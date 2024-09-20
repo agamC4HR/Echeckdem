@@ -1,0 +1,54 @@
+﻿@model List<Echeckdem.CustomFolder.OrganisationList>
+
+@{
+    ViewData["Title"] = "Organisation List";
+}
+
+<!-- Page Title -->
+<div class="container mt-5">
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+
+    <!-- Search Bar -->
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-6">
+            <form method="get" asp-controller="OrgList" asp-action="OrganisationList" class="input-group">
+                <input type="text" name="searchTerm" class="form-control" placeholder="Search organizations..." value="@ViewData["CurrentFilter"]" />
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Display Total Number of Organizations -->
+    <div class="text-center mb-4">
+        <p class="lead">Total Organizations: <span class="badge badge-info">@Model.Count</span></p>
+        <p class=" lead"> 
+    </div>
+
+    <!-- Organization Table -->
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Organisation Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var org = Model[i];   
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>
+                            <a asp-controller="OrgListGeneralInformation" asp-action="GeneralInfo" asp-route-id="@org.oid" class="text-decoration-none">
+                                @org.Oname
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+<

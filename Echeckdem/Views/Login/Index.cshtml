@@ -1,0 +1,177 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            background-color: #1E3A8A;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Comply4hr logo at the top image */
+        .top-left-image {
+            position: absolute;
+            top: 65px      <!-- set up in vscode = 10% -->
+            left: 10px;
+            width: 250px;
+            height: 80px;
+        }
+
+        /* Echeck tool image at mid */
+        .middle-left-image {
+            position: absolute;
+            top: 50%;          <!--set up in vscode = 50% -->
+            left: 80px;
+            transform: translateY(-50%);
+            width: 380px;
+            height: 180px;
+            left: 201px;
+        }
+
+        /* Container for text below the image */
+        .text-below-image {
+            position: absolute;
+            top: calc(50% + 100px);
+            left: 180px;
+            width: 380px;
+            text-align: center;
+        }
+
+            .text-below-image h1, .text-below-image h2 {
+                margin: 0;
+                font-size: 24px;
+                line-height: 1.5;
+                color: white;
+            }
+
+        .login-container {
+            background-color: #0D1A47;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            width: 420px;
+            padding: 30px;
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+        }
+
+            .login-container h2 {
+                margin-bottom: 15px;
+                text-align: center;
+                font-size: 24px;
+            }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-size: 18px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 10px;
+                border-radius: 5px;
+                border: none;
+                font-size: 16px;
+            }
+
+                .form-group input[type="submit"] {
+                    background-color: #f98806;
+                    color: white;
+                    cursor: pointer;
+                    font-weight: bold;
+                    border: none;
+                    padding: 10px;
+                    border-radius: 5px;
+                    font-size: 16px;
+                }
+
+                    .form-group input[type="submit"]:hover {
+                        background-color: #f98806;
+                    }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+            .forgot-password a {
+                color: #f98806;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+                .forgot-password a:hover {
+                    text-decoration: underline;
+                }
+
+        .alert {
+            color: white;
+            background-color: #f44336;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Image at the top left -->
+    <img src="~/imgs/new_logo.png" alt="Top Left Image" class="top-left-image" />
+
+    <!-- Image at the middle left -->
+    <img src="~/imgs/eCheckwhite.png" alt="Middle Left Image" class="middle-left-image" />
+
+    <!-- Text below the middle image -->
+    <div class="text-below-image">
+        <h1>ENTITY / FACTORY COMPLIANCE</h1>
+        <h2>DASHBOARD ON THE GO!!!</h2>
+    </div>
+
+    <div class="login-container">
+        <h2>Welcome! Let's get started.</h2>
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert">
+                @ViewBag.Message
+            </div>
+        }
+
+        <form asp-action="Index" method="post">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="userID">UserID</label>
+                <input type="text" id="userID" name="userID" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Login" />
+            </div>
+        </form>
+        <div class="forgot-password">
+            <a href="#">Forgot Password?</a>
+        </div>
+    </div>
+</body>
+</html>
+

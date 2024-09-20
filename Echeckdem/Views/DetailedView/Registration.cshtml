@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Echeckdem.Models.RegistrationViewModel>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .table-custom {
+            margin: 20px auto;
+            width: 90%;
+            border-collapse: collapse;
+        }
+
+            .table-custom th, .table-custom td {
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            .table-custom th {
+                background-color: #f4f4f4;
+                color: #333;
+                font-weight: bold;
+            }
+
+            .table-custom tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            .table-custom tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            .table-custom td {
+                word-wrap: break-word;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="my-4">Registration Report Details</h2>
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Organization Name</th>
+                    <th>Site</th>
+                    <th>Due Date</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Region</th>
+                    <th>Title</th>
+                    <!--<th>Form</th>-->
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.OName</td>
+                        <td>@item.Lname</td>
+                        <td>@item.Doe?.ToString("dd MMM yyyy")</td>
+                        <td>@item.LCity</td>
+                        <td>@item.LState</td>
+                        <td>@item.LRegion</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
