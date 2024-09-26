@@ -37,7 +37,7 @@ namespace Echeckdem.Controllers
 
                     // Generate JWT token
                         var token = _jwtService.GenerateJwtToken(user);
-
+                    
 
                     // Storing UserLevel in session
 

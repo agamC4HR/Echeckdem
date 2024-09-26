@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 
+//// Forcing development mode
+//builder.Host.UseEnvironment("Development");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

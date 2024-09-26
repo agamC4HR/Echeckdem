@@ -29,6 +29,16 @@ namespace Echeckdem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRegisterations()
         {
+            //var userLevelStr = HttpContext.Session.GetInt32("UserLevel");
+            //var userID = HttpContext.Session.GetString("userID");
+
+            //if (userLevelStr.HasValue)
+            //{
+            //    // Use userLevel.Value as an integer
+            //    var registrations = await _regService.GetDataAsync(userLevelStr.Value, userID);
+            //    return View("~/Views/DetailedView/Registration.cshtml", registrations);
+            //}
+
             var userLevelStr = HttpContext.Session.GetString("UserLevel");
             var userID = HttpContext.Session.GetString("userID");
 

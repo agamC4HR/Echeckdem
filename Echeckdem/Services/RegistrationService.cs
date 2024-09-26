@@ -1,4 +1,5 @@
 ﻿using Echeckdem.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Echeckdem.Services
@@ -37,8 +38,8 @@ namespace Echeckdem.Services
 
             sqlQuery += " ORDER BY a.doe DESC, b.lname";
 
-            var result = await _context.RegistrationViewModel.FromSqlRaw(sqlQuery, uno).ToListAsync();
-
+             var result = await _context.RegistrationViewModel.FromSqlRaw(sqlQuery, uno).ToListAsync();
+            //var result = await _context.RegistrationViewModel.FromSqlRaw(sqlQuery, new SqlParameter("@Uno", uno)).ToListAsync();
             return result;
         }
     }
