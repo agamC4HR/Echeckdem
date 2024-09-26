@@ -33,7 +33,7 @@ namespace Echeckdem.Controllers
             var userID = HttpContext.Session.GetString("userID");
 
 
-            Console.WriteLine(userLevelStr);
+            Console.WriteLine(userLevelStr.ToString());
             Console.WriteLine(userID);
 
 
