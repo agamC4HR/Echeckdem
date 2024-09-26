@@ -15,7 +15,7 @@ namespace Echeckdem.Services
             _context = context;
         }
 
-        public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, string uno)
+        public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, string uno,string OName=null, string Lname=null)
         {
            var sqlQuery = @"
                                 SELECT a.oid, 
@@ -27,7 +27,7 @@ namespace Echeckdem.Services
                          FROM ncret a
                          JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
                          JOIN nctempret c ON a.rcode = c.rcode
-                         JOIN ncmorg d ON b.oid = d.oid
+                         JOIN ncmorg d ON b.oid = d.oid  
                          WHERE d.oactive = 1 
                            AND a.status <> 99";
 
@@ -38,6 +38,16 @@ namespace Echeckdem.Services
                            AND b.lactive = '1'
                            AND a.lcode IN (SELECT DISTINCT lcode FROM ncumap WHERE uno = {0})";
             }
+
+            //if (!string.IsNullOrEmpty(filter.OName))
+            //{
+            //    sqlQuery += $"AND d.oname = '{filter.OName}'";
+            //}
+
+            //if (!string.IsNullOrEmpty(filter.Lname))
+            //{
+            //    sqlQuery += $" AND b.lname = '{filter.Lname}'";
+            //}
 
             sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
 

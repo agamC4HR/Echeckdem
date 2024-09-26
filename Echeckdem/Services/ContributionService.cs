@@ -13,7 +13,7 @@ namespace Echeckdem.Services
             _context = context;
         }
 
-        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,string uno)
+        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,string uno, string OName = null, string Lname = null)
         {
             var sqlQuery = @"
                                 SELECT a.oid, a.lastdate,

@@ -11,7 +11,7 @@ namespace Echeckdem.Services
         {
             _context = context;
         }
-        public async Task<List<RegistrationViewModel>> GetDataAsync(int ulev, string uno)
+        public async Task<List<RegistrationViewModel>> GetDataAsync(int ulev, string uno, string OName = null, string Lname = null)
         {
             var sqlQuery = @"
                 SELECT a.oid, a.doe,

@@ -36,7 +36,7 @@ namespace Echeckdem.Controllers
                     var userLevel = await _userService.GetUserLevelAsync(user.userID);
 
                     // Generate JWT token
-                    var token = _jwtService.GenerateJwtToken(user);
+                        var token = _jwtService.GenerateJwtToken(user);
 
 
                     // Storing UserLevel in session

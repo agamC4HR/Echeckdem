@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Details View";
+}
+
+<h2>Details View</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("GetRegisterations", "DetailsView")'">Registrations</button>
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("GetContributions", "DetailsView")'">Contributions</button>
+        <button class="btn btn-primary" onclick="location.href='@Url.Action("GetReturns", "DetailsView")'">Returns</button>
+
+        <button class="btn btn-primary" id="filter-button">Filter</button>
+
+        <div id="filter-form" style="display: none;">
+            <form asp-action="FilterData" asp-controller="DetailsView">
+                <label>Filter by:</label>
+                <input type="checkbox" name="Returns" value="true" /> Returns
+                <input type="checkbox" name="Registrations" value="true" /> Registrations
+                <input type="checkbox" name="Contributions" value="true" /> Contributions
+                <br />
+                <label>OName:</label>
+                <input type="text" name="OName" />
+                <br />
+                <label>LName:</label>
+                <input type="text" name="LName" />
+                <br />
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("filter-button").addEventListener("click", function () {
+        var filterForm = document.getElementById("filter-form");
+        if (filterForm.style.display === "none") {
+            filterForm.style.display = "block";
+        } else {
+            filterForm.style.display = "none";
+        }
+    });
+</script>
