@@ -37,8 +37,8 @@ namespace Echeckdem.Services
             sqlQuery += @" ORDER BY a.lastdate DESC, b.lname";
 
             // Execute the SQL query
-            //var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, uno).ToListAsync();
-            var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, new SqlParameter("@uno", uno)).ToListAsync();
+            var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, uno).ToListAsync();
+            //var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, new SqlParameter("@uno", uno)).ToListAsync();
             return result;
            
 

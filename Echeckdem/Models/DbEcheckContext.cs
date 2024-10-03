@@ -124,7 +124,7 @@ public partial class DbEcheckContext : DbContext
     public virtual DbSet<Triglink> Triglinks { get; set; }
 
     public virtual DbSet<UserActivation> UserActivations { get; set; }
-
+     
     public virtual DbSet<Webinar> Webinars { get; set; }
 
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
