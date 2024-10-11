@@ -3,40 +3,38 @@ using Echeckdem.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
+using Microsoft.EntityFrameworkCore;
 
 namespace Echeckdem.Services
 {
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
-        private readonly MongoDbService _mongoDbService;
 
-        public UserService(MongoDbService mongoDbService)
+        private readonly DbEcheckContext _dbEcheckContext;
 
+        public UserService(DbEcheckContext dbEcheckContext)
         {
-            _mongoDbService = mongoDbService;
+            _dbEcheckContext = dbEcheckContext;
         }
 
-        public async Task<Users> AuthenticateUserAsync(string userID, string password)
-            {
-
-            var usersCollection = _mongoDbService.GetUsersCollection();
-            var filter = Builders<Users>.Filter.And(
-                Builders<Users>.Filter.Eq(u => u.userID, userID),
-                Builders<Users>.Filter.Eq(u => u.password, password)
-                );
-
-            return await usersCollection.Find(filter).FirstOrDefaultAsync();
-        }
-
-        public async Task<int> GetUserLevelAsync(string userID)              //getting USERLEVEL
+        public bool IsValidUser(string Userid, string Password)
         {
-            var usersCollection = _mongoDbService.GetUsersCollection();
-            var filter = Builders<Users>.Filter.Eq(u => u.userID, userID);
-            var user = await usersCollection.Find(filter).FirstOrDefaultAsync();
+            var user = _dbEcheckContext.Ncusers.Where(u => u.Userid == Userid && u.Password == Password).FirstOrDefault();
 
-            return user?.Ulev ?? 0; // Assuming `ulev` is the field for user level  
+            return user != null;
         }
+
+        public async Task<int> GetUserLevelAsync(string userId)
+        {
+            var user = await _dbEcheckContext.Ncusers
+                .Where(u => u.Userid == userId)
+                .FirstOrDefaultAsync();
+
+            return user?.Userlevel ?? 0;
+        }
+
 
     }
 }
+
 
