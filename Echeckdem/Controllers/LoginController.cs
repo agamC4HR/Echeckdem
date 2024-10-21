@@ -53,7 +53,7 @@ namespace Echeckdem.Controllers
                             return RedirectToAction("Reports", "Reports"); // Reports page
                         //case 4:
                         case 2:
-                            return RedirectToAction("Index", "DetailsView"); // Details View page
+                            return RedirectToAction("Index", "Home"); // Details View page
                         case 4:
                             return RedirectToAction("MainData", "MainData"); // Main Data page                                      
                         default:
