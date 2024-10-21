@@ -11,5 +11,6 @@
         //public string RTitle { get; set; }
         public string OName { get; set; }
         public DateTime? LastDate { get; set; }
+        public string TP {  get; set; }
     }
 }

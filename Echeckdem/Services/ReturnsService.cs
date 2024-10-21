@@ -39,15 +39,7 @@ namespace Echeckdem.Services
                            AND a.lcode IN (SELECT DISTINCT lcode FROM ncumap WHERE uno = {0})";
             }
 
-            //if (!string.IsNullOrEmpty(filter.OName))
-            //{
-            //    sqlQuery += $"AND d.oname = '{filter.OName}'";
-            //}
-
-            //if (!string.IsNullOrEmpty(filter.Lname))
-            //{
-            //    sqlQuery += $" AND b.lname = '{filter.Lname}'";
-            //}
+           
 
             sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
 

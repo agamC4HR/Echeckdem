@@ -25,7 +25,7 @@ namespace Echeckdem.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Index(LoginViewModel model)
-        {
+        { 
             if (ModelState.IsValid)
             {
                 var isValidUser = _loginService.IsValidUser(model.userID, model.password);
@@ -42,7 +42,8 @@ namespace Echeckdem.Controllers
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
 
-                    
+                    Console.WriteLine("USERLEVEL:", userLevel);
+                    Console.WriteLine("USERID:", model.userID);
                     // Redirect based on user level
                     switch (userLevel)
                     {
