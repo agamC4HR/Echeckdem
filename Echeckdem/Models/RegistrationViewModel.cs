@@ -10,6 +10,7 @@
         public string OName { get; set; }
 
         public DateTime? Doe { get; set; }
+        public string TP { get; set; }
        
     }
 }

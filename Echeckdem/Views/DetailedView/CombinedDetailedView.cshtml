@@ -1,0 +1,136 @@
+﻿@model CombinedDetailedViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .table-custom {
+            margin: 20px auto;
+            width: 90%;
+            border-collapse: collapse;
+        }
+
+            .table-custom th, .table-custom td {
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            .table-custom th {
+                background-color: #f4f4f4;
+                color: #333;
+                font-weight: bold;
+            }
+
+            .table-custom tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            .table-custom tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            .table-custom td {
+                word-wrap: break-word;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="my-4">Combined Reports</h2>
+
+        <!-- Registrations Table -->
+        <h3>Registration Report</h3>
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Organization Name</th>
+                    <th>Site</th>
+                    <th>Due Date</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Region</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var registration in Model.Registrations)
+                {
+                    <tr>
+                        <td>@registration.OName</td>
+                        <td>@registration.Lname</td>
+                        <td>@registration.Doe?.ToString("dd MMM yyyy")</td>
+                        <td>@registration.LCity</td>
+                        <td>@registration.LState</td>
+                        <td>@registration.LRegion</td>
+                        <td>@registration.TP</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Contributions Table -->
+        <h3>Contribution Report</h3>
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Organization Name</th>
+                    <th>Site</th>
+                    <th>Due Date</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Region</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var contribution in Model.Contributions)
+                {
+                    <tr>
+                        <td>@contribution.OName</td>
+                        <td>@contribution.Lname</td>
+                        <td>@contribution.LastDate?.ToString("dd MMM yyyy")</td>
+                        <td>@contribution.LCity</td>
+                        <td>@contribution.LState</td>
+                        <td>@contribution.LRegion</td>
+                        <td>@contribution.TP</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Returns Table -->
+        <h3>Returns Report</h3>
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Organization Name</th>
+                    <th>Report Title</th>
+                    <th>Site</th>
+                    <th>Due Date</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Region</th>
+                    <th>Form</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var returnData in Model.Returns)
+                {
+                    <tr>
+                        <td>@returnData.OName</td>
+                        <td>@returnData.RTitle</td>
+                        <td>@returnData.Lname</td>
+                        <td>@returnData.LastDate?.ToString("dd MMM yyyy")</td>
+                        <td>@returnData.LCity</td>
+                        <td>@returnData.LState</td>
+                        <td>@returnData.LRegion</td>
+                        <td>@returnData.RForm</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

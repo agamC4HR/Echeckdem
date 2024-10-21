@@ -16,7 +16,7 @@ namespace Echeckdem.Services
         public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,string uno, string OName = null, string Lname = null)
         {
             var sqlQuery = @"
-                                SELECT a.oid, a.lastdate,
+                                SELECT a.oid, a.tp, a.lastdate,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.oname
 
@@ -38,7 +38,7 @@ namespace Echeckdem.Services
 
             // Execute the SQL query
             var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, uno).ToListAsync();
-            //var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, new SqlParameter("@uno", uno)).ToListAsync();
+           
             return result;
            
 
