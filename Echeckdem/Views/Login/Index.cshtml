@@ -1,19 +1,13 @@
-﻿ @{
-    ViewData["Title"] = "Login";
-}
-@*
-
-        @if (ViewBag.Message != null)
-        {
-            <div class="alert">
-                @ViewBag.Message
-            </div>
-        }
- *@
-
-
-
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
     <link rel="stylesheet" href="~/css/login.css">
+
+</head>
+<body>
 
     <div class="theme-toggle">
         <box-icon id="theme-icon" name='sun' onclick="toggleTheme()"></box-icon>
@@ -39,12 +33,18 @@
                 </div>
 
                 <div class="input-box animation" style="--D:3; --S:24">
-                    <button class="btn" type="submit">Login</button>
+                    <button class="btn" type="submit" style="color:white;">Login</button>
                 </div>
 
                 <div class="regi-link animation" style="--D:4; --S:25">
                     <a id="forgotPassword">Forgot your password? </a>
                 </div>
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert">
+                        @ViewBag.Message
+                    </div>
+                }
             </form>
         </div>
 
@@ -67,12 +67,18 @@
 
 
                 <div class="input-box animation" style="--li:20; --S:4">
-                    <button class="btn" type="submit">Submit</button>
+                    <button class="btn" type="submit" style="color:white;">Submit</button>
                 </div>
 
                 <div class="regi-link animation" style="--li:21; --S:5">
                     <a id="remeberPassword">Oh I remebered!</a>
                 </div>
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert">
+                        @ViewBag.Message
+                    </div>
+                }
             </form>
         </div>
 
@@ -129,4 +135,5 @@
             }
         };
     </script>
-
+</body>
+</html>
