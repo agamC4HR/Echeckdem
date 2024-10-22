@@ -1,6 +1,8 @@
 ﻿using Echeckdem.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
+using System.Security.Policy;
 
 namespace Echeckdem.Services
 {
@@ -13,10 +15,10 @@ namespace Echeckdem.Services
             _context = context;
         }
 
-        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,string uno, string OName = null, string Lname = null)
+        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,string uno, string organizationName = null, string site = null, string state = null, string city = null)
         {
             var sqlQuery = @"
-                                SELECT a.oid, a.tp, a.lastdate,
+                                SELECT a.oid, a.tp, a.Status, a.depdate, a.Period, a.Cyear, a.lastdate,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.oname
 
@@ -34,14 +36,32 @@ namespace Echeckdem.Services
                 AND b.lactive = '1'";
             }
 
+            //Applyting FILTERSS
+
+            if (!string.IsNullOrEmpty(organizationName))
+            {
+                sqlQuery += " AND c.oname LIKE '%' + {1} + '%'";
+            }
+            if (!string.IsNullOrEmpty(site))
+            {
+                sqlQuery += " AND b.lname LIKE '%' + {2} + '%'";
+            }
+            if (!string.IsNullOrEmpty(city))
+            {
+                sqlQuery += " AND b.lcity LIKE '%' + {4} + '%'";
+            }
+            if (!string.IsNullOrEmpty(state))
+            {
+                sqlQuery += " AND b.lstate LIKE '%' + {3} + '%'";
+            }
+           
+
+
             sqlQuery += @" ORDER BY a.lastdate DESC, b.lname";
 
             // Execute the SQL query
-            var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, uno).ToListAsync();
-           
+            var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city).ToListAsync();
             return result;
-           
-
         }
 
     }

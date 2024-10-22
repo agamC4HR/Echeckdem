@@ -11,6 +11,30 @@
 
         public DateTime? Doe { get; set; }
         public string TP { get; set; }
-       
+       public string Status { get; set; }
+
+
+        public string GetStatusDescription()
+        {
+            return Status switch
+            {
+
+                "E" => "Expired",
+                "SU" => "Surrendered",
+                "A" => "Applied",
+                "NA" => "Not Applicable",
+                "C" => "Compliant",
+                "D" => "Documents Required",
+                "N" => "Non-Compliant",
+                "B" => "Awaiting Application",
+                "AR" => "Ammendment Required",
+                "AA" => "Ammendment Applied",
+                "SC" => "Site Closed",
+                "UP" => "Under Process",
+                _ => "Unknown"
+            };
+
+        }
+    
     }
 }

@@ -23,17 +23,22 @@ namespace Echeckdem.Controllers
            
         }
 
-        public async Task<IActionResult> CombinedDetailed(int ulev, string uno)
+        public async Task<IActionResult> CombinedDetailed(int ulev, string uno, string organizationName = null, string site = null, string state = null, string city = null, string category = null)
         {
-            var registrations = await _regService.GetDataAsync(ulev, uno);
-            var contributions = await _contService.GetDataAsync(ulev, uno);
-            var returns = await _retService.GetDataAsync( ulev, uno);
+            var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, site, state, city);
+            var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, site, state, city);
+            var returns = await _retService.GetDataAsync( ulev, uno, organizationName, site, state, city);
 
             var detailedViewModel = new CombinedDetailedViewModel
             {
                 Registrations = registrations,
                 Contributions = contributions,
-                Returns = returns
+                Returns = returns,
+                OrganizationName = organizationName,
+                Site = site,
+                State = state,
+                City = city,
+                Category = category
             };
 
 
