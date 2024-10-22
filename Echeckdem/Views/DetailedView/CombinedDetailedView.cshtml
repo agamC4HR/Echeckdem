@@ -1,136 +1,289 @@
 ﻿@model CombinedDetailedViewModel
 
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <style>
-        .table-custom {
-            margin: 20px auto;
-            width: 90%;
-            border-collapse: collapse;
+@{
+    ViewData["Title"] = "Detailed Report";
+    ViewData["Heading"] = "Detailed Report";
+    ViewData["Heading_child"] = "Comprehensive labor compliance insights and actions.";
+}
+
+
+<style>
+    .table-heading-container {
+        position:relative;
+        width:97%;
+        top:40px;
+        left:20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fdfdfd;
+        padding: 5px 10px;
+        border-radius: .375rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+    }
+
+    .table-heading-text {
+        font-size: 16px;
+        color: black;
+        font-weight: bold;
+    }
+
+    .table-filter-buttons {
+        background: #e0dede;
+        display: flex;
+        align-items:center;
+        gap: 10px;
+        border: none;
+        border-radius: 0.375rem;
+        padding:4px 8px;
+    }
+
+    .table-filter-btn {
+        background-color: transparent;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 0.375rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .table-filter-btn.active {
+            background-color: #ffffff;
+            border:none;
+            border-radius:0.375rem;
         }
 
-            .table-custom th, .table-custom td {
-                padding: 12px;
-                text-align: left;
-                border: 1px solid #ddd;
+    .table-container {
+        background-color: transparent;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        text-align: left;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .styled-table thead tr {
+            font-family: "Arial", sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .styled-table td {
+            padding: 5px 10px;
+            border: 1px solid #dddddd;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .styled-table th {
+            padding: 5px 10px;
+            border: 1px solid #dddddd;
+            font-size: 14px;
+            width:auto;
+        }
+
+            .styled-table th:nth-child(1) { /* S.No. */
+                width: 4%;
             }
 
-            .table-custom th {
-                background-color: #f4f4f4;
-                color: #333;
-                font-weight: bold;
+            .styled-table th:nth-child(2) { /* S.No. */
+                width: 15%;
             }
 
-            .table-custom tr:nth-child(even) {
-                background-color: #f9f9f9;
+            .styled-table th:nth-child(5) { /* Site */
+                width: 150px;
             }
 
-            .table-custom tr:hover {
+            .styled-table th:nth-child(6) { /* Period */
+                width: 9%;
+            }
+
+            .styled-table th:nth-child(7) { /* Due Date */
+                width: 9%;
+            }
+
+            .styled-table th:nth-child(8) { /* Status */
+                width: 10%;
+            }
+
+            .styled-table th:nth-child(9) { /* Date of Deposit/Renewal */
+                width: 9%;
+            }
+
+            .styled-table th:nth-child(10) { /* City */
+                width: 120px;
+            }
+
+            .styled-table th:nth-child(11) { /* State */
+                width: 120px;
+            }
+
+            .styled-table th:nth-child(12) { /* Region */
+                width: 120px;
+            }
+
+        .styled-table tbody tr {
+            background-color: #f9f9f9;
+
+        }
+
+            .styled-table tbody tr:nth-of-type(even) {
                 background-color: #f1f1f1;
             }
 
-            .table-custom td {
-                word-wrap: break-word;
+            .styled-table tbody tr:hover {
+                background-color: #e2e2e2;
             }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2 class="my-4">Combined Reports</h2>
 
-        <!-- Registrations Table -->
-        <h3>Registration Report</h3>
-        <table class="table table-custom">
-            <thead>
-                <tr>
-                    <th>Organization Name</th>
-                    <th>Site</th>
-                    <th>Due Date</th>
-                    <th>City</th>
-                    <th>State</th>
-                    <th>Region</th>
-                    <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var registration in Model.Registrations)
-                {
-                    <tr>
-                        <td>@registration.OName</td>
-                        <td>@registration.Lname</td>
-                        <td>@registration.Doe?.ToString("dd MMM yyyy")</td>
-                        <td>@registration.LCity</td>
-                        <td>@registration.LState</td>
-                        <td>@registration.LRegion</td>
-                        <td>@registration.TP</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        .styled-table tbody td {
+            color: #333333;
+        }
 
-        <!-- Contributions Table -->
-        <h3>Contribution Report</h3>
-        <table class="table table-custom">
-            <thead>
-                <tr>
-                    <th>Organization Name</th>
-                    <th>Site</th>
-                    <th>Due Date</th>
-                    <th>City</th>
-                    <th>State</th>
-                    <th>Region</th>
-                    <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var contribution in Model.Contributions)
-                {
-                    <tr>
-                        <td>@contribution.OName</td>
-                        <td>@contribution.Lname</td>
-                        <td>@contribution.LastDate?.ToString("dd MMM yyyy")</td>
-                        <td>@contribution.LCity</td>
-                        <td>@contribution.LState</td>
-                        <td>@contribution.LRegion</td>
-                        <td>@contribution.TP</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <!-- Returns Table -->
-        <h3>Returns Report</h3>
-        <table class="table table-custom">
-            <thead>
-                <tr>
-                    <th>Organization Name</th>
-                    <th>Report Title</th>
-                    <th>Site</th>
-                    <th>Due Date</th>
-                    <th>City</th>
-                    <th>State</th>
-                    <th>Region</th>
-                    <th>Form</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var returnData in Model.Returns)
-                {
-                    <tr>
-                        <td>@returnData.OName</td>
-                        <td>@returnData.RTitle</td>
-                        <td>@returnData.Lname</td>
-                        <td>@returnData.LastDate?.ToString("dd MMM yyyy")</td>
-                        <td>@returnData.LCity</td>
-                        <td>@returnData.LState</td>
-                        <td>@returnData.LRegion</td>
-                        <td>@returnData.RForm</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+</style>
+<div class="table-heading-container">
+    <h2 class="table-heading-text">Category</h2>
+    <div class="table-filter-buttons">
+        <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
+        <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
+        <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
+        <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
     </div>
-</body>
-</html>
+</div>
+
+<div class="table-container">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>S.No.</th>
+                <th>Organization Name</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Site</th>
+                <th>Period</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Date of Deposit/Renewal</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Region</th>
+                @* <th>Form</th> *@
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int sno = 1; 
+            }
+            @foreach (var registration in Model.Registrations)
+            {
+                <tr class="registration-row">
+                    <td>@sno</td>
+                    <td>@registration.OName</td>
+                    <td>Registrations</td>
+                    <td>@registration.TP</td>
+                    <td>@registration.Lname</td>
+                    <td></td>
+                    <td>@registration.Doe?.ToString("dd MMM yyyy")</td>
+                    <td></td>
+                    <td></td>
+                    <td>@registration.LCity</td>
+                    <td>@registration.LState</td>
+                    <td>@registration.LRegion</td>
+                    @* <td></td> <!-- Empty for Registrations --> *@
+                </tr>
+                sno++;
+            }
+            @foreach (var contribution in Model.Contributions)
+            {
+                <tr class="payroll-row">
+                    <td>@sno</td>
+                    <td>@contribution.OName</td>
+                    <td>Payroll</td> 
+                    <td>@contribution.TP</td>
+                    <td>@contribution.Lname</td>
+                    <td></td>
+                    <td>@contribution.LastDate?.ToString("dd MMM yyyy")</td>
+                    <td></td>
+                    <td></td>
+                    <td>@contribution.LCity</td>
+                    <td>@contribution.LState</td>
+                    <td>@contribution.LRegion</td>
+                    @* <td></td> <!-- Empty for Contributions --> *@
+                </tr>
+                sno++;
+            }
+            @foreach (var returnData in Model.Returns)
+            {
+                <tr class="return-row">
+                    <td>@sno</td>
+                    <td>@returnData.OName</td>
+                    <td>Returns</td> 
+                    <td></td>
+                    <td>@returnData.Lname</td>
+                    <td></td>
+                    <td>@returnData.LastDate?.ToString("dd MMM yyyy")</td>
+                    <td></td>
+                    <td></td>
+                    <td>@returnData.LCity</td>
+                    <td>@returnData.LState</td>
+                    <td>@returnData.LRegion</td>
+                    @* <td>@returnData.RTitle</td> <!-- Unique to Returns -->
+                    <td>@returnData.RForm</td> <!-- Unique to Returns --> *@
+                </tr>
+                sno++;
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function filterTable(type) {
+        const allRows = document.querySelectorAll("tbody tr");
+        const registrationRows = document.querySelectorAll(".registration-row");
+        const payrollRows = document.querySelectorAll(".payroll-row");
+        const returnRows = document.querySelectorAll(".return-row");
+
+        // Show or hide rows based on the selected filter type
+        if (type === "all") {
+            allRows.forEach(row => row.style.display = "table-row");
+            updateSerialNumbers(allRows);
+        } else if (type === "registration") {
+            registrationRows.forEach(row => row.style.display = "table-row");
+            payrollRows.forEach(row => row.style.display = "none");
+            returnRows.forEach(row => row.style.display = "none");
+            updateSerialNumbers(registrationRows);
+        } else if (type === "payroll") {
+            registrationRows.forEach(row => row.style.display = "none");
+            payrollRows.forEach(row => row.style.display = "table-row");
+            returnRows.forEach(row => row.style.display = "none");
+            updateSerialNumbers(payrollRows);
+        } else if (type === "return") {
+            registrationRows.forEach(row => row.style.display = "none");
+            payrollRows.forEach(row => row.style.display = "none");
+            returnRows.forEach(row => row.style.display = "table-row");
+            updateSerialNumbers(returnRows);
+        }
+
+        // Update active button
+        document.querySelectorAll(".table-filter-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(`.table-filter-btn[onclick="filterTable('${type}')"]`).classList.add("active");
+    }
+
+    function updateSerialNumbers(rows) {
+        rows.forEach((row, index) => {
+            const serialCell = row.cells[0]; // Assuming the first cell is for the serial number
+            serialCell.textContent = index + 1; // Update serial number based on index
+        });
+    }
+</script>

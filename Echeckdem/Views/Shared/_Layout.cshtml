@@ -13,7 +13,7 @@
     <nav class="navbar">
         <div class="nav_parent">
             <div class="nav_logo">
-                <a href="">
+                <a href="/Home">
                     <div class="nav_image">
                         <img src="~/imgs/eCheckwhite.png" alt="" class="product_logo"/>
                     </div>
@@ -21,7 +21,7 @@
             </div>
             <div class="nav-links">
                 <div class="nav_links">
-                    <a href=""> Home</a>
+                    <a href="/Home"> Home</a>
                     <a href=""> Operations Calendar</a>
                     <a href=""> Graphical Details</a>
                     <a href=""> Bulk Upload</a>
@@ -33,18 +33,17 @@
             </div>
         </div>
     </nav>
-    <div class="main">
         <div class="heading_background_parent">
-            <img src="~/imgs/background.jpeg" alt="Alternate Text" class="heading_background" />
+            <div class="heading_background">
             <div class="heading_parent">
                 <h1 class="heading"> @ViewData["Heading"] </h1>
                 <p class="heading_child">@ViewData["Heading_child"] </p>
             </div>
+                </div>
         </div>
         <div class="main_child">
             @RenderBody()
         </div>
-    </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
