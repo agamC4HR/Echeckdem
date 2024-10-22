@@ -41,10 +41,13 @@
                     <th>Report Title</th>
                     <th>Site</th>
                     <th>Due Date</th>
+                    <th>Period</th>
                     <th>City</th>
                     <th>State</th>
                     <th>Region</th>
-                    <th>Form</th>
+                    <th>Date of Deposit/Renewal</th>
+                    <th>Status</th>
+                    @* <th>Form</th> *@
                 </tr>
             </thead>
             <tbody>
@@ -55,11 +58,15 @@
                         <td>@item.RTitle</td>
                         <td>@item.Lname</td>
                         <td>@item.LastDate?.ToString("dd MMM yyyy")</td>
+                        <td>@item.Period?.ToString("MMMM yyyy")</td>
+                        
                         <td>@item.LCity</td>
                         <td>@item.LState</td>
                         <td>@item.LRegion</td>
-                        <td>@item.RForm</td>   
-                    </tr>
+                        <td>@item.Depdate?.ToString("dd MMM yyyy")</td>
+                        <td>@item.GetStatusDescription()</td>
+@*                         <td>@item.RForm</td>   
+ *@                    </tr>
                 }
             </tbody>
         </table>

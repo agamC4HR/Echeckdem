@@ -4,7 +4,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <style>
+    <style> 
         .table-custom {
             margin: 20px auto;
             width: 90%;
@@ -43,12 +43,14 @@
             <thead>
                 <tr>
                     <th>Organization Name</th>
+
                     <th>Site</th>
                     <th>Due Date</th>
                     <th>City</th>
                     <th>State</th>
                     <th>Region</th>
                     <th>Type</th>
+                    <th>Status</th>
                     <!--<th>Form</th>-->
                 </tr>
             </thead>
@@ -63,6 +65,7 @@
                         <td>@item.LState</td>
                         <td>@item.LRegion</td>
                         <td>@item.TP</td>
+                        <td>@item.GetStatusDescription()</td>
 
                     </tr>
                 }
