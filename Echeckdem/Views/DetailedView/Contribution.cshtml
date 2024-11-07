@@ -18,7 +18,7 @@
             }
 
             .table-custom th {
-                background-color: #f4f4f4;
+                background-color: #f4f4f4;                              
                 color: #333;
                 font-weight: bold;
             }
@@ -52,7 +52,7 @@
                     <th>Type</th>
                     <th>Date of Deposit/Renewal</th>
                     <th>Status</th>
-                    <!--<th>Form</th>-->
+                   
                 </tr>
             </thead>
             <tbody>
@@ -61,13 +61,13 @@
                     <tr>
                         <td>@item.OName</td>
                         <td>@item.Lname</td>
-                        <td>@item.LastDate?.ToString("dd MMM yyyy")</td>
+                        <td>@item.LastDate?.ToString("dd-MM-yyyy")</td>
                         <td>@item.FormattedPeriod</td>
                         <td>@item.LCity</td>
                         <td>@item.LState</td>
                         <td>@item.LRegion</td>
                         <td>@item.TP</td>
-                        <td>@item.Depdate?.ToString("dd MMM yyyy")</td>
+                        <td>@item.Depdate?.ToString("dd-MM-yyyy")</td>
                         <td>@item.GetStatusDescription()</td>
                      
 

@@ -13,6 +13,8 @@
         public string TP { get; set; }
        public string Status { get; set; }
 
+        public DateOnly? Dolr { get; set; }
+
 
         public string GetStatusDescription()
         {

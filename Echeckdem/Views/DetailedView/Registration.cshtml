@@ -43,13 +43,14 @@
             <thead>
                 <tr>
                     <th>Organization Name</th>
-
                     <th>Site</th>
                     <th>Due Date</th>
+                    <th>Period</th>
                     <th>City</th>
                     <th>State</th>
                     <th>Region</th>
                     <th>Type</th>
+                    <th>Date of Deposit/Renewal</th>
                     <th>Status</th>
                     <!--<th>Form</th>-->
                 </tr>
@@ -60,11 +61,13 @@
                     <tr>
                         <td>@item.OName</td>
                         <td>@item.Lname</td>
-                        <td>@item.Doe?.ToString("dd MMM yyyy")</td>
+                        <td>@item.Doe?.ToString("dd-MM-yyyy")</td>
+                        <td>N/A</td>
                         <td>@item.LCity</td>
                         <td>@item.LState</td>
                         <td>@item.LRegion</td>
                         <td>@item.TP</td>
+                        <td>@item.Dolr?.ToString("dd-MM-yyyy")</td>
                         <td>@item.GetStatusDescription()</td>
 
                     </tr>

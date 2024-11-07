@@ -14,7 +14,7 @@ namespace Echeckdem.Services
             _EcheckContext = EcheckContext;
         }
 
-        // public async Task<List<OrganisationList>> GetActiveOrganisationsListAsync(string searchTerm)
+        // public async Task<List<OrganisationList>> GetActiveOrganisationsListAsync(string searchTerm) 
         public async Task<List<OrganisationList>> GetActiveOrganisationsListAsync(string searchTerm)
         {
             // Define the base query
@@ -38,6 +38,6 @@ namespace Echeckdem.Services
 
             return organisationList;
         }
-
+        
     }
 }

@@ -13,14 +13,14 @@ namespace Echeckdem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GeneralInfo(string id) // id as string
+        public async Task<IActionResult> GeneralInfo(string id) 
         {
             if (string.IsNullOrEmpty(id))
             {
                 return BadRequest("Invalid organisation ID.");
             }
 
-            var info = await _orglistGenInfoService.GetOrganisationGeneralInformation(id);
+            var info = await _orglistGenInfoService.GetOrganisationGeneralInformation(id);                                                                       
 
             if (info == null)
             {
@@ -31,7 +31,7 @@ namespace Echeckdem.Controllers
         }
        /* public IActionResult Index()
         {
-            return View();
+            return View();    
         }*/
     }
 }

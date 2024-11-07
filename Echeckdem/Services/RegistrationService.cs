@@ -12,10 +12,10 @@ namespace Echeckdem.Services
         {
             _context = context;
         }
-        public async Task<List<RegistrationViewModel>> GetDataAsync(int ulev, string uno, string organizationName = null, string site = null, string state = null, string city = null)
+        public async Task<List<RegistrationViewModel>> GetDataAsync(int ulev, string uno, string organizationName = null, string site = null, string state = null, string city = null, DateTime? startDueDate = null, DateTime? endDueDate = null, DateTime? startPeriod = null, DateTime? endPeriod = null)
         {
             var sqlQuery = @"
-                SELECT a.oid, a.doe, a.status, a.tp,  
+                SELECT a.oid, a.doe, a.status, a.Dolr, a.tp,  
                 b.lname, b.lstate, b.lcity, b.lregion,
                 c.oname
                 
@@ -52,14 +52,30 @@ namespace Echeckdem.Services
             {
                 sqlQuery += " AND b.lstate LIKE '%' + {3} + '%'";
             }
-           
+            if (startDueDate.HasValue)
+            {
+                sqlQuery += " AND a.doe >= {5}";
+            }
+            if (endDueDate.HasValue)
+            {
+                sqlQuery += " AND a.doe <= {6}";
+            }
+            if (startPeriod.HasValue)
+            {
+                //sqlQuery += " AND a.Dolr >= {7}";
+            }
+            if (endPeriod.HasValue)
+            {
+                //sqlQuery += " AND a.Dolr <= {8}";
+            }
+
 
             sqlQuery += " ORDER BY a.doe DESC, b.lname";
 
            
                 
             //first return variable=
-            var result = await _context.RegistrationViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city).ToListAsync();
+            var result = await _context.RegistrationViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod).ToListAsync();
             
             return result;
         }

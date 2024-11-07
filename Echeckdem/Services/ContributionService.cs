@@ -15,19 +15,19 @@ namespace Echeckdem.Services
             _context = context;
         }
 
-        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,string uno, string organizationName = null, string site = null, string state = null, string city = null)
+        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,string uno, string organizationName = null, string site = null, string state = null, string city = null, DateTime? startDueDate = null, DateTime? endDueDate = null, DateTime? startPeriod = null, DateTime? endPeriod = null)
         {
             var sqlQuery = @"
                                 SELECT a.oid, a.tp, a.Status, a.depdate, a.Period, a.Cyear, a.lastdate,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.oname
 
-                         FROM nccontr a
-            JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
-            JOIN ncmorg c ON c.oid = b.oid
-            WHERE c.oactive = 1 AND a.status <> 99";
+                                FROM nccontr a
+                                JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
+                                JOIN ncmorg c ON c.oid = b.oid
+                                WHERE c.oactive = 1 AND a.status <> 99";
 
-            // Add extra filtering if ulev > 1
+            // Add extra filtering if ulev > 1 
             if (ulev > 1)
             {
                 sqlQuery += @"
@@ -54,13 +54,28 @@ namespace Echeckdem.Services
             {
                 sqlQuery += " AND b.lstate LIKE '%' + {3} + '%'";
             }
-           
+            if (startDueDate.HasValue)
+            {
+                sqlQuery += " AND a.lastdate >= {5}";
+            }
+            if (endDueDate.HasValue)
+            {
+                sqlQuery += " AND a.lastdate <= {6}";
+            }
+            if (startPeriod.HasValue)
+            {
+                sqlQuery += " AND a.Period >= {7}";
+            }
+            if (endPeriod.HasValue)
+            {
+                sqlQuery += " AND a.Period <= {8}";
+            }
 
 
-            sqlQuery += @" ORDER BY a.lastdate DESC, b.lname";
+            sqlQuery += @" ORDER BY a.lastdate DESC, b.lname";    
 
-            // Execute the SQL query
-            var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city).ToListAsync();
+            // Execute the SQL query 
+            var result = await _context.ContributionViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod).ToListAsync() ;
             return result;
         }
 

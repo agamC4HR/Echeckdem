@@ -17,7 +17,7 @@ namespace Echeckdem.Services
             _context = context;
         }
 
-        public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, string uno, string organizationName = null, string site = null, string state = null, string city = null)
+        public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, string uno, string organizationName = null, string site = null, string state = null, string city = null, DateTime? startDueDate = null, DateTime? endDueDate = null, DateTime? startPeriod = null, DateTime? endPeriod = null)
         {
            var sqlQuery = @"
                                 SELECT a.oid, a.Depdate, a.Status, 
@@ -60,13 +60,30 @@ namespace Echeckdem.Services
             {
                 sqlQuery += " AND b.lstate LIKE '%' + {3} + '%'";
             }
-           
 
+            if (startDueDate.HasValue)
+            {
+                sqlQuery += " AND a.lastdate >= {5}";
+            }
+            if (endDueDate.HasValue)
+            {
+                sqlQuery += " AND a.lastdate <= {6}";
+            }
+            if (startPeriod.HasValue)
+            {
+                //sqlQuery += " AND DATEADD(MONTH, a.RM, DATEADD(YEAR, a.YROFF, GETDATE())) >= {7}";
+                //sqlQuery += " AND a.Period >= {7}";
+            }
+            if (endPeriod.HasValue)
+            {
+                //sqlQuery += " AND DATEADD(MONTH, a.RM, DATEADD(YEAR, a.YROFF, GETDATE())) <= {8}";
+                //sqlQuery += " AND a.Period <= {8}";
+            }
 
             sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
 
             // Execute the SQL query
-            var result = await _context.ReturnsViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city).ToListAsync();
+            var result = await _context.ReturnsViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod).ToListAsync();
             return result;
         }
 
