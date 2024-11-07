@@ -9,19 +9,48 @@
 
 <style>
     .table-heading-container {
-        position:relative;
-        width:97%;
-        top:40px;
-        left:20px;
+        position:sticky;
+        width:96vw;
+        top:70px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         background-color: #fdfdfd;
-        padding: 5px 10px;
+        padding: 3px 5px;
         border-radius: .375rem;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 10px;
+        margin-bottom: -28px;
+        margin-top:38px;
+        margin-left:19px;
     }
+
+    .table-search-input{
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: .375rem;
+        font-size: 14px;
+        width: 200px;
+    }
+
+    .table-export-btn{
+        background-color: #3AC47D;
+        color:white;
+        border: 2px solid #3AC47D;
+        font-weight:600;
+        padding: 5px;
+        border-radius: .375rem;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .table-export-btn:hover {
+            background-color: white;
+            color: #3AC47D;
+            text-decoration: underline;
+            border: 2px solid #3AC47D;
+        }
 
     .table-heading-text {
         font-size: 16px;
@@ -30,20 +59,22 @@
     }
 
     .table-filter-buttons {
+        height:29px;
         background: #e0dede;
         display: flex;
         align-items:center;
         gap: 10px;
         border: none;
         border-radius: 0.375rem;
-        padding:4px 8px;
+        padding:3px 5px;
     }
 
     .table-filter-btn {
         background-color: transparent;
         border: none;
-        padding: 8px 12px;
+        padding: 6px 10px;
         border-radius: 0.375rem;
+        font-size:12px;
         font-weight: bold;
         cursor: pointer;
         transition: background-color 0.3s, color 0.3s;
@@ -53,23 +84,34 @@
             background-color: #ffffff;
             border:none;
             border-radius:0.375rem;
+            height:26px;
+
         }
 
     .table-container {
-        background-color: transparent;
+        background:transparent;
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* height: 60vh; /* Define the height of the container */
+        overflow-y: auto; /* Allow vertical scrolling */ */
     }
 
     .styled-table {
-        width: 100%;
+        position:relative;
+        width: 96vw;
         border-collapse: collapse;
         margin: 20px 0;
         font-size: 16px;
         text-align: left;
         border-radius: 8px;
         overflow: hidden;
+    }
+
+    .styled-table thead {
+        position:sticky;
+        top:0;
+        z-index:10;
+        background-color: #ffffff;
     }
 
         .styled-table thead tr {
@@ -88,6 +130,7 @@
         }
 
         .styled-table th {
+            background: #cccccc;
             padding: 5px 10px;
             border: 1px solid #dddddd;
             font-size: 14px;
@@ -98,7 +141,7 @@
                 width: 4%;
             }
 
-            .styled-table th:nth-child(2) { /* S.No. */
+            .styled-table th:nth-child(2) { 
                 width: 15%;
             }
 
@@ -119,7 +162,7 @@
             }
 
             .styled-table th:nth-child(9) { /* Date of Deposit/Renewal */
-                width: 9%;
+                width: 7%;
             }
 
             .styled-table th:nth-child(10) { /* City */
@@ -153,14 +196,33 @@
 
 </style>
 <div class="table-heading-container">
-    <h2 class="table-heading-text">Category</h2>
+    
+    <!-- Search bar -->
+    <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
+
+    <!-- Download button with icon -->
+    <button class="table-export-btn" onclick="downloadData()">
+        EXPORT
+    </button>
+  
+@*     <h2 class="table-heading-text">Category</h2> *@
+
     <div class="table-filter-buttons">
         <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
         <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
         <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
         <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
     </div>
+
+    <!-- More filters button with icon -->
+@*     <button class="action-btn" onclick="toggleMoreFilters()">
+        <i class="bx bx-filter-alt"></i> More Filters
+    </button> *@
+
+ 
 </div>
+
+
 
 <div class="table-container">
     <table class="styled-table">
@@ -193,9 +255,9 @@
                     <td>Registrations</td>
                     <td>@registration.TP</td>
                     <td>@registration.Lname</td>
-                    <td></td>
+                    <td>N/A</td>
                     <td>@registration.Doe?.ToString("dd MMM yyyy")</td>
-                    <td></td>
+                    <td>@registration.GetStatusDescription()</td>
                     <td></td>
                     <td>@registration.LCity</td>
                     <td>@registration.LState</td>
@@ -212,10 +274,10 @@
                     <td>Payroll</td> 
                     <td>@contribution.TP</td>
                     <td>@contribution.Lname</td>
-                    <td></td>
+                    <td>@contribution.FormattedPeriod</td>
                     <td>@contribution.LastDate?.ToString("dd MMM yyyy")</td>
-                    <td></td>
-                    <td></td>
+                    <td>@contribution.GetStatusDescription()</td>
+                    <td>@contribution.Depdate?.ToString("dd MMM yyyy")</td>
                     <td>@contribution.LCity</td>
                     <td>@contribution.LState</td>
                     <td>@contribution.LRegion</td>
@@ -228,18 +290,17 @@
                 <tr class="return-row">
                     <td>@sno</td>
                     <td>@returnData.OName</td>
-                    <td>Returns</td> 
-                    <td></td>
+                    <td>Returns</td>
+                    <td>@returnData.RTitle</td>
                     <td>@returnData.Lname</td>
-                    <td></td>
+                    <td>@returnData.Period?.ToString("MMMM yyyy")</td>
                     <td>@returnData.LastDate?.ToString("dd MMM yyyy")</td>
-                    <td></td>
-                    <td></td>
+                    <td>@returnData.GetStatusDescription()</td>
+                    <td>@returnData.Depdate?.ToString("dd MMM yyyy")</td>
                     <td>@returnData.LCity</td>
                     <td>@returnData.LState</td>
                     <td>@returnData.LRegion</td>
-                    @* <td>@returnData.RTitle</td> <!-- Unique to Returns -->
-                    <td>@returnData.RForm</td> <!-- Unique to Returns --> *@
+                    @*  <td>@returnData.RForm</td>  *@
                 </tr>
                 sno++;
             }
