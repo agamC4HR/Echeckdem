@@ -31,8 +31,7 @@ builder.Services.AddSingleton<MongoDbService>();
 // Dependency Injection for services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<OrgListService>();
-builder.Services.AddScoped<OrgListGeneralInformationService>();
+builder.Services.AddScoped<OrganisationSetupService>();
 builder.Services.AddScoped<ReturnsService>();
 builder.Services.AddScoped<ContributionService>();
 builder.Services.AddScoped<RegistrationService>();
