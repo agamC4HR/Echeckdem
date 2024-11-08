@@ -69,6 +69,7 @@ namespace Echeckdem.Services
                 //sqlQuery += " AND a.Dolr <= {8}";
             }
 
+            // 
 
             sqlQuery += " ORDER BY a.doe DESC, b.lname";
 

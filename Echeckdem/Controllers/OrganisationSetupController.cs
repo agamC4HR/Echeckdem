@@ -19,7 +19,6 @@ namespace Echeckdem.Controllers
             var organisationList = await _organisationsetupservice.GetActiveOrganisationsListAsync(searchTerm);
             ViewData["CurrentFilter"] = searchTerm;
             return View("OrganisationList", organisationList);
-            //return View(organisationList);
         }
 
         [HttpGet]
@@ -37,7 +36,6 @@ namespace Echeckdem.Controllers
             }
 
             return View("Details", organisationInfo);
-           // return View(organisationInfo);
         }
     }
 }

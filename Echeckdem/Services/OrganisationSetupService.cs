@@ -14,7 +14,7 @@ namespace Echeckdem.Services
         }
 
         
-        public async Task<List<OrganisationListViewModel>> GetActiveOrganisationsListAsync(string searchTerm)  
+        public async Task<List<OrganisationListViewModel>> GetActiveOrganisationsListAsync(string searchTerm)       // organisation List
         {
             var query = _EcheckContext.Ncmorgs
                 .Where(ncm => ncm.Oactive == 1);
@@ -32,10 +32,8 @@ namespace Echeckdem.Services
                 })
                 .ToListAsync();
         }
-        // there must be task organsiationListViewMODel.cs in the context and the get organsiationLIst View model must be updated in the scope.
-
-
-        public async Task<OrganisationGeneralInfoViewModel?> GetOrganisationGeneralInformationAsync(string oid)
+        
+        public async Task<OrganisationGeneralInfoViewModel?> GetOrganisationGeneralInformationAsync(string oid)     // General Information 
         {
             if (string.IsNullOrEmpty(oid))
                 throw new ArgumentException("Organisation ID cannot be null or empty", nameof(oid));
@@ -54,5 +52,7 @@ namespace Echeckdem.Services
                 .FirstOrDefaultAsync();
         }
 
+
+        
     }
 }
