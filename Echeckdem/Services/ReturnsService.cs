@@ -19,6 +19,8 @@ namespace Echeckdem.Services
 
         public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, string uno, string organizationName = null, string site = null, string state = null, string city = null, DateTime? startDueDate = null, DateTime? endDueDate = null, DateTime? startPeriod = null, DateTime? endPeriod = null)
         {
+            var currentYear = DateTime.Now.Year;
+
            var sqlQuery = @"
                                 SELECT a.oid, a.Depdate, a.Status, 
                                 b.lname, b.lstate, b.lcity, b.lregion, 
@@ -32,25 +34,26 @@ namespace Echeckdem.Services
                          JOIN nctempret c ON a.rcode = c.rcode
                          JOIN ncmorg d ON b.oid = d.oid  
                          WHERE d.oactive = 1 
-                           AND a.status <> 99";
+                           AND a.status <> 99
+                            AND Year(a.lastdate) = {0} ";
 
             // Add extra filtering if ulev > 1
             if (ulev > 1)
             {
-                sqlQuery += @" AND b.oid IN (SELECT DISTINCT oid FROM ncumap WHERE uno = {0})
+                sqlQuery += @" AND b.oid IN (SELECT DISTINCT oid FROM ncumap WHERE uno = {1})
                            AND b.lactive = '1'
-                           AND a.lcode IN (SELECT DISTINCT lcode FROM ncumap WHERE uno = {0})";
+                           AND a.lcode IN (SELECT DISTINCT lcode FROM ncumap WHERE uno = {1})";
             }
 
             //Applyting FILTERSS
 
             if (!string.IsNullOrEmpty(organizationName))
             {
-                sqlQuery += " AND d.oname LIKE '%' + {1} + '%'";
+                sqlQuery += " AND d.oname LIKE '%' + {2} + '%'";
             }
             if (!string.IsNullOrEmpty(site))
             {
-                sqlQuery += " AND b.lname LIKE '%' + {2} + '%'";
+                sqlQuery += " AND b.lname LIKE '%' + {3} + '%'";
             }
             if (!string.IsNullOrEmpty(city))
             {
@@ -58,16 +61,16 @@ namespace Echeckdem.Services
             }
             if (!string.IsNullOrEmpty(state))
             {
-                sqlQuery += " AND b.lstate LIKE '%' + {3} + '%'";
+                sqlQuery += " AND b.lstate LIKE '%' + {5} + '%'";
             }
 
             if (startDueDate.HasValue)
             {
-                sqlQuery += " AND a.lastdate >= {5}";
+                sqlQuery += " AND a.lastdate >= {6}";
             }
             if (endDueDate.HasValue)
             {
-                sqlQuery += " AND a.lastdate <= {6}";
+                sqlQuery += " AND a.lastdate <= {7}";
             }
             if (startPeriod.HasValue)
             {
@@ -83,7 +86,7 @@ namespace Echeckdem.Services
             sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
 
             // Execute the SQL query
-            var result = await _context.ReturnsViewModel.FromSqlRaw(sqlQuery, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod).ToListAsync();
+            var result = await _context.ReturnsViewModel.FromSqlRaw(sqlQuery, currentYear, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod).ToListAsync();
             return result;
         }
 
