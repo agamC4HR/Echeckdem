@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Echeckdem.Models;
 
 public partial class Ncmloc
 {
+    [Key]
     public string Lcode { get; set; } = null!;
 
     public string Oid { get; set; } = null!;

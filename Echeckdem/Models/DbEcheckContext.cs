@@ -1449,9 +1449,12 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncmloc>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCMLOC");
+            entity.HasKey(e => e.Lcode);
+
+            entity.ToTable("NCMLOC");
+            //entity
+            //    .HasNoKey()
+            //    .ToTable("NCMLOC");
 
             entity.Property(e => e.Cemail)
                 .IsUnicode(false)
