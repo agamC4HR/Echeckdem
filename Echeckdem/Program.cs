@@ -35,6 +35,7 @@ builder.Services.AddScoped<OrganisationSetupService>();
 builder.Services.AddScoped<ReturnsService>();
 builder.Services.AddScoped<ContributionService>();
 builder.Services.AddScoped<RegistrationService>();
+builder.Services.AddScoped<IBulkUploadService, BulkUploadService>();
 // Configuring the Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStrings");              //ECHECK
 builder.Services.AddDbContext<DbEcheckContext>(options =>

@@ -6,14 +6,16 @@ namespace Echeckdem.Controllers
     public class OrganisationSetupController : Controller
     {
        private readonly OrganisationSetupService _organisationsetupservice;
+       private readonly IBulkUploadService _bulkUploadService;
 
-        public OrganisationSetupController (OrganisationSetupService organisationSetupService)
+        public OrganisationSetupController (OrganisationSetupService organisationSetupService, IBulkUploadService bulkUploadService)
 
         {
             _organisationsetupservice = organisationSetupService;
+            _bulkUploadService = bulkUploadService;
         }
 
-        [HttpGet]
+        [HttpGet]                                                                                                        // Get Organisation List View
         public async Task<IActionResult> List(string searchTerm = "")
         {
             var organisationList = await _organisationsetupservice.GetActiveOrganisationsListAsync(searchTerm);
@@ -29,7 +31,7 @@ namespace Echeckdem.Controllers
                 return BadRequest("Invalid organisation ID.");
             }
 
-            var organisationInfo = await _organisationsetupservice.GetOrganisationGeneralInformationAsync(id);
+            var organisationInfo = await _organisationsetupservice.GetOrganisationGeneralInformationAsync(id);           // Get Organisation GerneralInfo Details
             if (organisationInfo == null)
             {
                 return NotFound();
@@ -37,6 +39,35 @@ namespace Echeckdem.Controllers
 
             return View("Details", organisationInfo);
         }
+
+
+        // Add Locations
+        [HttpGet]
+        public IActionResult Upload()
+        {
+            return View("BulkUpload");
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                ModelState.AddModelError("File", "Please upload a valid Excel file.");
+                return View();
+            }
+
+            var recordCount = await _bulkUploadService.UploadLocationDataAsync(file);
+            ViewBag.Message = $"{recordCount} records uploaded successfully.";
+            
+            return View("BulkUpload", recordCount);
+
+        }
+
+
+
+
     }
 }
 
