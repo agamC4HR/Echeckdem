@@ -35,10 +35,15 @@
     </nav>
         <div class="heading_background_parent">
             <div class="heading_background">
+                <div class="heading-grandparent">
             <div class="heading_parent">
                 <h1 class="heading"> @ViewData["Heading"] </h1>
                 <p class="heading_child">@ViewData["Heading_child"] </p>
-            </div>
+                </div>
+                    <button class="filter-btn" onclick="toggleFilterForm()">      <!-- Filter button -->
+                        FILTER
+                    </button>
+                </div>
                 </div>
         </div>
         <div class="main_child">
@@ -50,6 +55,9 @@
    @*  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

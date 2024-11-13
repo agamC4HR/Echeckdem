@@ -6,6 +6,7 @@
     ViewData["Heading_child"] = "Comprehensive labor compliance insights and actions.";
 }
 
+<partial name="_FilterForm" model="Model" />
 
 <style>
     .table-heading-container {
@@ -52,27 +53,6 @@
             border: 2px solid #3AC47D;
         }
 
-    .filter-btn {
-        background-color: #c4e517;
-        color: white;
-        border: 2px solid #c4e517;
-        font-weight: 600;
-        padding: 5px;
-        border-radius: .375rem;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-        .filter-btn:hover {
-            background-color: white;
-            color: #c4e517;
-            text-decoration: underline;
-            border: 2px solid #c4e517;
-        }
-
-
     .table-heading-text {
         font-size: 16px;
         color: black;
@@ -109,23 +89,7 @@
 
         }
 
-    .table-filter-container {
-        display: none;
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px solid #c4e517;
-        border-radius: .375rem;
-        background-color: #f9f9f9;
-        transition: all 0.3s ease; /* Smooth transition */
-        max-height: 0; /* Initially collapsed */
-        overflow: hidden; /* Prevent content overflow */
-    }
-
-        .table-filter-container.show {
-            display: block;
-            max-height: 500px; /* Maximum height when expanded */
-        }
-
+   
     .table-container {
         background:transparent;
         padding: 20px;
@@ -236,6 +200,8 @@
         background-color: yellow;
         color: black;
     }
+
+    
 </style>
 <div class="table-heading-container">
     
@@ -247,11 +213,6 @@
         EXPORT
     </button>
 
-    <!-- Filter button -->
-    <button class="filter-btn" onclick="toggleForm()">
-        FILTER
-    </button>
-
     <!-- Outer-Filter button -->
     <div class="table-filter-buttons">
         <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
@@ -261,12 +222,7 @@
     </div>
 </div>
 
-<!-- Filter Form -->
-<div class="table-filter-container" id="table-filter-container">
-    <form action="">
-        <p>Hello</p>
-    </form>
-</div>
+
 
 
 
@@ -395,13 +351,21 @@
     }
 
     function toggleForm() {
-        const formContainer = document.getElementById('table-filter-container');
-        if (formContainer.classList.contains('show')) {
-            formContainer.classList.remove('show');
+        const tableFilterContainer = document.getElementById('table-filter-container');
+        const tableFilterContainerParent = document.getElementById('table-filter-container-parent');
+        const body = document.body;
+
+        if (tableFilterContainer.classList.contains('show') && tableFilterContainerParent.classList.contains('show')) {
+            tableFilterContainer.classList.remove('show');
+            tableFilterContainerParent.classList.remove('show');
+            body.style.overflow = '';
         } else {
-            formContainer.classList.add('show');
+            tableFilterContainer.classList.add('show');
+            tableFilterContainerParent.classList.add('show');
+            body.style.overflow = 'hidden';
         }
     }
+
 
     function searchTable() {
         const input = document.getElementById('searchBar');

@@ -1,0 +1,303 @@
+﻿@model CombinedDetailedViewModel
+
+
+<style>
+
+    .table-filter-container-parent {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(0 0 0 / 0.5);
+        backdrop-filter: blur(4px);
+        overflow: hidden;
+    }
+
+        .table-filter-container-parent.show {
+            display: flex;
+        }
+
+    .table-filter-container {
+        display: none;
+       /*  background-color: white; */
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: .375rem;
+        transition: all 0.3s ease;
+        overflow-y: auto;
+        position: fixed;
+        width: 80vw;
+        height: 80vh;
+        z-index: 30;
+        left: 134px;
+        background: linear-gradient(to bottom, #d8d8d8 12%, white 0%)
+    }
+
+        .table-filter-container.show {
+            display: flex;
+            flex-direction:column;
+        }
+
+    .close-btn-table-filter-container {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .table-filter-container-header {
+        display:flex;
+        flex-direction:row-reverse;
+        justify-content:space-between;
+        padding:5px;
+        align-items:center;
+    }
+
+    form {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Form row styling */
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    /* Form group styling */
+    .form-group {
+        flex: 1;
+        min-width: 240px;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            display: inline-block;
+            font-size: 12px;
+        }
+
+    /* Input and select box styling */
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: border-color 0.3s ease;
+        background-color: #fff;
+        color: #333;
+        font-size:12px;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+    /* Button styling */
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Date picker alignment */
+    input[type="date"] {
+        padding: 8px 10px;
+    }
+</style>
+
+<!-- Filter Form -->
+<div class="table-filter-container-parent" id="table-filter-container-parent">
+    <div class="table-filter-container" id="table-filter-container">
+        <div class="table-filter-container-header">
+            <button type="button" class="close-btn-table-filter-container" onclick="toggleFilterForm()">✕</button>
+            <h3 style=" text-align: center; font-weight: bold; color: #333;">Filter Options</h3>
+        </div>
+        
+        <form method="get" asp-action="CombinedDetailed">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="OrganizationName">Organization Name</label>
+                    @* <input type="text" name="organizationName" class="form-control" value="@Model.OrganizationName" /> *@
+                    <select name="organizationName" class="form-control">
+                        <option value="">Select an Organisation</option>
+                        <option value="D. E. Shaw India Pvt. Ltd.">D. E. Shaw India Pvt. Ltd.</option>
+                        <option value="Environmental Resources Management (ERM)">Environmental Resources Management (ERM)</option>
+                        <option value="Gartner India Research & Advisory Service Private Limited">Gartner India Research & Advisory Service Private Limited</option>
+                        <option value="HOULIHAN LOKEY ADVISORY (INDIA) PRIVATE LIMITED">HOULIHAN LOKEY ADVISORY (INDIA) PRIVATE LIMITED</option>
+                        <option value="LIGHTSTORM DATA CENTERS PVT LTD">LIGHTSTORM DATA CENTERS PVT LTD</option>
+                        <option value="Lightstorm Telecom Connectivity Private Limited">Lightstorm Telecom Connectivity Private Limited</option>
+                        <option value="Lightstorm Telecom Ventures Private Limited">Lightstorm Telecom Ventures Private Limited</option>
+                        <option value="National Investment and Infrastructure Fund Limited (NIIF)">National Investment and Infrastructure Fund Limited (NIIF)</option>
+                        <option value="RASTREATOR COMPARADOR CORREDURIA DE SEGUROS S.L.">RASTREATOR COMPARADOR CORREDURIA DE SEGUROS S.L.</option>
+                        <option value="Realsta Infratech Pvt Ltd">Realsta Infratech Pvt Ltd</option>
+                        <option value="Savills India Pvt. ltd.">Savills India Pvt. ltd.</option>
+                        <option value="Synopsys (India) EDA Software Pvt. Ltd.">Synopsys (India) EDA Software Pvt. Ltd.</option>
+                        <option value="Synopsys (India) Pvt. Ltd.">Synopsys (India) Pvt. Ltd.</option>
+                        <option value="US Tech Solutions Private Limited">US Tech Solutions Private Limited</option>
+                        <option value="Vouchagram">Vouchagram</option>
+                        <option value="Zinnia Digital Service LLP">Zinnia Digital Service LLP</option>
+                    </select>
+
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="Site">Site</label>
+                    @* <input type="text" name="site" class="form-control" value="@Model.Site" /> *@
+                    <select name="site" class="form-control">
+                        <option value="">Select a Site</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                        <option value="Asyst Park, 4th Floor, Kolkata">Asyst Park, 4th Floor, Kolkata</option>
+                        <option value="Bangalore Site Ambalipura">Bangalore Site Ambalipura</option>
+                        <option value="Bangalore Site Richmond Town">Bangalore Site Richmond Town</option>
+                        <option value="Boston House, Suren Road, Chakala, Andheri Kurla Road, Andheri (East)">Boston House, Suren Road, Chakala, Andheri Kurla Road, Andheri (East)</option>
+                        <option value="Chennai location">Chennai location</option>
+                        <option value="Cyber Park">Cyber Park</option>
+                        <option value="DELHI">DELHI</option>
+                        <option value="Dshaw-Bangalore">Dshaw-Bangalore</option>
+                        <option value="Dshaw-Gurugram">Dshaw-Gurugram</option>
+                        <option value="DLF Cyber city Building No. 10A, 4th floor, Gurgaon">DLF Cyber city Building No. 10A, 4th floor, Gurgaon</option>
+                        <option value="Gurgaon">Gurgaon</option>
+                        <option value="Gurgaon 2nd floor cyber city">Gurgaon 2nd floor cyber city</option>
+                        <option value="Gurugram">Gurugram</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Hyderabad-Knowledge City">Hyderabad-Knowledge City</option>
+                        <option value="KOLKATA">KOLKATA</option>
+                        <option value="Kolkata location">Kolkata location</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Mumbai Location">Mumbai Location</option>
+                        <option value="New Delhi Delhi">New Delhi Delhi</option>
+                        <option value="Noida">Noida</option>
+                        <option value="Outer Marthahalli Ring Road">Outer Marthahalli Ring Road</option>
+                        <option value="PUNE LOCATION">PUNE LOCATION</option>
+                        <option value="Residency Road">Residency Road</option>
+                        <option value="Synopsys (India) EDA Software Pvt. Ltd.">Synopsys (India) EDA Software Pvt. Ltd.</option>
+                        <option value="Synopsys (India) Pvt. Ltd.-New Delhi">Synopsys (India) Pvt. Ltd.-New Delhi</option>
+                        <option value="Synopsys (India) Pvt. Ltd.-Sec 127, Gautam Budh Nagar">Synopsys (India) Pvt. Ltd.-Sec 127, Gautam Budh Nagar</option>
+                        <option value="Synopsys (India) Pvt. Ltd.-Sec 2, Noida">Synopsys (India) Pvt. Ltd.-Sec 2, Noida</option>
+                        <option value="Synopsys (India) Pvt. Ltd.-Sec 62, Noida">Synopsys (India) Pvt. Ltd.-Sec 62, Noida</option>
+                        <option value="Synopsys (India) Pvt. Ltd.-Sec 64, Noida">Synopsys (India) Pvt. Ltd.-Sec 64, Noida</option>
+                        <option value="The capital BKC Mumbai">The capital BKC Mumbai</option>
+                        <option value="702 Abhishree Avenue, Near Nehru Nagar Circle, Ambawadi, Ahmedabad">702 Abhishree Avenue, Near Nehru Nagar Circle, Ambawadi, Ahmedabad</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="State">State</label>
+                    @* <input type="text" name="state" class="form-control" value="@Model.State" /> *@
+                    <select name="state" class="form-control">
+                        <option value="">Select a State</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="New Delhi">New Delhi</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="West Bengal">West Bengal</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="City">City</label>
+                    <select name="city" class="form-control">
+                        <option value="">Select a City</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Banglaore">Banglaore</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Gautam Budh Nagar">Gautam Budh Nagar</option>
+                        <option value="Gurgaon">Gurgaon</option>
+                        <option value="Gurugram">Gurugram</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Nehru Place">Nehru Place</option>
+                        <option value="New Delhi">New Delhi</option>
+                        <option value="Noida">Noida</option>
+                        <option value="Pune">Pune</option>
+                    </select>
+                </div>
+
+
+
+
+                <div class="form-group col-md-3">
+                    <label for="StartDueDate">Start Due Date</label>
+                    <input type="date" name="startDueDate" class="form-control" value="@Model.StartDueDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="EndDueDate">End Due Date</label>
+                    <input type="date" name="endDueDate" class="form-control" value="@Model.EndDueDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="StartPeriod">Start Period</label>
+                    <input type="date" name="startPeriod" class="form-control" value="@Model.StartPeriod?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="EndPeriod">End Period</label>
+                    <input type="date" name="endPeriod" class="form-control" value="@Model.EndPeriod?.ToString("yyyy-MM-dd")" />
+                </div>
+
+
+
+
+
+            </div>
+            <div class="form-row">
+                @*                <div class="form-group col-md-3">
+                <label for="Category">Category</label>
+                <select name="category" class="form-control">
+                <option value="">All</option>
+                <option value="Registration" selected="@(Model.Category == "Registration")">Registration</option>
+                <option value="Contribution" selected="@(Model.Category == "Contribution")">Contribution</option>
+                <option value="Returns" selected="@(Model.Category == "Returns")">Returns</option>
+                </select>
+                </div> *@
+
+                <div class="form-group col-md-3 align-self-end">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleFilterForm() {
+        const tableFilterContainer = document.getElementById('table-filter-container');
+        const tableFilterContainerParent = document.getElementById('table-filter-container-parent');
+        const body = document.body;
+
+        if (tableFilterContainer.classList.contains('show') && tableFilterContainerParent.classList.contains('show')) {
+            tableFilterContainer.classList.remove('show');
+            tableFilterContainerParent.classList.remove('show');
+            body.style.overflow = '';
+        } else {
+            tableFilterContainer.classList.add('show');
+            tableFilterContainerParent.classList.add('show');
+            body.style.overflow = 'hidden';
+        }
+    }
+</script>
