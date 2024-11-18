@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,6 +12,9 @@
     @* <link rel="stylesheet" href="~/Echeckdem.styles.css" asp-append-version="true" /> *@
 </head>
 <body>
+ @*    @{
+        var userLevel = HttpContextAccessor.HttpContext.Session.GetInt32("UserLevel");
+    } *@
     <div class="main_parent">
     <nav class="navbar">
         <div class="nav_parent">
@@ -25,6 +31,12 @@
                     <a href=""> Operations Calendar</a>
                     <a href=""> Graphical Details</a>
                     <a href=""> Bulk Upload</a>
+                        @* <h2>User Level: @ViewBag.UserLevel</h2> *@
+                        <a href="/OrganisationSetup/List"> Org Setup</a>
+                        @* @if (userLevel == 1)
+                        {
+                            <a href="/OrganisationSetup/List"> Org Setup</a>
+                        } *@
                 </div>
             </div>
             <div class="b-links">
@@ -40,9 +52,13 @@
                 <h1 class="heading"> @ViewData["Heading"] </h1>
                 <p class="heading_child">@ViewData["Heading_child"] </p>
                 </div>
-                    <button class="filter-btn" onclick="toggleFilterForm()">      <!-- Filter button -->
-                        FILTER
-                    </button>
+                    @if (ViewData["Title"]?.ToString() != "Organisation List")
+                    {
+                        <button class="filter-btn" onclick="toggleFilterForm()">
+                            <!-- Filter button -->
+                            FILTER
+                        </button>
+                    }
                 </div>
                 </div>
         </div>
@@ -59,6 +75,7 @@
 
 
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
 

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
 
 //// Forcing development mode
 //builder.Host.UseEnvironment("Development");
@@ -61,6 +62,9 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -80,8 +84,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
 app.UseSession();
+app.UseRouting();
+
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllerRoute(

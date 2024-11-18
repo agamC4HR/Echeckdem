@@ -36,30 +36,38 @@ namespace Echeckdem.Controllers
                     var userLevel = await _loginService.GetUserLevelAsync(model.userID);
 
                     // Generate JWT token
-                   //var token = await _jwtService.GenerateJwtToken(model.userID);
+                    //var token = await _jwtService.GenerateJwtToken(model.userID);
 
                     // Storing UserLevel in session
+
+
+                    //ViewBag.UserLevel = userLevel;
+
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
 
-                    Console.WriteLine("USERLEVEL:", userLevel);
+                    var storedUserLevel = HttpContext.Session.GetInt32("UserLevel");
+                    //Console.WriteLine($"Attempting to store UserLevel: {userLevel}");
+                    //Console.WriteLine($"Stored UserLevel after setting: {storedUserLevel}");
                     Console.WriteLine("USERID:", model.userID);
                     // Redirect based on user level
-                    switch (userLevel)
-                    {
-                        case 1:
-                            return RedirectToAction("Index", "Admin"); // Admin page
-                        //case 2:
-                        case 3:
-                            return RedirectToAction("Reports", "Reports"); // Reports page
-                        //case 4:
-                        case 2:
-                            return RedirectToAction("Index", "Home"); // Details View page
-                        case 4:
-                            return RedirectToAction("MainData", "MainData"); // Main Data page                                      
-                        default:
-                            return RedirectToAction("Error", "Home"); // Handle unknown user levels
-                    }
+                    return RedirectToAction("Index", "Home");
+                    //switch (userLevel)
+                    //{
+                    //    case 1:
+                    //        //return RedirectToAction("Index", "Admin"); // Admin page
+                    //        return RedirectToAction("Index", "Home"); // Details View page
+                    //    //case 2:
+                    //    case 3:
+                    //        return RedirectToAction("Reports", "Reports"); // Reports page
+                    //    //case 4:
+                    //    case 2:
+                    //        return RedirectToAction("Index", "Home"); // Details View page
+                    //    case 4:
+                    //        return RedirectToAction("MainData", "MainData"); // Main Data page                                      
+                    //    default:
+                    //        return RedirectToAction("Error", "Home"); // Handle unknown user levels
+                    //}
                 }
                 else
                 {
