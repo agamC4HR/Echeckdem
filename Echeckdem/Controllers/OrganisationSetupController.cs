@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Echeckdem.Services;
+using Echeckdem.CustomFolder;
 
 namespace Echeckdem.Controllers
 {
@@ -15,30 +16,37 @@ namespace Echeckdem.Controllers
             _bulkUploadService = bulkUploadService;
         }
 
-        [HttpGet]                                                                                                        // Get Organisation List View
-        public async Task<IActionResult> List(string searchTerm = "")
-        {
-            var organisationList = await _organisationsetupservice.GetActiveOrganisationsListAsync(searchTerm);
-            ViewData["CurrentFilter"] = searchTerm;
-            return View("OrganisationList", organisationList);
-        }
-
         [HttpGet]
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return BadRequest("Invalid organisation ID.");
-            }
-
-            var organisationInfo = await _organisationsetupservice.GetOrganisationGeneralInformationAsync(id);           // Get Organisation GerneralInfo Details
-            if (organisationInfo == null)
-            {
-                return NotFound();
-            }
-            //return View("OrganisationList", organisationList);
-            return View("Details", organisationInfo);
+            var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid);
+            
+            return View("OrganisationSetup", viewModel);
         }
+        //[HttpGet]                                                                                                        // Get Organisation List View
+        //public async Task<IActionResult> List(string searchTerm = "")
+        //{
+        //    var organisationList = await _organisationsetupservice.GetActiveOrganisationsListAsync(searchTerm);
+        //    ViewData["CurrentFilter"] = searchTerm;
+        //    return View("OrganisationList", organisationList);
+        //}
+
+        //[HttpGet]
+        //public async Task<IActionResult> Details(string id)
+        //{
+        //    if (string.IsNullOrEmpty(id))
+        //    {
+        //        return BadRequest("Invalid organisation ID.");
+        //    }
+
+        //    var organisationInfo = await _organisationsetupservice.GetOrganisationGeneralInformationAsync(id);           // Get Organisation GerneralInfo Details
+        //    if (organisationInfo == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    //return View("OrganisationList", organisationList);
+        //    return View("Details", organisationInfo);
+        //}
 
 
         // Add Locations

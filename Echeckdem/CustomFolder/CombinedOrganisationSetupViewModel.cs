@@ -5,10 +5,15 @@ namespace Echeckdem.CustomFolder
 {
     public class CombinedOrganisationSetupViewModel
     {
-        public IEnumerable<OrganisationsListViewModel> OrganisationList { get; set; }
-        public IEnumerable<OrganisationGeneralInfoViewModel> OrganisationGeneralInfo { get; set; }
-        public IEnumerable<AddLocationViewModel> AddLocation { get; set; }
+        //public IEnumerable<OrganisationsListViewModel> OrganisationList { get; set; }
+        //public OrganisationGeneralInfoViewModel OrganisationDetails { get; set; }
+        ////public IEnumerable<OrganisationGeneralInfoViewModel> OrganisationDetails { get; set; }
+        //public string CurrentFilter { get; set; }
+        //public IEnumerable<AddLocationViewModel> AddLocation { get; set; }
 
+
+        public List<OrganisationsListViewModel> OrganisationsList { get; set; }
+        public OrganisationGeneralInfoViewModel? SelectedOrganisation { get; set; }
         //OrganisationsListViewModel
         public string oid { get; set; }
 
