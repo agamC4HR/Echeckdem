@@ -48,14 +48,14 @@ namespace Echeckdem.Controllers
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
 
-                    Console.WriteLine("USERLEVEL:", userLevel);
-                    Console.WriteLine("UNO:", uno);
-                    Console.WriteLine("USERID:", model.userID);
+                    //Console.WriteLine("USERLEVEL:", userLevel);
+                    //Console.WriteLine("UNO:", uno);
+                    //Console.WriteLine("USERID:", model.userID);
                     // Redirect based on user level
                     switch (userLevel)
                     {
                         case 1:
-                            return RedirectToAction("Index", "Admin"); // Admin page
+                            return RedirectToAction("Index", "Home"); // Admin page
                         //case 2:
                         case 3:
                             return RedirectToAction("Reports", "Reports"); //9 Reports page

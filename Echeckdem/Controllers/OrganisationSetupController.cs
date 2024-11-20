@@ -36,7 +36,7 @@ namespace Echeckdem.Controllers
             {
                 return NotFound();
             }
-
+            //return View("OrganisationList", organisationList);
             return View("Details", organisationInfo);
         }
 
