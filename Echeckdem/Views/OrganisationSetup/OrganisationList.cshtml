@@ -1,30 +1,97 @@
-﻿@model List<Echeckdem.CustomFolder.OrganisationListViewModel>
+﻿@* @model Echeckdem.Models.CombinedOrganizationSetupViewModel
+ *@
 
 @{
     ViewData["Title"] = "Organisation List";
+    ViewData["Heading"] = "Organisation Management";
+    ViewData["Heading_child"] = "Organizational intelligence and response toolkit.";
 }
 
-<div class="container mt-5">
-    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
 
-    <div class="row mb-4 justify-content-center">
-        <div class="col-md-6">
-            <form method="get" asp-action="List" class="input-group">
-                <input type="text" name="searchTerm" class="form-control" placeholder="Search organizations..." value="@ViewData["CurrentFilter"]" />
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </div>
-            </form>
-        </div>
+
+<!-- Custom CSS -->
+<style>
+
+    .table-container {
+        width: 30vw;
+        top: 40px;
+        height:80vh;
+        overflow:scroll;
+     
+    }
+
+    .styled-table {
+        margin: 0;
+    }
+
+    .styled-table thead {
+        top:0;
+    }
+
+
+    .organization-count {
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .count-badge {
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+ 
+    .org-link {
+        display:block;
+        text-decoration: none;
+        color: black;
+        font-size:12px;
+        font-weight:300;
+        text-align:left;
+        padding:0;
+        font-family:Arial;
+    }
+
+        .org-link:hover {
+            text-decoration: underline;
+        }
+</style>
+
+    <div class="table-heading-container">
+
+        <!-- Search bar -->
+        <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
+
+        <!-- Download button -->
+        <button class="table-export-btn" onclick="downloadData()">
+            EXPORT
+        </button>
+
+    <!-- Add button -->
+    <button class="table-add-btn">
+        Add
+    </button>
+
+        <!-- Outer-Filter button -->
+@*         <div class="table-filter-buttons">
+            <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
+            <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
+            <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
+            <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
+        </div> *@
     </div>
 
-    <div class="text-center mb-4">
-        <p class="lead">Total Organizations: <span class="badge badge-info">@Model.Count</span></p>
-    </div>
+    <!-- Organization Count -->
+@*     <div class="organization-count">
+        <p>Total Organizations: <span class="count-badge">@Model.Count</span></p>
+    </div> *@
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered">
-            <thead class="thead-dark">
+    <!-- Table Section -->
+    <div class="table-container">
+    <table class="styled-table">
+            <thead>
                 <tr>
                     <th>#</th>
                     <th>Organisation Name</th>
@@ -33,11 +100,11 @@
             <tbody>
                 @for (int i = 0; i < Model.Count; i++)
                 {
-                    var org = Model[i];
+                    var org = Model[i]; 
                     <tr>
                         <td>@(i + 1)</td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@org.oid" class="text-decoration-none">
+                            <a asp-action="Details" asp-route-id="@org.oid" class="org-link">
                                 @org.Oname
                             </a>
                         </td>
@@ -46,4 +113,42 @@
             </tbody>
         </table>
     </div>
-</div>
+
+
+
+        <script>
+    function searchTable() {
+        const input = document.getElementById('searchBar');
+        const filter = input.value.toLowerCase();  // Convert input to lowercase for case-insensitive search
+        const rows = document.querySelectorAll('.styled-table tbody tr');  // Get all rows in the table
+
+        rows.forEach(row => {
+            const orgNameCell = row.cells[1];  // Get the 'Organisation Name' cell (2nd column)
+            const anchor = orgNameCell.querySelector('.org-link');  // Get the <a> tag within the cell
+            let orgNameText = anchor.textContent || anchor.innerText;  // Get the plain text of the organization name
+
+            // Check if the filter text matches any part of the organization name
+            if (orgNameText.toLowerCase().includes(filter)) {
+                row.style.display = "";  // Show the row if it matches
+                highlightText(anchor, filter);  // Highlight the matched text inside the <a> tag
+            } else {
+                row.style.display = "none";  // Hide the row if it doesn't match
+                removeHighlight(anchor);  // Remove previous highlights from the <a> tag
+            }
+        });
+    }
+
+    // Function to highlight the text inside the anchor tag
+    function highlightText(anchor, filter) {
+        removeHighlight(anchor);  // Remove any previous highlights first
+
+        const regex = new RegExp(`(${filter})`, 'gi');  // Create a case-insensitive regex for the filter
+        anchor.innerHTML = anchor.innerHTML.replace(regex, '<span class="highlight">$1</span>');  // Wrap matched text in a span with a highlight class
+    }
+
+    // Function to remove the highlighting from the anchor tag
+    function removeHighlight(anchor) {
+        // Remove any previous highlights from the <a> tag
+        anchor.innerHTML = anchor.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+    }
+        </script>

@@ -37,9 +37,13 @@ namespace Echeckdem.Controllers
                     var uno = await _loginService.GetUserUnoAsync(model.userID);
 
                     // Generate JWT token
-                   //var token = await _jwtService.GenerateJwtToken(model.userID);
+                    //var token = await _jwtService.GenerateJwtToken(model.userID);
 
                     // Storing UserLevel in session
+
+
+                    //ViewBag.UserLevel = userLevel;
+
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
