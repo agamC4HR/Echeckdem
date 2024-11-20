@@ -142,14 +142,14 @@
                     {
                         <tr>
                              <td>@item.OName</td>
-                        <td>@item.RTitle</td>
+                       @*  <td>@item.RTitle</td> *@
                         <td>@item.Lname</td>
                         <td>@item.LastDate?.ToString("dd-MM-yyyy")</td>
                         <td>@item.Period?.ToString("MMMM yyyy")</td>
-                        
                         <td>@item.LCity</td>
-                        <td>@item.LState</td>
+                        <td>@item.State</td>
                         <td>@item.LRegion</td>
+                        <td>@item.RTitle</td>
                         <td>@item.Depdate?.ToString("dd-MM-yyyy")</td>
                         <td>@item.GetStatusDescription()</td>
                         </tr>

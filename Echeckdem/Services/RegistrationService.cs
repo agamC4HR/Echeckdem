@@ -26,7 +26,7 @@ namespace Echeckdem.Services
 
         FROM ncreg a
         JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
-        JOIN ncmorg c ON b.oid = c.oid
+        JOIN ncmorg c ON c.oid = b.oid
         JOIN MASTSTATES d ON b.lstate = d.stateid
         WHERE c.oactive = 1 
         AND b.oid = a.oid
@@ -147,7 +147,7 @@ namespace Echeckdem.Services
             var sqlQuery = @"SELECT DISTINCT c.Statedesc
                             FROM NCUMAP m
                             JOIN NCMLOC b ON m.Lcode = b.Lcode
-                            JOIN MASTSTATES c ON b.lstate = c.STATEID
+                            JOIN MASTSTATES c ON b.lstate = c.stateid
                             WHERE m.Uno = {0} AND b.Lactive = 1";
 
             //    var sqlQuery = @"

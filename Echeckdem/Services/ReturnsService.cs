@@ -22,17 +22,18 @@ namespace Echeckdem.Services
             var currentYear = DateTime.Now.Year;
 
             var sqlQuery = @"
-                                SELECT a.oid, a.Depdate, a.Status, 
+                                SELECT a.oid, a.Depdate, a.Status, a.lastdate,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.rtitle, c.rform, c.RM, c.YROFF, 
                                 d.oname,
-                                a.lastdate
+                                e.statedesc as State
                                 
 
                                 FROM ncret a
                                 JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
                                 JOIN nctempret c ON a.rcode = c.rcode
                                 JOIN ncmorg d ON b.oid = d.oid  
+                                JOIN MASTSTATES e ON b.lstate = e.stateid
                                 WHERE d.oactive = 1 
                                 AND a.status <> 99";
             
@@ -65,7 +66,7 @@ namespace Echeckdem.Services
 
             if (!string.IsNullOrEmpty(StateName))
             {
-                sqlQuery += " AND b.lstate = @StateName";
+                sqlQuery += " AND e.statedesc = @StateName";
             }
 
             if (!string.IsNullOrEmpty(CityName))
@@ -149,17 +150,15 @@ namespace Echeckdem.Services
 
         public async Task<List<string>> GetStateNamesAsync(int uno)
         {
-            var sqlQuery = @"
-        SELECT DISTINCT b.Lstate
-        FROM NCUMAP m
-        JOIN NCMLOC b ON m.Lcode = b.Lcode
-        WHERE m.Uno = {0} AND b.Lactive = 1";
+            var sqlQuery = @"   SELECT DISTINCT e.statedesc
+                                FROM NCUMAP m
+                                JOIN NCMLOC b ON m.Lcode = b.Lcode
+                                JOIN MASTSTATES e ON b.lstate = e.stateid
+                                WHERE m.Uno = {0} AND b.Lactive = 1";
 
-            var stateNames = await _context.Ncmlocs
-                .FromSqlRaw(sqlQuery, uno)
-                .Select(s => s.Lstate ?? string.Empty)
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToListAsync();
+            var stateNames = await _context.Database
+          .SqlQueryRaw<string>(sqlQuery, uno)
+          .ToListAsync();
 
             return stateNames;
         }

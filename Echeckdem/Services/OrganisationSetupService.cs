@@ -13,7 +13,7 @@ namespace Echeckdem.Services
             _EcheckContext = EcheckContext;
         }
 
-        public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)
+        public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)                // service for getting organisation list and general info of that organisation
         {
             // Fetch the list of active organizations
             var organisationsList = await _EcheckContext.Ncmorgs

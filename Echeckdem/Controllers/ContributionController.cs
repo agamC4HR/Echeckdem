@@ -17,7 +17,7 @@ namespace Echeckdem.Controllers
             int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
             int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
 
-            if (ulev == 0) // || uno == 1)
+            if (ulev == 0 || uno == 1)
             {
                 // If session values are missing, redirect to login or show error
                 TempData["ErrorMessage"] = "Session has expired. Please log in again.";
