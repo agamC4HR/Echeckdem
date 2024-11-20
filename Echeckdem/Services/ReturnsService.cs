@@ -45,7 +45,7 @@ namespace Echeckdem.Services
                 sqlQuery += "AND YEAR(a.lastdate) = @currentYear ";
             }
             // Add extra filtering if ulev > 1
-            if (ulev > 1)
+            if (ulev >= 1)
             {
                 sqlQuery += @" AND b.oid IN (SELECT DISTINCT oid FROM ncumap WHERE uno = @uno)
                            AND b.lactive = '1'

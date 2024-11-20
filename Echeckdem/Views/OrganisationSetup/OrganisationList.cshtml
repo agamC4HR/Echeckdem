@@ -183,22 +183,38 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < Model.Count; i++)
-                {
-                    var org = Model[i]; 
+               
                     <tr>
-                        <td>@(i + 1)</td>
+                        
                         <td>
                         <a asp-action="Details" asp-route-id="@org.oid" class="org-link" target="_blank">
                             @org.Oname
                         </a>
                         </td>
                     </tr>
-                }
+                
             </tbody>
         </table>
     </div>
 
+
+<div class="container mt-5">
+
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2>Organisation Details</h2>
+        </div>
+        <div class="card-body">
+            <p class="mb-2"><strong>OID:</strong> @Model.oid</p>
+            <p class="mb-2"><strong>Organisation Name: </strong> @Model.Oname</p>
+            <p class="mb-2"><strong>SPOC:</strong> @Model.Spoc</p>
+            <p class="mb-2"><strong>Start Year:</strong> @Model.styear</p>
+            <p class="mb-2"><strong>Contact Name:</strong> @Model.Contname</p>
+            <p class="mb-2"><strong>Contact Email:</strong> @Model.Contemail</p>
+        </div>
+    </div>
+</div>
 
         <script>
     function searchTable() {

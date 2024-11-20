@@ -14,7 +14,7 @@ namespace Echeckdem.Services
         }
 
         
-        public async Task<List<OrganisationListViewModel>> GetActiveOrganisationsListAsync(string searchTerm)       // organisation List
+        public async Task<List<OrganisationsListViewModel>> GetActiveOrganisationsListAsync(string searchTerm)       // organisation List
         {
             var query = _EcheckContext.Ncmorgs
                 .Where(ncm => ncm.Oactive == 1);
@@ -25,7 +25,7 @@ namespace Echeckdem.Services
             }
 
             return await query
-                .Select(ncm => new OrganisationListViewModel
+                .Select(ncm => new OrganisationsListViewModel
                 {
                     Oname = ncm.Oname,
                     oid = ncm.Oid
