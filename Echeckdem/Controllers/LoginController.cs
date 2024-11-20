@@ -51,22 +51,25 @@ namespace Echeckdem.Controllers
                     Console.WriteLine("USERLEVEL:", userLevel);
                     Console.WriteLine("UNO:", uno);
                     Console.WriteLine("USERID:", model.userID);
+
+                    return RedirectToAction("Index", "Home");
+
                     // Redirect based on user level
-                    switch (userLevel)
-                    {
-                        case 1:
-                            return RedirectToAction("Index", "Admin"); // Admin page
-                        //case 2:
-                        case 3:
-                            return RedirectToAction("Reports", "Reports"); //9 Reports page
-                        //case 4:
-                        case 2:
-                            return RedirectToAction("Index", "Home"); // Details View page
-                        case 4:
-                            return RedirectToAction("MainData", "MainData"); // Main Data page                                      
-                        default:
-                            return RedirectToAction("Error", "Home"); // Handle unknown user levels
-                    }
+                    //switch (userLevel)
+                    //{
+                    //    case 1:
+                    //        return RedirectToAction("Index", "Admin"); // Admin page
+                    //    //case 2:
+                    //    case 3:
+                    //        return RedirectToAction("Reports", "Reports"); //9 Reports page
+                    //    //case 4:
+                    //    case 2:
+                    //        return RedirectToAction("Index", "Home"); // Details View page
+                    //    case 4:
+                    //        return RedirectToAction("MainData", "MainData"); // Main Data page                                      
+                    //    default:
+                    //        return RedirectToAction("Error", "Home"); // Handle unknown user levels
+                    //}
                 }
                 else
                 {

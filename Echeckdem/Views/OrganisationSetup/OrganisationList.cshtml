@@ -1,5 +1,6 @@
-﻿@* @model Echeckdem.Models.CombinedOrganizationSetupViewModel
- *@
+﻿ @model List<Echeckdem.CustomFolder.OrganisationListViewModel>
+
+
 
 @{
     ViewData["Title"] = "Organisation List";
@@ -57,6 +58,90 @@
         .org-link:hover {
             text-decoration: underline;
         }
+
+    .org-details-container {
+        position: absolute;
+        width: 66vw;
+        margin: 20px auto;
+        padding: 0 15px;
+        top:40px;
+        left: 420px;
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+
+    /* Card styling */
+    .org-details-header {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+        border: 2px solid #dd3432;
+    }
+
+    /* Card header styling */
+    .child-org-details-header h2 {
+        background-color: white;
+        color: #dd3432;
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 2px solid #dd3432;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .org-details-links-container {
+        display: grid;
+        grid-template-rows: auto auto;
+        row-gap: 10px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .org-details-upper-links, .org-details-lower-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        justify-items: stretch;
+    }
+
+    .org-details-links-container a {
+        background-color: #dd3432;
+        color: white;
+        text-decoration: none;
+        font-size: 12px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 2px solid #dd3432;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        text-align: center;
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+
+        .org-details-links-container a:hover {
+            background-color: white;
+            color: #dd3432;
+            border: 2px solid #dd3432;
+        }
+
+    .org-details-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two equal columns */
+        gap: 15px; /* Space between items */
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+        .org-details-body p {
+            margin: 0; /* Remove default margin for better alignment */
+        }
+
+        .org-details-body strong {
+            color: #dd3432;
+        }
 </style>
 
     <div class="table-heading-container">
@@ -104,16 +189,15 @@
                     <tr>
                         <td>@(i + 1)</td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@org.oid" class="org-link">
-                                @org.Oname
-                            </a>
+                        <a asp-action="Details" asp-route-id="@org.oid" class="org-link" target="_blank">
+                            @org.Oname
+                        </a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
-
 
 
         <script>
@@ -151,4 +235,6 @@
         // Remove any previous highlights from the <a> tag
         anchor.innerHTML = anchor.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
     }
+
+
         </script>
