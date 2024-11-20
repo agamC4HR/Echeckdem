@@ -32,8 +32,9 @@ namespace Echeckdem.Controllers
 
                 if (isValidUser)
                 {
-                    // Retrieve user level
+                    // Retrieve user level and UNO
                     var userLevel = await _loginService.GetUserLevelAsync(model.userID);
+                    var uno = await _loginService.GetUserUnoAsync(model.userID);
 
                     // Generate JWT token
                    //var token = await _jwtService.GenerateJwtToken(model.userID);
@@ -41,8 +42,10 @@ namespace Echeckdem.Controllers
                     // Storing UserLevel in session
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
+                    HttpContext.Session.SetInt32("UNO", uno);
 
                     Console.WriteLine("USERLEVEL:", userLevel);
+                    Console.WriteLine("UNO:", uno);
                     Console.WriteLine("USERID:", model.userID);
                     // Redirect based on user level
                     switch (userLevel)
@@ -51,7 +54,7 @@ namespace Echeckdem.Controllers
                             return RedirectToAction("Index", "Admin"); // Admin page
                         //case 2:
                         case 3:
-                            return RedirectToAction("Reports", "Reports"); // Reports page
+                            return RedirectToAction("Reports", "Reports"); //9 Reports page
                         //case 4:
                         case 2:
                             return RedirectToAction("Index", "Home"); // Details View page

@@ -6,6 +6,12 @@
     ViewData["Heading_child"] = "Comprehensive labor compliance insights and actions.";
 }
 
+
+    
+
+
+
+
 <partial name="_FilterForm" model="Model" />
 
 <style>
@@ -209,9 +215,12 @@
     <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
 
     <!-- Download button -->
+    
+
     <button class="table-export-btn" onclick="downloadData()">
         EXPORT
     </button>
+  
 
     <!-- Outer-Filter button -->
     <div class="table-filter-buttons">
@@ -262,7 +271,7 @@
                     <td>@registration.GetStatusDescription()</td>
                     <td></td>
                     <td>@registration.LCity</td>
-                    <td>@registration.LState</td>
+                    <td>@registration.State</td>
                     <td>@registration.LRegion</td>
                     @* <td></td> <!-- Empty for Registrations --> *@
                 </tr>

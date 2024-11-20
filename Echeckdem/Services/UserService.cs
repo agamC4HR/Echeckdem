@@ -1,5 +1,4 @@
-﻿using Echeckdem.MongoData;
-using Echeckdem.Models;
+﻿using Echeckdem.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
@@ -31,6 +30,15 @@ namespace Echeckdem.Services
                 .FirstOrDefaultAsync();
 
             return user?.Userlevel ?? 0;
+        }
+
+        public async Task<int> GetUserUnoAsync(string userId)
+        {
+            var user = await _dbEcheckContext.Ncusers
+                .Where (u => u.Userid == userId)
+                .FirstOrDefaultAsync();
+
+            return user?.Uno ?? 0;
         }
 
 

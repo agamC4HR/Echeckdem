@@ -23,11 +23,23 @@ namespace Echeckdem.Controllers
 
         }
 
-        public async Task<IActionResult> CombinedDetailed(int ulev, string uno, string organizationName = null, string site = null, string state = null, string city = null, string category = null, DateTime? startDueDate = null, DateTime? endDueDate = null, DateTime? startPeriod = null, DateTime? endPeriod = null)
+        public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null, string StateName = null, string CityName = null)//(int ulev, int uno, string organizationName = null)
         {
-            var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod);
-            var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod);
-            var returns = await _retService.GetDataAsync(ulev, uno, organizationName, site, state, city, startDueDate, endDueDate, startPeriod, endPeriod);
+
+            int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
+            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
+
+
+            if (ulev == 0 || uno == 0)
+            {
+                // If session values are missing, redirect to login or show error
+                TempData["ErrorMessage"] = "Session has expired. Please log in again.";
+                return RedirectToAction("Index", "Login");
+            }
+
+            var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
+            var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
+            var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
 
             var detailedViewModel = new CombinedDetailedViewModel
             {
@@ -35,14 +47,15 @@ namespace Echeckdem.Controllers
                 Contributions = contributions,
                 Returns = returns,
                 OrganizationName = organizationName,
-                Site = site,
-                State = state,
-                City = city,
-                Category = category,
-                StartDueDate = startDueDate,
-                EndDueDate = endDueDate,
-                StartPeriod = startPeriod,
-                EndPeriod = endPeriod
+                Site = LocationName,
+                State = StateName,
+                City = CityName
+                
+                //Category = category,
+                //StartDueDate = startDueDate,
+                //EndDueDate = endDueDate,
+                //StartPeriod = startPeriod,
+                //EndPeriod = endPeriod
             };
 
 

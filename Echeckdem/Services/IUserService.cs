@@ -7,6 +7,7 @@ namespace Echeckdem.Services
         bool IsValidUser(string userId, string password);
        
         Task<int> GetUserLevelAsync(string Userid);
+        Task<int> GetUserUnoAsync(string Userid);
 
     }
 }

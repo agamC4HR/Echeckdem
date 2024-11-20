@@ -1,5 +1,5 @@
 using Echeckdem.Models;
-using Echeckdem.MongoData;
+
 using Echeckdem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true; // Make the session cookie essential
 });
-builder.Services.AddSingleton<MongoDbService>();
+
 
 // Dependency Injection for services
 builder.Services.AddScoped<IUserService, UserService>();
