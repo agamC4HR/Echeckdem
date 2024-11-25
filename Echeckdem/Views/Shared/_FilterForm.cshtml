@@ -1,5 +1,4 @@
-﻿@model CombinedDetailedViewModel
-
+﻿
 
 <style>
 
@@ -135,26 +134,16 @@
         <form method="get" asp-action="CombinedDetailed">
             <div class="form-row">
                 <div class="form-group col-md-3">
-                    <label for="OrganizationName">Organization Name</label>
-                    @* <input type="text" name="organizationName" class="form-control" value="@Model.OrganizationName" /> *@
-                    <select name="organizationName" class="form-control">
-                        <option value="">Select an Organisation</option>
-                        <option value="D. E. Shaw India Pvt. Ltd.">D. E. Shaw India Pvt. Ltd.</option>
-                        <option value="Environmental Resources Management (ERM)">Environmental Resources Management (ERM)</option>
-                        <option value="Gartner India Research & Advisory Service Private Limited">Gartner India Research & Advisory Service Private Limited</option>
-                        <option value="HOULIHAN LOKEY ADVISORY (INDIA) PRIVATE LIMITED">HOULIHAN LOKEY ADVISORY (INDIA) PRIVATE LIMITED</option>
-                        <option value="LIGHTSTORM DATA CENTERS PVT LTD">LIGHTSTORM DATA CENTERS PVT LTD</option>
-                        <option value="Lightstorm Telecom Connectivity Private Limited">Lightstorm Telecom Connectivity Private Limited</option>
-                        <option value="Lightstorm Telecom Ventures Private Limited">Lightstorm Telecom Ventures Private Limited</option>
-                        <option value="National Investment and Infrastructure Fund Limited (NIIF)">National Investment and Infrastructure Fund Limited (NIIF)</option>
-                        <option value="RASTREATOR COMPARADOR CORREDURIA DE SEGUROS S.L.">RASTREATOR COMPARADOR CORREDURIA DE SEGUROS S.L.</option>
-                        <option value="Realsta Infratech Pvt Ltd">Realsta Infratech Pvt Ltd</option>
-                        <option value="Savills India Pvt. ltd.">Savills India Pvt. ltd.</option>
-                        <option value="Synopsys (India) EDA Software Pvt. Ltd.">Synopsys (India) EDA Software Pvt. Ltd.</option>
-                        <option value="Synopsys (India) Pvt. Ltd.">Synopsys (India) Pvt. Ltd.</option>
-                        <option value="US Tech Solutions Private Limited">US Tech Solutions Private Limited</option>
-                        <option value="Vouchagram">Vouchagram</option>
-                        <option value="Zinnia Digital Service LLP">Zinnia Digital Service LLP</option>
+                    <label for="organizationFilter">Filter by Organization:</label>
+                    <select id="organizationFilter" name="organizationName" class="form-control mx-2">
+                        <option value="">All</option>
+                        @if (ViewBag.OrganizationNames != null)
+                        {
+                            foreach (var org in ViewBag.OrganizationNames)
+                            {
+                                <option value="@org">@org</option>
+                            }
+                        }
                     </select>
 
                 </div>

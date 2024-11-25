@@ -47,9 +47,9 @@ namespace Echeckdem.Controllers
                 Contributions = contributions,
                 Returns = returns,
                 OrganizationName = organizationName,
-                Site = LocationName,
-                State = StateName,
-                City = CityName
+                SiteName = LocationName,
+                StateName = StateName,
+                CityName = CityName
                 
                 //Category = category,
                 //StartDueDate = startDueDate,

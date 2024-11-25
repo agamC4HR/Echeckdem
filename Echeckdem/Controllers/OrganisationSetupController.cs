@@ -53,7 +53,8 @@ namespace Echeckdem.Controllers
         [HttpGet]
         public IActionResult Upload()
         {
-            return View("BulkUpload");
+            return PartialView("bulkupload");
+            
         }
 
         [HttpPost]
@@ -62,15 +63,13 @@ namespace Echeckdem.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                ModelState.AddModelError("File", "Please upload a valid Excel file.");
-                return View();
+                //ViewBag.Message = "Please upload a valid Excel file.";
+                //return View("bulkupload");
+                return Json(new { success = false, message = "Please upload a valid Excel file." });
             }
 
             var recordCount = await _bulkUploadService.UploadLocationDataAsync(file);
-            ViewBag.Message = $"{recordCount} records uploaded successfully.";
-            
-            return View("BulkUpload", recordCount);
-
+            return Json(new { success = true, message = $"{recordCount} records uploaded successfully." });
         }
 
 
