@@ -1,33 +1,209 @@
 ﻿@model Echeckdem.CustomFolder.CombinedOrganisationSetupViewModel
 
-<div class="row">
-    <!-- Organization List Section -->
-    <div class="col-md-6">
-        <h3>Organizations</h3>
-        <input type="text" id="searchBar" placeholder="Search..." class="form-control mb-3" onkeyup="filterTable()">
+@{
+    ViewData["Title"] = "Organisation List";
+    ViewData["Heading"] = "Organisation Management";
+    ViewData["Heading_child"] = "Organizational intelligence and response toolkit.";
+}
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Organisation Name</th>
-                </tr>
-            </thead>
+<style>
+
+    .table-container {
+        width: 30vw;
+        top: 40px;
+        height: 80vh;
+        overflow: scroll;
+    }
+
+    .styled-table {
+        margin: 0;
+    }
+
+        .styled-table thead {
+            top: 0;
+        }
+
+
+    .organization-count {
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .count-badge {
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+
+
+    .org-link {
+        display: block;
+        text-decoration: none;
+        color: black;
+        font-size: 12px;
+        font-weight: 300;
+        text-align: left;
+        padding: 0;
+        font-family: Arial;
+    }
+
+        .org-link:hover {
+            text-decoration: underline;
+        }
+
+    .org-details-container {
+        position: absolute;
+        width: 66vw;
+        margin: 20px auto;
+        padding: 0 15px;
+        top: 40px;
+        left: 420px;
+        font-family: 'Arial', sans-serif;
+        color: #333;
+    }
+
+    /* Card styling */
+    .org-details-header {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+        border: 2px solid #dd3432;
+    }
+
+    /* Card header styling */
+    .child-org-details-header h2 {
+        background-color: white;
+        color: #dd3432;
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 2px solid #dd3432;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .org-details-links-container {
+        display: grid;
+        grid-template-rows: auto auto;
+        row-gap: 10px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .org-details-upper-links, .org-details-lower-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        justify-items: stretch;
+    }
+
+    .org-details-links-container a {
+        background-color: #dd3432;
+        color: white;
+        text-decoration: none;
+        font-size: 12px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 2px solid #dd3432;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        text-align: center;
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+
+        .org-details-links-container a.active {
+            background-color: white;
+            color: #dd3432;
+            border: 2px solid #dd3432;
+            font-weight: bold;
+        }
+
+        .org-details-links-container a:hover {
+            background-color: white;
+            color: #dd3432;
+            border: 2px solid #dd3432;
+        }
+
+    .org-details-body {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two equal columns */
+        gap: 15px; /* Space between items */
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+        .org-details-body p {
+            margin: 0; /* Remove default margin for better alignment */
+        }
+
+        .org-details-body strong {
+            color: #dd3432;
+        }
+</style>
+
+<div class="table-heading-container">
+
+    <!-- Search bar -->
+    <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
+
+    <!-- Download button -->
+    <button class="table-export-btn" onclick="downloadData()">
+        EXPORT
+    </button>
+
+    <!-- Add button -->
+    <button class="table-add-btn">
+        Add
+    </button>
+
+    <!-- Outer-Filter button -->
+    @*         <div class="table-filter-buttons">
+    <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
+    <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
+    <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
+    <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
+    </div> *@
+</div>
+
+<!-- Organization Count -->
+@*     <div class="organization-count">
+        <p>Total Organizations: <span class="count-badge">@Model.Count</span></p>
+    </div> *@
+
+
+
+<!-- Table Section -->
+<div class="table-container">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>S.No.</th>
+                <th>Organisation Name</th>
+            </tr>
+        </thead>
             <tbody>
+            @{
+                int sno = 1;
+            }
                 @if (Model.OrganisationsList?.Any() ?? false)
                 {
-                    int index = 1;
+                    
                     foreach (var org in Model.OrganisationsList)
                     {
                         <tr>
-                            <td>@index++</td>
+                            <td>@sno</td>
                             <td>
                                 <a asp-action="OrganisationSetup" asp-route-selectedOid="@org.oid" class="org-link">
                                     @org.Oname
                                 </a>
                             </td>
-                        </tr>
-                    }
+                    </tr>
+                    sno++;
+                }
                 }
                 else
                 {
@@ -40,14 +216,33 @@
     </div>
 
     <!-- Selected Organisation Details Section -->
-    <div class="col-md-6">
+<div class="org-details-container">
         @if (Model.SelectedOrganisation != null)
         {
-            <div class="card">
-                <div class="card-header">
-                    <h3>Organisation Details</h3>
+        <div class="org-details-header">
+            <div class="child-org-details-header">
+                <h2 id="orgDetailsHeader">@Model.SelectedOrganisation.Oname</h2>
                 </div>
-                <div class="card-body">
+            <div class="org-details-links-container">
+
+                <div class="org-details-upper-links">
+                    <!-- Top links -->
+                    <a href="/OrganisationSetup/OrganisationSetup?selectedOid=@Model.SelectedOrganisation.oid" class="org-details-upper-links active">General Information</a>
+                    <a href="/OrganisationSetup/OrganisationSetup">Location Map</a>
+                    <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
+                    <a href="#">Location Data</a>
+                </div>
+
+                <div class="org-details-lower-links">
+                    <!-- Bottom links -->
+                    <a href="#">Location Setup</a>
+                    <a href="#">Returns 1</a>
+                    <a href="#">Contributions 1</a>
+                    <a href="#">Returns 2</a>
+                </div>
+
+                </div>
+            <div id="orgDetailsBody" class="org-details-body">
                     <p><strong>OID:</strong> @Model.SelectedOrganisation.oid</p>
                     <p><strong>Name:</strong> @Model.SelectedOrganisation.Oname</p>
                     <p><strong>SPOC:</strong> @Model.SelectedOrganisation.Spoc</p>
@@ -65,15 +260,59 @@
 </div>
 
 <script>
-    // Search Table Functionality
-    function filterTable() {
+    function searchTable() {
         const input = document.getElementById('searchBar');
-        const filter = input.value.toLowerCase();
-        const rows = document.querySelectorAll('table tbody tr');
+        const filter = input.value.toLowerCase();  
+        const rows = document.querySelectorAll('.styled-table tbody tr');  
 
         rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(filter) ? '' : 'none';
+            const orgNameCell = row.cells[1];  // Get the 'Organisation Name' cell (2nd column)
+            const anchor = orgNameCell.querySelector('.org-link');  // Get the <a> tag within the cell
+            let orgNameText = anchor.textContent || anchor.innerText;  // Get the plain text of the organization name
+
+            // Check if the filter text matches any part of the organization name
+            if (orgNameText.toLowerCase().includes(filter)) {
+                row.style.display = "";  // Show the row if it matches
+                highlightText(anchor, filter);  // Highlight the matched text inside the <a> tag
+            } else {
+                row.style.display = "none";  // Hide the row if it doesn't match
+                removeHighlight(anchor);  // Remove previous highlights from the <a> tag
+            }
         });
     }
+
+    // Function to highlight the text inside the anchor tag
+    function highlightText(anchor, filter) {
+        removeHighlight(anchor);  // Remove any previous highlights first
+
+        const regex = new RegExp(`(${filter})`, 'gi');  // Create a case-insensitive regex for the filter
+        anchor.innerHTML = anchor.innerHTML.replace(regex, '<span class="highlight">$1</span>');  // Wrap matched text in a span with a highlight class
+    }
+
+    // Function to remove the highlighting from the anchor tag
+
+    function removeHighlight(anchor) {
+        // Remove any previous highlights from the <a> tag
+        anchor.innerHTML = anchor.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+    }
+
+
+        function showUploadForm() {
+            document.getElementById("orgDetailsHeader").innerText = "Locations";
+            $("#orgDetailsBody").load('/OrganisationSetup/upload');
+               
+        }
+
+    document.querySelectorAll('.org-details-links-container a').forEach(link => {
+        link.addEventListener('click', function (e) {
+            // Remove active class from all links
+            document.querySelectorAll('.org-details-links-container a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Add active class to the clicked link
+            e.target.classList.add('active');
+        });
+    });
+    
 </script>
