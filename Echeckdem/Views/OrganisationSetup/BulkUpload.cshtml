@@ -1,5 +1,9 @@
 ﻿
-
+<style>
+    .location-template-parent p {
+       font-size:10px;
+    }
+</style>
 <form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="file">Upload Excel File:</label>
@@ -10,6 +14,22 @@
 
 
 <div id="messageContainer" class="alert mt-3" style="display:none;"></div>
+<div class="location-template-parent">
+    <p> *Please refer to this Excel template to upload data in Locations. </p>
+    <p> *Note: Code - max 15 characters, Name - max 100 characters, City/Region/State - max 30 characters </p>
+
+
+        <a href="@Url.Action("DownloadExcelFile", "OrganisationSetup")"
+       style="display: block; color: blue; background-color: lightgray; text-align:center; align-content:center;"
+       onmouseover="this.style.textDecoration='underline'"
+       onmouseout="this.style.textDecoration='none'">
+        Download Excel Template
+    </a>
+</div>
+
+
+
+
 
 
 

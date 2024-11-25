@@ -114,6 +114,13 @@
         white-space: nowrap; /* Prevent text wrapping */
     }
 
+        .org-details-links-container a.active {
+            background-color: white;
+            color: #dd3432;
+            border: 2px solid #dd3432;
+            font-weight: bold;
+        }
+
         .org-details-links-container a:hover {
             background-color: white;
             color: #dd3432;
@@ -220,7 +227,7 @@
 
                 <div class="org-details-upper-links">
                     <!-- Top links -->
-                    <a href="/OrganisationSetup/OrganisationSetup?selectedOid=@Model.SelectedOrganisation.oid">General Information</a>
+                    <a href="/OrganisationSetup/OrganisationSetup?selectedOid=@Model.SelectedOrganisation.oid" class="org-details-upper-links active">General Information</a>
                     <a href="/OrganisationSetup/OrganisationSetup">Location Map</a>
                     <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
                     <a href="#">Location Data</a>
@@ -289,25 +296,23 @@
         anchor.innerHTML = anchor.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
     }
 
-@*     function showUploadForm() {
-        const orgDetailsBody = document.getElementById('orgDetailsBody');
-
-        // Replace content with the upload form
-        orgDetailsBody.innerHTML = `
-                <form asp-action="Upload" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="file">Upload Excel File:</label>
-                        <input type="file" name="file" class="form-control" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </form>
-            `;      
-    } *@
 
         function showUploadForm() {
             document.getElementById("orgDetailsHeader").innerText = "Locations";
             $("#orgDetailsBody").load('/OrganisationSetup/upload');
                
         }
+
+    document.querySelectorAll('.org-details-links-container a').forEach(link => {
+        link.addEventListener('click', function (e) {
+            // Remove active class from all links
+            document.querySelectorAll('.org-details-links-container a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Add active class to the clicked link
+            e.target.classList.add('active');
+        });
+    });
     
 </script>

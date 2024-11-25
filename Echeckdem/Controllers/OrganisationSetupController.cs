@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using OfficeOpenXml;
+using Microsoft.AspNetCore.Mvc;
 using Echeckdem.Services;
 using Echeckdem.CustomFolder;
 
@@ -72,10 +73,37 @@ namespace Echeckdem.Controllers
             return Json(new { success = true, message = $"{recordCount} records uploaded successfully." });
         }
 
+        public IActionResult DownloadExcelFile()
+        {
+            // Set EPPlus license context for .NET Core
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            // Create a new Excel package
+            using (var package = new ExcelPackage())
+            {
+                // Add a worksheet
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+
+                // Add headers to the worksheet
+                worksheet.Cells[1, 1].Value = "Lcode";
+                worksheet.Cells[1, 2].Value = "Oid";
+                worksheet.Cells[1, 3].Value = "Lname";
+                worksheet.Cells[1, 4].Value = "Lcity";
+                worksheet.Cells[1, 5].Value = "Lstate";
+                worksheet.Cells[1, 6].Value = "Lregion";
 
 
+                // Generate file content
+                var fileContent = package.GetAsByteArray();
 
-    }
+                // Return file as download
+                return File(fileContent,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "Location Template.xlsx");
+            }
+        }
+
+}
 }
 
 
