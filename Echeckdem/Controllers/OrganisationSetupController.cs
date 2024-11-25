@@ -23,32 +23,7 @@ namespace Echeckdem.Controllers
             
             return View("OrganisationSetup", viewModel);
         }
-        //[HttpGet]                                                                                                        // Get Organisation List View
-        //public async Task<IActionResult> List(string searchTerm = "")
-        //{
-        //    var organisationList = await _organisationsetupservice.GetActiveOrganisationsListAsync(searchTerm);
-        //    ViewData["CurrentFilter"] = searchTerm;
-        //    return View("OrganisationList", organisationList);
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> Details(string id)
-        //{
-        //    if (string.IsNullOrEmpty(id))
-        //    {
-        //        return BadRequest("Invalid organisation ID.");
-        //    }
-
-        //    var organisationInfo = await _organisationsetupservice.GetOrganisationGeneralInformationAsync(id);           // Get Organisation GerneralInfo Details
-        //    if (organisationInfo == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    //return View("OrganisationList", organisationList);
-        //    return View("Details", organisationInfo);
-        //}
-
-
+       
         // Add Locations
         [HttpGet]
         public IActionResult Upload()
@@ -66,7 +41,7 @@ namespace Echeckdem.Controllers
                 return View();
             }
 
-            var recordCount = await _bulkUploadService.UploadLocationDataAsync(file);
+            var recordCount = await _bulkUploadService.UploadLocationDataAsync(file); 
             ViewBag.Message = $"{recordCount} records uploaded successfully.";
             
             return View("BulkUpload", recordCount);
