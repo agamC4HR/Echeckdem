@@ -17,15 +17,7 @@
         public DateTime? StartPeriod { get; set; }
         public DateTime? EndPeriod { get; set; }
 
-        //Filter Properties
-
-        public string OrganizationName { get; set; }
-
-        public string SiteName { get; set; }
-
-        public string StateName { get; set; }
-
-        public string CityName { get; set; }
+       
 
 
 
