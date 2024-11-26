@@ -15,7 +15,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string organizationName = null, string LocationName = null, string StateName = null, string CityName = null)
+        public async Task<IActionResult> Index(string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
         {
             int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
             int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
@@ -41,7 +41,7 @@ namespace Echeckdem.Controllers
 
             var CityNames = await _retservice.GetCityNamesAsync(uno);
             ViewBag.CityNames = CityNames;
-            var ReturnData = await _retservice.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
+            var ReturnData = await _retservice.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
 
             return View("~/Views/DetailedView/Returns.cshtml", ReturnData);
                     

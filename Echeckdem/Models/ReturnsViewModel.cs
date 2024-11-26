@@ -18,8 +18,6 @@
 
             public int RM {  get; set; }
             public int YROFF { get; set; }
-
-
             public DateTime? Period => CalculatePeriod();
             public string GetStatusDescription()
             {

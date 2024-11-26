@@ -12,10 +12,10 @@
         public string SiteName { get; set; }
         public string StateName { get; set; }
         public string CityName { get; set; }
-        public DateTime? StartDueDate { get; set; }
-        public DateTime? EndDueDate { get; set; }
-        public DateTime? StartPeriod { get; set; }
-        public DateTime? EndPeriod { get; set; }
+        public DateOnly? StartDueDate { get; set; }
+        public DateOnly? EndDueDate { get; set; }
+        public DateOnly? StartPeriod { get; set; }
+        public DateOnly? EndPeriod { get; set; }
 
        
 

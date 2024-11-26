@@ -117,6 +117,24 @@
                         }
                     }
                 </select>
+
+                
+                <label for="startDueDate">Start Due Date:</label>
+                <input type="date" id="startDueDate" name="StartDueDate" class="form-control mx-2"
+                       value="@ViewContext.HttpContext.Request.Query["StartDueDate"]" />
+
+                <label for="endDueDate">End Due Date:</label>
+                <input type="date" id="endDueDate" name="EndDueDate" class="form-control mx-2"
+                       value="@ViewContext.HttpContext.Request.Query["EndDueDate"]" />
+
+                <label for="startPeriod">Start Period: </label>
+                <input type="date" id="startPeriod" name="StartPeriod" class="form-control mx-2"
+                       value="@ViewContext.HttpContext.Request.Query["StartPeriod"]" />
+
+                <label for="endPeriod">End Period: </label>
+                <input type="date" id="endPeriod" name="EndPeriod" class="form-control mx-2"
+                       value="@ViewContext.HttpContext.Request.Query["EndPeriod"]" />
+
                 <button type="submit" class="btn btn-primary">Apply Filter</button>
             </form>
         </div>
@@ -149,8 +167,7 @@
                             <td>N/A</td>
                             <td>@item.LCity</td>
                             <td>@item.State</td>
-                            @* @* <td>@item.LState</td> *@ 
-                           <td>@item.LRegion</td>
+                            <td>@item.LRegion</td>
                             <td>@item.TP</td>
                             <td>@item.Dolr?.ToString("dd-MM-yyyy")</td>
                             <td>@item.GetStatusDescription()</td>

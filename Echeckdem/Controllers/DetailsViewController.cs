@@ -23,7 +23,7 @@ namespace Echeckdem.Controllers
 
         }
 
-        public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null, string StateName = null, string CityName = null)//(int ulev, int uno, string organizationName = null)
+        public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)//(int ulev, int uno, string organizationName = null)
         {
 
             int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
@@ -39,10 +39,9 @@ namespace Echeckdem.Controllers
 
 
 
-            var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
-
-            var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
-            var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
+            var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+            var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+            var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
 
             var detailedViewModel = new CombinedDetailedViewModel
             {
@@ -52,7 +51,11 @@ namespace Echeckdem.Controllers
                 OrganizationName = organizationName,
                 SiteName = LocationName,
                 StateName = StateName,
-                CityName = CityName
+                CityName = CityName,
+                StartDueDate = StartDueDate,
+                EndDueDate = EndDueDate,
+                StartPeriod = StartPeriod,
+                EndPeriod = EndPeriod
             };
 
             var organizationNames = await _regService.GetOrganizationNamesAsync(uno);
@@ -76,7 +79,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetLocations(string organizationName)
+        public async Task<IActionResult> GetLocations(string organizationName)  
         {
             int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
 

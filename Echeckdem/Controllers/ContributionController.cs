@@ -12,7 +12,7 @@ namespace Echeckdem.Controllers
             _contService = contService;
         }
      
-        public async Task<IActionResult> Index(string organizationName = null, string LocationName = null, string StateName = null, string CityName = null)
+        public async Task<IActionResult> Index(string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
         {
             int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
             int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
@@ -38,7 +38,7 @@ namespace Echeckdem.Controllers
             var CityNames = await _contService.GetCityNamesAsync(uno);
             ViewBag.CityNames = CityNames;
 
-           var ContributionData = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
+           var ContributionData = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
 
             return View("~/Views/DetailedView/Contribution.cshtml", ContributionData);
 

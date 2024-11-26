@@ -17,7 +17,7 @@ namespace Echeckdem.Services
             _context = context;
         }
 
-        public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null)
+        public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
         {
             var currentYear = DateTime.Now.Year;
 
@@ -73,6 +73,22 @@ namespace Echeckdem.Services
             {
                 sqlQuery += " AND b.lcity = @CityName";
             }
+            if (StartDueDate.HasValue)
+            {
+                sqlQuery += " AND a.lastdate >= @StartDueDate";
+            }
+            if (EndDueDate.HasValue)
+            {
+                sqlQuery += " AND a.lastdate <= @EndDueDate";
+            }
+            if (StartPeriod.HasValue)
+            {
+                sqlQuery += " AND a.Depdate >= @StartPeriod";
+            }
+            if (EndPeriod.HasValue)
+            {
+                sqlQuery += " AND a.Depdate <= @EndPeriod";
+            }
 
             sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
 
@@ -84,7 +100,11 @@ namespace Echeckdem.Services
                              new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
                              new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
                              new SqlParameter("@StateName", (object)StateName ?? DBNull.Value),
-                             new SqlParameter("@CityName", (object)CityName ?? DBNull.Value))
+                             new SqlParameter("@CityName", (object)CityName ?? DBNull.Value),
+                             new SqlParameter("@StartDueDate", (object)StartDueDate ?? DBNull.Value),
+                             new SqlParameter("@EndDueDate", (object)EndDueDate ?? DBNull.Value),
+                             new SqlParameter("@StartPeriod", (object)StartPeriod ?? DBNull.Value),
+                             new SqlParameter("@EndPeriod", (object)EndPeriod ?? DBNull.Value))
                 .ToListAsync();
 
             return result;
