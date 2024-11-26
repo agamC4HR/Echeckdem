@@ -37,7 +37,10 @@ namespace Echeckdem.Controllers
                 return RedirectToAction("Index", "Login");
             }
 
+
+
             var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
+
             var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
             var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
 
@@ -50,18 +53,41 @@ namespace Echeckdem.Controllers
                 SiteName = LocationName,
                 StateName = StateName,
                 CityName = CityName
-                
-                //Category = category,
-                //StartDueDate = startDueDate,
-                //EndDueDate = endDueDate,
-                //StartPeriod = startPeriod,
-                //EndPeriod = endPeriod
             };
+
+            var organizationNames = await _regService.GetOrganizationNamesAsync(uno);
+            ViewBag.OrganizationNames = organizationNames;
+
+            var locationNames = string.IsNullOrEmpty(organizationName)
+               ? await _regService.GetLocationNamesAsync(uno)
+               : await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
+            ViewBag.LocationNames = locationNames;
+
+            var StateNames = await _regService.GetStateNamesAsync(uno);
+            ViewBag.StateNames = StateNames;
+
+            var CityNames = await _regService.GetCityNamesAsync(uno);
+            ViewBag.CityNames = CityNames;
+
+            //var ReturnData = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
 
 
             return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetLocations(string organizationName)
+        {
+            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
+
+            if (string.IsNullOrEmpty(organizationName))
+            {
+                return Json(await _regService.GetLocationNamesAsync(uno));
+            }
+
+            var locations = await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
+            return Json(locations);
+        }
 
 
     }

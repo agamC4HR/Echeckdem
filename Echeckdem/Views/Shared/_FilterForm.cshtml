@@ -148,53 +148,32 @@
 
                 </div>
                 <div class="form-group col-md-3">
-                    <label for="Site">Site</label>
+                    <label for="locationFilter">Site</label>
                     @* <input type="text" name="site" class="form-control" value="@Model.Site" /> *@
-                    <select name="site" class="form-control">
+                    <select id="locationFilter" name="LocationName" class="form-control">
                         <option value="">Select a Site</option>
-                        <option value="Ahmedabad">Ahmedabad</option>
-                        <option value="Asyst Park, 4th Floor, Kolkata">Asyst Park, 4th Floor, Kolkata</option>
-                        <option value="Bangalore Site Ambalipura">Bangalore Site Ambalipura</option>
-                        <option value="Bangalore Site Richmond Town">Bangalore Site Richmond Town</option>
-                        <option value="Boston House, Suren Road, Chakala, Andheri Kurla Road, Andheri (East)">Boston House, Suren Road, Chakala, Andheri Kurla Road, Andheri (East)</option>
-                        <option value="Chennai location">Chennai location</option>
-                        <option value="Cyber Park">Cyber Park</option>
-                        <option value="DELHI">DELHI</option>
-                        <option value="Dshaw-Bangalore">Dshaw-Bangalore</option>
-                        <option value="Dshaw-Gurugram">Dshaw-Gurugram</option>
-                        <option value="DLF Cyber city Building No. 10A, 4th floor, Gurgaon">DLF Cyber city Building No. 10A, 4th floor, Gurgaon</option>
-                        <option value="Gurgaon">Gurgaon</option>
-                        <option value="Gurgaon 2nd floor cyber city">Gurgaon 2nd floor cyber city</option>
-                        <option value="Gurugram">Gurugram</option>
-                        <option value="Haryana">Haryana</option>
-                        <option value="Hyderabad">Hyderabad</option>
-                        <option value="Hyderabad-Knowledge City">Hyderabad-Knowledge City</option>
-                        <option value="KOLKATA">KOLKATA</option>
-                        <option value="Kolkata location">Kolkata location</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Mumbai Location">Mumbai Location</option>
-                        <option value="New Delhi Delhi">New Delhi Delhi</option>
-                        <option value="Noida">Noida</option>
-                        <option value="Outer Marthahalli Ring Road">Outer Marthahalli Ring Road</option>
-                        <option value="PUNE LOCATION">PUNE LOCATION</option>
-                        <option value="Residency Road">Residency Road</option>
-                        <option value="Synopsys (India) EDA Software Pvt. Ltd.">Synopsys (India) EDA Software Pvt. Ltd.</option>
-                        <option value="Synopsys (India) Pvt. Ltd.-New Delhi">Synopsys (India) Pvt. Ltd.-New Delhi</option>
-                        <option value="Synopsys (India) Pvt. Ltd.-Sec 127, Gautam Budh Nagar">Synopsys (India) Pvt. Ltd.-Sec 127, Gautam Budh Nagar</option>
-                        <option value="Synopsys (India) Pvt. Ltd.-Sec 2, Noida">Synopsys (India) Pvt. Ltd.-Sec 2, Noida</option>
-                        <option value="Synopsys (India) Pvt. Ltd.-Sec 62, Noida">Synopsys (India) Pvt. Ltd.-Sec 62, Noida</option>
-                        <option value="Synopsys (India) Pvt. Ltd.-Sec 64, Noida">Synopsys (India) Pvt. Ltd.-Sec 64, Noida</option>
-                        <option value="The capital BKC Mumbai">The capital BKC Mumbai</option>
-                        <option value="702 Abhishree Avenue, Near Nehru Nagar Circle, Ambawadi, Ahmedabad">702 Abhishree Avenue, Near Nehru Nagar Circle, Ambawadi, Ahmedabad</option>
-                    </select>
+                        @if (ViewBag.LocationNames != null)
+                        {
+                            foreach (var loc in ViewBag.LocationNames)
+                            {
+                                <option value="@loc">@loc</option>
+                            }
+                        }
+                       </select>
                 </div>
                 <div class="form-group col-md-3">
-                    <label for="State">State</label>
+                    <label for="StateFilter">State</label>
                     @* <input type="text" name="state" class="form-control" value="@Model.State" /> *@
-                    <select name="state" class="form-control">
+                    <select id="StateFilter" name="Statename" class="form-control">
                         <option value="">Select a State</option>
-                        <option value="Gujarat">Gujarat</option>
+                        @if (ViewBag.StateNames != null)
+                        {
+                            foreach (var sta in ViewBag.StateNames)
+                            {
+                                <option value="@sta">@sta</option>
+                            }
+                        }
+                      @*   <option value="Gujarat">Gujarat</option>
                         <option value="Haryana">Haryana</option>
                         <option value="Karnataka">Karnataka</option>
                         <option value="Maharashtra">Maharashtra</option>
@@ -202,14 +181,21 @@
                         <option value="Tamil Nadu">Tamil Nadu</option>
                         <option value="Telangana">Telangana</option>
                         <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="West Bengal">West Bengal</option>
+                        <option value="West Bengal">West Bengal</option> *@
                     </select>
                 </div>
                 <div class="form-group col-md-3">
-                    <label for="City">City</label>
-                    <select name="city" class="form-control">
+                    <label for="CityFilter">City</label>
+                    <select id="CityFilter" name="CityName" class="form-control">
                         <option value="">Select a City</option>
-                        <option value="Ahmedabad">Ahmedabad</option>
+                        @if (ViewBag.CityNames != null)
+                        {
+                            foreach (var city in ViewBag.CityNames)
+                            {
+                                <option value="@city">@city</option>
+                            }
+                        }
+                       @*  <option value="Ahmedabad">Ahmedabad</option>
                         <option value="Bangalore">Bangalore</option>
                         <option value="Banglaore">Banglaore</option>
                         <option value="Chennai">Chennai</option>
@@ -225,7 +211,7 @@
                         <option value="Nehru Place">Nehru Place</option>
                         <option value="New Delhi">New Delhi</option>
                         <option value="Noida">Noida</option>
-                        <option value="Pune">Pune</option>
+                        <option value="Pune">Pune</option> *@
                     </select>
                 </div>
 
@@ -289,4 +275,20 @@
             body.style.overflow = 'hidden';
         }
     }
+    $(document).ready(function () {
+        $('#organizationFilter').on('change', function () {
+            var organizationName = $(this).val();
+
+            $.get('/DetailsView/GetLocations', { organizationName: organizationName }, function (data) {
+                var locationDropdown = $('#locationFilter');
+                locationDropdown.empty();
+
+                locationDropdown.append('<option value="All"></option>');
+
+                $.each(data, function (index, location) {
+                    locationDropdown.append('<option value="' + location + '">' + location + '</option>');
+                });
+            });
+        });
+    });
 </script>

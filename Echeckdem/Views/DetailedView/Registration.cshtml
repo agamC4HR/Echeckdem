@@ -1,4 +1,5 @@
-﻿@model CombinedDetailedViewModel
+﻿@model IEnumerable<Echeckdem.Models.RegistrationViewModel>
+
 
 <!DOCTYPE html>
 <html>
@@ -80,7 +81,7 @@
 
 
                 <label for="locationFilter">Filter by Location:</label>
-                <select id="locationFilter" name="SiteName" class="form-control mx-2">
+                <select id="locationFilter" name="LocationName" class="form-control mx-2">
                     <option value="">All</option>
                     @if (ViewBag.LocationNames != null)
                     {
@@ -125,7 +126,7 @@
             $('#organizationFilter').on('change', function () {
                 var organizationName = $(this).val();
 
-                $.get('/Registration/GetLocations', { organizationName: organizationName }, function (data) {
+                $.get('/DetailsView/GetLocations', { organizationName: organizationName }, function (data) {
                     var locationDropdown = $('#locationFilter');
                     locationDropdown.empty();
 
