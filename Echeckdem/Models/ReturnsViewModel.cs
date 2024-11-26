@@ -2,7 +2,6 @@
     {
         public class ReturnsViewModel
         {
-            // public int SerialNumber { get; set; }
             public string oid { get; set; }
             public string Lname { get; set; }
             //public string LState { get; set; }

@@ -14,6 +14,7 @@ namespace Echeckdem.Controllers
             _retservice = retservice;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(string organizationName = null, string LocationName = null, string StateName = null, string CityName = null)
         {
             int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
@@ -52,7 +53,7 @@ namespace Echeckdem.Controllers
 
             if (string.IsNullOrEmpty(organizationName))
             {
-                return Json(await _retservice.GetLocationNamesAsync(uno));
+                return Json(await _retservice.GetLocationNamesAsync(uno));                                               
             }
 
             var locations = await _retservice.GetFilteredLocationNamesAsync(uno, organizationName);

@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<Echeckdem.Models.RegistrationViewModel>
 
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +20,7 @@
             }
 
             .table-custom th {
-                background-color: #343a40;
+                background-color: #343a40;     
                 color: #fff;
                 font-weight: bold;
             }
@@ -120,7 +121,52 @@
             </form>
         </div>
 
-       
+        <!-- Data Table -->
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Organization Name</th>
+                    <th>Site</th>
+                    <th>Due Date</th>
+                    <th>Period</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Region</th>
+                    <th>Type</th>
+                    <th>Date of Deposit/Renewal</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.OName</td>
+                            <td>@item.Lname</td>
+                            <td>@item.Doe?.ToString("dd-MM-yyyy")</td>
+                            <td>N/A</td>
+                            <td>@item.LCity</td>
+                            <td>@item.State</td>
+                            @* @* <td>@item.LState</td> *@ 
+                           <td>@item.LRegion</td>
+                            <td>@item.TP</td>
+                            <td>@item.Dolr?.ToString("dd-MM-yyyy")</td>
+                            <td>@item.GetStatusDescription()</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" class="text-center">No data available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>  
+    </div>
+
     <script>
         $(document).ready(function () {
             $('#organizationFilter').on('change', function () {
