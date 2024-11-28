@@ -25,7 +25,7 @@ namespace Echeckdem.Controllers
             return View("OrganisationSetup", viewModel);
         }
        
-        // Add Locations
+        // Add Locations process        --  1)  BULK UPLOAD
         [HttpGet]
         public IActionResult Upload()
         {
@@ -39,8 +39,6 @@ namespace Echeckdem.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                //ViewBag.Message = "Please upload a valid Excel file.";
-                //return View("bulkupload");
                 return Json(new { success = false, message = "Please upload a valid Excel file." });
             }
 
