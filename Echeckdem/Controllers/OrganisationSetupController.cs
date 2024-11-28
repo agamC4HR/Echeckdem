@@ -39,7 +39,9 @@ namespace Echeckdem.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                return Json(new { success = false, message = "Please upload a valid Excel file." });
+                //ViewBag.Message = "Please upload a valid Excel file.";
+                //return View("bulkupload");
+                return Json(new { success = false, message = "*Error: Please upload a valid Excel file." });
             }
 
             var recordCount = await _bulkUploadService.UploadLocationDataAsync(file);

@@ -41,9 +41,13 @@
             </div>
             <div class="b-links">
                 <a href=""> Settings</a>
-                <a href=""> Logout</a>
-            </div>
+                
         </div>
+
+               @*  <a href=""> Settings</a> *@
+                <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">
+                    <button  type="submit" class="Logout-button">Logout</button>
+                </form>
     </nav>
         <div class="heading_background_parent">
             <div class="heading_background">
