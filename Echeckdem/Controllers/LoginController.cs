@@ -80,6 +80,16 @@ namespace Echeckdem.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            // Clear the user session
+            HttpContext.Session.Clear();
+
+            // Redirect to the login page
+            return RedirectToAction("Index", "Login");
+        }
     }
 }
 
