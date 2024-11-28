@@ -24,7 +24,22 @@ namespace Echeckdem.Controllers
             
             return View("OrganisationSetup", viewModel);
         }
-       
+
+        [HttpPost]
+        public async Task<IActionResult> EditOrganisationInfo(OrganisationGeneralInfoViewModel updatedInfo)
+        {
+            var isUpdated = await _organisationsetupservice.UpdateOrganisationInfoAsync(updatedInfo);
+
+            if (isUpdated)
+            {
+                TempData["SuccessMessage"] = "Record updated successfully.";
+                return RedirectToAction("OrganisationSetup", new { selectedOid = updatedInfo.oid });
+
+            }
+
+            return BadRequest("Failed to update organization information");
+        }
+
         // Add Locations process        --  1)  BULK UPLOAD
         [HttpGet]
         public IActionResult Upload()
@@ -34,13 +49,10 @@ namespace Echeckdem.Controllers
         }
 
         [HttpPost]
-
         public async Task<IActionResult> Upload(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
-                //ViewBag.Message = "Please upload a valid Excel file.";
-                //return View("bulkupload");
                 return Json(new { success = false, message = "*Error: Please upload a valid Excel file." });
             }
 
@@ -77,22 +89,6 @@ namespace Echeckdem.Controllers
                     "Location Template.xlsx");
             }
         }
-
-        [HttpPost]
-        public async Task<IActionResult> EditOrganisationInfo(OrganisationGeneralInfoViewModel updatedInfo)
-        {
-            var isUpdated = await _organisationsetupservice.UpdateOrganisationInfoAsync(updatedInfo);
-
-            if (isUpdated)
-            {
-                TempData["SuccessMessage"] = "Record updated successfully.";
-                return RedirectToAction("OrganisationSetup", new { selectedOid = updatedInfo.oid });
-               
-            }
-
-            return BadRequest("Failed to update organization information");
-        }
-
     }
 }
 
