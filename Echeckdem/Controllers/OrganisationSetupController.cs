@@ -25,7 +25,7 @@ namespace Echeckdem.Controllers
             return View("OrganisationSetup", viewModel);
         }
        
-        // Add Locations
+        // Add Locations process        --  1)  BULK UPLOAD
         [HttpGet]
         public IActionResult Upload()
         {
