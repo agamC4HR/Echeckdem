@@ -50,5 +50,27 @@ namespace Echeckdem.Services
                 SelectedOrganisation = selectedOrganisation
             };
         }
+
+        public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)
+        {
+            var organisation = await _EcheckContext.Ncmorgs
+                .FirstOrDefaultAsync(o => o.Oid == updatedInfo.oid);
+
+            if (organisation == null)
+            {
+                return false;
+            }
+
+            // Update the fields, allowing null values
+            organisation.Oname = updatedInfo.Oname;
+            organisation.Spoc = updatedInfo.Spoc;
+            organisation.Styear = updatedInfo.styear; // Nullable type for years (if applicable)
+            organisation.Contname = updatedInfo.Contname;
+            organisation.Contemail = updatedInfo.Contemail;
+
+            // Save changes to the database
+            await _EcheckContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

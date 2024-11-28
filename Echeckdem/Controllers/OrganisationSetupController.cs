@@ -78,7 +78,22 @@ namespace Echeckdem.Controllers
             }
         }
 
-}
+        [HttpPost]
+        public async Task<IActionResult> EditOrganisationInfo(OrganisationGeneralInfoViewModel updatedInfo)
+        {
+            var isUpdated = await _organisationsetupservice.UpdateOrganisationInfoAsync(updatedInfo);
+
+            if (isUpdated)
+            {
+                TempData["SuccessMessage"] = "Record updated successfully.";
+                return RedirectToAction("OrganisationSetup", new { selectedOid = updatedInfo.oid });
+               
+            }
+
+            return BadRequest("Failed to update organization information");
+        }
+
+    }
 }
 
 

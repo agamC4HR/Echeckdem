@@ -73,17 +73,41 @@
         border: 2px solid #dd3432;
     }
 
-    /* Card header styling */
+    .child-org-details-header{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #dd3432;
+        padding: 0px 10px;
+    }
+
     .child-org-details-header h2 {
         background-color: white;
         color: #dd3432;
         padding: 10px;
         font-weight: bold;
         text-align: center;
-        border-bottom: 2px solid #dd3432;
         margin: 0;
         font-size: 16px;
     }
+
+    .child-org-details-header button {
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #dd3432;
+            color: white;
+            border: 2px solid #dd3432;
+            border-radius:4px;
+    }
+
+        .child-org-details-header button:hover {
+            background-color: white;
+            color: #dd3432;
+
+
+        }
 
     .org-details-links-container {
         display: grid;
@@ -130,19 +154,59 @@
     .org-details-body {
         display: grid;
         grid-template-columns: 1fr 1fr; /* Two equal columns */
-        gap: 15px; /* Space between items */
+        gap: 15px;
         padding: 20px;
         font-size: 16px;
         line-height: 1.6;
     }
 
+    .Edit-OrganisationInfo-Form{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+
+    }
+
         .org-details-body p {
-            margin: 0; /* Remove default margin for better alignment */
+            margin: 0;
         }
 
-        .org-details-body strong {
-            color: #dd3432;
+        strong {
+        color: #dd3432;
         }
+
+
+    .Edit-OrganisationInfo-Form label {
+            font-weight: bold;
+            color: #dd3432;
+            padding-right: 10px;
+   }
+
+    .Edit-OrganisationInfo-Form input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+    .Edit-OrganisationInfo-Form button {
+        padding: 5px;
+        font-size: 12px;
+        font-weight:bold;
+        background-color: white;
+        color: #dd3432;
+        border: 2px solid #dd3432;
+    }
+
+        .Edit-OrganisationInfo-Form button:hover {
+            background-color: #dd3432;
+            color:white ;
+        }
+
+ 
 </style>
 
 <div class="table-heading-container">
@@ -222,12 +286,13 @@
         <div class="org-details-header">
             <div class="child-org-details-header">
                 <h2 id="orgDetailsHeader">@Model.SelectedOrganisation.Oname</h2>
+                <button type="button" onclick="showEditForm()">Edit</button>
                 </div>
             <div class="org-details-links-container">
 
                 <div class="org-details-upper-links">
                     <!-- Top links -->
-                    <a href="/OrganisationSetup/OrganisationSetup?selectedOid=@Model.SelectedOrganisation.oid" class="org-details-upper-links active">General Information</a>
+                    <a href="/OrganisationSetup/OrganisationSetup?selectedOid=@Model.SelectedOrganisation.oid" id="generalInfoLink" class="org-details-upper-links active">General Information</a>
                     <a href="/OrganisationSetup/OrganisationSetup">Location Map</a>
                     <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
                     <a href="#">Location Data</a>
@@ -242,14 +307,43 @@
                 </div>
 
                 </div>
-            <div id="orgDetailsBody" class="org-details-body">
+            <div id="orgDetailsBody" class="org-details-body"> 
                     <p><strong>OID:</strong> @Model.SelectedOrganisation.oid</p>
                     <p><strong>Name:</strong> @Model.SelectedOrganisation.Oname</p>
                     <p><strong>SPOC:</strong> @Model.SelectedOrganisation.Spoc</p>
                     <p><strong>Start Year:</strong> @Model.SelectedOrganisation.styear</p>
                     <p><strong>Contact Name:</strong> @Model.SelectedOrganisation.Contname</p>
                     <p><strong>Contact Email:</strong> @Model.SelectedOrganisation.Contemail</p>
-                </div>
+              </div>
+
+            <!-- Form for editing organisation info -->
+            <div id="editForm" style="display:none;">
+                <form asp-action="EditOrganisationInfo" method="post" class="Edit-OrganisationInfo-Form">
+                    <label>Oid</label>
+                    <input type="text" name="oid" value="@Model.SelectedOrganisation.oid" readonly />
+
+                    <label>Organization Name</label>
+                    <input type="text" name="Oname" value="@Model.SelectedOrganisation.Oname" />
+
+                    <label>SPOC</label>
+                    <input type="text" name="Spoc" value="@Model.SelectedOrganisation.Spoc" />
+
+                    <label>Start Year</label>
+                    <input type="number" name="styear" value="@Model.SelectedOrganisation.styear" />
+
+                    <label>Contact Name</label>
+                    <input type="text" name="Contname" value="@Model.SelectedOrganisation.Contname" />
+
+                    <label>Contact Email</label>
+                    <input type="email" name="Contemail" value="@Model.SelectedOrganisation.Contemail" />
+                   
+                    <button type="submit">Save Changes</button>
+                    <button type="button" onclick="cancelEdit()">Close</button>
+                    
+                </form>
+            </div>
+
+            
             </div>
         }
         else
@@ -257,9 +351,19 @@
             <p>Select an organization to view details.</p>
         }
     </div>
-</div>
+
+
 
 <script>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <text>
+            alert('@TempData["SuccessMessage"]');
+        </text>
+    }
+
+
     function searchTable() {
         const input = document.getElementById('searchBar');
         const filter = input.value.toLowerCase();  
@@ -312,7 +416,33 @@
 
             // Add active class to the clicked link
             e.target.classList.add('active');
+
+            // Show or hide the Edit button based on the active link
+            if (e.target.id === "generalInfoLink" && e.target.classList.contains('active')) {
+                document.querySelector('.child-org-details-header button').style.display = 'block';  // Show the Edit button
+            } else {
+                document.querySelector('.child-org-details-header button').style.display = 'none';  // Hide the Edit button
+            }
         });
     });
+
+
+    function showEditForm() {
+        // Hide the org-details-body
+        document.getElementById("orgDetailsBody").style.display = "none";
+
+        // Show the edit form
+        document.getElementById("editForm").style.display = "block";
+    }
+
+    function cancelEdit() {
+        // Hide the edit form
+        document.getElementById("editForm").style.display = "none";
+
+        // Show the org-details-body again (General Information section)
+        document.getElementById("orgDetailsBody").style.display = "grid";
+    }
+
+
     
 </script>
