@@ -246,37 +246,41 @@
             }
         });
     }
-
     function highlightText(row, filter) {
-        // Clear any previous highlights
-        removeHighlight(row);
-
-        const regex = new RegExp(`(${filter})`, 'gi');  // Create a case-insensitive regex for the filter
-        row.innerHTML = row.innerHTML.replace(regex, '<span class="highlight">$1</span>');  // Wrap matched text in a span with a highlight class
+        row.querySelectorAll('td').forEach(cell => {
+            const text = cell.textContent || cell.innerText;
+            if (filter && text.toLowerCase().includes(filter)) {
+                const regex = new RegExp(`(${filter})`, 'gi');
+                cell.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');
+            } else {
+                cell.innerHTML = text; // Reset if no match
+            }
+        });
     }
 
     function removeHighlight(row) {
-        // Remove any previous highlights
-        row.innerHTML = row.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+        row.querySelectorAll('td').forEach(cell => {
+            cell.innerHTML = cell.textContent || cell.innerText; // Remove span
+        });
     }
 
-    // function downloadData() {
-    //     const table = document.querySelector('.styled-table');
-    //     let rows = table.querySelectorAll('tr');
-    //     let csv = [];
+    function downloadData() {
+        const table = document.querySelector('.styled-table');
+        let rows = table.querySelectorAll('tr');
+        let csv = [];
 
-    //     rows.forEach(row => {
-    //         const rowData = [];
-    //         row.querySelectorAll('th, td').forEach(cell => {
-    //             rowData.push(cell.textContent);
-    //         });
-    //         csv.push(rowData.join(','));
-    //     });
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('th, td').forEach(cell => {
+                rowData.push(cell.textContent);
+            });
+            csv.push(rowData.join(','));
+        });
 
-    //     const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
-    //     const link = document.createElement('a');
-    //     link.href = URL.createObjectURL(csvFile);
-    //     link.download = 'table-data.csv';
-    //     link.click();
-    // }
+        const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(csvFile);
+        link.download = 'table-data.csv';
+        link.click();
+    }
 </script>
