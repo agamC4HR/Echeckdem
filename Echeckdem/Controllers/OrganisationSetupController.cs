@@ -7,15 +7,17 @@ namespace Echeckdem.Controllers
 {
     public class OrganisationSetupController : Controller
     {
-       private readonly OrganisationSetupService _organisationsetupservice;
-       private readonly IBulkUploadService _bulkUploadService;
+        private readonly OrganisationSetupService _organisationsetupservice;
+        private readonly IBulkUploadService _bulkUploadService;
 
-        public OrganisationSetupController (OrganisationSetupService organisationSetupService, IBulkUploadService bulkUploadService)
+        public OrganisationSetupController(OrganisationSetupService organisationSetupService, IBulkUploadService bulkUploadService)
 
         {
             _organisationsetupservice = organisationSetupService;
             _bulkUploadService = bulkUploadService;
         }
+
+        
 
         [HttpGet]
         public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid)
@@ -89,6 +91,30 @@ namespace Echeckdem.Controllers
                     "Location Template.xlsx");
             }
         }
+
+
+        [HttpGet]
+        public IActionResult AddOrganisation()
+        {
+            return View("AddOrganisation");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrganisation(OrganisationGeneralInfoViewModel newOrganisation)
+        {
+            if (ModelState.IsValid)
+            {
+                var isAdded = await _organisationsetupservice.AddOrganisationAsync(newOrganisation);
+
+                if (isAdded)
+                {
+                    TempData["SuccessMessage"] = "Organisation added successfully.";
+                    return RedirectToAction("OrganisationSetup");
+                }
+            }
+            return View(newOrganisation);  // Ensure newOrganisation is passed back if validation fails
+        }
+
     }
 }
 

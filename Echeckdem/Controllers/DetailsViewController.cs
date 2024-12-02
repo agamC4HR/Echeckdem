@@ -32,7 +32,7 @@ namespace Echeckdem.Controllers
 
             if (ulev == 0)// || uno == 0)
             {
-                // If session values are missing, redirect to login or show error
+                // If session values are missing, redirect to login or show error 
                 TempData["ErrorMessage"] = "Session has expired. Please log in again.";
                 return RedirectToAction("Index", "Login");
             }
@@ -77,7 +77,7 @@ namespace Echeckdem.Controllers
 
             return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> GetLocations(string organizationName)  
         {

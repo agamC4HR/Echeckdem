@@ -13,6 +13,25 @@ namespace Echeckdem.Services
             _EcheckContext = EcheckContext;
         }
 
+        public async Task<bool> AddOrganisationAsync(OrganisationGeneralInfoViewModel newOrganisation)
+        {
+            var organisation = new Ncmorg
+            {
+                Oid = newOrganisation.oid,
+                Oname = newOrganisation.Oname,
+                Spoc = newOrganisation.Spoc,
+                Styear = newOrganisation.styear,
+                Contname = newOrganisation.Contname,
+                Contemail = newOrganisation.Contemail,
+                Oactive = 1 // Assuming all new organizations are active by default
+            };
+
+            _EcheckContext.Ncmorgs.Add(organisation);
+            await _EcheckContext.SaveChangesAsync();
+            return true;
+        }
+
+
         public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)                // service for getting organisation list and general info of that organisation
         {
             // Fetch the list of active organizations
@@ -51,7 +70,7 @@ namespace Echeckdem.Services
             };
         }
 
-        public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)
+        public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)          // update the details in general info 
         {
             var organisation = await _EcheckContext.Ncmorgs
                 .FirstOrDefaultAsync(o => o.Oid == updatedInfo.oid);
@@ -67,10 +86,14 @@ namespace Echeckdem.Services
             organisation.Styear = updatedInfo.styear; // Nullable type for years (if applicable)
             organisation.Contname = updatedInfo.Contname;
             organisation.Contemail = updatedInfo.Contemail;
-
+           
             // Save changes to the database
             await _EcheckContext.SaveChangesAsync();
             return true;
         }
+
+
+
+
     }
 }
