@@ -20,7 +20,7 @@ namespace Echeckdem.Controllers
             _regService = regService;
             _contService = contService;
             _retService = retService;
-
+            
         }
 
         public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)//(int ulev, int uno, string organizationName = null)
@@ -92,6 +92,6 @@ namespace Echeckdem.Controllers
             return Json(locations);
         }
 
-
+     
     }
 }

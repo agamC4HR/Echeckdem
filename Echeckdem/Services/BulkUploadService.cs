@@ -15,7 +15,7 @@ namespace Echeckdem.Services
             _context = context;
         }
 
-        public async Task<int> UploadLocationDataAsync(IFormFile file)
+        public async Task<int> UploadLocationDataAsync(IFormFile file )         // addded here 
         {
             var locations = new List<Ncmloc>();
 
@@ -34,7 +34,8 @@ namespace Echeckdem.Services
                             var location = new Ncmloc
                             {
                                 Lcode = row.Cell(1).GetValue<string>().Substring(0, Math.Min(15, row.Cell(1).GetValue<string>().Length)),
-                                Oid = row.Cell(2).GetValue<string>().Substring(0, Math.Min(30, row.Cell(2).GetValue<string>().Length)),
+                                 Oid = row.Cell(2).GetValue<string>().Substring(0, Math.Min(30, row.Cell(2).GetValue<string>().Length)),
+                                //Oid = oid,
                                 Lname = row.Cell(3).GetValue<string>().Substring(0, Math.Min(100, row.Cell(3).GetValue<string>().Length)),
                                 Lcity = row.Cell(4).GetValue<string>().Substring(0, Math.Min(30, row.Cell(4).GetValue<string>().Length)),
                                 Lstate = row.Cell(5).GetValue<string>().Substring(0, Math.Min(30, row.Cell(5).GetValue<string>().Length)),

@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Echeckdem.Services;
 using Echeckdem.CustomFolder;
+using System.Security.Cryptography;
 
 namespace Echeckdem.Controllers
+
 {
     public class OrganisationSetupController : Controller
     {
@@ -17,9 +19,30 @@ namespace Echeckdem.Controllers
             _bulkUploadService = bulkUploadService;
         }
 
-
-
         [HttpGet]
+        public IActionResult AddOrganisation()                    // Add Organisation details
+        {
+            return View("AddOrganisation");
+        }
+
+        [HttpPost]                                                // Add Organisation details 
+        public async Task<IActionResult> AddOrganisation(OrganisationGeneralInfoViewModel newOrganisation)
+        {
+            if (ModelState.IsValid)
+            {
+                var isAdded = await _organisationsetupservice.AddOrganisationAsync(newOrganisation);
+
+                if (isAdded)
+                {
+                    TempData["SuccessMessage"] = "Organisation added successfully.";
+                    return RedirectToAction("OrganisationSetup");
+                }
+            }
+            return View(newOrganisation);  // Ensure newOrganisation is passed back if validation fails
+        }
+
+
+        [HttpGet]                            // Getting Organisation List and General Info
         public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid)
         {
             var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid);
@@ -27,7 +50,7 @@ namespace Echeckdem.Controllers
             return View("OrganisationSetup", viewModel);
         }
 
-        [HttpPost]
+        [HttpPost]                                               // Editing/Updating Organisation General Info 
         public async Task<IActionResult> EditOrganisationInfo(OrganisationGeneralInfoViewModel updatedInfo)
         {
             var isUpdated = await _organisationsetupservice.UpdateOrganisationInfoAsync(updatedInfo);
@@ -42,15 +65,16 @@ namespace Echeckdem.Controllers
             return BadRequest("Failed to update organization information");
         }
 
-        // Add Locations process        --  1)  BULK UPLOAD
+        // Add Locations process        --  1)  BULK  UPLOAD 
         [HttpGet]
         public IActionResult Upload()
         {
             return PartialView("bulkupload");
-
+            
+            
         }
 
-        [HttpPost]
+        [HttpPost]                                                          // Add Locations process        --  1)  BULK UPLOAD
         public async Task<IActionResult> Upload(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -62,50 +86,7 @@ namespace Echeckdem.Controllers
             return Json(new { success = true, message = $"{recordCount} records uploaded successfully." });
         }
 
-
-        //Add Organisation------------------------
-
-        [HttpGet]
-        public IActionResult AddOrganisation()
-        {
-            return PartialView("AddOrganisation");
-        }
-
-        [HttpPost]
-
-        public async Task<IActionResult> AddOrganisation(OrganisationGeneralInfoViewModel newOrganisation)
-        {
-            if (!ModelState.IsValid)
-            {
-                TempData["Status"] = "error";
-                TempData["Message"] = "Validation failed.";
-                return RedirectToAction("OrganisationSetup");
-            }
-
-            try
-            {
-                var isAdded = await _organisationsetupservice.AddOrganisationAsync(newOrganisation);
-
-                if (isAdded)
-                {
-                    TempData["Status"] = "success";
-                    TempData["Message"] = "Organisation added successfully.";
-                }
-                else
-                {
-                    TempData["Status"] = "error";
-                    TempData["Message"] = "Failed to add organisation.";
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["Status"] = "error";
-                TempData["Message"] = "An error occurred: " + ex.Message;
-            }
-
-            return RedirectToAction("OrganisationSetup");
-        }
-        public IActionResult DownloadExcelFile()
+        public IActionResult DownloadExcelFile()                             // Downloading excel tempelate file 
         {
             // Set EPPlus license context for .NET Core
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -134,6 +115,43 @@ namespace Echeckdem.Controllers
                     "Location Template.xlsx");
             }
         }
+
+        
+
+
+        // geting locations data for ADDLOCATIONS Button
+        [HttpGet]
+        public async Task<IActionResult> GetLocationDatabyOid(string oid)
+
+        {
+            var locations = await _organisationsetupservice.GetLocationDatabyOidAsync(oid);
+                if(locations == null || !locations.Any())
+            {
+                TempData["ErrorMessage"] = $"No locations found for OID: {oid}";
+                return RedirectToAction("OrganisationSetup");
+            }
+          
+            return View("EditLocations", locations);
+        }
+
+
+
+        // adding locations data for ADDLOCATIONS button
+        [HttpPost]
+        public async Task<IActionResult> UpdateLocations([FromForm] List<AddLocationViewModel> updatedlocationdata)
+        {
+            if (await _organisationsetupservice.AddLocationDataAsync(updatedlocationdata))
+            {
+                TempData["SuccessMessage"] = "Locations updated successfully.";
+                return RedirectToAction("GetLocationsByOid", new { oid = updatedlocationdata.FirstOrDefault()?.Oid });
+            }
+            TempData["ErrorMessage"] = "Failed to update locations.";
+            return View("EditLocations", updatedlocationdata);
+           
+
+        }
+
+
     }
 }
 
