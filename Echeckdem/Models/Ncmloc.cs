@@ -9,7 +9,7 @@ public partial class Ncmloc
     [Key]
     public string Lcode { get; set; } = null!;
 
-    public string Oid { get; set; } = null!;
+    public string Oid { get; set; } = null!;    
 
     public string? Lname { get; set; }
 

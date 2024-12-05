@@ -13,7 +13,7 @@ namespace Echeckdem.Services
             _EcheckContext = EcheckContext;
         }
 
-        public async Task<bool> AddOrganisationAsync(OrganisationGeneralInfoViewModel newOrganisation)
+        public async Task<bool> AddOrganisationAsync(OrganisationGeneralInfoViewModel newOrganisation)                        // Adding ORgansation Details
         {
             var organisation = new Ncmorg
             {
@@ -83,15 +83,51 @@ namespace Echeckdem.Services
             // Update the fields, allowing null values
             organisation.Oname = updatedInfo.Oname;
             organisation.Spoc = updatedInfo.Spoc;
-            organisation.Styear = updatedInfo.styear; // Nullable type for years (if applicable)
+            organisation.Styear = updatedInfo.styear; 
             organisation.Contname = updatedInfo.Contname;
-            organisation.Contemail = updatedInfo.Contemail;
+            organisation.Contemail = updatedInfo.Contemail;    
            
-            // Save changes to the database
+            // Save changes to the database  
             await _EcheckContext.SaveChangesAsync();
             return true;
         }
 
+        public async Task<List<AddLocationViewModel>> GetLocationDatabyOidAsync(string oid)                // getting location data on basis of oid for ADDLOCATIONS button
+        {
+            return await _EcheckContext.Ncmlocs
+                .Where(n => n.Oid == oid)
+                .Select(n => new AddLocationViewModel
+                {
+                   // Oid = oid,
+                    Lcode = n.Lcode,
+                    Lname = n.Lname,
+                    Lcity = n.Lcity,
+                    Lstate = n.Lstate,
+                    Lregion = n.Lregion,
+                    Iscentral = n.Iscentral,
+                    Iscloc = n.Iscloc,
+                    Lactive = n.Lactive
+                }).ToListAsync();
+        }
+
+        public async Task<bool> AddLocationDataAsync (List<AddLocationViewModel> addlocationdata)                      // adding additional information for ADDLOCATIONS button
+        {
+            foreach (var loc in addlocationdata)
+            {
+                var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n=>n.Lcode == loc.Lcode && n.Oid == loc.Oid);
+                if (locationInDb != null)
+                {
+                    locationInDb.Iscentral = loc.Iscentral;
+                    locationInDb.Iscloc = loc.Iscloc;
+                    locationInDb.Lactive = loc.Lactive;
+                }
+            }
+
+            await _EcheckContext.SaveChangesAsync();
+            return true;
+        }
+               
+         
 
 
 

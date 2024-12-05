@@ -220,7 +220,7 @@
     </button>
 
     <!-- Add button -->
-    <button class="table-add-btn">
+    <button class="table-add-btn" onclick="showAddOrganisationForm()">
         Add
     </button>
 
@@ -443,6 +443,12 @@
         document.getElementById("orgDetailsBody").style.display = "grid";
     }
 
-
+    function showAddOrganisationForm() {
+        document.getElementById("orgDetailsHeader").innerText = "Add Organisation";
+        $("#orgDetailsBody").load('/OrganisationSetup/AddOrganisation');
+        document.getElementById("editForm").style.display = "none";
+        document.getElementById("orgDetailsBody").style.display = "block";
+        document.getElementById("organisationTable").style.display = "none";
+    }
     
 </script>

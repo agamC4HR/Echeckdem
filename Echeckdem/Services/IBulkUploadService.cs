@@ -5,6 +5,6 @@ namespace Echeckdem.Services
 {
     public interface IBulkUploadService
     {
-        Task<int> UploadLocationDataAsync(IFormFile file);
+        Task<int> UploadLocationDataAsync(IFormFile file );
     }
 }
