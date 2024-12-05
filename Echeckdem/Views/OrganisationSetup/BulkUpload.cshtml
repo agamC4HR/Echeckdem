@@ -4,29 +4,31 @@
        font-size:10px;
     }
 </style>
-<form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="file">Upload Excel File:</label>
-        <input type="file" name="file" class="form-control" />
-    </div>
-    <button  type="submit" class="btn btn-primary">Upload</button>
-</form>
+@if (Context.Session.GetInt32("User Level") == 1)
+{
+    <form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Upload Excel File:</label>
+            <input type="file" name="file" class="form-control" />
+        </div>
+        <button  type="submit" class="btn btn-primary">Upload</button>
+    </form>
 
 
-<div id="messageContainer" class="alert mt-3" style="display:none; color:red;"></div>
-<div class="location-template-parent">
-    <p> *Please refer to this Excel template to upload data in Locations. </p>
-    <p> *Note: Code - max 15 characters, Name - max 100 characters, City/Region/State - max 30 characters </p>
+    <div id="messageContainer" class="alert mt-3" style="display:none; color:red;"></div>
+    <div class="location-template-parent">
+        <p> *Please refer to this Excel template to upload data in Locations. </p>
+        <p> *Note: Code - max 15 characters, Name - max 100 characters, City/Region/State - max 30 characters </p>
 
 
         <a href="@Url.Action("DownloadExcelFile", "OrganisationSetup")"
-       style="display: block; color: blue; background-color: lightgray; text-align:center; align-content:center;"
-       onmouseover="this.style.textDecoration='underline'"
-       onmouseout="this.style.textDecoration='none'">
-        Download Excel Template
-    </a>
-</div>
-
+        style="display: block; color: blue; background-color: lightgray; text-align:center; align-content:center;"
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'">
+            Download Excel Template
+        </a>
+    </div>
+}
 
 
 

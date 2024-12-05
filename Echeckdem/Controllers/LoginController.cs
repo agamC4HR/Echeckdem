@@ -35,7 +35,9 @@ namespace Echeckdem.Controllers
                     // Retrieve user level and UNO
                     var userLevel = await _loginService.GetUserLevelAsync(model.userID);
                     var uno = await _loginService.GetUserUnoAsync(model.userID);
-
+                    
+                    Console.WriteLine("UNO:", uno);
+                    Console.WriteLine("USERID:", model.userID);
                     // Generate JWT token
                     //var token = await _jwtService.GenerateJwtToken(model.userID);
 
@@ -48,9 +50,9 @@ namespace Echeckdem.Controllers
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
 
-                    Console.WriteLine("USERLEVEL:", userLevel);
-                    Console.WriteLine("UNO:", uno);
-                    Console.WriteLine("USERID:", model.userID);
+                    if (userLevel==2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
+
+                    ViewBag.UserLevel = userLevel;
 
                     return RedirectToAction("Index", "Home");
 

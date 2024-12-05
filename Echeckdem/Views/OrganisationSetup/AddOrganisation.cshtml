@@ -1,80 +1,99 @@
 ﻿@model Echeckdem.CustomFolder.OrganisationGeneralInfoViewModel
+@using Microsoft.AspNetCore.Http
 
-@{
-    ViewBag.Title = "Add Organisation";
-}
+<style>
+    .Add-OrganisationInfo-Form form {
+        display: grid;
+        grid-template-columns:repeat(4, 1fr); 
+        column-gap: 15px; 
+        row-gap: 15px; 
+        padding: 20px;
 
-<h2>Add Organisation</h2>
+    }
 
-@using (Html.BeginForm("AddOrganisation", "OrganisationSetup", FormMethod.Post))
+    .Add-OrganisationInfo-Form label {
+        grid-column: span 1; 
+        margin-right: 10px;
+        align-self: center;
+        font-size:12px;
+    }
+
+    .Add-OrganisationInfo-Form input {
+        grid-column: span 1; 
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    .Add-OrganisationInfo-Form button {
+        grid-column: span 1;
+        padding: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: white;
+        color: #dd3432;
+        border: 2px solid #dd3432;
+        cursor: pointer;
+        }
+
+            .Add-OrganisationInfo-Form button:hover {
+                background-color: #dd3432;
+                color: white;
+            }
+</style>
+
+@if (Context.Session.GetInt32("User Level") == 1)
+                        {
+    <div class="org-details-header">
+        <div class="child-org-details-header">
+            <h2 id="orgDetailsHeader">Add Organisation</h2>
+        </div>
+        <div class="Add-OrganisationInfo-Form">
+            @* <div id="messageContainer" class="alert mt-3" style="display:none; color:red;"></div> *@
+
+            <form asp-action="AddOrganisation" method="post" id="addOrganisationForm" enctype="multipart/form-data">
+                <label for="Oname">Organisation Name</label>
+                <input type="text" id="Oname" name="Oname" />
+
+                <label for="oid">Organisation ID</label>
+                <input type="text" id="oid" name="oid" />
+
+                <label for="Spoc">SPOC</label>
+                <input type="text" id="Spoc" name="Spoc" />
+
+                <label for="styear">Start Year</label>
+                <input type="text" id="styear" name="styear" />
+
+                <label for="Contname">Contact Name</label>
+                <input type="text" id="Contname" name="Contname" />
+
+                <label for="Contemail">Contact Email</label>
+                <input type="email" id="Contemail" name="Contemail" />
+
+                <button type="submit">Save</button>
+
+            </form>
+        </div>
+    </div>
+} 
+
+@section Scripts {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Display TempData message if it exists
+  @if (TempData["Status"] != null)
 {
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Organisation Details</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Oname, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Oname, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Oname, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.oid, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.oid, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.oid, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Spoc, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Spoc, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Spoc, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.styear, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.styear, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.styear, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Contname, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Contname, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Contname, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Contemail, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Contemail, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Contemail, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Add Organisation" class="btn btn-default" />
-            </div>
-        </div>
+    <div class="alert @(TempData["Status"]?.ToString() == "success" ? "alert-success" : "alert-danger")" role="alert">
+        @TempData["Message"] ?? "No message available."
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "OrganisationSetup") // Link to return to the organization setup page
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+            $("#addOrganisationForm").submit(function (e) {
+                // Check for required fields
+                if ($('#Oname').val() === "" || $('#oid').val() === "") {
+                    alert("These fields are required!");
+                    return false;
+                }
+            });
+    });
+    }

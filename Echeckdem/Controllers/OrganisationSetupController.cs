@@ -17,13 +17,13 @@ namespace Echeckdem.Controllers
             _bulkUploadService = bulkUploadService;
         }
 
-        
+
 
         [HttpGet]
         public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid)
         {
             var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid);
-            
+
             return View("OrganisationSetup", viewModel);
         }
 
@@ -47,7 +47,7 @@ namespace Echeckdem.Controllers
         public IActionResult Upload()
         {
             return PartialView("bulkupload");
-            
+
         }
 
         [HttpPost]
@@ -62,6 +62,49 @@ namespace Echeckdem.Controllers
             return Json(new { success = true, message = $"{recordCount} records uploaded successfully." });
         }
 
+
+        //Add Organisation------------------------
+
+        [HttpGet]
+        public IActionResult AddOrganisation()
+        {
+            return PartialView("AddOrganisation");
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> AddOrganisation(OrganisationGeneralInfoViewModel newOrganisation)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Status"] = "error";
+                TempData["Message"] = "Validation failed.";
+                return RedirectToAction("OrganisationSetup");
+            }
+
+            try
+            {
+                var isAdded = await _organisationsetupservice.AddOrganisationAsync(newOrganisation);
+
+                if (isAdded)
+                {
+                    TempData["Status"] = "success";
+                    TempData["Message"] = "Organisation added successfully.";
+                }
+                else
+                {
+                    TempData["Status"] = "error";
+                    TempData["Message"] = "Failed to add organisation.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Status"] = "error";
+                TempData["Message"] = "An error occurred: " + ex.Message;
+            }
+
+            return RedirectToAction("OrganisationSetup");
+        }
         public IActionResult DownloadExcelFile()
         {
             // Set EPPlus license context for .NET Core
@@ -91,30 +134,6 @@ namespace Echeckdem.Controllers
                     "Location Template.xlsx");
             }
         }
-
-
-        [HttpGet]
-        public IActionResult AddOrganisation()
-        {
-            return View("AddOrganisation");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddOrganisation(OrganisationGeneralInfoViewModel newOrganisation)
-        {
-            if (ModelState.IsValid)
-            {
-                var isAdded = await _organisationsetupservice.AddOrganisationAsync(newOrganisation);
-
-                if (isAdded)
-                {
-                    TempData["SuccessMessage"] = "Organisation added successfully.";
-                    return RedirectToAction("OrganisationSetup");
-                }
-            }
-            return View(newOrganisation);  // Ensure newOrganisation is passed back if validation fails
-        }
-
     }
 }
 
