@@ -126,10 +126,6 @@ namespace Echeckdem.Services
             await _EcheckContext.SaveChangesAsync();
             return true;
         }
-               
-         
-
-
-
+        
     }
 }
