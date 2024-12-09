@@ -119,7 +119,7 @@ namespace Echeckdem.Controllers
         
 
 
-        // geting locations data for ADDLOCATIONS Button
+        // geting locations data for LOCATIONDATA Button
         [HttpGet]
         public async Task<IActionResult> GetLocationDatabyOid(string oid)
 
