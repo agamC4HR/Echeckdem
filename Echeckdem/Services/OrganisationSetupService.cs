@@ -98,7 +98,7 @@ namespace Echeckdem.Services
             return true;
         }
 
-        public async Task<List<AddLocationViewModel>> GetLocationDatabyOidAsync(string oid)                // getting location data on basis of oid for ADDLOCATIONS button
+        public async Task<List<AddLocationViewModel>> GetLocationDatabyOidAsync(string oid)                // getting location data on basis of oid for LOCATIONSDATA button
         {
             return await _EcheckContext.Ncmlocs
                 .Where(n => n.Oid == oid)
@@ -110,9 +110,11 @@ namespace Echeckdem.Services
                     Lcity = n.Lcity,
                     Lstate = n.Lstate,
                     Lregion = n.Lregion,
-                    Iscentral = n.Iscentral,
+                    Iscentral = n.Iscentral,    
                     Iscloc = n.Iscloc,
-                    Lactive = n.Lactive
+                    Lactive = n.Lactive,
+                    Ltype = n.Ltype,
+                    Lsetup = n.Lsetup
                 }).ToListAsync();
         }
 
@@ -147,6 +149,8 @@ namespace Echeckdem.Services
                     locationInDb.Iscentral = loc.Iscentral;
                     locationInDb.Iscloc = loc.Iscloc;
                     locationInDb.Lactive = loc.Lactive;
+                    locationInDb.Ltype = loc.Ltype;
+                    locationInDb.Lsetup = loc.Lsetup;
                 }
             }
 

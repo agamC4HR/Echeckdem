@@ -55,7 +55,7 @@ public partial class Ncmloc
 
     public string? FinRespEmail { get; set; }
 
-    public string? Ltype { get; set; }
+    public string? Ltype { get; set; }  
 
     public int? Iscloc { get; set; }
 }

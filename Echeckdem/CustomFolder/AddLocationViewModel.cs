@@ -21,6 +21,10 @@
 
         public int? Iscloc { get; set; }
 
+        public string? Ltype { get; set; }
+
+        public int? Lsetup { get; set; }
+
         
     }
 }
