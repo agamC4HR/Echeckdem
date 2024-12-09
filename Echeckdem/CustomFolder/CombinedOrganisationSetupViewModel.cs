@@ -7,6 +7,8 @@ namespace Echeckdem.CustomFolder
     {
         public List<OrganisationsListViewModel> OrganisationsList { get; set; }
         public OrganisationGeneralInfoViewModel? SelectedOrganisation { get; set; }
+
+        public List<AddLocationViewModel> AddLocation { get; set; }
         //OrganisationsListViewModel
         public string oid { get; set; }
         public string Oname { get; set; }
@@ -18,5 +20,22 @@ namespace Echeckdem.CustomFolder
         public string? Contname { get; set; }
         public string? Contemail { get; set; }
         public string ImportData { get; set; }
+        //
+        public string? Lcode { get; set; }
+
+        public string? Oid { get; set; }
+
+        public string? Lname { get; set; }
+
+        public string? Lcity { get; set; }
+
+        public string? Lstate { get; set; }
+
+        public string? Lregion { get; set; }
+        public int? Lactive { get; set; }
+
+        public int? Iscentral { get; set; }
+
+        public int? Iscloc { get; set; }
     }
 }

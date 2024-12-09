@@ -22,7 +22,7 @@ namespace Echeckdem.Controllers
         [HttpGet]
         public IActionResult AddOrganisation()                    // Add Organisation details
         {
-            return View("AddOrganisation");
+            return PartialView("AddOrganisation");
         }
 
         [HttpPost]                                                // Add Organisation details 
@@ -38,7 +38,7 @@ namespace Echeckdem.Controllers
                     return RedirectToAction("OrganisationSetup");
                 }
             }
-            return View(newOrganisation);  // Ensure newOrganisation is passed back if validation fails
+            return RedirectToAction("OrganisationSetup");
         }
 
 
@@ -116,39 +116,69 @@ namespace Echeckdem.Controllers
             }
         }
 
-        
+
 
 
         // geting locations data for ADDLOCATIONS Button
+        //[HttpGet]
+        //public async Task<IActionResult> GetLocationDatabyOid(string oid)
+
+        //{
+        //    var locations = await _organisationsetupservice.GetLocationDatabyOidAsync(oid);
+        //        if(locations == null || !locations.Any())
+        //    {
+        //        TempData["ErrorMessage"] = $"No locations found for OID: {oid}";
+        //        return RedirectToAction("OrganisationSetup");
+        //    }
+
+        //    return View("EditLocations", locations);
+        //}
         [HttpGet]
         public async Task<IActionResult> GetLocationDatabyOid(string oid)
-
         {
             var locations = await _organisationsetupservice.GetLocationDatabyOidAsync(oid);
-                if(locations == null || !locations.Any())
+
+            if (locations == null || !locations.Any())
             {
                 TempData["ErrorMessage"] = $"No locations found for OID: {oid}";
                 return RedirectToAction("OrganisationSetup");
             }
-          
-            return View("EditLocations", locations);
-        }
 
+            // Create an instance of CombinedOrganisationSetupViewModel
+            var model = new CombinedOrganisationSetupViewModel
+            {
+                AddLocation = locations, // Assuming locations is of type List<AddLocationViewModel>
+                oid = oid // Set the OID if needed
+            };
+
+            return PartialView("EditLocations", model);
+        }
 
 
         // adding locations data for ADDLOCATIONS button
         [HttpPost]
         public async Task<IActionResult> UpdateLocations([FromForm] List<AddLocationViewModel> updatedlocationdata)
         {
-            if (await _organisationsetupservice.AddLocationDataAsync(updatedlocationdata))
+            if (updatedlocationdata == null || !updatedlocationdata.Any())
             {
-                TempData["SuccessMessage"] = "Locations updated successfully.";
-                return RedirectToAction("GetLocationsByOid", new { oid = updatedlocationdata.FirstOrDefault()?.Oid });
+                TempData["ErrorMessage"] = "No location data provided.";
+                return PartialView("EditLocations", updatedlocationdata);
             }
-            TempData["ErrorMessage"] = "Failed to update locations.";
-            return View("EditLocations", updatedlocationdata);
-           
 
+            try
+            {
+                if (await _organisationsetupservice.AddLocationDataAsync(updatedlocationdata))
+                {
+                    TempData["SuccessMessage"] = "Locations updated successfully.";
+                    return RedirectToAction("GetLocationsByOid", new { oid = updatedlocationdata.FirstOrDefault()?.Oid });
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred while updating locations: {ex.Message}";
+            }
+
+            return PartialView("EditLocations", updatedlocationdata);
         }
 
 

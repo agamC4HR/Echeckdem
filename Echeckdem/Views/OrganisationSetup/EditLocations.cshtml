@@ -1,0 +1,281 @@
+﻿@model Echeckdem.CustomFolder.CombinedOrganisationSetupViewModel
+
+<style>
+    .locationDataTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 16px;
+        color: #333;
+        background-color: #fff;
+    }
+
+        .locationDataTable thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .locationDataTable th,
+        .locationDataTable td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+            font-size: 12px;
+        }
+
+        .locationDataTable th {
+            font-weight: bold;
+            text-transform: uppercase;
+           
+            color: #495057;
+        }
+
+        .locationDataTable tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .locationDataTable tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        /* .locationDataTable i {
+            color: #007bff;
+            font-size: 16px;
+        }
+ */
+    /* Form Buttons */
+    .locationDataForm .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        text-transform: uppercase;
+    }
+
+        .locationDataForm .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+    .locationDataForm .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        text-transform: uppercase;
+    }
+
+        .locationDataForm .btn-secondary:hover {
+            background-color: #565e64;
+            border-color: #434a4f;
+        }
+
+    /* Success and Error Messages */
+    .locationDataSuccessMessage {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    .locationDataErrorMessage {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+</style>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="locationDataSuccessMessage">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="locationDataErrorMessage">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<table class="locationDataTable">
+    <thead>
+        <tr>
+            <th>Location Code</th>
+            <th>Location Name</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Region</th>
+            <th>Is Central</th>
+            <th>Is CLOC</th>
+            <th>Active</th>
+            <th>Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var location in Model.AddLocation)
+        {
+            <tr>
+                <td class="editable" data-field="Lcode">@location.Lcode</td>
+                <td class="editable" data-field="Lname">@location.Lname</td>
+                <td class="editable" data-field="Lcity">@location.Lcity</td>
+                <td class="editable" data-field="Lstate">@location.Lstate</td>
+                <td class="editable" data-field="Lregion">@location.Lregion</td>
+                <td class="editable" data-field="Iscentral">
+                    @(location.Iscentral == 1 ? "Yes" : "No")
+                </td>
+                <td class="editable" data-field="Iscloc">
+                    @(location.Iscloc == 1 ? "Yes" : "No")
+                </td>
+                <td class="editable" data-field="Lactive">
+                    @(location.Lactive == 1 ? "Yes" : "No")
+                </td>
+                <td>
+                    <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Edit Location Modal -->
+<div class="modal fade" id="editLocationModal" tabindex="-1" role="dialog" aria-labelledby="editLocationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="editLocationForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editLocationModalLabel">Edit Location</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Hidden Field for Location ID -->
+                    <input type="hidden" id="locationId" name="locationId" />
+
+                    <div class="form-group">
+                        <label for="Lcode">Location Code</label>
+                        <input type="text" class="form-control" id="Lcode" name="Lcode" placeholder="Enter location code" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Lname">Location Name</label>
+                        <input type="text" class="form-control" id="Lname" name="Lname" placeholder="Enter location name" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Lcity">City</label>
+                        <input type="text" class="form-control" id="Lcity" name="Lcity" placeholder="Enter city name" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Lstate">State</label>
+                        <input type="text" class="form-control" id="Lstate" name="Lstate" placeholder="Enter state name" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Lregion">Region</label>
+                        <input type="text" class="form-control" id="Lregion" name="Lregion" placeholder="Enter region name" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Iscentral">Is Central</label>
+                        <select class="form-control" id="Iscentral" name="Iscentral" required>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Iscloc">Is CLOC</label>
+                        <select class="form-control" id="Iscloc" name="Iscloc" required>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Lactive">Active</label>
+                        <select class="form-control" id="Lactive" name="Lactive" required>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Populate the modal with data
+        $('.edit-icon').on('click', function () {
+            var row = $(this).closest('tr');
+            var locationId = row.data('id'); // Assuming data-id attribute for location ID
+            var Lcode = row.find('td[data-field="Lcode"]').text();
+            var Lname = row.find('td[data-field="Lname"]').text();
+            var Lcity = row.find('td[data-field="Lcity"]').text();
+            var Lstate = row.find('td[data-field="Lstate"]').text();
+            var Lregion = row.find('td[data-field="Lregion"]').text();
+            var Iscentral = row.find('td[data-field="Iscentral"]').text() === "Yes" ? 1 : 0;
+            var Iscloc = row.find('td[data-field="Iscloc"]').text() === "Yes" ? 1 : 0;
+            var Lactive = row.find('td[data-field="Lactive"]').text().includes("Yes") ? 1 : 0;
+
+            // Populate modal fields
+            $('#locationId').val(locationId);
+            $('#Lcode').val(Lcode);
+            $('#Lname').val(Lname);
+            $('#Lcity').val(Lcity);
+            $('#Lstate').val(Lstate);
+            $('#Lregion').val(Lregion);
+            $('#Iscentral').val(Iscentral);
+            $('#Iscloc').val(Iscloc);
+            $('#Lactive').val(Lactive);
+
+            $('#editLocationModal').modal('show');
+        });
+
+        // Handle form submission
+        $('#editLocationForm').on('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var formData = $(this).serialize(); // Serialize form data
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'), // Use form's action attribute
+                data: formData,
+                success: function (response) {
+                    // Handle success
+                    $('#editLocationModal').modal('hide');
+                    alert('Location updated successfully!');
+                    location.reload(); // Optionally refresh the page or update table dynamically
+                },
+                error: function (xhr, status, error) {
+                    console.error('XHR:', xhr);
+                    console.error('Status:', status);
+                    console.error('Error:', error);
+                    alert('Error updating location: ' + xhr.responseText || error);
+                }
+            });
+        });
+    });
+</script>

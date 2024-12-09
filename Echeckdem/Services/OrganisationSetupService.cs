@@ -116,13 +116,34 @@ namespace Echeckdem.Services
                 }).ToListAsync();
         }
 
-        public async Task<bool> AddLocationDataAsync (List<AddLocationViewModel> addlocationdata)                      // adding additional information for ADDLOCATIONS button
+        //public async Task<bool> AddLocationDataAsync (List<AddLocationViewModel> addlocationdata)                      // adding additional information for ADDLOCATIONS button
+        //{
+        //    foreach (var loc in addlocationdata)
+        //    {
+        //        var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n=>n.Lcode == loc.Lcode && n.Oid == loc.Oid);
+        //        if (locationInDb != null)
+        //        {
+        //            locationInDb.Iscentral = loc.Iscentral;
+        //            locationInDb.Iscloc = loc.Iscloc;
+        //            locationInDb.Lactive = loc.Lactive;
+        //        }
+        //    }
+
+        //    await _EcheckContext.SaveChangesAsync();
+        //    return true;
+        //}
+        public async Task<bool> AddLocationDataAsync(List<AddLocationViewModel> addlocationdata)
         {
             foreach (var loc in addlocationdata)
             {
-                var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n=>n.Lcode == loc.Lcode && n.Oid == loc.Oid);
+                var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n => n.Lcode == loc.Lcode && n.Oid == loc.Oid);
                 if (locationInDb != null)
                 {
+                    // Update all fields
+                    locationInDb.Lname = loc.Lname;
+                    locationInDb.Lcity = loc.Lcity;
+                    locationInDb.Lstate = loc.Lstate;
+                    locationInDb.Lregion = loc.Lregion;
                     locationInDb.Iscentral = loc.Iscentral;
                     locationInDb.Iscloc = loc.Iscloc;
                     locationInDb.Lactive = loc.Lactive;
@@ -132,6 +153,5 @@ namespace Echeckdem.Services
             await _EcheckContext.SaveChangesAsync();
             return true;
         }
-        
     }
 }

@@ -289,16 +289,16 @@
 
                 <div class="org-details-upper-links">
                     <!-- Top links -->
-                    <a href="/OrganisationSetup/OrganisationSetup?selectedOid=@Model.SelectedOrganisation.oid" id="generalInfoLink" class="org-details-upper-links active">General Information</a>
-                    <a href="/OrganisationSetup/OrganisationSetup">Location Map</a>
+                    <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation.oid" id="generalInfoLink" class="org-details-upper-links active">General Information</a>
+                    <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation.oid">Location Map</a>
                     <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
-                    <a href="#">Location Data</a>
+                    <a href="javascript:void(0)" onclick="LocationDataForm()" id="locationDataInfo" class="org-details-upper-links">Location Data</a>
                 </div>
 
                 <div class="org-details-lower-links">
                     <!-- Bottom links -->
-                    <a href="#">Location Setup</a>
-                    <a href="#">Returns 1</a>
+                        <a asp-controller="OrganisationSetup" asp-action="GetLocationDatabyOid" asp-route-oid="ERM">Location Setup</a>
+                        <a href="javascript:void(0)" onclick="LocationDataForm()">Returns 1</a>
                     <a href="#">Contributions 1</a>
                     <a href="#">Returns 2</a>
                 </div>
@@ -351,6 +351,7 @@
 
 
 }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
 
@@ -361,6 +362,30 @@
         </text>
     }
 
+        document.querySelectorAll('.org-details-links-container a').forEach(link => {
+            link.addEventListener('click', function (e) {
+                // Remove active class from all links
+                document.querySelectorAll('.org-details-links-container a').forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // Add active class to the clicked link
+                e.target.classList.add('active');
+
+                // Show or hide the Edit button based on the active link
+                if (e.target.id === "generalInfoLink" && e.target.classList.contains('active')) {
+                    document.querySelector('.child-org-details-header button').style.display = 'block';  // Show the Edit button
+                    document.querySelector('.child-org-details-header button').onclick = 'showUploadForm()'
+                }
+              @*   else if (e.target.id === "locationDataInfo" && e.target.classList.contains('active')) {
+                    document.querySelector('.child-org-details-header button').style.display = 'block';  // Show the Edit button
+                    document.querySelector('.child-org-details-header button').onclick = 'showLocationForm()';
+                }  *@
+                else {
+                    document.querySelector('.child-org-details-header button').style.display = 'none';  // Hide the Edit button
+                }
+            });
+        });
 
     // Start of Working of Search Bar-------------------------
     function searchTable() {
@@ -407,24 +432,6 @@
                
         }
 
-    document.querySelectorAll('.org-details-links-container a').forEach(link => {
-        link.addEventListener('click', function (e) {
-            // Remove active class from all links
-            document.querySelectorAll('.org-details-links-container a').forEach(link => {
-                link.classList.remove('active');
-            });
-
-            // Add active class to the clicked link
-            e.target.classList.add('active');
-
-            // Show or hide the Edit button based on the active link
-            if (e.target.id === "generalInfoLink" && e.target.classList.contains('active')) {
-                document.querySelector('.child-org-details-header button').style.display = 'block';  // Show the Edit button
-            } else {
-                document.querySelector('.child-org-details-header button').style.display = 'none';  // Hide the Edit button
-            }
-        });
-    });
     //End of Working Of Add Location--------------------------------
 
     //Start of Edit Organisation------------------------------ 
@@ -444,7 +451,8 @@
         document.getElementById("orgDetailsBody").style.display = "grid";
     }
     //End of Edit Organisation-------------------------------------------
-
+    
+    //Start of Add Organisation------------------------------
     function showAddOrganisationForm() {
      
             fetch('/OrganisationSetup/AddOrganisation')
@@ -461,5 +469,42 @@
                     document.getElementById("orgDetailsContainer").innerHTML = "<p>Error loading the form. Please try again.</p>";
                 });
     }
+    //End of Add Organisation------------------------------
+
+    //Start of Location data Form------------------------------
+    function LocationDataForm() {
+        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        if (!oid) {
+            alert("Organisation ID is not available. Please select a valid organisation.");
+            return;
+        }
+
+        // Change the display style of orgDetailsBody to block
+        const orgDetailsBody = document.getElementById("orgDetailsBody");
+        orgDetailsBody.style.display = "block";
+        orgDetailsBody.style.padding = "10px";
+
+        document.getElementById("orgDetailsHeader").innerText = "Location Data";
+        $("#orgDetailsBody").load(`/OrganisationSetup/GetLocationDatabyOid?oid=${oid}`);
+
+    }
+    // End of Location data Form------------------------------
     
+    // Function to show the edit form for location data
+@*     function showLocationEditForm() {
+        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        if (!oid) {
+            alert("Organisation ID is not available. Please select a valid organisation.");
+            return;
+        }
+
+        // Hide the org-details-body
+        document.getElementById("orgDetailsBody").style.display = "none";
+
+        // Load the edit form for location data
+        const editForm = document.getElementById("editForm");
+        editForm.style.display = "block";
+        $("#editForm").load(`/OrganisationSetup/EditLocationData?oid=${oid}`);
+    }
+ *@
 </script>

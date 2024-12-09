@@ -81,12 +81,12 @@
 @section Scripts {
     document.addEventListener('DOMContentLoaded', function () {
         // Display TempData message if it exists
-  @if (TempData["Status"] != null)
-{
-    <div class="alert @(TempData["Status"]?.ToString() == "success" ? "alert-success" : "alert-danger")" role="alert">
-        @TempData["Message"] ?? "No message available."
-    </div>
-}
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <text>
+            alert('@TempData["SuccessMessage"]');
+        </text>
+    }
 
             $("#addOrganisationForm").submit(function (e) {
                 // Check for required fields
