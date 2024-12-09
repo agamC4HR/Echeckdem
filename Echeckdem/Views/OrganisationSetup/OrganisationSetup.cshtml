@@ -1,9 +1,12 @@
 ﻿@model Echeckdem.CustomFolder.CombinedOrganisationSetupViewModel
 
 @{
-    ViewData["Title"] = "Organisation List";
-    ViewData["Heading"] = "Organisation Management";
-    ViewData["Heading_child"] = "Organizational intelligence and response toolkit.";
+    @if (Context.Session.GetInt32("User Level") == 1)
+    {
+        ViewData["Title"] = "Organisation List";
+        ViewData["Heading"] = "Organisation Management";
+        ViewData["Heading_child"] = "Organizational intelligence and response toolkit.";
+    }
 }
 
 <style>
@@ -54,6 +57,7 @@
         }
 
     .org-details-container {
+       /*  display: none; */
         position: absolute;
         width: 66vw;
         margin: 20px auto;
@@ -64,7 +68,6 @@
         color: #333;
     }
 
-    /* Card styling */
     .org-details-header {
         background-color: #fff;
         border-radius: 8px;
@@ -208,6 +211,8 @@
 
  
 </style>
+@if (Context.Session.GetInt32("User Level") == 1)
+                        {
 
 <div class="table-heading-container">
 
@@ -215,22 +220,15 @@
     <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
 
     <!-- Download button -->
-    <button class="table-export-btn" onclick="downloadData()">
+  @*   <button class="table-export-btn" onclick="downloadData()">
         EXPORT
     </button>
-
+ *@
     <!-- Add button -->
     <button class="table-add-btn" onclick="showAddOrganisationForm()">
         Add
     </button>
 
-    <!-- Outer-Filter button -->
-    @*         <div class="table-filter-buttons">
-    <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
-    <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
-    <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
-    <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
-    </div> *@
 </div>
 
 <!-- Organization Count -->
@@ -241,7 +239,7 @@
 
 
 <!-- Table Section -->
-<div class="table-container">
+<div class="table-container" id="organisationTable">
     <table class="styled-table">
         <thead>
             <tr>
@@ -278,16 +276,15 @@
             </tbody>
         </table>
     </div>
-
-    <!-- Selected Organisation Details Section -->
-<div class="org-details-container">
-        @if (Model.SelectedOrganisation != null)
-        {
+<!-- Selected Organisation Details Section -->
+<div class="org-details-container" id="orgDetailsContainer">
+    @if (Model.SelectedOrganisation != null)
+    {
         <div class="org-details-header">
             <div class="child-org-details-header">
                 <h2 id="orgDetailsHeader">@Model.SelectedOrganisation.Oname</h2>
                 <button type="button" onclick="showEditForm()">Edit</button>
-                </div>
+            </div>
             <div class="org-details-links-container">
 
                 <div class="org-details-upper-links">
@@ -306,15 +303,15 @@
                     <a href="#">Returns 2</a>
                 </div>
 
-                </div>
-            <div id="orgDetailsBody" class="org-details-body"> 
-                    <p><strong>OID:</strong> @Model.SelectedOrganisation.oid</p>
-                    <p><strong>Name:</strong> @Model.SelectedOrganisation.Oname</p>
-                    <p><strong>SPOC:</strong> @Model.SelectedOrganisation.Spoc</p>
-                    <p><strong>Start Year:</strong> @Model.SelectedOrganisation.styear</p>
-                    <p><strong>Contact Name:</strong> @Model.SelectedOrganisation.Contname</p>
-                    <p><strong>Contact Email:</strong> @Model.SelectedOrganisation.Contemail</p>
-              </div>
+            </div>
+            <div id="orgDetailsBody" class="org-details-body">
+                <p><strong>OID:</strong> @Model.SelectedOrganisation.oid</p>
+                <p><strong>Name:</strong> @Model.SelectedOrganisation.Oname</p>
+                <p><strong>SPOC:</strong> @Model.SelectedOrganisation.Spoc</p>
+                <p><strong>Start Year:</strong> @Model.SelectedOrganisation.styear</p>
+                <p><strong>Contact Name:</strong> @Model.SelectedOrganisation.Contname</p>
+                <p><strong>Contact Email:</strong> @Model.SelectedOrganisation.Contemail</p>
+            </div>
 
             <!-- Form for editing organisation info -->
             <div id="editForm" style="display:none;">
@@ -336,23 +333,24 @@
 
                     <label>Contact Email</label>
                     <input type="email" name="Contemail" value="@Model.SelectedOrganisation.Contemail" />
-                   
+
                     <button type="submit">Save Changes</button>
                     <button type="button" onclick="cancelEdit()">Close</button>
-                    
+
                 </form>
             </div>
 
-            
-            </div>
-        }
-        else
-        {
-            <p>Select an organization to view details.</p>
-        }
-    </div>
+
+        </div>
+    }
+    else
+    {
+        <p>Select an organization to view details.</p>
+    }
+</div>
 
 
+}
 
 <script>
 
@@ -364,6 +362,7 @@
     }
 
 
+    // Start of Working of Search Bar-------------------------
     function searchTable() {
         const input = document.getElementById('searchBar');
         const filter = input.value.toLowerCase();  
@@ -399,8 +398,9 @@
         // Remove any previous highlights from the <a> tag
         anchor.innerHTML = anchor.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
     }
+    // End of Working of Search Bar------------------------
 
-
+    //Start of Working Of Add Location-------------------------
         function showUploadForm() {
             document.getElementById("orgDetailsHeader").innerText = "Locations";
             $("#orgDetailsBody").load('/OrganisationSetup/upload');
@@ -425,8 +425,9 @@
             }
         });
     });
+    //End of Working Of Add Location--------------------------------
 
-
+    //Start of Edit Organisation------------------------------ 
     function showEditForm() {
         // Hide the org-details-body
         document.getElementById("orgDetailsBody").style.display = "none";
@@ -442,13 +443,23 @@
         // Show the org-details-body again (General Information section)
         document.getElementById("orgDetailsBody").style.display = "grid";
     }
+    //End of Edit Organisation-------------------------------------------
 
     function showAddOrganisationForm() {
-        document.getElementById("orgDetailsHeader").innerText = "Add Organisation";
-        $("#orgDetailsBody").load('/OrganisationSetup/AddOrganisation');
-        document.getElementById("editForm").style.display = "none";
-        document.getElementById("orgDetailsBody").style.display = "block";
-        document.getElementById("organisationTable").style.display = "none";
+     
+            fetch('/OrganisationSetup/AddOrganisation')
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.text();
+                })
+                .then(html => {
+                    // Inject the form HTML into the orgDetailsBody
+                    document.getElementById("orgDetailsContainer").innerHTML = html;
+                })
+                .catch(error => {
+                    console.error("Error loading the form:", error);
+                    document.getElementById("orgDetailsContainer").innerHTML = "<p>Error loading the form. Please try again.</p>";
+                });
     }
     
 </script>

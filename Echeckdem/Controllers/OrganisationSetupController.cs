@@ -46,7 +46,7 @@ namespace Echeckdem.Controllers
         public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid)
         {
             var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid);
-            
+
             return View("OrganisationSetup", viewModel);
         }
 

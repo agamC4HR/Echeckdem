@@ -31,6 +31,12 @@ namespace Echeckdem.Services
             return true;
         }
 
+        //public async Task<bool> CheckDuplicateAsync(OrganisationGeneralInfoViewModel newOrganisation)
+        //{
+        //    // Check if an organization with the same OID or Organisation Name exists
+        //    return await _EcheckContext.Ncmorgs.AnyAsync(o =>
+        //        o.Oid == newOrganisation.oid || o.Oname == newOrganisation.Oname);
+        //}
 
         public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)                // service for getting organisation list and general info of that organisation
         {
