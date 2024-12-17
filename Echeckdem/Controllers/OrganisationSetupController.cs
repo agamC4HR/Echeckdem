@@ -133,19 +133,84 @@ namespace Echeckdem.Controllers
 
         //    return View("EditLocations", locations);
         //}
-        [HttpGet]
-        public async Task<IActionResult> GetLocationDatabyOid(string oid)
-        {
-            var locations = await _organisationsetupservice.GetLocationDatabyOidAsync(oid);
+        //[HttpGet]
+        //public async Task<IActionResult> GetLocationDatabyOid(string oid)
+        //{
+        //    var locations = await _organisationsetupservice.GetLocationDatabyOidAsync(oid);
 
-            if (locations == null || !locations.Any())
+        //    if (locations == null || !locations.Any())
+        //    {
+        //        TempData["ErrorMessage"] = $"No locations found for OID: {oid}";
+        //        return RedirectToAction("OrganisationSetup");
+        //    }
+
+        //    // Create an instance of CombinedOrganisationSetupViewModel
+        //    var model = new CombinedOrganisationSetupViewModel
+        //    {
+        //        AddLocation = locations, // Assuming locations is of type List<AddLocationViewModel>
+        //        oid = oid // Set the OID if needed
+        //    };
+
+        //    return PartialView("EditLocations", model);
+        //}
+
+        //[HttpPut]
+
+        //public async Task<IActionResult> UpdateLocations([FromForm] List<AddLocationViewModel> updatedlocationdata)
+        //{
+        //    if (updatedlocationdata == null || !updatedlocationdata.Any())
+        //    {
+        //        TempData["ErrorMessage"] = "No location data provided.";
+        //        return PartialView("EditLocations", updatedlocationdata);
+        //    }
+
+        //    try
+        //    {
+        //        // Update locations data in the database
+        //        bool result = await _organisationsetupservice.AddLocationDataAsync(updatedlocationdata);
+
+        //        if (result)
+        //        {
+        //            TempData["SuccessMessage"] = "Locations updated successfully.";
+        //            // Redirect to the GetLocationDatabyOid action after update
+        //            return RedirectToAction("GetLocationDatabyOid", new { oid = updatedlocationdata.FirstOrDefault()?.Oid });
+        //        }
+        //        else
+        //        {
+        //            TempData["ErrorMessage"] = "Failed to update locations.";
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["ErrorMessage"] = $"An error occurred while updating locations: {ex.Message}";
+        //        Console.WriteLine($"Update error: {ex}");
+        //        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+        //    }
+
+        //    return PartialView("EditLocations", updatedlocationdata);
+        //}
+        [HttpGet]
+        public IActionResult GetLocationDatabyOid(string oid)
+        {
+            var locations = _organisationsetupservice.GetLocationDatabyOidAsync(oid).Result;
+
+            if (string.IsNullOrEmpty(oid))
             {
-                TempData["ErrorMessage"] = $"No locations found for OID: {oid}";
+                TempData["ErrorMessage"] = "Invalid OID.";
                 return RedirectToAction("OrganisationSetup");
             }
 
+            //var locations = await _organisationsetupservice.GetLocationDatabyOidAsync(oid);
+            
+            //if (locations == null || !locations.Any())
+            //if (!locations.Any())
+            //{
+            //    TempData["ErrorMessage"] = $"No locations found for OID: {oid}";
+            //    return RedirectToAction("OrganisationSetup");
+            //}
+
             // Create an instance of CombinedOrganisationSetupViewModel
-            var model = new CombinedOrganisationSetupViewModel
+            var model =  new CombinedOrganisationSetupViewModel
             {
                 AddLocation = locations, // Assuming locations is of type List<AddLocationViewModel>
                 oid = oid // Set the OID if needed
@@ -155,31 +220,63 @@ namespace Echeckdem.Controllers
         }
 
 
-        // adding locations data for ADDLOCATIONS button
+
         [HttpPost]
-        public async Task<IActionResult> UpdateLocations([FromForm] List<AddLocationViewModel> updatedlocationdata)
+        public async Task<IActionResult> UpdateLocations(CombinedOrganisationSetupViewModel updatedLocationData)
         {
-            if (updatedlocationdata == null || !updatedlocationdata.Any())
+            //if (updatedLocationData == null || updatedLocationData.AddLocation == null || !updatedLocationData.AddLocation.Any())
+            //{
+            //    TempData["ErrorMessage"] = "No location data provided.";
+            //    return PartialView("EditLocations", updatedLocationData);
+            //}
+
+            if (updatedLocationData.Lcode == null)
             {
-                TempData["ErrorMessage"] = "No location data provided.";
-                return PartialView("EditLocations", updatedlocationdata);
+                TempData["ErrorMessage"] = "No data received.";
+                return PartialView("EditLocations", new CombinedOrganisationSetupViewModel());
+                
             }
+
+            //if (string.IsNullOrEmpty(updatedLocationData.Oid))
+            //{
+            //    TempData["ErrorMessage"] = "Oid is missing.";
+            //    return PartialView("EditLocations", updatedLocationData);
+            //}
 
             try
             {
-                if (await _organisationsetupservice.AddLocationDataAsync(updatedlocationdata))
+                // Update locations data in the database
+                bool result = await _organisationsetupservice.AddLocationDataAsync(updatedLocationData);
+
+                if (result)
                 {
                     TempData["SuccessMessage"] = "Locations updated successfully.";
-                    return RedirectToAction("GetLocationsByOid", new { oid = updatedlocationdata.FirstOrDefault()?.Oid });
+                    // Redirect to the GetLocationDatabyOid action after update
+                    return RedirectToAction("GetLocationDatabyOid", new { oid = updatedLocationData.oid });
+                
+                }
+                
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to update locations.";
                 }
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"An error occurred while updating locations: {ex.Message}";
+                Console.WriteLine($"Update error: {ex}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+               
             }
 
-            return PartialView("EditLocations", updatedlocationdata);
+            // If something fails, return the same model to the view
+            return PartialView("EditLocations", updatedLocationData);
         }
+
+
+
+       
+
 
 
     }

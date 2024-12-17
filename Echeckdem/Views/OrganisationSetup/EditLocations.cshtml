@@ -135,16 +135,16 @@
                 <td class="editable" data-field="Lstate">@location.Lstate</td>
                 <td class="editable" data-field="Lregion">@location.Lregion</td>
                 <td class="editable" data-field="Iscentral">
-                    @(location.Iscentral == 1 ? "Yes" : "No")
-                </td>
+                    @(location.Iscentral.HasValue ? (location.Iscentral == 1 ? "Yes" : "No") : "N/A")
                 <td class="editable" data-field="Iscloc">
-                    @(location.Iscloc == 1 ? "Yes" : "No")
+                    @(location.Iscloc.HasValue ? (location.Iscloc == 1 ? "Yes" : "No") : "N/A")
                 </td>
                 <td class="editable" data-field="Lactive">
-                    @(location.Lactive == 1 ? "Yes" : "No")
+                    @(location.Lactive.HasValue ? (location.Lactive == 1 ? "Yes" : "No") : "N/A")
                 </td>
                 <td>
                     <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                    @* <i class="fas fa-pen edit-icon" onclick="enableEdit(this)" title="Edit this field"></i> *@
                 </td>
             </tr>
         }
@@ -155,89 +155,123 @@
 <div class="modal fade" id="editLocationModal" tabindex="-1" role="dialog" aria-labelledby="editLocationModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+           @*  <form id="editLocationForm" method="put"> *@
             <form id="editLocationForm" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editLocationModalLabel">Edit Location</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <input type="hidden" asp-for="Oid" />
+            @* @Html.BeginForm("UpdateLocations", "OrganisationSetup", HttpMethod.Post, new { id = "editLocationForm" }) *@
+                
+            <div class="modal-header">
+                <h5 class="modal-title" id="editLocationModalLabel">Edit Location</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Hidden Field for Location ID -->
+                <input type="hidden" id="locationId" name="locationId" />
+
+                <div class="form-group">
+                    <label for="Lcode">Location Code</label>
+                    <input type="text" class="form-control" id="Lcode" name="Lcode" placeholder="Enter location code" required />
                 </div>
-                <div class="modal-body">
-                    <!-- Hidden Field for Location ID -->
-                    <input type="hidden" id="locationId" name="locationId" />
 
-                    <div class="form-group">
-                        <label for="Lcode">Location Code</label>
-                        <input type="text" class="form-control" id="Lcode" name="Lcode" placeholder="Enter location code" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Lname">Location Name</label>
-                        <input type="text" class="form-control" id="Lname" name="Lname" placeholder="Enter location name" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Lcity">City</label>
-                        <input type="text" class="form-control" id="Lcity" name="Lcity" placeholder="Enter city name" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Lstate">State</label>
-                        <input type="text" class="form-control" id="Lstate" name="Lstate" placeholder="Enter state name" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Lregion">Region</label>
-                        <input type="text" class="form-control" id="Lregion" name="Lregion" placeholder="Enter region name" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Iscentral">Is Central</label>
-                        <select class="form-control" id="Iscentral" name="Iscentral" required>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Iscloc">Is CLOC</label>
-                        <select class="form-control" id="Iscloc" name="Iscloc" required>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="Lactive">Active</label>
-                        <select class="form-control" id="Lactive" name="Lactive" required>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="Lname">Location Name</label>
+                    <input type="text" class="form-control" id="Lname" name="Lname" placeholder="Enter location name" required />
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+
+                <div class="form-group">
+                    <label for="Lcity">City</label>
+                    <input type="text" class="form-control" id="Lcity" name="Lcity" placeholder="Enter city name" required />
                 </div>
+
+                <div class="form-group">
+                    <label for="Lstate">State</label>
+                    <input type="text" class="form-control" id="Lstate" name="Lstate" placeholder="Enter state name" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="Lregion">Region</label>
+                    <input type="text" class="form-control" id="Lregion" name="Lregion" placeholder="Enter region name" required />
+                </div>
+
+                @*  <div class="form-group">
+                <label for="Iscentral">Is Central</label>
+                <select class="form-control" id="Iscentral" name="Iscentral" required>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+                </select>
+                </div> *@
+                <div class="form-group">
+                    <label for="Iscentral">Is Central</label>
+                    <select class="form-control" id="Iscentral" name="Iscentral">
+                        <option value="" selected>-- Select --</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="Iscloc">Is CLOC</label>
+                    <select class="form-control" id="Iscloc" name="Iscloc">
+                        <option value="" selected>-- Select --</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Lactive">Active</label>
+                    <select class="form-control" id="Lactive" name="Lactive">
+                        <option value="" selected>-- Select --</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+                @*                     <div class="form-group">
+                <label for="Iscloc">Is CLOC</label>
+                <select class="form-control" id="Iscloc" name="Iscloc" required>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+                </select>
+                </div>
+
+                <div class="form-group">
+                <label for="Lactive">Active</label>
+                <select class="form-control" id="Lactive" name="Lactive" required>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+                </select>
+                </div> *@
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
             </form>
+                
+
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function () {
         // Populate the modal with data
         $('.edit-icon').on('click', function () {
             var row = $(this).closest('tr');
+
             var locationId = row.data('id'); // Assuming data-id attribute for location ID
             var Lcode = row.find('td[data-field="Lcode"]').text();
             var Lname = row.find('td[data-field="Lname"]').text();
             var Lcity = row.find('td[data-field="Lcity"]').text();
             var Lstate = row.find('td[data-field="Lstate"]').text();
             var Lregion = row.find('td[data-field="Lregion"]').text();
-            var Iscentral = row.find('td[data-field="Iscentral"]').text() === "Yes" ? 1 : 0;
+            var Iscentral = (row.find('td[data-field="Iscentral"]').text() === "Yes") ? 1 : (row.find('td[data-field="Iscentral"]').text() === "" || row.find('td[data-field="Iscentral"]').text() === null) ? "No" : 0;
+
             var Iscloc = row.find('td[data-field="Iscloc"]').text() === "Yes" ? 1 : 0;
             var Lactive = row.find('td[data-field="Lactive"]').text().includes("Yes") ? 1 : 0;
+
 
             // Populate modal fields
             $('#locationId').val(locationId);
@@ -255,18 +289,23 @@
 
         // Handle form submission
         $('#editLocationForm').on('submit', function (e) {
-            e.preventDefault(); // Prevent default form submission
-
-            var formData = $(this).serialize(); // Serialize form data
-
+            e.preventDefault(); @* // Prevent default form submission *@
+                
+                        var formData = new FormData(this); @* //new formData(); Serialize form data*@
+                alert("hELLO");
+    @* formData.append("updatedLocationData", $(this).get(0)); *@
+            
             $.ajax({
-                type: 'POST',
-                url: $(this).attr('action'), // Use form's action attribute
+                type: "POST",
+                url: '@Url.Action("UpdateLocations", "OrganisationSetup")', // Use form's action attribute 
                 data: formData,
+                contentType: false,
+                processData: false,
                 success: function (response) {
                     // Handle success
-                    $('#editLocationModal').modal('hide');
+                    
                     alert('Location updated successfully!');
+                    $('#editLocationModal').modal('hide');
                     location.reload(); // Optionally refresh the page or update table dynamically
                 },
                 error: function (xhr, status, error) {

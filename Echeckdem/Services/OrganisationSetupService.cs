@@ -1,4 +1,5 @@
-﻿using Echeckdem.CustomFolder;
+﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Echeckdem.CustomFolder;
 using Echeckdem.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -98,64 +99,76 @@ namespace Echeckdem.Services
             return true;
         }
 
-        public async Task<List<AddLocationViewModel>> GetLocationDatabyOidAsync(string oid)                // getting location data on basis of oid for LOCATIONSDATA button
+        public Task<List<AddLocationViewModel>> GetLocationDatabyOidAsync(string oid)                // getting location data on basis of oid for LOCATIONSDATA button
+
         {
-            return await _EcheckContext.Ncmlocs
+            Console.WriteLine($"Fetching locations for OID: {oid}");
+
+            return  _EcheckContext.Ncmlocs
                 .Where(n => n.Oid == oid)
                 .Select(n => new AddLocationViewModel
                 {
-                   // Oid = oid,
-                    Lcode = n.Lcode,
+                    // Oid = oid,
+                    Lcode = n.Lcode,            
                     Lname = n.Lname,
                     Lcity = n.Lcity,
                     Lstate = n.Lstate,
                     Lregion = n.Lregion,
-                    Iscentral = n.Iscentral,    
+                    Iscentral = n.Iscentral,
                     Iscloc = n.Iscloc,
-                    Lactive = n.Lactive,
-                    Ltype = n.Ltype,
-                    Lsetup = n.Lsetup
+                    Lactive = n.Lactive
+                    //Ltype = n.Ltype,
+                    //Lsetup = n.Lsetup
                 }).ToListAsync();
+           
+
+
+            //public async Task<bool> AddLocationDataAsync (List<AddLocationViewModel> addlocationdata)                      // adding additional information for ADDLOCATIONS button
+            //{
+            //    foreach (var loc in addlocationdata)
+            //    {
+            //        var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n=>n.Lcode == loc.Lcode && n.Oid == loc.Oid);
+            //        if (locationInDb != null)
+            //        {
+            //            locationInDb.Iscentral = loc.Iscentral;
+            //            locationInDb.Iscloc = loc.Iscloc;
+            //            locationInDb.Lactive = loc.Lactive;
+            //        }
+            //    }
+
+            //    await _EcheckContext.SaveChangesAsync();
+            //    return true;
+            //}
         }
-
-        //public async Task<bool> AddLocationDataAsync (List<AddLocationViewModel> addlocationdata)                      // adding additional information for ADDLOCATIONS button
-        //{
-        //    foreach (var loc in addlocationdata)
-        //    {
-        //        var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n=>n.Lcode == loc.Lcode && n.Oid == loc.Oid);
-        //        if (locationInDb != null)
-        //        {
-        //            locationInDb.Iscentral = loc.Iscentral;
-        //            locationInDb.Iscloc = loc.Iscloc;
-        //            locationInDb.Lactive = loc.Lactive;
-        //        }
-        //    }
-
-        //    await _EcheckContext.SaveChangesAsync();
-        //    return true;
-        //}
-        public async Task<bool> AddLocationDataAsync(List<AddLocationViewModel> addlocationdata)
+        public async Task<bool> AddLocationDataAsync(CombinedOrganisationSetupViewModel addlocationdata)
+        //public async Task UpdateLocationAsync(AddLocationViewModel addlocationdata)
         {
-            foreach (var loc in addlocationdata)
-            {
-                var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n => n.Lcode == loc.Lcode && n.Oid == loc.Oid);
-                if (locationInDb != null)
+            //if (addlocationdata == null) // || !addlocationdata.Any())
+            //    return false;
+            //foreach() //(var loc in addlocationdata)
+
+            var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n => n.Lcode == addlocationdata.Lcode && n.Oid == addlocationdata.Oid);
+
+            if (locationInDb != null)
                 {
                     // Update all fields
-                    locationInDb.Lname = loc.Lname;
-                    locationInDb.Lcity = loc.Lcity;
-                    locationInDb.Lstate = loc.Lstate;
-                    locationInDb.Lregion = loc.Lregion;
-                    locationInDb.Iscentral = loc.Iscentral;
-                    locationInDb.Iscloc = loc.Iscloc;
-                    locationInDb.Lactive = loc.Lactive;
-                    locationInDb.Ltype = loc.Ltype;
-                    locationInDb.Lsetup = loc.Lsetup;
-                }
+
+                    locationInDb.Lname = addlocationdata.Lname ?? locationInDb.Lname;
+                    locationInDb.Lcity = addlocationdata.Lcity ?? locationInDb.Lcity;
+                    locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;
+                    locationInDb.Lregion = addlocationdata.Lregion ?? locationInDb.Lregion;
+                    locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
+                    locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
+                    locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
+              
+                await _EcheckContext.SaveChangesAsync();
+                return true;
             }
 
-            await _EcheckContext.SaveChangesAsync();
-            return true;
+            return false;
+
+            
+            
         }
     }
 }
