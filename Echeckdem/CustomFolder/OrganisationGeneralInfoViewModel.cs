@@ -9,5 +9,7 @@
         public int? styear { get; set; }
         public string? Contname { get; set; }
         public string? Contemail { get; set; }
+
+        public int? Oactive { get; set; }
     }
 }

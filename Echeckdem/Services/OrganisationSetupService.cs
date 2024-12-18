@@ -24,7 +24,7 @@ namespace Echeckdem.Services
                 Styear = newOrganisation.styear,
                 Contname = newOrganisation.Contname,
                 Contemail = newOrganisation.Contemail,
-                Oactive = 1 // Assuming all new organizations are active by default
+                Oactive = newOrganisation.Oactive ?? 1 // Assuming all new organizations are active by default
             };
 
             _EcheckContext.Ncmorgs.Add(organisation);
@@ -116,59 +116,38 @@ namespace Echeckdem.Services
                     Lregion = n.Lregion,
                     Iscentral = n.Iscentral,
                     Iscloc = n.Iscloc,
-                    Lactive = n.Lactive
-                    //Ltype = n.Ltype,
-                    //Lsetup = n.Lsetup
+                    Lactive = n.Lactive,
+                    Ltype = n.Ltype,
+                    Lsetup = n.Lsetup
                 }).ToListAsync();
            
 
 
-            //public async Task<bool> AddLocationDataAsync (List<AddLocationViewModel> addlocationdata)                      // adding additional information for ADDLOCATIONS button
-            //{
-            //    foreach (var loc in addlocationdata)
-            //    {
-            //        var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n=>n.Lcode == loc.Lcode && n.Oid == loc.Oid);
-            //        if (locationInDb != null)
-            //        {
-            //            locationInDb.Iscentral = loc.Iscentral;
-            //            locationInDb.Iscloc = loc.Iscloc;
-            //            locationInDb.Lactive = loc.Lactive;
-            //        }
-            //    }
-
-            //    await _EcheckContext.SaveChangesAsync();
-            //    return true;
-            //}
+          
         }
         public async Task<bool> AddLocationDataAsync(CombinedOrganisationSetupViewModel addlocationdata)
-        //public async Task UpdateLocationAsync(AddLocationViewModel addlocationdata)
         {
-            //if (addlocationdata == null) // || !addlocationdata.Any())
-            //    return false;
-            //foreach() //(var loc in addlocationdata)
 
             var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n => n.Lcode == addlocationdata.Lcode && n.Oid == addlocationdata.Oid);
 
             if (locationInDb != null)
-                {
-                    // Update all fields
+            {
+                // Update all fields
 
-                    locationInDb.Lname = addlocationdata.Lname ?? locationInDb.Lname;
-                    locationInDb.Lcity = addlocationdata.Lcity ?? locationInDb.Lcity;
-                    locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;
-                    locationInDb.Lregion = addlocationdata.Lregion ?? locationInDb.Lregion;
-                    locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
-                    locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
-                    locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
-              
+                locationInDb.Lname = addlocationdata.Lname ?? locationInDb.Lname;
+                locationInDb.Lcity = addlocationdata.Lcity ?? locationInDb.Lcity;
+                locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;
+                locationInDb.Lregion = addlocationdata.Lregion ?? locationInDb.Lregion;
+                locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
+                locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
+                locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
+                locationInDb.Ltype = addlocationdata.Ltype;
+                locationInDb.Lsetup = addlocationdata.Lsetup;
+
                 await _EcheckContext.SaveChangesAsync();
                 return true;
             }
-
             return false;
-
-            
-            
         }
     }
 }
