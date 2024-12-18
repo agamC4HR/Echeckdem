@@ -108,7 +108,7 @@ namespace Echeckdem.Services
                 .Where(n => n.Oid == oid)
                 .Select(n => new AddLocationViewModel
                 {
-                    // Oid = oid,
+                    Oid = oid,
                     Lcode = n.Lcode,            
                     Lname = n.Lname,
                     Lcity = n.Lcity,
