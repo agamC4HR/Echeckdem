@@ -25,7 +25,7 @@ namespace Echeckdem.Services
                 Styear = newOrganisation.styear,
                 Contname = newOrganisation.Contname,
                 Contemail = newOrganisation.Contemail,
-                Oactive = newOrganisation.Oactive ?? 1 // Assuming all new organizations are active by default
+                Oactive = 1 //newOrganisation.Oactive ?? 1 // Assuming all new organizations are active by default
             };
 
             _EcheckContext.Ncmorgs.Add(organisation);
@@ -60,7 +60,7 @@ namespace Echeckdem.Services
                         styear = o.Styear,
                         Contname = o.Contname,
                         Contemail = o.Contemail,
-                     //   Oactive = o.Oactive
+                        Oactive = o.Oactive,
                     })
                     .FirstOrDefaultAsync();
             }
@@ -88,8 +88,8 @@ namespace Echeckdem.Services
             organisation.Styear = updatedInfo.styear; 
             organisation.Contname = updatedInfo.Contname;
             organisation.Contemail = updatedInfo.Contemail;
-           // organisation.Oactive = updatedInfo.Oactive;
-
+            organisation.Oactive = updatedInfo.Oactive;
+           
             // Save changes to the database  
             await _EcheckContext.SaveChangesAsync();
             return true;
@@ -116,12 +116,8 @@ namespace Echeckdem.Services
                     Ltype = n.Ltype,
                     Lsetup = n.Lsetup
                 }).ToListAsync();
-           
-
-
-          
         }
-        public async Task<bool> AddLocationDataAsync(CombinedOrganisationSetupViewModel addlocationdata)
+        public async Task<bool> AddLocationDataAsync(CombinedOrganisationSetupViewModel addlocationdata)              // Editing the details for LOCatiion DATA button
         {
 
             var locationInDb = await _EcheckContext.Ncmlocs.FirstOrDefaultAsync(n => n.Lcode == addlocationdata.Lcode && n.Oid == addlocationdata.Oid);
@@ -137,7 +133,8 @@ namespace Echeckdem.Services
                 locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
                 locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
                 locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
-                locationInDb.Ltype = addlocationdata.Ltype;
+                //locationInDb.Ltype = addlocationdata.Ltype;
+                locationInDb.Ltype = string.IsNullOrEmpty(addlocationdata.Ltype) ? null : addlocationdata.Ltype;
                 locationInDb.Lsetup = addlocationdata.Lsetup;
 
                 await _EcheckContext.SaveChangesAsync();

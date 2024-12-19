@@ -104,8 +104,8 @@
             <th>City</th>
             <th>State</th>
             <th>Region</th>
-            <th>Is Central</th>
-            <th>Is CLOC</th>
+            <th>Central Govt</th>
+            <th>CLRA</th>
             <th>Active</th>
             <th>Site Under</th>
             <th>Edit</th>
@@ -130,7 +130,8 @@
                     @(location.Lactive.HasValue ? (location.Lactive == 1 ? "Yes" : "No") : "N/A")
                 </td>
                 <td data-field="Ltype">
-                        @location.Ltype
+                        @* @location.Ltype *@
+                        @location.LtypeDescription
                 </td>
                 <td>
                     <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
@@ -200,8 +201,7 @@
                         <option value="1">Yes</option>
                         <option value="0">No</option>
                     </select>
-                
-            
+           
       
                 <button type="submit" class="btn ">Save Changes</button>
                 <button type="button" class="close-btn">Cancel</button>

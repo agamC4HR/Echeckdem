@@ -42,6 +42,20 @@ namespace Echeckdem.CustomFolder
 
         public int? Lsetup { get; set; }
 
+        public string LtypeDescription
+        {
+            get
+            {
+                var trimmedLtype = Ltype?.Trim().ToUpper();
+                return trimmedLtype switch
+                {
+                    "S" => "SE",
+                    "F" => "Fact",
+                    null => "BOCW",
+                    _ => "Unknown"
+                };
+            }
+        }
 
     }
 }
