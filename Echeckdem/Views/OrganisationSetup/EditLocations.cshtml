@@ -107,6 +107,7 @@
             <th>Is Central</th>
             <th>Is CLOC</th>
             <th>Active</th>
+            <th>Site Under</th>
             <th>Edit</th>
         </tr>
     </thead>
@@ -127,6 +128,9 @@
                 </td>
                 <td data-field="Lactive">
                     @(location.Lactive.HasValue ? (location.Lactive == 1 ? "Yes" : "No") : "N/A")
+                </td>
+                <td data-field="Ltype">
+                        @location.Ltype
                 </td>
                 <td>
                     <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
