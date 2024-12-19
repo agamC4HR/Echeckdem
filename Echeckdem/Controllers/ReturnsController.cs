@@ -45,7 +45,7 @@ namespace Echeckdem.Controllers
 
             return View("~/Views/DetailedView/Returns.cshtml", ReturnData);
                     
-        }
+        } // selectioncommittee
         [HttpGet]
         public async Task<IActionResult> GetLocations(string organizationName)
         {

@@ -118,7 +118,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetLocationDatabyOid(string oid)
+        public IActionResult GetLocationDatabyOid(string oid)                                 // Viewing the Location DATA tab
         {
             var locations = _organisationsetupservice.GetLocationDatabyOidAsync(oid).Result;
 
@@ -140,7 +140,8 @@ namespace Echeckdem.Controllers
 
 
 
-        [HttpPost]
+        [HttpPost]                                                                                                          // EDting the location tab button to make any change. 
+
         public async Task<IActionResult> UpdateLocations(CombinedOrganisationSetupViewModel updatedLocationData)
         {
             if (updatedLocationData.Lcode == null)
