@@ -311,7 +311,17 @@
                 <p><strong>Start Year:</strong> @Model.SelectedOrganisation.styear</p>
                 <p><strong>Contact Name:</strong> @Model.SelectedOrganisation.Contname</p>
                 <p><strong>Contact Email:</strong> @Model.SelectedOrganisation.Contemail</p>
-                <p><strong>Active:</strong> @Model.SelectedOrganisation.Oactive</p>
+                <p><strong>Active:</strong>
+                        @if (Model.SelectedOrganisation.Oactive == 1)
+                        {
+                            <span>Yes</span>
+                        }
+                        else
+                        {
+                            <span>No</span>
+                        }
+                       
+                </p>
                     
             </div>
 
@@ -336,8 +346,11 @@
                     <label>Contact Email</label>
                     <input type="email" name="Contemail" value="@Model.SelectedOrganisation.Contemail" />
 
-                        <label>Active</label>
-                        <input type="checkbox" name="Oactive" value="@Model.SelectedOrganisation.Oactive" />
+                    <label for="Oactive">Active</label>
+                    <select id="Oactive" name="Oactive">
+                            <option value="@Model.SelectedOrganisation.Oactive == 1">Yes</option>
+                            <option value="@Model.SelectedOrganisation.Oactive == 0">No</option>
+                        </select>
 
                     <button type="submit">Save Changes</button>
                     <button type="button" onclick="cancelEdit()">Close</button>

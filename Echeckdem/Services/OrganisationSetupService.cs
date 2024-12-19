@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Echeckdem.CustomFolder;
 using Echeckdem.Models;
 using Microsoft.EntityFrameworkCore;
@@ -58,7 +59,8 @@ namespace Echeckdem.Services
                         Spoc = o.Spoc,
                         styear = o.Styear,
                         Contname = o.Contname,
-                        Contemail = o.Contemail
+                        Contemail = o.Contemail,
+                     //   Oactive = o.Oactive
                     })
                     .FirstOrDefaultAsync();
             }
@@ -85,8 +87,9 @@ namespace Echeckdem.Services
             organisation.Spoc = updatedInfo.Spoc;
             organisation.Styear = updatedInfo.styear; 
             organisation.Contname = updatedInfo.Contname;
-            organisation.Contemail = updatedInfo.Contemail;    
-           
+            organisation.Contemail = updatedInfo.Contemail;
+           // organisation.Oactive = updatedInfo.Oactive;
+
             // Save changes to the database  
             await _EcheckContext.SaveChangesAsync();
             return true;
