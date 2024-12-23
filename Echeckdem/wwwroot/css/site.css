@@ -15,7 +15,7 @@ body {
     background-attachment: fixed;
 }
 .main_parent {
-    width: 100vw;
+
     min-height: 100vh;
     display: flex;
     flex-direction: column;

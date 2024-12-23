@@ -1,8 +1,15 @@
 ﻿@model Echeckdem.CustomFolder.CombinedOrganisationSetupViewModel
 
+@{
+    int currentYear = DateTime.Now.Year;
+    int startYear = currentYear - 2;
+    int endYear = currentYear + 2;
+}
+
 <style>
     .locationDataTable {
-        width: 100%;
+        table-layout:fixed;
+        width: 62vw;
         border-collapse: collapse;
         margin-bottom: 20px;
         font-size: 16px;
@@ -108,6 +115,7 @@
             <th>CLRA</th>
             <th>Active</th>
             <th>Site Under</th>
+            <th>Setup</th>
             <th>Edit</th>
         </tr>
     </thead>
@@ -133,6 +141,16 @@
                         @* @location.Ltype *@
                         @location.LtypeDescription
                 </td>
+                <td data-field="Lsetup">
+
+
+                        @(
+                            location.Lsetup.HasValue
+                            ? location.Lsetup.ToString()
+                            : "N/A"
+                            )
+
+                </td>
                 <td>
                     <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                 </td>
@@ -140,6 +158,7 @@
         }
     </tbody>
 </table>
+
 
 <!-- Edit Location Modal -->
 <div class="modal" id="editLocationModal" style="display:none; ">
@@ -192,8 +211,23 @@
                         <option value="1">Yes</option>
                         <option value="0">No</option>
                     </select>
-                
 
+
+                <label for="Ltype">Site Under</label>
+                <select id="Ltype" name="Ltype">
+                    <option value="" selected>BOCW</option>
+                    <option value="S">Shops & Establishment</option>
+                    <option value="F">Factoty</option>
+                </select>
+                
+                <label for="Lsetup">Setup</label>
+<select id="Lsetup" name="Lsetup" required>
+    <option value="" disabled selected>-- Select Year --</option>
+    @for (int year = startYear; year <= endYear; year++)
+    {
+        <option value="@year">@year</option>
+    }
+</select>
                
                     <label for="Lactive">Active</label>
                     <select id="Lactive" name="Lactive">
@@ -234,6 +268,18 @@
             var Iscentral = row.find('td[data-field="Iscentral"]').text().includes("Yes") ? 1 : 0;
             var Iscloc = row.find('td[data-field="Iscloc"]').text().includes("Yes") ? 1 : 0;
             var Lactive = row.find('td[data-field="Lactive"]').text().includes("Yes") ? 1 : 0;
+           @*  var Ltype = row.find('td[data-field="Ltype"]').text().trim(); *@
+            var LtypeDescription = row.find('td[data-field="Ltype"]').text().trim();
+            var Lsetup = row.find('td[data-field="Lsetup"]').text().trim();
+
+            var LtypeValue = "";
+            if (LtypeDescription === "SE") {
+                LtypeValue = "S";
+            } else if (LtypeDescription === "Fact") {
+                LtypeValue = "F";
+            } else if (LtypeDescription === "BOCW") {
+                LtypeValue = ""; // Default or no value
+            }
 
 
             // Populate modal fields
@@ -246,6 +292,9 @@
             $('#Iscentral').val(Iscentral);
             $('#Iscloc').val(Iscloc);
             $('#Lactive').val(Lactive);
+            @* $('#Ltype').val(Ltype); *@
+            $('#Ltype').val(LtypeValue);
+            $('#Lsetup').val(Lsetup);
 
             $('#editLocationModal').css('display', 'block');
             $('#locationDataTable').css('display', 'none');

@@ -502,7 +502,7 @@
         orgDetailsBody.style.display = "block";
         orgDetailsBody.style.padding = "10px";
 
-        document.getElementById("orgDetailsHeader").innerText = "Location Data";
+        document.getElementById("orgDetailsHeader").innerText = "Location Data - @Model.SelectedOrganisation?.Oname ";
         $("#orgDetailsBody").load(`/OrganisationSetup/GetLocationDatabyOid?oid=${oid}`);
 
     }
