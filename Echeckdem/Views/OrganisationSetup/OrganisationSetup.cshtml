@@ -11,12 +11,12 @@
 
 <style>
 
-    .table-container {
+/*     .table-container {
         width: 30vw;
         top: 40px;
         height: 80vh;
         overflow: scroll;
-    }
+    } */
 
     .styled-table {
         margin: 0;
@@ -213,33 +213,23 @@
 </style>
 @if (Context.Session.GetInt32("User Level") == 1)
                         {
-
-<div class="table-heading-container">
-
+    @section TableHeadingContent {
     <!-- Search bar -->
     <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
 
-    <!-- Download button -->
-  @*   <button class="table-export-btn" onclick="downloadData()">
-        EXPORT
-    </button>
- *@
     <!-- Add button -->
     <button class="table-add-btn" onclick="showAddOrganisationForm()">
         Add
     </button>
-
-</div>
+    }
 
 <!-- Organization Count -->
 @*     <div class="organization-count">
         <p>Total Organizations: <span class="count-badge">@Model.Count</span></p>
     </div> *@
 
-
-
 <!-- Table Section -->
-<div class="table-container" id="organisationTable">
+    @section TableContent {
     <table class="styled-table">
         <thead>
             <tr>
@@ -265,17 +255,12 @@
                             </td>
                     </tr>
                     sno++;
+                    }
                 }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="2">No organizations found.</td>
-                    </tr>
-                }
+               
             </tbody>
         </table>
-    </div>
+        }
 <!-- Selected Organisation Details Section -->
 <div class="org-details-container" id="orgDetailsContainer">
     @if (Model.SelectedOrganisation != null)
@@ -290,7 +275,7 @@
                 <div class="org-details-upper-links">
                     <!-- Top links -->
                     <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation.oid" id="generalInfoLink" class="org-details-upper-links active">General Information</a>
-                    <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation.oid">Location Map</a>
+                    <a href="#">Location Map</a>
                     <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
                     <a href="javascript:void(0)" onclick="LocationDataForm()" id="locationDataInfo" class="org-details-upper-links">Location Data</a>
                 </div>

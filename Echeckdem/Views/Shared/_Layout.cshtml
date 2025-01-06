@@ -16,6 +16,14 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     @* <link rel="stylesheet" href="~/Echeckdem.styles.css" asp-append-version="true" /> *@
 </head>
+<style>
+    .table-container {
+        width: 30vw;
+        top: 40px;
+        height: 80vh;
+        overflow: scroll;
+    }
+</style>
 <body>
 @*     @{
         var userLevel = Context.Session.GetInt32("UserLevel");
@@ -33,21 +41,22 @@
             <div class="nav-links">
                 <div class="nav_links">
                     <a href="/Home"> Home</a>
-                    <a href=""> Operations Calendar</a>
-                    <a href=""> Graphical Details</a>
-                    <a href=""> Bulk Upload</a>
-                     
-                       @*  <h2>User Level: @ViewBag.UserLevel</h2>
-                          @if (userLevel == 2)
-                        {
-                            <a href="/OrganisationSetup/List"> Org Setup</a>
-                        }  *@
+                  
+
+                       
 
                         @if (Context.Session.GetInt32("User Level") == 1)
                         {
 
                             @* <h2>User Level: @ViewBag.UserLevel</h2> *@
+                            <a href="">Manage Sites</a>
                             <a href="/OrganisationSetup/OrganisationSetup"> Org Setup</a>
+                        }
+                        else
+                        {
+                            <a href=""> Operations Calendar</a>
+                            <a href=""> Graphical Details</a>
+                            <a href=""> Bulk Upload</a>
                         }
                     </div>
             </div>
@@ -79,6 +88,15 @@
                 </div>
         </div>
         <div class="main_child">
+            @if (ViewData["Title"]?.ToString() == "Organisation List")
+            {
+                <div class="table-heading-container">
+                    @RenderSection("TableHeadingContent", required: false)
+                </div>
+                <div class="table-container">
+                    @RenderSection("TableContent", required: false)
+                </div>
+            }
             @RenderBody()
         </div>
     </div>
