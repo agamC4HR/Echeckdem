@@ -140,7 +140,7 @@ namespace Echeckdem.Controllers
 
 
 
-        [HttpPost]                                                                                                          // EDting the location tab button to make any change. 
+        [HttpPost]                                                                                                          // EDting the location tab button to make any change.   
 
         public async Task<IActionResult> UpdateLocations(CombinedOrganisationSetupViewModel updatedLocationData)
         {
@@ -161,7 +161,6 @@ namespace Echeckdem.Controllers
                     TempData["SuccessMessage"] = "Locations updated successfully.";
                     // Redirect to the GetLocationDatabyOid action after update
                     return RedirectToAction("GetLocationDatabyOid", new { oid = updatedLocationData.oid });
-                
                 }
                 
                 else
@@ -179,13 +178,6 @@ namespace Echeckdem.Controllers
             // If something fails, return the same model to the view
             return PartialView("EditLocations", updatedLocationData);
         }
-
-
-
-       
-
-
-
     }
 }
 

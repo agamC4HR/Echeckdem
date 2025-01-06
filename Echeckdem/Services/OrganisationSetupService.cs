@@ -42,7 +42,7 @@ namespace Echeckdem.Services
                 .Select(ncm => new OrganisationsListViewModel
                 {
                     Oname = ncm.Oname,
-                    oid = ncm.Oid
+                    oid = ncm.Oid           
                 })
                 .ToListAsync();
 
@@ -128,16 +128,15 @@ namespace Echeckdem.Services
 
                 locationInDb.Lname = addlocationdata.Lname ?? locationInDb.Lname;
                 locationInDb.Lcity = addlocationdata.Lcity ?? locationInDb.Lcity;
-                locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;
+                locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;  
                 locationInDb.Lregion = addlocationdata.Lregion ?? locationInDb.Lregion;
                 locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
                 locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
                 locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
-                //locationInDb.Ltype = addlocationdata.Ltype;
                 locationInDb.Ltype = string.IsNullOrEmpty(addlocationdata.Ltype) ? null : addlocationdata.Ltype;
                 locationInDb.Lsetup = addlocationdata.Lsetup;
 
-                await _EcheckContext.SaveChangesAsync();
+                await _EcheckContext.SaveChangesAsync();                                                            
                 return true;
             }
             return false;
