@@ -21,6 +21,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Audtrail> Audtrails { get; set; }
 
+    public virtual DbSet<BocwScope> BocwScopes { get; set; }
+
     public virtual DbSet<Calendar> Calendars { get; set; }
 
     public virtual DbSet<Contact> Contacts { get; set; }
@@ -89,6 +91,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Ncmloc> Ncmlocs { get; set; }
 
+    public virtual DbSet<Ncmlocbo> Ncmlocbos { get; set; }
+
     public virtual DbSet<Ncmorg> Ncmorgs { get; set; }
 
     public virtual DbSet<Ncreg> Ncregs { get; set; }
@@ -124,8 +128,9 @@ public partial class DbEcheckContext : DbContext
     public virtual DbSet<Triglink> Triglinks { get; set; }
 
     public virtual DbSet<UserActivation> UserActivations { get; set; }
-     
+
     public virtual DbSet<Webinar> Webinars { get; set; }
+
 
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
@@ -133,27 +138,23 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
 
-
-
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("server=AGAM\\SQLEXPRESS01;database=DB_echeck;trusted_connection=true; TrustServerCertificate=True;");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("server=AGAM\\SQLEXPRESS01;database=DB_echeck;Trusted_Connection=True; TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        {
-            modelBuilder.Entity<ReturnsViewModel>()
-           .HasNoKey()
-           .ToView(null);   
+        modelBuilder.Entity<ReturnsViewModel>()
+         .HasNoKey()
+         .ToView(null);
 
-            modelBuilder.Entity<ContributionViewModel>()
-           .HasNoKey()
-           .ToView(null);
+        modelBuilder.Entity<ContributionViewModel>()
+       .HasNoKey()
+       .ToView(null);
 
-            modelBuilder.Entity<RegistrationViewModel>()
-          .HasNoKey()
-          .ToView(null);
-        }
+        modelBuilder.Entity<RegistrationViewModel>()
+      .HasNoKey()
+    .ToView(null);
 
         modelBuilder.Entity<Act>(entity =>
         {
@@ -306,6 +307,21 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("UIDS");
+        });
+
+        modelBuilder.Entity<BocwScope>(entity =>
+        {
+            entity.HasKey(e => e.ScopeId);
+
+            entity.ToTable("BOCW_SCOPE");
+
+            entity.Property(e => e.ScopeId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ScopeID");
+            entity.Property(e => e.ScopeName)
+                .HasMaxLength(200)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Calendar>(entity =>
@@ -1449,13 +1465,14 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncmloc>(entity =>
         {
-            entity.HasKey(e => e.Lcode);
+            entity.HasKey(e => e.Lcode).HasName("ncmloc_key");
 
             entity.ToTable("NCMLOC");
-            //entity
-            //    .HasNoKey()
-            //    .ToTable("NCMLOC");
 
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("lcode");
             entity.Property(e => e.Cemail)
                 .IsUnicode(false)
                 .HasColumnName("cemail");
@@ -1490,10 +1507,6 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(30)
                 .IsUnicode(false)
                 .HasColumnName("lcity");
-            entity.Property(e => e.Lcode)
-                .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("lcode");
             entity.Property(e => e.Lconemail)
                 .HasMaxLength(100)
                 .IsUnicode(false)
@@ -1537,6 +1550,35 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("oid");
             entity.Property(e => e.Stdate).HasColumnName("stdate");
+        });
+
+        modelBuilder.Entity<Ncmlocbo>(entity =>
+        {
+            entity.HasKey(e => e.ProjectCode);
+
+            entity.ToTable("NCMLOCBO");
+
+            entity.Property(e => e.ProjectCode).HasMaxLength(10);
+            entity.Property(e => e.ClientName).HasMaxLength(100);
+            entity.Property(e => e.GeneralContractor).HasMaxLength(100);
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("lcode");
+            entity.Property(e => e.NatureofWork).HasMaxLength(255);
+            entity.Property(e => e.OvalId)
+                .HasMaxLength(10)
+                .HasColumnName("OvalID");
+            entity.Property(e => e.ProjectAddress).HasMaxLength(255);
+            entity.Property(e => e.ProjectArea).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.ProjectCostEst).HasColumnName("ProjectCost_est");
+            entity.Property(e => e.ProjectEndDateEst).HasColumnName("ProjectEndDate_est");
+            entity.Property(e => e.ProjectLead).HasMaxLength(255);
+            entity.Property(e => e.ProjectStartDateEst).HasColumnName("ProjectStartDate_est");
+
+            entity.HasOne(d => d.LcodeNavigation).WithMany(p => p.Ncmlocbos)
+                .HasForeignKey(d => d.Lcode)
+                .HasConstraintName("FK_NCMLOCBO_NCMLOC");
         });
 
         modelBuilder.Entity<Ncmorg>(entity =>

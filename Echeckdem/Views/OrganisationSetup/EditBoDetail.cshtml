@@ -1,0 +1,90 @@
+﻿@model Ncmlocbo
+
+<h2 class="mb-4">Edit BO Detail</h2>
+
+<form asp-action="EditBoDetail" method="post" class="needs-validation" novalidate>
+    <input type="hidden" asp-for="ProjectCode" />
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Lcode" class="form-label"></label>
+            <input asp-for="Lcode" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="ClientName" class="form-label"></label>
+            <input asp-for="ClientName" class="form-control" required />
+            <div class="invalid-feedback">Please provide a valid Client Name.</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="ProjectAddress" class="form-label"></label>
+            <input asp-for="ProjectAddress" class="form-control" required />
+            <div class="invalid-feedback">Please provide a valid Project Address.</div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="NatureofWork" class="form-label"></label>
+            <input asp-for="NatureofWork" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="ProjectCostEst" class="form-label"></label>
+            <input asp-for="ProjectCostEst" class="form-control" type="number" required />
+            <div class="invalid-feedback">Please provide a valid cost estimate.</div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="ProjectStartDateEst" class="form-label"></label>
+            <input asp-for="ProjectStartDateEst" type="date" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="ProjectEndDateEst" class="form-label"></label>
+            <input asp-for="ProjectEndDateEst" type="date" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="VendorCount" class="form-label"></label>
+            <input asp-for="VendorCount" class="form-control" type="number" />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="WorkerHeadCount" class="form-label"></label>
+            <input asp-for="WorkerHeadCount" class="form-control" type="number" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <label asp-for="ProjectLead" class="form-label"></label>
+            <input asp-for="ProjectLead" class="form-control" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a href="@Url.Action("ViewBocwDetails", "OrganisationSetup", new { oid = Model.Lcode.Substring(0, 6) })" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+    // Bootstrap form validation
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>

@@ -1,8 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Echeckdem.Models;
-
-
-
+using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
 
 namespace Echeckdem.Services
 {
@@ -14,11 +13,21 @@ namespace Echeckdem.Services
         {
             _context = context;
         }
+        async Task<string> GetStateAbbreviation(string fullStateName)                                              // function to map state to statemaster
+        {
+            var fullStateNameTrimmed = fullStateName.Trim();
+            var state = await _context.Maststates.FirstOrDefaultAsync(s => s.Statedesc.ToLower() == fullStateNameTrimmed.ToLower());
+            if (state == null)
+            {
+              Console.WriteLine($"State not found: {fullStateNameTrimmed}");
+            }
+            return state?.Stateid?? string.Empty;
+        }
 
-        public async Task<int> UploadLocationDataAsync(IFormFile file )         // addded here 
+
+        public async Task<int> UploadLocationDataAsync(IFormFile file, string oid)         // bulk upload
         {
             var locations = new List<Ncmloc>();
-
             if (file.Length > 0)
             {
                 using (var stream = new MemoryStream())
@@ -31,32 +40,46 @@ namespace Echeckdem.Services
 
                         foreach (var row in rows)
                         {
-                            var location = new Ncmloc
-                            {
-                                Lcode = row.Cell(1).GetValue<string>().Substring(0, Math.Min(15, row.Cell(1).GetValue<string>().Length)),
-                                 Oid = row.Cell(2).GetValue<string>().Substring(0, Math.Min(30, row.Cell(2).GetValue<string>().Length)),
-                                //Oid = oid,
-                                Lname = row.Cell(3).GetValue<string>().Substring(0, Math.Min(100, row.Cell(3).GetValue<string>().Length)),
-                                Lcity = row.Cell(4).GetValue<string>().Substring(0, Math.Min(30, row.Cell(4).GetValue<string>().Length)),
-                                Lstate = row.Cell(5).GetValue<string>().Substring(0, Math.Min(30, row.Cell(5).GetValue<string>().Length)),
-                                Lregion = row.Cell(6).GetValue<string>().Substring(0, Math.Min(30, row.Cell(6).GetValue<string>().Length))
 
+                            var fullStateName = row.Cell(3).GetValue<string>().Substring(0, Math.Min(30, row.Cell(3).GetValue<string>().Length));
+                            var stateAbbreviation = await GetStateAbbreviation(fullStateName);
+
+                            int? ParseYesNo(string value) =>
+                            value?.Trim().ToLower() switch
+                            {
+                                 "yes" => 1,
+                                 "no" => 0,
+                                 _ => null // Handle invalid values as null
                             };
 
+                            var location = new Ncmloc
+                            {
+                                Lcode = Guid.NewGuid().ToString().Substring(0, 8),
+                                Oid = oid,
+                                Lname = row.Cell(1).GetValue<string>().Substring(0, Math.Min(100, row.Cell(1).GetValue<string>().Length)),
+                                Lcity = row.Cell(2).GetValue<string>().Substring(0, Math.Min(30, row.Cell(2).GetValue<string>().Length)),
+                                Lstate = stateAbbreviation,
+                                Lregion = row.Cell(4).GetValue<string>().Substring(0, Math.Min(30, row.Cell(4).GetValue<string>().Length)),
+                                Ltype = row.Cell(5).GetValue<string>().Substring(0, Math.Min(30, row.Cell(5).GetValue<string>().Length)),
+                                Laddress = row.Cell(6).GetValue<string>().Substring(0, Math.Min(200, row.Cell(6).GetValue<string>().Length)),
+                                Lcontact = row.Cell(7).GetValue<string>().Substring(0, Math.Min(100, row.Cell(7).GetValue<string>().Length)),
+                                Lconemail = row.Cell(8).GetValue<string>().Substring(0, Math.Min(100, row.Cell(8).GetValue<string>().Length)),
+                                Lconno = row.Cell(9).GetValue<string>().Substring(0, Math.Min(50, row.Cell(9).GetValue<string>().Length)),
+                                Cemail = row.Cell(10).GetValue<string>().Substring(0, Math.Min(100, row.Cell(10).GetValue<string>().Length)),
+                                Iscentral = ParseYesNo(row.Cell(11).GetValue<string>()), // Yes - 1 No - 0
+                                Iscloc = ParseYesNo(row.Cell(12).GetValue<string>()),
+                                Lsetup = row.Cell(13).GetValue<int?>(),
+                                Lactive = ParseYesNo(row.Cell(14).GetValue<string>())
+                            }; 
                             locations.Add(location);
-
                         }
                     }
                     await _context.Ncmlocs.AddRangeAsync(locations);
                     await _context.SaveChangesAsync();
-                    
-
                 }
-
                 return locations.Count;
             }
-
             return 0;
         }
     }
-}
+}   

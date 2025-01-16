@@ -2,15 +2,28 @@
     string oid = Context.Request.Query["oid"];
 }
 
+
+
+
 <style>
     .location-template-parent p {
         font-size: 10px;
     }
 </style>
+ 
+
+@if (ViewBag.HasIncompleteBOData == true)
+{
+    <div class="alert alert-warning">
+        Additional information for BOCW sites is required. Please upload the data using the template below.
+    </div>
+}
+
+
 @if (Context.Session.GetInt32("User Level") == 1)
 {
-    <form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="oid" value="@oid" />
+    <form id="uploadForm" asp-action="UploadBOCWSiteDetails" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="oid" value="@ViewBag.Oid" />
         <div class="form-group">
             <label for="file">Upload Excel File:</label>
             <input type="file" name="file" class="form-control" />
@@ -18,24 +31,25 @@
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 
+    <div id="messageContainer" class="alert mt-3" style="display:none;"></div>
 
-    <div id="messageContainer" class="alert mt-3" style="display:none; color:red;"></div>
     <div class="location-template-parent">
-        <p> *Please refer to this Excel template to upload data in Locations. </p>
-        <p> *Note: Code - max 15 characters, Name - max 100 characters, City/Region/State - max 30 characters </p>
+        <p> *Please refer to this Excel template to upload data in Locations under BOCW. </p>
+        <p> *Note: OvalID - max 10 characters </p>
 
-
-        <a href="@Url.Action("DownloadExcelFile", "OrganisationSetup")"
+        <a href="@Url.Action("DownloadBOCWExcelFile", "OrganisationSetup", new { oid = ViewBag.Oid})"
            style="display: block; color: blue; background-color: lightgray; text-align:center; align-content:center;"
            onmouseover="this.style.textDecoration='underline'"
            onmouseout="this.style.textDecoration='none'">
             Download Excel Template
         </a>
     </div>
+
+
 }
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function () {
         $("#uploadForm").submit(function (e) {
@@ -43,13 +57,8 @@
 
             var formData = new FormData(this);
 
-            // Log the form data for debugging
-            for (var pair of formData.entries()) {
-                console.log(pair[0] + ', ' + pair[1]);
-            }
-
             $.ajax({
-                url: '@Url.Action("Upload", "OrganisationSetup")',
+                url: '@Url.Action("UploadBOCWSiteDetails", "OrganisationSetup")',
                 type: 'POST',
                 data: formData,
                 contentType: false,
@@ -74,3 +83,4 @@
         });
     });
 </script>
+

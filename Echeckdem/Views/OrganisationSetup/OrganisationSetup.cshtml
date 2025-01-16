@@ -246,6 +246,8 @@
                     
                     foreach (var org in Model.OrganisationsList)
                     {
+
+
                         <tr>
                             <td>@sno</td>
                             <td>
@@ -253,6 +255,9 @@
                                     @org.Oname
                                 </a>
                             </td>
+                         
+
+                           
                     </tr>
                     sno++;
                     }
@@ -275,17 +280,18 @@
                 <div class="org-details-upper-links">
                     <!-- Top links -->
                     <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation.oid" id="generalInfoLink" class="org-details-upper-links active">General Information</a>
-                    <a href="#">Location Map</a>
+                    @* <a href="#">Location Map</a> *@
                     <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
                     <a href="javascript:void(0)" onclick="LocationDataForm()" id="locationDataInfo" class="org-details-upper-links">Location Data</a>
+
+                        <a href="javascript:void(0);" onclick="viewBOCWData()" id="viewBOCWDataButton">View BOCW Data</a>
+                        <a href="javascript:void(0);" onclick="editBOCWData()" id="editBOCWDataButton">Edit BOCW Data</a>
                 </div>
 
                 <div class="org-details-lower-links">
                     <!-- Bottom links -->
-                        <a asp-controller="OrganisationSetup" asp-action="GetLocationDatabyOid" asp-route-oid="ERM">Location Setup</a>
-                        <a href="#">Returns 1</a>
-                    <a href="#">Contributions 1</a>
-                    <a href="#">Returns 2</a>
+                        <a href="javascript:void(0);" onclick="showBOCWUploadForm()">BOCWSITESETUP</a>
+                      
                 </div>
 
             </div>
@@ -307,6 +313,7 @@
                         }
                        
                 </p>
+                
                     
             </div>
 
@@ -358,12 +365,17 @@
 
 <script>
 
+
+
     @if (TempData["SuccessMessage"] != null)
     {
         <text>
             alert('@TempData["SuccessMessage"]');
         </text>
     }
+
+     
+
 
         document.querySelectorAll('.org-details-links-container a').forEach(link => {
             link.addEventListener('click', function (e) {
@@ -430,8 +442,14 @@
 
     //Start of Working Of Add Location-------------------------
         function showUploadForm() {
+        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        if (!oid) {
+            alert("Organisation ID is not available. Please select a valid organisation.");
+            return;
+        }
+
             document.getElementById("orgDetailsHeader").innerText = "Locations";
-            $("#orgDetailsBody").load('/OrganisationSetup/upload');
+            $("#orgDetailsBody").load(`/OrganisationSetup/upload?oid=${oid}`);
                
         }
 
@@ -491,8 +509,55 @@
         $("#orgDetailsBody").load(`/OrganisationSetup/GetLocationDatabyOid?oid=${oid}`);
 
     }
-    // End of Location data Form------------------------------
-    
+    // End of Location data Form-----------------------------
+
+    //Start of Working Of Add Location for BOCW sites-------------------------
+    function showBOCWUploadForm() {
+        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        if (!oid) {
+            alert("Organisation ID is not available. Please select a valid organisation.");
+            return;
+        }
+
+        document.getElementById("orgDetailsHeader").innerText = "Locations";
+        $("#orgDetailsBody").load(`/OrganisationSetup/BOCWSiteSetup?oid=${oid}`);
+
+    }
+    // End of  Add Location for BOCW sites-----------------------------
+
+    @* // Start of viewing BOCW DATA----------------------------------------------------
+    function viewBOCWData() {
+        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        if (!oid) {
+            alert("Organisation ID is not available. Please select a valid organisation.");
+            return;
+        }
+
+        document.getElementById("orgDetailsHeader").innerText = "BOCW Data - @Model.SelectedOrganisation?.Oname";
+        $("#orgDetailsBody").load(/OrganisationSetup/ViewBOCWData ? oid = ${ oid });
+    }
+    // END of viewing BOCW DATA------------------------------------------------------
+
+
+    // START of editing BOCW DATA---------------------------------------------------
+    function editBOCWData() {
+        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        if (!oid) {
+            alert("Organisation ID is not available. Please select a valid organisation.");
+            return;
+        }
+
+        document.getElementById("orgDetailsHeader").innerText = "Edit BOCW Data - @Model.SelectedOrganisation?.Oname";
+        $("#orgDetailsBody").load(/OrganisationSetup/EditBOCWData ? oid = ${ oid });
+
+        // END of editing BOCW DATA--------------------------------------------------- *@
+
+
+
+
+
+
+
     // Function to show the edit form for location data
 @*     function showLocationEditForm() {
         const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";

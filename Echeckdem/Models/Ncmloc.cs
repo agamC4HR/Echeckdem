@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Echeckdem.Models;
 
 public partial class Ncmloc
 {
-    [Key]
     public string Lcode { get; set; } = null!;
 
-    public string Oid { get; set; } = null!;    
+    public string Oid { get; set; } = null!;
 
     public string? Lname { get; set; }
 
@@ -55,7 +53,9 @@ public partial class Ncmloc
 
     public string? FinRespEmail { get; set; }
 
-    public string? Ltype { get; set; }  
+    public string? Ltype { get; set; }
 
     public int? Iscloc { get; set; }
+
+    public virtual ICollection<Ncmlocbo> Ncmlocbos { get; set; } = new List<Ncmlocbo>();
 }

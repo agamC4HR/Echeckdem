@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Echeckdem.Models.BocwScope>
+
+<h2 class="my-4">BOCW Scope Setup</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">BOCW Scope List</h4>
+                    <a href="/ActScopeSetup/Create" class="btn btn-success">Add New Scope</a>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Scope ID</th>
+                                <th>Scope Name</th>
+                                <th>Scope Active</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var scope in Model)
+                            {
+                                <tr>
+                                    <td>@scope.ScopeId</td>
+                                    <td>@scope.ScopeName</td>
+                                    <td>@(scope.ScopeActive == 1 ? "YES" : "NO")</td>
+                                    <td>
+                                        <a href="/ActScopeSetup/Edit/@scope.ScopeId" class="btn btn-warning"> Edit</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

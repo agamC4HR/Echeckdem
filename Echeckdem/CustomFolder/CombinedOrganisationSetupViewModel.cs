@@ -51,7 +51,8 @@ namespace Echeckdem.CustomFolder
                 {
                     "S" => "SE",
                     "F" => "Fact",
-                    null => "BOCW",
+                    "BO" => "BOCW",
+                    
                     _ => "Unknown"
                 };
             }

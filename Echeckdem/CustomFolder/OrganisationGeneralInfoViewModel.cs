@@ -1,8 +1,11 @@
-﻿namespace Echeckdem.CustomFolder
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Echeckdem.CustomFolder
 {
     public class OrganisationGeneralInfoViewModel
     {
-        public string oid { get; set; }
+        public string? oid { get; set; }
+        
         public string Oname { get; set; }
         public string? Spoc { get; set; }
         public int TotalCount { get; set; }

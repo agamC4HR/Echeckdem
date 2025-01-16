@@ -34,15 +34,11 @@
                     {
                      "S" => "SE",
                      "F" => "Fact",
-                     null => "BOCW",
-                     _=> "Unknown"
+                     "BO" => "BOCW",
+                     _ => "Unknown"
                 };
             }
         }
-
-
-
-
-        
+     
     }
 }

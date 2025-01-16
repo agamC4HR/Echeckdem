@@ -53,26 +53,25 @@
             @* <div id="messageContainer" class="alert mt-3" style="display:none; color:red;"></div> *@
 
             <form asp-action="AddOrganisation" method="post" id="addOrganisationForm" enctype="multipart/form-data">
+                
                 <label for="Oname">Organisation Name</label>
                 <input type="text" id="Oname" name="Oname" />
 
-                <label for="oid">Organisation ID</label>
-                <input type="text" id="oid" name="oid" />
+               
 
-                <label for="Spoc">SPOC</label>
+                <label for="Spoc">C4HR SPOC</label>
                 <input type="text" id="Spoc" name="Spoc" />
 
                 <label for="styear">Start Year</label>
                 <input type="text" id="styear" name="styear" />
 
-                <label for="Contname">Contact Name</label>
+                <label for="Contname">Client Contact Name</label>
                 <input type="text" id="Contname" name="Contname" />
 
-                <label for="Contemail">Contact Email</label>
+                <label for="Contemail">Client Contact Email</label>
                 <input type="email" id="Contemail" name="Contemail" />
 
-                @* <label for="Contemail">Active</label>
-                <input type="checkbox" id="Oactive" name="Oactive" /> *@
+                
 
                 <button type="submit">Save</button>
 

@@ -25,7 +25,7 @@
         .locationDataTable th,
         .locationDataTable td {
             padding: 12px;
-            text-align: left;
+            text-align: left;   
             border: 1px solid #dee2e6;
             font-size: 12px;
         }
@@ -125,6 +125,7 @@
             <tr>
                 <td data-field="Oid" style="display: none;">@location.Oid</td>
                 <td  data-field="Lcode">@location.Lcode</td>
+                
                 <td  data-field="Lname">@location.Lname</td>
                 <td  data-field="Lcity">@location.Lcity</td>
                 <td  data-field="Lstate">@location.Lstate</td>
@@ -151,6 +152,10 @@
                             )
 
                 </td>
+
+
+                
+
                 <td>
                     <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                 </td>
@@ -215,9 +220,9 @@
 
                 <label for="Ltype">Site Under</label>
                 <select id="Ltype" name="Ltype">
-                    <option value="" selected>BOCW</option>
+                    <option value="BO" selected>BOCW</option>
                     <option value="S">Shops & Establishment</option>
-                    <option value="F">Factoty</option>
+                    <option value="F">Factory</option>
                 </select>
                 
                 <label for="Lsetup">Setup</label>
@@ -278,7 +283,7 @@
             } else if (LtypeDescription === "Fact") {
                 LtypeValue = "F";
             } else if (LtypeDescription === "BOCW") {
-                LtypeValue = ""; // Default or no value
+                LtypeValue = "BO"; // Default or no value
             }
 
 
