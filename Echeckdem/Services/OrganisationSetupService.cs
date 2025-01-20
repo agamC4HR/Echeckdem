@@ -205,18 +205,26 @@ namespace Echeckdem.Services
 
                         foreach (var row in rows)
                         {
+                            var lname = row.Cell(1).GetValue<string>()?.Trim();
 
-                            var lcode = row.Cell(1).GetValue<string>()?.Trim();
-                            if (!boSites.Any(b => b.Lcode == lcode))
-                                throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
+                            // Resolve lcode based on lname
+                            var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
+                            if (site == null)
+                                throw new InvalidOperationException($"Invalid Location Name (Lname): {lname} for BO site.");
+
+                            var lcode = site.Lcode; // Use the resolved lcode for further processing
+
+                            //var lcode = row.Cell(1).GetValue<string>()?.Trim();
+                            //if (!boSites.Any(b => b.Lcode == lcode))
+                            //    throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
 
 
 
-                            var matchingSite = boSites.FirstOrDefault(b => b.Lcode == lcode);
-                            if (matchingSite == null)
-                                throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
+                            //var matchingSite = boSites.FirstOrDefault(b => b.Lcode == lcode);
+                            //if (matchingSite == null)
+                            //    throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
 
-                            var lname = matchingSite.Lname; // Get lname from Ncmloc table
+                            //var lname = matchingSite.Lname; // Get lname from Ncmloc table
 
 
 
@@ -255,7 +263,7 @@ namespace Echeckdem.Services
                             var boDetail = new Ncmlocbo
                             {
                                 Lcode = lcode,
-                                Lname = lname,
+                                //Lname = lname,
                                 ProjectCode = Guid.NewGuid().ToString().Substring(0, 6), // Generate 6-char project code
                                 OvalId = row.Cell(2).GetValue<string>().Trim(),
                                 ClientName = row.Cell(3).GetValue<string>().Trim(),
@@ -382,6 +390,32 @@ namespace Echeckdem.Services
 
             foreach (var scopeId in selectedScopeIds)
             {
+                //// Ensure the ScopeId exists in the BocwScope table
+                //var scope = await _EcheckContext.BocwScopes.FirstOrDefaultAsync(s => s.ScopeId == scopeId);
+
+                //if (scope == null)
+                //{
+                //    // Handle error if no matching scope is found
+                //    throw new InvalidOperationException($"Scope with ID '{scopeId}' does not exist.");
+                //    //continue; // or throw an exception, depending on your requirements
+                //}
+
+                //var mapping = new BoScopeMap
+                //{
+                //    ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
+                //    ScopeId = scopeId,
+                //    Lcode = lcode,
+                //    ProjectCode = projectCode,
+                //    Active = true
+                //};
+
+                //// Associating the existing scope with the mapping
+                //mapping.LcodeNavigation = new Ncmloc { Lcode = lcode }; // Set LcodeNavigation if it's required
+                //mapping.ProjectCodeNavigation = new Ncmlocbo { ProjectCode = projectCode }; // Set ProjectCodeNavigation
+                ////mapping.Scope = scope; // This ensures the mapping is properly associated with the existing scope
+                //mapping.ScopeMap = new BocwScope { BoScopeMapScopeMap = mapping };
+
+                //_EcheckContext.BoScopeMaps.Add(mapping);
                 var mapping = new BoScopeMap
                 {
                     ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
@@ -389,7 +423,14 @@ namespace Echeckdem.Services
                     Lcode = lcode,
                     ProjectCode = projectCode,
                     Active = true
+
                 };
+
+                //mapping.LcodeNavigation = new Ncmloc { Lcode = lcode }; // Set LcodeNavigation if it's required
+                //mapping.ProjectCodeNavigation = new Ncmlocbo { ProjectCode = projectCode }; // Set ProjectCodeNavigation
+                //mapping.Scope = new BocwScope { ScopeId = scopeId }; // Set Scope (you can fetch full data from DB if needed)
+               // mapping.ScopeMap = new BocwScope { BoScopeMapScopeMap = mapping };
+
 
                 _EcheckContext.BoScopeMaps.Add(mapping);
             }
