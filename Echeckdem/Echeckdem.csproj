@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\OrganisationSetup\ManageScopePartial.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Asa.Personal.MongoDB.Driver" Version="1.0.3" />
     <PackageReference Include="ClosedXML" Version="0.104.1" />
     <PackageReference Include="EPPlus" Version="7.5.1" />
@@ -33,10 +29,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\imgs\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\OrganisationSetup\ManageScopePartial.cshtml" />
   </ItemGroup>
 
 </Project>

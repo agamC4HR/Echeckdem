@@ -11,7 +11,5 @@ public partial class BocwScope
 
     public int ScopeActive { get; set; }
 
-    public virtual BoScopeMap? BoScopeMapScopeMap { get; set; }
-
-    public virtual ICollection<BoScopeMap> BoScopeMapScopes { get; set; } = new List<BoScopeMap>();
+    public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 }

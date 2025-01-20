@@ -259,7 +259,7 @@ namespace Echeckdem.Controllers
         {
             ViewBag.Oid = oid;
             // You can use the OID to pre-populate any necessary data or pass it along to the view
-            return View("BOCWBulkUpload", new { oid }); //,
+            return PartialView("BOCWBulkUpload", new { oid }); //,
         }
 
 
@@ -278,13 +278,7 @@ namespace Echeckdem.Controllers
 
             try
             {
-            //    if (await _organisationsetupservice.HasIncompleteBODataAsync(oid))
-            //    {
-            //        return Json(new { success = false, message = "Additional information for BO sites is required. Please complete this before other actions." });
-            //    }
-
-
-
+            
                 var boSites = await _organisationsetupservice.GetBoSitesAsync(oid); // Method to fetch BO sites
                 if (!boSites.Any())
                 {
@@ -320,12 +314,16 @@ namespace Echeckdem.Controllers
                 return Json(new { success = false, message = "Please provide a valid OID." });
             }
 
-            var boSites = await _organisationsetupservice.GetBoSitesAsync(oid);
+            //var boSites = await _organisationsetupservice.GetBoSitesAsync(oid);
 
-            //var boSites = await _EcheckContext.Ncmlocs
-            //     .Where(n => n.Oid == oid && n.Ltype == "BO")
-            //     .Select(n => new {n.Lname }) // Select both lcode ( n.Lcode, ) and lname 
-            //     .ToListAsync();
+
+
+
+            var boSites = await _EcheckContext.Ncmlocs.Where(n => n.Oid == oid && n.Ltype == "BO").Select(n => new { n.Lcode, n.Lname }).ToListAsync();
+
+
+
+
 
             if (!boSites.Any())
             {
@@ -340,7 +338,7 @@ namespace Echeckdem.Controllers
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
                 // Add headers to the worksheet
 
-                worksheet.Cells[1, 1].Value = "LocationCode"; // lcode
+                worksheet.Cells[1, 1].Value = "LocationName";//"LocationCode"; // lcode
                 //worksheet.Cells[1, 1].Value = "LocationName";  // lname
                 worksheet.Cells[1, 2].Value = "OvalId";
                 worksheet.Cells[1, 3].Value = "ClientName";
@@ -362,7 +360,7 @@ namespace Echeckdem.Controllers
                 foreach (var site in boSites)
                 {
                     //worksheet.Cells[row, 1].Value = site.Lcode;
-                    worksheet.Cells[row, 1].Value = site.Lcode;//site.Lname;
+                    worksheet.Cells[row, 1].Value = site.Lname;//site.Lcode;//site.Lname;
                    
                     row++;            
                 }
@@ -388,7 +386,7 @@ namespace Echeckdem.Controllers
             }
 
             var boDetails = await _organisationsetupservice.GetAllBocwDetailsAsync(oid);
-            return View(boDetails);
+            return PartialView(boDetails);
         }
 
         
@@ -446,6 +444,7 @@ namespace Echeckdem.Controllers
 
 
         public async Task<IActionResult> Index()
+       
         {
             try
             {
@@ -461,14 +460,25 @@ namespace Echeckdem.Controllers
 
         }
 
-        public async Task<IActionResult> ManageScope (string lcode, string projectCode)
+
+        [HttpGet]
+        public async Task<IActionResult> GetScopesBySite(string lcode, string projectCode)
         {
-            ViewBag.lcode = lcode;
-            ViewBag.projectCode = projectCode;
-            var scopes = await _organisationsetupservice.GetScopesAsync();
-            return PartialView("ManageScopePartial", scopes);
+            try
+            {
+                // Fetch scopes for the site from BocwScope
+                var scopes = await _organisationsetupservice.GetScopesAsync();
+                return Json(scopes);
+            }
+            catch (Exception ex)
+            {
+                // Log error
+                // Logger.LogError(ex, "Error fetching scopes");
+                return Json(new List<BocwScope>());
+            }
         }
 
+       
         [HttpPost]
         public async Task<IActionResult> SaveMapping (string lcode, string projectCode, List<string> selectedScopeIds)
         {
@@ -483,55 +493,7 @@ namespace Echeckdem.Controllers
         }
             
 
-        //public async Task<IActionResult> Index()                                               //fetching information of bocw scopes and locations details.
-        //{
-        //    var bocwScopes = await _EcheckContext.BocwScopes.ToListAsync();
-        //    var locations = await _EcheckContext.Ncmlocbos.ToListAsync();
-        //    return View(new BOCWScopeViewModel
-        //    {
-        //        BocwScope = bocwScopes,
-        //        locations = locations
-        //    });
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> SaveScopeMap(List<BoScopeMap> scopeMaps)                               // SaveScope map in boscopemap table 
-        //{
-
-        //    if (scopeMaps == null || !scopeMaps.Any())
-        //    {
-        //        TempData["ErrorMessage"] = "No mapping data was provided.";
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-
-        //    foreach (var map in scopeMaps)
-        //    {
-        //        // Check if mapping already exists
-        //        var existingMap = await _EcheckContext.BoScopeMaps
-        //            .FirstOrDefaultAsync(m => m.Lcode == map.Lcode && m.ScopeId == map.ScopeId);
-
-        //        if (existingMap != null)
-        //        {
-        //            // Update existing mapping
-        //            existingMap.Active = map.Active;
-        //        }
-        //        else
-        //        {
-        //            // Add new mapping
-        //            _EcheckContext.BoScopeMaps.Add(new BoScopeMap                               
-        //            {
-        //                ScopeId = map.ScopeId,
-        //                Lcode = map.Lcode,
-        //                ProjectCode = map.ProjectCode,
-        //                Active = map.Active
-        //            });
-        //        }
-        //    }
-        //    await _EcheckContext.SaveChangesAsync();
-        //    TempData["SuccessMessage"] = "Scope mappings saved successfully!";
-        //    return RedirectToAction(nameof(Index));
-        //}
+        
 
     }
 }

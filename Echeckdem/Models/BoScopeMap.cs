@@ -11,15 +11,13 @@ public partial class BoScopeMap
 
     public string Lcode { get; set; } = null!;
 
-    public string? ProjectCode { get; set; }
+    public string ProjectCode { get; set; } = null!;
 
     public bool Active { get; set; }
 
     public virtual Ncmloc LcodeNavigation { get; set; } = null!;
 
-    public virtual Ncmlocbo? ProjectCodeNavigation { get; set; }
+    public virtual Ncmlocbo ProjectCodeNavigation { get; set; } = null!;
 
     public virtual BocwScope Scope { get; set; } = null!;
-
-    public virtual BocwScope ScopeMap { get; set; } = null!;
 }

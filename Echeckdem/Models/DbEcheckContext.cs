@@ -146,9 +146,10 @@ public partial class DbEcheckContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         modelBuilder.Entity<ReturnsViewModel>()
-       .HasNoKey()
-       .ToView(null);
+      .HasNoKey()
+      .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()
@@ -156,7 +157,7 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<RegistrationViewModel>()
       .HasNoKey()
-.ToView(null);
+      .ToView(null);
 
         modelBuilder.Entity<Act>(entity =>
         {
@@ -334,19 +335,15 @@ public partial class DbEcheckContext : DbContext
             entity.HasOne(d => d.LcodeNavigation).WithMany(p => p.BoScopeMaps)
                 .HasForeignKey(d => d.Lcode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_BO_SCOPE_MAP_BO_SCOPE_MAP");
+                .HasConstraintName("FK_BO_SCOPE_MAP_NCMLOC");
 
             entity.HasOne(d => d.ProjectCodeNavigation).WithMany(p => p.BoScopeMaps)
                 .HasForeignKey(d => d.ProjectCode)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BO_SCOPE_MAP_NCMLOCBO");
 
-            entity.HasOne(d => d.Scope).WithMany(p => p.BoScopeMapScopes)
+            entity.HasOne(d => d.Scope).WithMany(p => p.BoScopeMaps)
                 .HasForeignKey(d => d.ScopeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_BO_SCOPE_MAP_BOCW_SCOPE1");
-
-            entity.HasOne(d => d.ScopeMap).WithOne(p => p.BoScopeMapScopeMap)
-                .HasForeignKey<BoScopeMap>(d => d.ScopeMapId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BO_SCOPE_MAP_BOCW_SCOPE");
         });
