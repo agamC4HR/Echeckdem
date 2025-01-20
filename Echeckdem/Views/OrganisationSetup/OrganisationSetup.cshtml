@@ -284,14 +284,15 @@
                     <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
                     <a href="javascript:void(0)" onclick="LocationDataForm()" id="locationDataInfo" class="org-details-upper-links">Location Data</a>
 
-                        <a href="javascript:void(0);" onclick="viewBOCWData()" id="viewBOCWDataButton">View BOCW Data</a>
-                        <a href="javascript:void(0);" onclick="editBOCWData()" id="editBOCWDataButton">Edit BOCW Data</a>
+                        
                 </div>
 
                 <div class="org-details-lower-links">
                     <!-- Bottom links -->
                         <a href="javascript:void(0);" onclick="showBOCWUploadForm()">BOCWSITESETUP</a>
-                      
+                        <a href="javascript:void(0);" onclick="viewBOCWData()" id="viewBOCWDataButton">View BOCW Data</a>
+                        <a asp-controller="OrganisationSetup" asp-action="viewbodetails" asp-route-oid="@Model.SelectedOrganisation.oid" id="viewBOCWDataButton">View BOCW Data</a>
+                        <a href="javascript:void(0);" onclick="editBOCWData()" id="editBOCWDataButton">Edit BOCW Data</a>
                 </div>
 
             </div>
@@ -519,13 +520,13 @@
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "Locations";
+        document.getElementById("orgDetailsHeader").innerText = "BOCW SITE SETUP";
         $("#orgDetailsBody").load(`/OrganisationSetup/BOCWSiteSetup?oid=${oid}`);
 
     }
     // End of  Add Location for BOCW sites-----------------------------
 
-    @* // Start of viewing BOCW DATA----------------------------------------------------
+     // Start of viewing BOCW DATA----------------------------------------------------
     function viewBOCWData() {
         const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
         if (!oid) {
@@ -533,12 +534,12 @@
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "BOCW Data - @Model.SelectedOrganisation?.Oname";
-        $("#orgDetailsBody").load(/OrganisationSetup/ViewBOCWData ? oid = ${ oid });
+        document.getElementById("orgDetailsHeader").innerText = "BOCW Data - @Model?.SelectedOrganisation?.Oname";
+            $("#orgDetailsBody").load(`/OrganisationSetup/viewbodetails?oid=${oid}`);
     }
     // END of viewing BOCW DATA------------------------------------------------------
 
-
+    @*
     // START of editing BOCW DATA---------------------------------------------------
     function editBOCWData() {
         const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";

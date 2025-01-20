@@ -364,3 +364,42 @@ a {
     .styled-table th {
         background-color: #f8f9fa;
     }
+
+
+   /*---------------------------------------------css for tables shown in orgdetilsbody->Organisationsetup.cshtml*/
+.org-details-body-table {
+    table-layout: fixed;
+    width: 62vw;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+}
+
+    .org-details-body-table thead {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .org-details-body-table th,
+    .org-details-body-table td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #dee2e6;
+        font-size: 12px;
+    }
+
+    .org-details-body-table th {
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #495057;
+    }
+
+    .org-details-body-table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .org-details-body-table tbody tr:hover {
+        background-color: #e9ecef;
+    }
