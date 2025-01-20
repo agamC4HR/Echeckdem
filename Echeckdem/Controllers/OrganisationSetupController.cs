@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using Echeckdem.Models;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace Echeckdem.Controllers
 
@@ -15,14 +16,16 @@ namespace Echeckdem.Controllers
         private readonly OrganisationSetupService _organisationsetupservice;
         private readonly IBulkUploadService _bulkUploadService;
         private readonly DbEcheckContext _EcheckContext;
+        private readonly ILogger<OrganisationSetupController> _logger;
 
 
-        public OrganisationSetupController(OrganisationSetupService organisationSetupService, IBulkUploadService bulkUploadService, DbEcheckContext EcheckContext)
+        public OrganisationSetupController(OrganisationSetupService organisationSetupService, IBulkUploadService bulkUploadService, DbEcheckContext EcheckContext, ILogger<OrganisationSetupController> logger)
 
         {
             _organisationsetupservice = organisationSetupService;
             _bulkUploadService = bulkUploadService;
             _EcheckContext = EcheckContext;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -144,13 +147,6 @@ namespace Echeckdem.Controllers
 
 
 
-
-
-            //if(_organisationsetupservice.HasIncompleteBODataAsync(oid).Result)
-            //{
-            //    TempData["ErrorMessage"] = "Additional information is required for BOCW sites. Please upload the required data before proceeding.";
-            //    return RedirectToAction("BOCWSiteSetup", new { oid });
-            //}
 
 
 
@@ -395,11 +391,18 @@ namespace Echeckdem.Controllers
             return View(boDetails);
         }
 
+        
+
         [HttpGet]
-        public async Task<IActionResult> ViewBocwDetails(string ProjectCode)
+        public async Task<IActionResult> EditBoDetail(string lcode)
         {
-            var boDetail = await _organisationsetupservice.GetBocwDetailsbyprojectcodeAsync(ProjectCode);
-            if(boDetail == null)
+            if (string.IsNullOrEmpty(lcode))
+            {
+                return RedirectToAction("Error", new { message = "Lcode is required." });
+            }
+
+            var boDetail = await _organisationsetupservice.GetBocwDetailsByLcodeAsync(lcode);
+            if (boDetail == null)
             {
                 return RedirectToAction("Error", new { message = "BO detail not found." });
             }
@@ -407,25 +410,128 @@ namespace Echeckdem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditBoDetail(Ncmlocbo updatedBoDetail)
+        public async Task<IActionResult> EditBoDetail(Ncmlocbo updatedBoDetail)                                     // Updating NCMLOCBO if any changes    
         {
             if (!ModelState.IsValid)
             {
+                TempData["ErrorMessage"] = "Please correct the errors in the form.";
+                _logger.LogWarning("Form submission is invalid. Errors: {@ModelState}", ModelState);
                 return View(updatedBoDetail);
             }
 
             try
             {
+               
+
                 await _organisationsetupservice.UpdateBoDetailsAsync(updatedBoDetail);
-                return RedirectToAction("ViewBoDetails", new { oid = updatedBoDetail.Lcode.Substring(0, 6) }); // Redirect to view after update
+                TempData["SuccessMessage"] = "BO details updated successfully!";
+                _logger.LogInformation("Successfully updated BO details for Lcode: {Lcode}", updatedBoDetail.Lcode);
+                return RedirectToAction("ViewBoDetails", new { oid = updatedBoDetail.Lcode.Substring(0, 6) });
             }
 
+            catch (KeyNotFoundException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                _logger.LogError(ex, "Failed to update BO details for Lcode: {Lcode}. Record not found.", updatedBoDetail.Lcode);
+                return RedirectToAction("Error", new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                TempData["ErrorMessage"] = "An unexpected error occurred while updating BO details.";
+                _logger.LogError(ex, "An unexpected error occurred while updating BO details for Lcode: {Lcode}", updatedBoDetail.Lcode);
                 return View(updatedBoDetail);
             }
+          
         }
+
+
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var sites = await _organisationsetupservice.GetAllSitesAsync();
+                return View(sites);
+            }
+            catch (Exception ex)
+            {
+                // Log error and return an error view/message
+                // Logger.LogError(ex, "Error fetching sites");
+                return View("Error");
+            }
+
+        }
+
+        public async Task<IActionResult> ManageScope (string lcode, string projectCode)
+        {
+            ViewBag.lcode = lcode;
+            ViewBag.projectCode = projectCode;
+            var scopes = await _organisationsetupservice.GetScopesAsync();
+            return PartialView("ManageScopePartial", scopes);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveMapping (string lcode, string projectCode, List<string> selectedScopeIds)
+        {
+            if (selectedScopeIds == null || !selectedScopeIds.Any())
+            {
+                ModelState.AddModelError("", "Please select at least one scope.");
+                return RedirectToAction("Index");
+            }
+
+            await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
+            return RedirectToAction ("Index");
+        }
+            
+
+        //public async Task<IActionResult> Index()                                               //fetching information of bocw scopes and locations details.
+        //{
+        //    var bocwScopes = await _EcheckContext.BocwScopes.ToListAsync();
+        //    var locations = await _EcheckContext.Ncmlocbos.ToListAsync();
+        //    return View(new BOCWScopeViewModel
+        //    {
+        //        BocwScope = bocwScopes,
+        //        locations = locations
+        //    });
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> SaveScopeMap(List<BoScopeMap> scopeMaps)                               // SaveScope map in boscopemap table 
+        //{
+
+        //    if (scopeMaps == null || !scopeMaps.Any())
+        //    {
+        //        TempData["ErrorMessage"] = "No mapping data was provided.";
+        //        return RedirectToAction(nameof(Index));
+        //    }
+
+
+        //    foreach (var map in scopeMaps)
+        //    {
+        //        // Check if mapping already exists
+        //        var existingMap = await _EcheckContext.BoScopeMaps
+        //            .FirstOrDefaultAsync(m => m.Lcode == map.Lcode && m.ScopeId == map.ScopeId);
+
+        //        if (existingMap != null)
+        //        {
+        //            // Update existing mapping
+        //            existingMap.Active = map.Active;
+        //        }
+        //        else
+        //        {
+        //            // Add new mapping
+        //            _EcheckContext.BoScopeMaps.Add(new BoScopeMap                               
+        //            {
+        //                ScopeId = map.ScopeId,
+        //                Lcode = map.Lcode,
+        //                ProjectCode = map.ProjectCode,
+        //                Active = map.Active
+        //            });
+        //        }
+        //    }
+        //    await _EcheckContext.SaveChangesAsync();
+        //    TempData["SuccessMessage"] = "Scope mappings saved successfully!";
+        //    return RedirectToAction(nameof(Index));
+        //}
 
     }
 }

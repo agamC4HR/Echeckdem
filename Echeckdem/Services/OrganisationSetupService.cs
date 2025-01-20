@@ -212,6 +212,16 @@ namespace Echeckdem.Services
 
 
 
+                            var matchingSite = boSites.FirstOrDefault(b => b.Lcode == lcode);
+                            if (matchingSite == null)
+                                throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
+
+                            var lname = matchingSite.Lname; // Get lname from Ncmloc table
+
+
+
+
+
                             // Logic to handle date fromat 
                             var projectStartDateValue = row.Cell(9).GetValue<string>()?.Trim();
                             DateOnly? projectStartDate = null;
@@ -245,14 +255,14 @@ namespace Echeckdem.Services
                             var boDetail = new Ncmlocbo
                             {
                                 Lcode = lcode,
-                                // Lname = lname,
+                                Lname = lname,
                                 ProjectCode = Guid.NewGuid().ToString().Substring(0, 6), // Generate 6-char project code
                                 OvalId = row.Cell(2).GetValue<string>().Trim(),
                                 ClientName = row.Cell(3).GetValue<string>().Trim(),
                                 GeneralContractor = row.Cell(4).GetValue<string>().Trim(),
                                 ProjectAddress = row.Cell(5).GetValue<string>().Trim(),
                                 NatureofWork = row.Cell(6).GetValue<string>().Trim(),
-                                ProjectArea = row.Cell(7).GetValue<decimal?>(),
+                                ProjectArea = row.Cell(7).GetValue<decimal>(),
                                 ProjectCostEst = row.Cell(8).GetValue<float?>(),
                                 ProjectStartDateEst = projectStartDate,
                                 ProjectEndDateEst = projectEndDate,
@@ -273,6 +283,7 @@ namespace Echeckdem.Services
             }
             return 0;
         }
+
 
         public async Task<List<Ncmloc>> GetBoSitesAsync(string oid)                                      // function to get sites under BOCW ACT.
         {
@@ -315,14 +326,17 @@ namespace Echeckdem.Services
 
         }
 
-        public async Task<Ncmlocbo> GetBocwDetailsbyprojectcodeAsync(string ProjectCode)
+
+
+        public async Task<Ncmlocbo> GetBocwDetailsByLcodeAsync(string lcode)
         {
-            return await _EcheckContext.Ncmlocbos.FirstOrDefaultAsync(b => b.ProjectCode == ProjectCode);
+            return await _EcheckContext.Ncmlocbos.FirstOrDefaultAsync(b => b.Lcode == lcode);
         }
+
 
         public async Task UpdateBoDetailsAsync(Ncmlocbo updatedBoDetail)
         {
-            var existingBoDetail = await _EcheckContext.Ncmlocbos.FirstOrDefaultAsync(b => b.ProjectCode == updatedBoDetail.ProjectCode);
+            var existingBoDetail = await _EcheckContext.Ncmlocbos.AsTracking().FirstOrDefaultAsync(b => b.Lcode == updatedBoDetail.Lcode);
             if (existingBoDetail != null)
             {
                 existingBoDetail.OvalId = updatedBoDetail.OvalId;
@@ -338,6 +352,7 @@ namespace Echeckdem.Services
                 existingBoDetail.WorkerHeadCount = updatedBoDetail.WorkerHeadCount;
                 existingBoDetail.ProjectLead = updatedBoDetail.ProjectLead;
 
+                _EcheckContext.Entry(existingBoDetail).State = EntityState.Modified;
 
                 await _EcheckContext.SaveChangesAsync();
 
@@ -348,5 +363,41 @@ namespace Echeckdem.Services
                throw new KeyNotFoundException("BO detail not found.");
             }
         }
+
+
+        public async Task<List<Ncmlocbo>> GetAllSitesAsync()
+        {
+            return await _EcheckContext.Ncmlocbos.ToListAsync();
+        }
+        public async Task<List<BocwScope>> GetScopesAsync()
+        {
+            return await _EcheckContext.BocwScopes.ToListAsync();
+        }
+
+        public async Task AddOrUpdateMapping (string lcode, string projectCode, List<string> selectedScopeIds)
+        {
+            // Remove existing mappings for the site
+            var existingMappings = _EcheckContext.BoScopeMaps.Where(m => m.Lcode == lcode && m.ProjectCode == projectCode);
+            _EcheckContext.BoScopeMaps.RemoveRange(existingMappings);
+
+            foreach (var scopeId in selectedScopeIds)
+            {
+                var mapping = new BoScopeMap
+                {
+                    ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
+                    ScopeId = scopeId,
+                    Lcode = lcode,
+                    ProjectCode = projectCode,
+                    Active = true
+                };
+
+                _EcheckContext.BoScopeMaps.Add(mapping);
+            }
+            await _EcheckContext.SaveChangesAsync();
+
+        }
+            
+        
+
     }
 }

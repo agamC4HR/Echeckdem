@@ -3,7 +3,8 @@
 <h2 class="mb-4">Edit BO Detail</h2>
 
 <form asp-action="EditBoDetail" method="post" class="needs-validation" novalidate>
-    <input type="hidden" asp-for="ProjectCode" />
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Lcode" />
 
     <div class="row">
         <div class="col-md-6 mb-3">
@@ -12,10 +13,30 @@
         </div>
 
         <div class="col-md-6 mb-3">
+            <label asp-for="OvalId" class="form-label"></label>
+            <input asp-for="OvalId" class="form-control" required />
+
+           
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="ProjectCode" class="form-label"></label>
+            <input asp-for="ProjectCode" class="form-control" required />
+
+
+        </div>
+        <div class="col-md-6 mb-3">
             <label asp-for="ClientName" class="form-label"></label>
             <input asp-for="ClientName" class="form-control" required />
             <div class="invalid-feedback">Please provide a valid Client Name.</div>
         </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="GeneralContractor" class="form-label"></label>
+            <input asp-for="GeneralContractor" class="form-control" required />
+            
+        </div>
+
     </div>
 
     <div class="row">
@@ -69,7 +90,7 @@
     </div>
 
     <button type="submit" class="btn btn-success">Save Changes</button>
-    <a href="@Url.Action("ViewBocwDetails", "OrganisationSetup", new { oid = Model.Lcode.Substring(0, 6) })" class="btn btn-secondary">Cancel</a>
+    <a href="@Url.Action("ViewBoDetails", "OrganisationSetup", new { oid = Model.Lcode.Substring(0, 6) })" class="btn btn-secondary">Cancel</a>
 </form>
 
 <script>

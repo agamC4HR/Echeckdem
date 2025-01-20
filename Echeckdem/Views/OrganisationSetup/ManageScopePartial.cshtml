@@ -1,0 +1,16 @@
+﻿<form method="post" action="/OrganisationSetup/SaveMapping">
+    <input type="hidden" name="lcode" value="@ViewBag.Lcode" />
+    <input type="hidden" name="projectCode" value="@ViewBag.ProjectCode" />
+    <div>
+        @foreach (var scope in Model)
+        {
+            var isChecked = scope.IsMapped ? "checked" : "";
+            <div>
+                <input type="checkbox" name="selectedScopeIds" value="@scope.ScopeID" @isChecked /> @scope.ScopeName
+            </div>
+        }
+    </div>
+    <button type="submit" class="btn btn-success">Save Mapping</button>
+</form>
+
+

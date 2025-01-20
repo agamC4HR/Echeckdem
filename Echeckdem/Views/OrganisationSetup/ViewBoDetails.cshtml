@@ -30,7 +30,7 @@
                 <td>@bo.NatureofWork</td>
                 <td>@bo.ProjectCostEst</td> 
                 <td>
-                    <a href="@Url.Action("EditBoDetail", "OrganisationSetup", new { ProjectCode = bo.ProjectCode })" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="@Url.Action("EditBoDetail", "OrganisationSetup",new { lcode = bo.Lcode })" class="btn btn-primary btn-sm">Edit</a>
                 </td>
             </tr>
         }
@@ -46,6 +46,24 @@
         <li class="page-item"><a class="page-link" href="#">Next</a></li>
     </ul>
 </nav>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
 
 <script>
     // Search Filter

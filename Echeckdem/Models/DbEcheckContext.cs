@@ -21,6 +21,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Audtrail> Audtrails { get; set; }
 
+    public virtual DbSet<BoScopeMap> BoScopeMaps { get; set; }
+
     public virtual DbSet<BocwScope> BocwScopes { get; set; }
 
     public virtual DbSet<Calendar> Calendars { get; set; }
@@ -131,12 +133,12 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Webinar> Webinars { get; set; }
 
-
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
     public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -145,8 +147,8 @@ public partial class DbEcheckContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ReturnsViewModel>()
-         .HasNoKey()
-         .ToView(null);
+       .HasNoKey()
+       .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()
@@ -154,7 +156,7 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<RegistrationViewModel>()
       .HasNoKey()
-    .ToView(null);
+.ToView(null);
 
         modelBuilder.Entity<Act>(entity =>
         {
@@ -307,6 +309,46 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("UIDS");
+        });
+
+        modelBuilder.Entity<BoScopeMap>(entity =>
+        {
+            entity.HasKey(e => e.ScopeMapId);
+
+            entity.ToTable("BO_SCOPE_MAP");
+
+            entity.Property(e => e.ScopeMapId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ScopeMapID");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("lcode");
+            entity.Property(e => e.ProjectCode).HasMaxLength(10);
+            entity.Property(e => e.ScopeId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ScopeID");
+
+            entity.HasOne(d => d.LcodeNavigation).WithMany(p => p.BoScopeMaps)
+                .HasForeignKey(d => d.Lcode)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BO_SCOPE_MAP_BO_SCOPE_MAP");
+
+            entity.HasOne(d => d.ProjectCodeNavigation).WithMany(p => p.BoScopeMaps)
+                .HasForeignKey(d => d.ProjectCode)
+                .HasConstraintName("FK_BO_SCOPE_MAP_NCMLOCBO");
+
+            entity.HasOne(d => d.Scope).WithMany(p => p.BoScopeMapScopes)
+                .HasForeignKey(d => d.ScopeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BO_SCOPE_MAP_BOCW_SCOPE1");
+
+            entity.HasOne(d => d.ScopeMap).WithOne(p => p.BoScopeMapScopeMap)
+                .HasForeignKey<BoScopeMap>(d => d.ScopeMapId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BO_SCOPE_MAP_BOCW_SCOPE");
         });
 
         modelBuilder.Entity<BocwScope>(entity =>
@@ -1565,6 +1607,10 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(15)
                 .IsUnicode(false)
                 .HasColumnName("lcode");
+            entity.Property(e => e.Lname)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("lname");
             entity.Property(e => e.NatureofWork).HasMaxLength(255);
             entity.Property(e => e.OvalId)
                 .HasMaxLength(10)

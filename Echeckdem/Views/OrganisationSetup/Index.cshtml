@@ -1,0 +1,58 @@
+﻿
+
+<table>
+    <thead>
+        <tr>
+            <th>Location Code</th>
+            <th>Project Code</th>
+            <th>Client Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var site in Model)
+        {
+            <tr>
+                <td>@site.Lcode</td>
+                <td>@site.ProjectCode</td>
+                <td>@site.ClientName</td>
+                <td>
+                    <button class="btn btn-primary" onclick="openManageScope('@site.Lcode', '@site.ProjectCode')"
+                            title="Manage scope mapping for @site.ClientName">
+                        Manage Scope Mapping
+                    </button>
+                </td>
+            </tr>
+            
+        }
+    </tbody>
+</table>
+
+<script>
+    function openManageScope(lcode, projectCode) {
+        console.log("Function triggered with:", lcode, projectCode);
+        $.get('/OrganisationSetup/ManageScope', { lcode, projectCode }, function (data) {
+            console.log("Response received:", data);
+            $('#scopeModalBody').html(data);
+            $('#scopeModal').modal('show');
+        }).fail(function (xhr) {
+        console.error("Error occurred:", xhr.responseText);
+        //log.error
+        });
+    }
+</script>
+
+<!-- Modal -->
+<div id="scopeModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage Scope Mapping</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="scopeModalBody" class="modal-body">
+                <!-- Content will be dynamically loaded -->
+            </div>
+        </div>
+    </div>
+</div>
