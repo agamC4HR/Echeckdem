@@ -7,6 +7,8 @@ using Echeckdem.Models;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
+using DocumentFormat.OpenXml.Office.CustomXsn;
+using DocumentFormat.OpenXml.InkML;
 
 namespace Echeckdem.Controllers
 
@@ -378,7 +380,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ViewBoDetails(string oid)
+        public async Task<IActionResult> ViewBoDetails(string oid)                                             // View BOCW sites details under VIEW BOCW DATA Button
         {
             if (string.IsNullOrEmpty(oid))
             {
@@ -408,31 +410,32 @@ namespace Echeckdem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditBoDetail(Ncmlocbo updatedBoDetail)                                     // Updating NCMLOCBO if any changes    
+        public async Task<IActionResult> EditBoDetail(Ncmlocbo updatedBoDetail)
         {
             if (!ModelState.IsValid)
             {
+                //return BadRequest("Invalid data submitted");
                 TempData["ErrorMessage"] = "Please correct the errors in the form.";
-                _logger.LogWarning("Form submission is invalid. Errors: {@ModelState}", ModelState);
                 return View(updatedBoDetail);
             }
 
             try
             {
-               
-
                 await _organisationsetupservice.UpdateBoDetailsAsync(updatedBoDetail);
+
+               // var lcode = updatedBoDetail.Lcode;
+                var oid = await _organisationsetupservice.GetOidByLcodeAsync(updatedBoDetail.Lcode);
+
                 TempData["SuccessMessage"] = "BO details updated successfully!";
-                _logger.LogInformation("Successfully updated BO details for Lcode: {Lcode}", updatedBoDetail.Lcode);
-                return RedirectToAction("ViewBoDetails", new { oid = updatedBoDetail.Lcode.Substring(0, 6) });
+                
+
+                // Redirect back to ViewBoDetails with the updated OID
+                return RedirectToAction("ViewBoDetails", new { oid }); 
+                
+            
             }
 
-            catch (KeyNotFoundException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                _logger.LogError(ex, "Failed to update BO details for Lcode: {Lcode}. Record not found.", updatedBoDetail.Lcode);
-                return RedirectToAction("Error", new { message = ex.Message });
-            }
+           
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "An unexpected error occurred while updating BO details.";
@@ -442,9 +445,41 @@ namespace Echeckdem.Controllers
           
         }
 
+        //public async Task<IActionResult> MapScopes (string lcode , string projectCode)
+        //{
+        //    //if (string.IsNullOrEmpty(lcode) || string.IsNullOrEmpty(projectCode))
+        //    //{
+        //    //    return Content("Lcode and ProjectCode are required.");
+        //    //}
+        //    var scopes = await _organisationsetupservice.GetScopesAsync();
+        //    //ViewBag.Lcode = lcode;
+        //    //ViewBag.ProjectCode = projectCode;
+
+        //    //var scopes = await _EcheckContext.BocwScopes.ToListAsync(); // Fetch all scopes
+        //    var viewModel = new MapScopesViewModel
+        //    {
+        //        Lcode = lcode,
+        //        ProjectCode = projectCode,
+        //        Scopes = scopes
+        //    };
+
+        //    return PartialView("_MapScopesPartialView", viewModel);
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> SaveMappings(string lcode, string projectCode, List<string> selectedScopeIds)
+        //{
+        //    await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
+        //    TempData["SuccessMessage"] = "Mappings saved successfully!";
+        //    return RedirectToAction("ViewBoDetails");//, new { oid = projectCode }); // Redirect to the BoDetails page
+        //}
+
+
+
+
 
         public async Task<IActionResult> Index()
-       
+
         {
             try
             {
@@ -462,25 +497,53 @@ namespace Echeckdem.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetScopesBySite(string lcode, string projectCode)
+
+        public async Task<IActionResult> GetScopesPartial(string lcode, string projectCode)
         {
             try
             {
-                // Fetch scopes for the site from BocwScope
+                // Get all available scopes
                 var scopes = await _organisationsetupservice.GetScopesAsync();
-                return Json(scopes);
+
+                // Get existing mappings
+                //var existingMappings = await _EcheckContext.BoScopeMaps
+                //    .Where(m => m.Lcode == lcode && m.ProjectCode == projectCode)
+                //    .Select(m => m.ScopeId)
+                //    .ToListAsync();
+
+                ViewBag.Lcode = lcode;
+                ViewBag.ProjectCode = projectCode;
+                //ViewBag.SelectedScopeIds = existingMappings;
+
+                return View("_ScopesMapping", scopes);
             }
             catch (Exception ex)
             {
                 // Log error
-                // Logger.LogError(ex, "Error fetching scopes");
-                return Json(new List<BocwScope>());
+                return View("_ScopesMapping");//, new List<BocwScope>());
             }
         }
+        //public async Task<IActionResult> GetScopesBySite(string lcode, string projectCode)
+        //{
+        //    try
+        //    {
+        //        // Fetch scopes for the site from BocwScope
+        //        var scopes = await _organisationsetupservice.GetScopesAsync();
+        //        return Json(scopes);
 
-       
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log error
+        //        // Logger.LogError(ex, "Error fetching scopes");
+        //        return Json(new List<BocwScope>());
+
+        //    }
+        //}
+
+
         [HttpPost]
-        public async Task<IActionResult> SaveMapping (string lcode, string projectCode, List<string> selectedScopeIds)
+        public async Task<IActionResult> SaveMapping(string lcode, string projectCode, List<string> selectedScopeIds)
         {
             if (selectedScopeIds == null || !selectedScopeIds.Any())
             {
@@ -489,11 +552,11 @@ namespace Echeckdem.Controllers
             }
 
             await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
-            return RedirectToAction ("Index");
+            return RedirectToAction("Index");
         }
-            
 
-        
+
+
 
     }
 }

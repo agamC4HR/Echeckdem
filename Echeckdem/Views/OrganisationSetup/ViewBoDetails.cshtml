@@ -24,7 +24,8 @@
             <th>Project Address</th>
             <th>Nature of Work</th>
             <th>Project Cost</th>
-            <th>Edit</th>
+            
+            
         </tr>
     </thead>
     <tbody id="boDetailsTable">
@@ -36,77 +37,42 @@
                 <td>@bo.ClientName</td>
                 <td>@bo.ProjectAddress</td>
                 <td>@bo.NatureofWork</td>
-                <td>@bo.ProjectCostEst</td> 
-               @*  <td>
-                    <a href="@Url.Action("EditBoDetail", "OrganisationSetup",new { lcode = bo.Lcode })" class="btn btn-primary btn-sm">Edit</a>
-                </td> *@
-                <td>
-                    <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
-                </td>
+                <td>@bo.ProjectCostEst</td>
+               
+               
             </tr>
+          
         }
+       
     </tbody>
 </table>
 
+<!-- Container to load the partial view -->
+<div id="mapScopesContainer"></div>
+
 <script>
-    $(document).ready(function () {
-       var oid = "";
-       // Populate the modal with data
-       $('.edit-icon').on('click', function () {
+    // Event listener for the "Map Scopes" button
+    $(document).on('click', '.map-scopes-btn', function () {
+        const lcode = $(this).data('lcode'); // Get Lcode from data attribute
+        const projectCode = $(this).data('projectcode'); // Get ProjectCode from data attribute
 
-           var row = $(this).closest('tr');
-           oid = row.find('td[data-field="Oid"]').text().trim(); // Set the global OID value
-    @* alert("Oid value: " + oid); *@
+        console.log("Loading scopes for Lcode:", lcode, "and ProjectCode:", projectCode); // Debugging line
 
+        // Show a loading spinner in the container
+        $('#mapScopesContainer').html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>');
 
-           var locationId = row.data('id'); // Assuming data-id attribute for location ID
-           var Lcode = row.find('td[data-field="Lcode"]').text();
-           var Lname = row.find('td[data-field="Lname"]').text();
-           var Lcity = row.find('td[data-field="Lcity"]').text();
-           var Lstate = row.find('td[data-field="Lstate"]').text();
-           var Lregion = row.find('td[data-field="Lregion"]').text();
-           var Iscentral = row.find('td[data-field="Iscentral"]').text().includes("Yes") ? 1 : 0;
-           var Iscloc = row.find('td[data-field="Iscloc"]').text().includes("Yes") ? 1 : 0;
-           var Lactive = row.find('td[data-field="Lactive"]').text().includes("Yes") ? 1 : 0;
-    @*  var Ltype = row.find('td[data-field="Ltype"]').text().trim(); *@
-           var LtypeDescription = row.find('td[data-field="Ltype"]').text().trim();
-           var Lsetup = row.find('td[data-field="Lsetup"]').text().trim();
-
-           var LtypeValue = "";
-           if (LtypeDescription === "SE") {
-               LtypeValue = "S";
-           } else if (LtypeDescription === "Fact") {
-               LtypeValue = "F";
-           } else if (LtypeDescription === "BOCW") {
-               LtypeValue = "BO"; // Default or no value
-           }
-
-
-           // Populate modal fields
-           $('#locationId').val(locationId);
-           $('#Lcode').val(Lcode);
-           $('#Lname').val(Lname);
-           $('#Lcity').val(Lcity);
-           $('#Lstate').val(Lstate);
-           $('#Lregion').val(Lregion);
-           $('#Iscentral').val(Iscentral);
-           $('#Iscloc').val(Iscloc);
-           $('#Lactive').val(Lactive);
-    @* $('#Ltype').val(Ltype); *@
-           $('#Ltype').val(LtypeValue);
-           $('#Lsetup').val(Lsetup);
-
-           $('#editLocationModal').css('display', 'block');
-           $('#locationDataTable').css('display', 'none');
-       });
-
-       $('.close-btn').on('click', function () {
-           $('#editLocationModal').css('display', 'none');
-           $('#locationDataTable').css('display', 'table');
-       });
-       });
+        // Perform an AJAX request to load the partial view
+        $.get('@Url.Action("MapScopes", "OrganisationSetup")', { lcode: lcode, projectCode: projectCode })
+            .done(function (data) {
+                if (data) {
+                    $('#mapScopesContainer').html(data); // Insert the partial view into the container
+                } else {
+                    alert("Failed to load scopes. Please try again."); // User feedback on failure
+                }
+            })
+            .fail(function (xhr, status, error) {
+                console.error("AJAX Error:", error); // Debugging line for failed request
+                alert(`Error: ${xhr.responseText || "Unable to process the request."}`); // Show error to the user
+            });
     });
 </script>
-
-
-

@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Site Details";
 }
-
+<div>
 <h2>Site Details</h2>
 
 <table class="table">
@@ -23,109 +23,33 @@
                 <td>@site.ProjectCode</td>
                 <td>@site.ClientName</td>
                 <td>
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#scopeMappingModal"
+                    @* <button class="btn btn-primary" onclick="loadScopesPartial('@site.Lcode', '@site.ProjectCode')">
+                        Manage Scopes
+                    </button> *@
+                        <a asp-controller="OrganisationSetup" asp-action="GetScopesPartial" asp-route-lcode="@site.Lcode" asp-route-projectCode="@site.ProjectCode"  >ManageScopes</a>
+                   @*  <button class="btn btn-primary" data-toggle="modal" data-target="#scopeMappingModal"
                             data-lcode="@site.Lcode" data-projectcode="@site.ProjectCode">
                         Map Scopes
-                    </button>
+                    </button> *@
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-<!-- Modal for Scope Mapping -->
-<div class="modal fade" id="scopeMappingModal" tabindex="-1" role="dialog" aria-labelledby="scopeMappingModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="scopeMappingModalLabel">Select Scopes for Site</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="scopeMappingForm" method="post" asp-action="SaveMapping" enctype="multipart/form-data">
-                    <input type="hidden" name="lcode" id="lcode" />
-                    <input type="hidden" name="projectCode" id="projectCode" />
-
-                    <div class="form-group">
-                        <label for="scopes">Select Scopes:</label>
-                        <select multiple class="form-control" name="selectedScopeIds" id="scopes">
-                            <!-- Options will be populated via JavaScript -->
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Save Mapping</button>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
-
 @section Scripts {
     <script>
-        // Event listener for modal opening
-        $('#scopeMappingModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
-            var lcode = button.data('lcode'); // Extract info from data-* attributes
-            var projectCode = button.data('projectcode');
+        function loadScopesPartial(lcode, projectCode) {
+            console.log("Loading scopes for lcode:", lcode, "and projectCode:", projectCode);
 
-            var modal = $(this);
-            modal.find('#lcode').val(lcode);
-            modal.find('#projectCode').val(projectCode);
-
-            // Fetch scopes for the current site
-            $.ajax({
-                url: '@Url.Action("GetScopesBySite", "OrganisationSetup")',
-                type: 'GET',
-                data: { lcode: lcode, projectCode: projectCode },
-                success: function (data) {
-                    var scopeSelect = modal.find('#scopes');
-                    scopeSelect.empty(); // Clear previous selections
-                    if (data.length > 0) {
-                        // Populate scope options
-                        data.forEach(function (scope) {
-                            scopeSelect.append(
-                                '<option value="' + scope.scopeId + '">' + scope.scopeName + '</option>'
-                            );
-                        });
-                    } else {
-                        // Handle case when no scopes are returned
-                        scopeSelect.append('<option>No scopes available</option>');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX Error: ', error);
-                }
-            });
-        });
-
-        // // Handle form submission
-        // $('#scopeMappingForm').on('submit', function (e) {
-        //     e.preventDefault();
-
-        //     var selectedScopes = $('#scopes').val(); // Get selected scope ids
-        //     if (selectedScopes && selectedScopes.length > 0) {
-        //         $.ajax({
-        //             url: '@Url.Action("SaveMapping", "OrganisationSetup")',
-        //             type: 'POST',
-        //             data: {
-        //                 lcode: $('#lcode').val(),
-        //                 projectCode: $('#projectCode').val(),
-        //                 selectedScopeIds: selectedScopes
-        //             },
-        //             success: function () {
-        //                 // Close modal and refresh the page or update the list
-        //                 $('#scopeMappingModal').modal('hide');
-        //                 location.reload(); // Reload page to reflect changes
-        //             },
-        //             error: function (xhr, status, error) {
-        //                 console.error('AJAX Error: ', error);
-        //             }
-        //         });
-        //     } else {
-        //         alert("Please select at least one scope.");
-        //     }
-        // });
+            $.get('/OrganisationSetup/GetScopesPartial', { lcode: lcode, projectCode: projectCode })
+                .done(function (data) {
+                    console.log("Scopes loaded successfully.");
+                    $('#scopesPartialContainer').html(data);
+                })
+                .fail(function () {
+                    alert('Error loading scopes. Please try again.');
+                });
+        }
     </script>
 }

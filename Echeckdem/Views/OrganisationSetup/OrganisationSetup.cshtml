@@ -530,6 +530,7 @@
     function viewBOCWData() {
         const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
         if (!oid) {
+            
             alert("Organisation ID is not available. Please select a valid organisation.");
             return;
         }

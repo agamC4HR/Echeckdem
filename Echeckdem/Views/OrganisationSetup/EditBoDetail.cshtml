@@ -2,7 +2,11 @@
 
 <h2 class="mb-4">Edit BO Detail</h2>
 
-<form asp-action="EditBoDetail" method="post" class="needs-validation" novalidate>
+@* <form asp-action="EditBoDetail" method="post" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Lcode" /> *@
+
+<form id="editBoDetailForm" asp-action="EditBoDetail" method="post" class="needs-validation" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Lcode" />
 
@@ -89,11 +93,44 @@
         </div>
     </div>
 
+   @*  <button type="button" id="saveBoDetail" class="btn btn-success">Save Changes</button>
+    <a href="javascript:void(0);" class="btn btn-secondary close-modal">Cancel</a> *@
     <button type="submit" class="btn btn-success">Save Changes</button>
     <a href="@Url.Action("ViewBoDetails", "OrganisationSetup", new { oid = Model.Lcode.Substring(0, 6) })" class="btn btn-secondary">Cancel</a>
 </form>
 
+@* 
 <script>
+    $(document).ready(function () {
+        $("#saveBoDetail").on("click", function (e) {
+            e.preventDefault();
+            var form = $("#editBoDetailForm");
+            var url = form.attr("action");
+            var data = form.serialize();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                success: function (response) {
+                    alert("Changes saved successfully!");
+                    // Close the modal or form and refresh the table
+                    $(".close-modal").click(); // Assuming there's a modal close button
+                    $("#boDetailsTable").load("/OrganisationSetup/ViewBoDetails?oid=" + response.oid + " #boDetailsTable");
+                },
+                error: function (xhr, status, error) {
+                    alert("An error occurred: " + error);
+                }
+            });
+        });
+
+        $(".close-modal").on("click", function () {
+            // Logic to close the modal (if using a modal)
+        });
+    });
+</script> *@
+
+@* <script>
     // Bootstrap form validation
     (function () {
         'use strict';
@@ -108,4 +145,4 @@
             }, false);
         });
     })();
-</script>
+</script> *@

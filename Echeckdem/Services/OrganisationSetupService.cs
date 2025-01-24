@@ -311,6 +311,18 @@ namespace Echeckdem.Services
 
 
 
+        public async Task<string> GetOidByLcodeAsync(string lcode)                           // fetch oid from nmcloc by taking lcode from ncmlocbo and matchingthat lcode in ncmlloc 
+        {
+            var oid = await _EcheckContext.Ncmlocs
+                .Where(loc => loc.Lcode == lcode)
+                .Select(loc => loc.Oid)
+                .FirstOrDefaultAsync();
+
+            if (oid == null)
+                throw new KeyNotFoundException($"No Oid found for Lcode: {lcode}");
+
+            return oid;
+        }
 
 
         public async Task<List<Ncmlocbo>> GetAllBocwDetailsAsync(string oid)
@@ -390,32 +402,6 @@ namespace Echeckdem.Services
 
             foreach (var scopeId in selectedScopeIds)
             {
-                //// Ensure the ScopeId exists in the BocwScope table
-                //var scope = await _EcheckContext.BocwScopes.FirstOrDefaultAsync(s => s.ScopeId == scopeId);
-
-                //if (scope == null)
-                //{
-                //    // Handle error if no matching scope is found
-                //    throw new InvalidOperationException($"Scope with ID '{scopeId}' does not exist.");
-                //    //continue; // or throw an exception, depending on your requirements
-                //}
-
-                //var mapping = new BoScopeMap
-                //{
-                //    ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
-                //    ScopeId = scopeId,
-                //    Lcode = lcode,
-                //    ProjectCode = projectCode,
-                //    Active = true
-                //};
-
-                //// Associating the existing scope with the mapping
-                //mapping.LcodeNavigation = new Ncmloc { Lcode = lcode }; // Set LcodeNavigation if it's required
-                //mapping.ProjectCodeNavigation = new Ncmlocbo { ProjectCode = projectCode }; // Set ProjectCodeNavigation
-                ////mapping.Scope = scope; // This ensures the mapping is properly associated with the existing scope
-                //mapping.ScopeMap = new BocwScope { BoScopeMapScopeMap = mapping };
-
-                //_EcheckContext.BoScopeMaps.Add(mapping);
                 var mapping = new BoScopeMap
                 {
                     ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
@@ -425,17 +411,9 @@ namespace Echeckdem.Services
                     Active = true
 
                 };
-
-                //mapping.LcodeNavigation = new Ncmloc { Lcode = lcode }; // Set LcodeNavigation if it's required
-                //mapping.ProjectCodeNavigation = new Ncmlocbo { ProjectCode = projectCode }; // Set ProjectCodeNavigation
-                //mapping.Scope = new BocwScope { ScopeId = scopeId }; // Set Scope (you can fetch full data from DB if needed)
-               // mapping.ScopeMap = new BocwScope { BoScopeMapScopeMap = mapping };
-
-
                 _EcheckContext.BoScopeMaps.Add(mapping);
             }
             await _EcheckContext.SaveChangesAsync();
-
         }
             
         
