@@ -1,4 +1,35 @@
 ﻿@model List<Ncmlocbo>
+<style>
+    .custom-popup {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px;
+        width: 60%;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-popup {
+        float: right;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+</style>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -24,6 +55,8 @@
             <th>Project Address</th>
             <th>Nature of Work</th>
             <th>Project Cost</th>
+            <th>Scope Management</th>
+            
             
             
         </tr>
@@ -38,41 +71,70 @@
                 <td>@bo.ProjectAddress</td>
                 <td>@bo.NatureofWork</td>
                 <td>@bo.ProjectCostEst</td>
-               
-               
-            </tr>
+             @* <td> <a asp-controller="OrganisationSetup" asp-action="GetScopesPartial" asp-route-lcode="@bo.Lcode" asp-route-projectCode="@bo.ProjectCode"><i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a> </td> *@
+                <td>
+                    <a href="#" class="edit-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
+                        <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                    </a>
+                </td>
+             </tr>
           
         }
        
     </tbody>
 </table>
 
-<!-- Container to load the partial view -->
-<div id="mapScopesContainer"></div>
+<!-- Hidden popup container -->
+<div class="custom-popup" id="scopePopup">
+    <div class="popup-content">
+        <span class="close-popup">&times;</span>
+        <div id="popupBodyContent">
+            <!-- Scope mapping content will be dynamically loaded here -->
+            <div class="text-center">Loading...</div>
+        </div>
+    </div>
+</div>
+    
 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Event listener for the "Map Scopes" button
-    $(document).on('click', '.map-scopes-btn', function () {
-        const lcode = $(this).data('lcode'); // Get Lcode from data attribute
-        const projectCode = $(this).data('projectcode'); // Get ProjectCode from data attribute
+    $(document).ready(function () {
+        $('.edit-scope').on('click', function (e) {
+            e.preventDefault();
+            console.log("Edit scope clicked"); // Debugging
+            const lcode = $(this).data('lcode');
+            const projectCode = $(this).data('project-code');
 
-        console.log("Loading scopes for Lcode:", lcode, "and ProjectCode:", projectCode); // Debugging line
-
-        // Show a loading spinner in the container
-        $('#mapScopesContainer').html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>');
-
-        // Perform an AJAX request to load the partial view
-        $.get('@Url.Action("MapScopes", "OrganisationSetup")', { lcode: lcode, projectCode: projectCode })
-            .done(function (data) {
-                if (data) {
-                    $('#mapScopesContainer').html(data); // Insert the partial view into the container
-                } else {
-                    alert("Failed to load scopes. Please try again."); // User feedback on failure
+            // Load the scope mapping data into the popup
+            $.ajax({
+                url: '/OrganisationSetup/GetScopesPartial',
+                type: 'GET',
+                data: { lcode, projectCode },
+                success: function (data) {
+                    $('#popupBodyContent').html(data);
+                },
+                error: function () {
+                    $('#popupBodyContent').html('<p>Error loading data.</p>');
                 }
-            })
-            .fail(function (xhr, status, error) {
-                console.error("AJAX Error:", error); // Debugging line for failed request
-                alert(`Error: ${xhr.responseText || "Unable to process the request."}`); // Show error to the user
             });
+
+            // Show the popup
+            $('#scopePopup').fadeIn();
+        });
+
+        // Close the popup
+        $('.close-popup').on('click', function () {
+            console.log("Close popup clicked"); // Debugging
+            $('#scopePopup').fadeOut();
+        });
+
+        // Close the popup when clicking outside the content
+        // $(document).on('click', function (e) {
+        //     if ($(e.target).closest('.popup-content').length === 0 && !$(e.target).hasClass('edit-scope')) {
+        //           console.log("Outside click detected"); // Debugging
+        //         $('#scopePopup').fadeOut();
+        //     }
+        // });
     });
 </script>

@@ -515,12 +515,12 @@ namespace Echeckdem.Controllers
                 ViewBag.ProjectCode = projectCode;
                 //ViewBag.SelectedScopeIds = existingMappings;
 
-                return View("_ScopesMapping", scopes);
+                return PartialView("_ScopesMapping", scopes);
             }
             catch (Exception ex)
             {
                 // Log error
-                return View("_ScopesMapping");//, new List<BocwScope>());
+                return PartialView("_ScopesMapping");//, new List<BocwScope>());
             }
         }
         //public async Task<IActionResult> GetScopesBySite(string lcode, string projectCode)

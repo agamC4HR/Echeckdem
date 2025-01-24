@@ -367,6 +367,13 @@ a {
 
 
    /*---------------------------------------------css for tables shown in orgdetilsbody->Organisationsetup.cshtml*/
+.table-container {
+    width: 30vw;
+    top: 40px;
+    height: 80vh;
+    overflow: scroll;
+}
+
 .org-details-body-table {
     table-layout: fixed;
     width: 62vw;
