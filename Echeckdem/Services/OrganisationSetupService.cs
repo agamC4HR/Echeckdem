@@ -26,7 +26,6 @@ namespace Echeckdem.Services
             string generatedOid;
             do
             {
-                //Guid abc = Guid.NewGuid();
                 generatedOid = Guid.NewGuid().ToString("N").Substring(0, 10);
 
                 Console.WriteLine($"Generated Oid: {generatedOid}");
@@ -35,7 +34,6 @@ namespace Echeckdem.Services
 
             var organisation = new Ncmorg
             {
-                // Oid = newOrganisation.oid,
                 Oid = generatedOid,
                 Oname = newOrganisation.Oname,
                 Spoc = newOrganisation.Spoc,
@@ -88,22 +86,7 @@ namespace Echeckdem.Services
                 SelectedOrganisation = selectedOrganisation
             };
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)          // update the details in general info 
+        public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)                           // update the details in general info 
         {
             var organisation = await _EcheckContext.Ncmorgs
                 .FirstOrDefaultAsync(o => o.Oid == updatedInfo.oid);
@@ -158,14 +141,8 @@ namespace Echeckdem.Services
                 if (locationInDb.Ltype?.Contains("BO") == true)
                 {
                     var isNcmLocBoPopulated = await _EcheckContext.Ncmlocbos.AnyAsync(n => n.Lcode == locationInDb.Lcode);
-
-                    //if (!isNcmLocBoPopulated)  
-                    //{
-                    //    throw new InvalidOperationException($"Additional information is required for BOCW site (Lcode: {locationInDb.Lcode} and Lname: {locationInDb.Lname}).");
-                    //}
                 }
                 // Update all fields
-
                 locationInDb.Lname = addlocationdata.Lname ?? locationInDb.Lname;
                 locationInDb.Lcity = addlocationdata.Lcity ?? locationInDb.Lcity;
                 locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;
@@ -206,13 +183,7 @@ namespace Echeckdem.Services
                         foreach (var row in rows)
                         {
                             var lname = row.Cell(1).GetValue<string>()?.Trim();
-
-                            //var input = row.Cell(1).GetValue<string>()?.Trim();
-
-                            // Use lcode and lname for further processing
-
-
-//                            Resolve lcode based on lname
+//                          Resolve lcode based on lname
                            var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
                             if (site == null)
                                 throw new InvalidOperationException($"Invalid Location Name (Lname): {lname} for BO site.");
@@ -223,17 +194,11 @@ namespace Echeckdem.Services
                             //if (!boSites.Any(b => b.Lcode == lcode))
                             //    throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
 
-
-
                             //var matchingSite = boSites.FirstOrDefault(b => b.Lcode == lcode);
                             //if (matchingSite == null)
                             //    throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
 
                             //var lname = matchingSite.Lname; // Get lname from Ncmloc table
-
-
-
-
 
                             // Logic to handle date fromat 
                             var projectStartDateValue = row.Cell(9).GetValue<string>()?.Trim();
@@ -268,8 +233,7 @@ namespace Echeckdem.Services
                             var boDetail = new Ncmlocbo
                             {
                                 Lcode = lcode,
-                                //Lname = lname,
-                                ProjectCode = Guid.NewGuid().ToString().Substring(0, 6), // Generate 6-char project code
+                                ProjectCode = Guid.NewGuid().ToString().Substring(0, 6),
                                 OvalId = row.Cell(2).GetValue<string>().Trim(),
                                 ClientName = row.Cell(3).GetValue<string>().Trim(),
                                 GeneralContractor = row.Cell(4).GetValue<string>().Trim(),
@@ -314,8 +278,6 @@ namespace Echeckdem.Services
             return boSites.Any(site => !_EcheckContext.Ncmlocbos.Any(b => b.Lcode == site.Lcode));
         }
 
-
-
         public async Task<string> GetOidByLcodeAsync(string lcode)                                                                                        // fetch oid from nmcloc by taking lcode from ncmlocbo and matchingthat lcode in ncmlloc 
         {
             var query = "SELECT TOP 1 Oid FROM Ncmloc WHERE Lcode = @lcode";
@@ -325,8 +287,6 @@ namespace Echeckdem.Services
                 .FirstOrDefaultAsync();
             return oid;
         }
-
-
         public async Task<List<Ncmlocbo>> GetAllBocwDetailsAsync(string oid)
         {
             var query = @"
@@ -343,18 +303,11 @@ namespace Echeckdem.Services
                 .ToListAsync();
 
             return bocwDetails;
-
-
-
         }
-
-
-
         public async Task<Ncmlocbo> GetBocwDetailsByLcodeAsync(string lcode)
         {
             return await _EcheckContext.Ncmlocbos.FirstOrDefaultAsync(b => b.Lcode == lcode);
         }
-
 
         public async Task UpdateBoDetailsAsync(Ncmlocbo updatedBoDetail)
         {

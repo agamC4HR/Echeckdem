@@ -20,7 +20,6 @@ namespace Echeckdem.Controllers
         private readonly DbEcheckContext _EcheckContext;
         private readonly ILogger<OrganisationSetupController> _logger;
 
-
         public OrganisationSetupController(OrganisationSetupService organisationSetupService, IBulkUploadService bulkUploadService, DbEcheckContext EcheckContext, ILogger<OrganisationSetupController> logger)
 
         {
@@ -73,13 +72,10 @@ namespace Echeckdem.Controllers
                 return RedirectToAction("OrganisationSetup", new { selectedOid = updatedInfo.oid });
 
             }
-
-
             return BadRequest("Failed to update organization information");
         }
-
-        // Add Locations process        --  1)  BULK  UPLOAD 
-        [HttpGet]
+               
+        [HttpGet]                                                                                                                                // Add Locations process        --  1)  BULK  UPLOAD 
         public IActionResult Upload(string oid)
         {
             ViewBag.SelectedOid = oid;
@@ -87,7 +83,7 @@ namespace Echeckdem.Controllers
             
          }
 
-        [HttpPost]                                                          // Add Locations process        --  1)  BULK UPLOAD
+        [HttpPost]                                                                                                                                   // Add Locations process        --  1)  BULK UPLOAD
         public async Task<IActionResult> Upload(IFormFile file, string oid )
         {
             if (String.IsNullOrEmpty(oid))
@@ -116,7 +112,6 @@ namespace Echeckdem.Controllers
         "Kerala", "Maharashtra", "Manipur", "Meghalaya", "Mizoram","Madhya Pradesh", "Nagaland", "New Delhi", "No State", "Orissa",
         "Pondicherry", "Punjab", "Rajasthan", "Sikkim", "Telangana","Tamil Nadu", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
         };
-
 
             // Create a new Excel package
             using (var package = new ExcelPackage())
@@ -155,15 +150,6 @@ namespace Echeckdem.Controllers
 
                 // Hide the validation sheet
                 validationSheet.Hidden = eWorkSheetHidden.Hidden;
-
-
-
-
-
-
-
-
-
                 // Generate file content
                 var fileContent = package.GetAsByteArray();
                 // Return file as download
@@ -176,22 +162,13 @@ namespace Echeckdem.Controllers
         [HttpGet]
         public IActionResult GetLocationDatabyOid(string oid)                                 // Viewing the Location DATA tab
         {
-          
-
             if (string.IsNullOrEmpty(oid))
             {
                 TempData["ErrorMessage"] = "Invalid OID.";
                 return RedirectToAction("OrganisationSetup");
             }
 
-
-
-
-
-
-
             var locations = _organisationsetupservice.GetLocationDatabyOidAsync(oid).Result;
-
 
             // Create an instance of CombinedOrganisationSetupViewModel 
             var model =  new CombinedOrganisationSetupViewModel
@@ -202,8 +179,6 @@ namespace Echeckdem.Controllers
 
             return PartialView("EditLocations", model);
         }
-
-
 
         [HttpPost]                                                                                                          // EDting the location tab button to make any change.   
 
@@ -304,16 +279,7 @@ namespace Echeckdem.Controllers
                 return Json(new { success = false, message = "Please provide a valid OID." });
             }
 
-            //var boSites = await _organisationsetupservice.GetBoSitesAsync(oid);
-
-
-
-
             var boSites = await _EcheckContext.Ncmlocs.Where(n => n.Oid == oid && n.Ltype == "BO").Select(n => new { n.Lcode, n.Lname }).ToListAsync();
-
-
-
-
 
             if (!boSites.Any())
             {
@@ -328,8 +294,7 @@ namespace Echeckdem.Controllers
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
                 // Add headers to the worksheet
 
-                worksheet.Cells[1, 1].Value = "LocationName";//"LocationCode"; // lcode
-                //worksheet.Cells[1, 1].Value = "LocationName";  // lname
+                worksheet.Cells[1, 1].Value = "LocationName";
                 worksheet.Cells[1, 2].Value = "OvalId";
                 worksheet.Cells[1, 3].Value = "ClientName";
                 worksheet.Cells[1, 4].Value = "GeneralContractor(GC)";
@@ -342,16 +307,12 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 11].Value = "VendorCount";
                 worksheet.Cells[1, 12].Value = "WorkerHeadcount";
                 worksheet.Cells[1, 13].Value = "ProjectLead";
-                
-
-               
+                                         
                 // Populate rows with BOCW site details
                 int row = 2;
                 foreach (var site in boSites)
                 {
-                    //worksheet.Cells[row, 1].Value = site.Lcode;
-                    worksheet.Cells[row, 1].Value = site.Lname;//site.Lcode;//site.Lname;
-                   
+                    worksheet.Cells[row, 1].Value = site.Lname;
                     row++;            
                 }
 
@@ -378,11 +339,6 @@ namespace Echeckdem.Controllers
             var boDetails = await _organisationsetupservice.GetAllBocwDetailsAsync(oid);
             return PartialView(boDetails);
         }
-
-        
-
-
-
 
         public async Task<IActionResult> Index()
         {
@@ -421,8 +377,6 @@ namespace Echeckdem.Controllers
 
                 ViewBag.Lcode = lcode;
                 ViewBag.ProjectCode = projectCode;
-                //ViewBag.SelectedScopeIds = existingMappings;
-
                 return PartialView("_ScopesMapping", scopes);
             }
             catch (Exception ex)
@@ -433,8 +387,6 @@ namespace Echeckdem.Controllers
             }
         }
         
-
-
         [HttpPost]
         public async Task<IActionResult> SaveMapping(string lcode, string projectCode, List<string> selectedScopeIds)
         {
@@ -447,7 +399,7 @@ namespace Echeckdem.Controllers
                 {
                     ModelState.AddModelError("", "Please select at least one scope.");
                     return Json(new { success = false, message = "No scopes selected." });
-                    //return RedirectToAction("Index");
+                   
                 }
 
                 await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
@@ -462,23 +414,15 @@ namespace Echeckdem.Controllers
                 }
 
                 return Json(new { success = true, oid });
-
-               
-
-                //return RedirectToAction("ViewBoDetails", new { oid });
+                            
             }
 
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "An error occurred while saving the mapping. Please try again." });
                 TempData["ErrorMessage"] = "An error occurred while saving the mapping. Please try again.";
-                //return RedirectToAction("Index");
             }
         }
-
-
-
-
     }
 }
 
