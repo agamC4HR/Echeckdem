@@ -330,7 +330,7 @@ a {
         border-radius: 0.375rem;
         height: 26px;
     }
-.table-container {
+.table-container-detailsView {
     position: relative;
     width: 96vw;
     background-color: white;
@@ -372,6 +372,11 @@ a {
     top: 40px;
     height: 80vh;
     overflow: scroll;
+    position: relative;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    left: 20px;
 }
 
 .org-details-body-table {
