@@ -3,7 +3,7 @@
     <h4>Select Scopes</h4>
     @if (Model != null && Model.Any())
     {
-        <form asp-action="SaveMapping" method="post">
+        <form asp-action="SaveMapping" method="post" id="saveMappingForm">
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -17,7 +17,7 @@
                     {
                         <tr>
                             <td>
-                                <input type="checkbox" name="selectedScopeIds" value="@scope.ScopeId" />
+                                <input type="checkbox" name="selectedScopeIds" value="@scope.ScopeId" @(scope.IsSelected ? "checked" : "") />
                             </td>
                             <td>@scope.ScopeName</td>
                             <td>@(scope.ScopeActive == 1 ? "Yes" : "No")</td>
@@ -35,3 +35,4 @@
         <p>No scopes available.</p>
     }
 </div>
+                       

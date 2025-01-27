@@ -25,11 +25,6 @@ namespace Echeckdem.Services
             boscope.ScopeId = scopeId;
             
 
-            // Log the scopeId and details to check if it's correct
-            Console.WriteLine($"Generated ScopeId: {boscope.ScopeId}");
-            Console.WriteLine($"Scope Name: {boscope.ScopeName}, Scope Active: {boscope.ScopeActive}");
-
-
             _context.BocwScopes.Add(boscope);
             await _context.SaveChangesAsync();
         }

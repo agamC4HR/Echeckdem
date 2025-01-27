@@ -207,8 +207,13 @@ namespace Echeckdem.Services
                         {
                             var lname = row.Cell(1).GetValue<string>()?.Trim();
 
-                            // Resolve lcode based on lname
-                            var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
+                            //var input = row.Cell(1).GetValue<string>()?.Trim();
+
+                            // Use lcode and lname for further processing
+
+
+//                            Resolve lcode based on lname
+                           var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
                             if (site == null)
                                 throw new InvalidOperationException($"Invalid Location Name (Lname): {lname} for BO site.");
 
@@ -311,16 +316,13 @@ namespace Echeckdem.Services
 
 
 
-        public async Task<string> GetOidByLcodeAsync(string lcode)                           // fetch oid from nmcloc by taking lcode from ncmlocbo and matchingthat lcode in ncmlloc 
+        public async Task<string> GetOidByLcodeAsync(string lcode)                                                                                        // fetch oid from nmcloc by taking lcode from ncmlocbo and matchingthat lcode in ncmlloc 
         {
+            var query = "SELECT TOP 1 Oid FROM Ncmloc WHERE Lcode = @lcode";
             var oid = await _EcheckContext.Ncmlocs
-                .Where(loc => loc.Lcode == lcode)
-                .Select(loc => loc.Oid)
+                .FromSqlRaw(query, new SqlParameter("@lcode", lcode))
+                .Select(x => x.Oid)
                 .FirstOrDefaultAsync();
-
-            if (oid == null)
-                throw new KeyNotFoundException($"No Oid found for Lcode: {lcode}");
-
             return oid;
         }
 

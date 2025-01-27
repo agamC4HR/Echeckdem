@@ -100,9 +100,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
+        // Handle the scope edit click
         $('.edit-scope').on('click', function (e) {
             e.preventDefault();
-            console.log("Edit scope clicked"); // Debugging
+            console.log("Edit scope clicked");
+
             const lcode = $(this).data('lcode');
             const projectCode = $(this).data('project-code');
 
@@ -125,16 +127,44 @@
 
         // Close the popup
         $('.close-popup').on('click', function () {
-            console.log("Close popup clicked"); // Debugging
+            console.log("Close popup clicked");
             $('#scopePopup').fadeOut();
         });
 
-        // Close the popup when clicking outside the content
-        // $(document).on('click', function (e) {
-        //     if ($(e.target).closest('.popup-content').length === 0 && !$(e.target).hasClass('edit-scope')) {
-        //           console.log("Outside click detected"); // Debugging
-        //         $('#scopePopup').fadeOut();
-        //     }
-        // });
+        // Handle form submission (via AJAX)
+        $(document).on('submit', '#saveMappingForm', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            const form = $(this);
+            const formData = form.serialize(); // Serialize the form data
+
+            $.ajax({
+                url: form.attr('action'), // URL from the form's action attribute
+                type: form.attr('method'), // HTTP method from the form
+                data: formData, // Form data to send
+                success: function (response) {
+                    if (response.success) {
+                        const oid = response.oid;
+
+                        // Dynamically load the ViewBoDetails view into the orgDetailsBody section
+                        $("#orgDetailsBody").load(`/OrganisationSetup/ViewBoDetails?oid=${oid}`, function () {
+                            // Optionally, you can add any additional actions after the content loads
+                        });
+
+                        // Close the popup
+                        $('#scopePopup').fadeOut();
+                    } else {
+                        alert(response.message || "An error occurred. Please try again.");
+                    }
+                },
+                error: function () {
+                    alert("An unexpected error occurred. Please try again.");
+                }
+            });
+        });
+
     });
+
 </script>
+
+              

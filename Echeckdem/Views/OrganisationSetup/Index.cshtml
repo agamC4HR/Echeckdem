@@ -23,14 +23,9 @@
                 <td>@site.ProjectCode</td>
                 <td>@site.ClientName</td>
                 <td>
-                    @* <button class="btn btn-primary" onclick="loadScopesPartial('@site.Lcode', '@site.ProjectCode')">
-                        Manage Scopes
-                    </button> *@
+                    
                         <a asp-controller="OrganisationSetup" asp-action="GetScopesPartial" asp-route-lcode="@site.Lcode" asp-route-projectCode="@site.ProjectCode"  >ManageScopes</a>
-                   @*  <button class="btn btn-primary" data-toggle="modal" data-target="#scopeMappingModal"
-                            data-lcode="@site.Lcode" data-projectcode="@site.ProjectCode">
-                        Map Scopes
-                    </button> *@
+                  
                 </td>
             </tr>
         }

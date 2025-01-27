@@ -7,16 +7,16 @@
         <label for="ScopeName">Scope Name</label>
         <input type="text" class="form-control" id="ScopeName" name="ScopeName" value="@Model.ScopeName" required />
     </div>
+
+    <input type="hidden" id="ScopeId" name="ScopeId" value="@Model.ScopeId" />
+
     <div class="form-group">
         <label for="ScopeActive">Scope Active</label>
-        <select>
-            class="form-control" id="ScopeActive" name="ScopeActive" value="@Model.ScopeActive" required />
-
+        <select class="form-control" id="ScopeActive" name="ScopeActive" required>
             <option value="" selected>-- Select --</option>
             <option value="1">Yes</option>
             <option value="0">No</option>
         </select>
-
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </form>

@@ -107,6 +107,17 @@ namespace Echeckdem.Controllers
         {
             // Set EPPlus license context for .NET Core
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            // Predefined state names from the database
+            var stateNames = new List<string>
+        {
+        "Andaman and Nicobar", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "National", "Chandigarh", "Central Govt", "Chattisgarh",
+        "Daman Diu", "Dadra Nagar Haveli", "Goa", "Gujarat", "Haryana","Himachal Pradesh", "Jammu and Kashmir", "Jharkand", "Karnataka",
+        "Kerala", "Maharashtra", "Manipur", "Meghalaya", "Mizoram","Madhya Pradesh", "Nagaland", "New Delhi", "No State", "Orissa",
+        "Pondicherry", "Punjab", "Rajasthan", "Sikkim", "Telangana","Tamil Nadu", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+        };
+
+
             // Create a new Excel package
             using (var package = new ExcelPackage())
             {
@@ -127,6 +138,32 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 12].Value = "Under CLRA";
                 worksheet.Cells[1, 13].Value = "Setup Year";
                 worksheet.Cells[1, 14].Value = "Site Active";
+
+                var validationSheet = package.Workbook.Worksheets.Add("Validation"); // Add a hidden sheet for validation
+                for (int i = 0; i < stateNames.Count; i++)
+                {
+                    validationSheet.Cells[i + 1, 1].Value = stateNames[i]; // Populate state names in column A
+                }
+
+                var stateRange = validationSheet.Cells[1, 1, stateNames.Count, 1]; // Range of state names
+                var validation = worksheet.DataValidations.AddListValidation("C2:C1000"); // Apply to "Site State" column (up to 1000 rows)
+                validation.ShowErrorMessage = true;
+                validation.ErrorTitle = "Invalid State";
+                validation.Error = "Please select a state from the dropdown.";
+                validation.Formula.ExcelFormula = $"Validation!{stateRange.Address}"; // Reference the state names
+
+
+                // Hide the validation sheet
+                validationSheet.Hidden = eWorkSheetHidden.Hidden;
+
+
+
+
+
+
+
+
+
                 // Generate file content
                 var fileContent = package.GetAsByteArray();
                 // Return file as download
@@ -202,55 +239,6 @@ namespace Echeckdem.Controllers
                 Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                
             }
-
-
-
-
-
-
-
-
-
-
-
-            //if (string.IsNullOrEmpty(updatedLocationData.oid))
-            //{
-            //    TempData["ErrorMessage"] = "No data received.";
-            //    return PartialView("EditLocations", new CombinedOrganisationSetupViewModel());
-            //}
-
-            //try
-            //{
-            //    if (await _organisationsetupservice.IncompleteBODataAsync(updatedLocationData.oid))
-            //    {
-            //        TempData["ErrorMessage"] = "Additional information is required for BOCW sites. Please upload the required data before proceeding.";
-            //        return RedirectToAction("BOCWSiteSetup", new { oid = updatedLocationData.oid });
-            //    }
-
-            //    bool result = await _organisationsetupservice.AddLocationDataAsync(updatedLocationData);
-
-            //    if (result)
-            //    {
-            //        TempData["SuccessMessage"] = "Locations updated successfully.";
-            //        return RedirectToAction("GetLocationDatabyOid", new { oid = updatedLocationData.oid });
-            //    }
-
-            //    TempData["ErrorMessage"] = "Failed to update locations.";
-            //}
-            //catch (Exception ex)
-            //{
-            //    TempData["ErrorMessage"] = $"An error occurred while updating locations: {ex.Message}";
-            //    Console.WriteLine($"Update error: {ex}");
-            //}
-
-
-
-
-
-
-
-
-
 
             // If something fails, return the same model to the view
             return PartialView("EditLocations", updatedLocationData);
@@ -393,93 +381,10 @@ namespace Echeckdem.Controllers
 
         
 
-        [HttpGet]
-        public async Task<IActionResult> EditBoDetail(string lcode)
-        {
-            if (string.IsNullOrEmpty(lcode))
-            {
-                return RedirectToAction("Error", new { message = "Lcode is required." });
-            }
-
-            var boDetail = await _organisationsetupservice.GetBocwDetailsByLcodeAsync(lcode);
-            if (boDetail == null)
-            {
-                return RedirectToAction("Error", new { message = "BO detail not found." });
-            }
-            return View(boDetail);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditBoDetail(Ncmlocbo updatedBoDetail)
-        {
-            if (!ModelState.IsValid)
-            {
-                //return BadRequest("Invalid data submitted");
-                TempData["ErrorMessage"] = "Please correct the errors in the form.";
-                return View(updatedBoDetail);
-            }
-
-            try
-            {
-                await _organisationsetupservice.UpdateBoDetailsAsync(updatedBoDetail);
-
-               // var lcode = updatedBoDetail.Lcode;
-                var oid = await _organisationsetupservice.GetOidByLcodeAsync(updatedBoDetail.Lcode);
-
-                TempData["SuccessMessage"] = "BO details updated successfully!";
-                
-
-                // Redirect back to ViewBoDetails with the updated OID
-                return RedirectToAction("ViewBoDetails", new { oid }); 
-                
-            
-            }
-
-           
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = "An unexpected error occurred while updating BO details.";
-                _logger.LogError(ex, "An unexpected error occurred while updating BO details for Lcode: {Lcode}", updatedBoDetail.Lcode);
-                return View(updatedBoDetail);
-            }
-          
-        }
-
-        //public async Task<IActionResult> MapScopes (string lcode , string projectCode)
-        //{
-        //    //if (string.IsNullOrEmpty(lcode) || string.IsNullOrEmpty(projectCode))
-        //    //{
-        //    //    return Content("Lcode and ProjectCode are required.");
-        //    //}
-        //    var scopes = await _organisationsetupservice.GetScopesAsync();
-        //    //ViewBag.Lcode = lcode;
-        //    //ViewBag.ProjectCode = projectCode;
-
-        //    //var scopes = await _EcheckContext.BocwScopes.ToListAsync(); // Fetch all scopes
-        //    var viewModel = new MapScopesViewModel
-        //    {
-        //        Lcode = lcode,
-        //        ProjectCode = projectCode,
-        //        Scopes = scopes
-        //    };
-
-        //    return PartialView("_MapScopesPartialView", viewModel);
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> SaveMappings(string lcode, string projectCode, List<string> selectedScopeIds)
-        //{
-        //    await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
-        //    TempData["SuccessMessage"] = "Mappings saved successfully!";
-        //    return RedirectToAction("ViewBoDetails");//, new { oid = projectCode }); // Redirect to the BoDetails page
-        //}
-
-
 
 
 
         public async Task<IActionResult> Index()
-
         {
             try
             {
@@ -488,9 +393,7 @@ namespace Echeckdem.Controllers
             }
             catch (Exception ex)
             {
-                // Log error and return an error view/message
-                // Logger.LogError(ex, "Error fetching sites");
-                return View("Error");
+               return View("Error");
             }
 
         }
@@ -506,10 +409,15 @@ namespace Echeckdem.Controllers
                 var scopes = await _organisationsetupservice.GetScopesAsync();
 
                 // Get existing mappings
-                //var existingMappings = await _EcheckContext.BoScopeMaps
-                //    .Where(m => m.Lcode == lcode && m.ProjectCode == projectCode)
-                //    .Select(m => m.ScopeId)
-                //    .ToListAsync();
+                var existingMappings = await _EcheckContext.BoScopeMaps
+                    .Where(m => m.Lcode == lcode && m.ProjectCode == projectCode)
+                    .Select(m => m.ScopeId)
+                    .ToListAsync();
+
+                foreach(var scope in scopes)
+                {
+                    scope.IsSelected = existingMappings.Contains(scope.ScopeId);
+                }
 
                 ViewBag.Lcode = lcode;
                 ViewBag.ProjectCode = projectCode;
@@ -520,39 +428,52 @@ namespace Echeckdem.Controllers
             catch (Exception ex)
             {
                 // Log error
-                return PartialView("_ScopesMapping");//, new List<BocwScope>());
+                Console.WriteLine($"Error in GetScopesPartial: {ex.Message}");
+                return PartialView("_ScopesMapping", new List<BocwScope>());
             }
         }
-        //public async Task<IActionResult> GetScopesBySite(string lcode, string projectCode)
-        //{
-        //    try
-        //    {
-        //        // Fetch scopes for the site from BocwScope
-        //        var scopes = await _organisationsetupservice.GetScopesAsync();
-        //        return Json(scopes);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log error
-        //        // Logger.LogError(ex, "Error fetching scopes");
-        //        return Json(new List<BocwScope>());
-
-        //    }
-        //}
+        
 
 
         [HttpPost]
         public async Task<IActionResult> SaveMapping(string lcode, string projectCode, List<string> selectedScopeIds)
         {
-            if (selectedScopeIds == null || !selectedScopeIds.Any())
+
+            try
             {
-                ModelState.AddModelError("", "Please select at least one scope.");
-                return RedirectToAction("Index");
+
+
+                if (selectedScopeIds == null || !selectedScopeIds.Any())
+                {
+                    ModelState.AddModelError("", "Please select at least one scope.");
+                    return Json(new { success = false, message = "No scopes selected." });
+                    //return RedirectToAction("Index");
+                }
+
+                await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
+
+                TempData["SuccessMessage"] = "Scope setup was successful!";
+
+
+                var oid = await _organisationsetupservice.GetOidByLcodeAsync(lcode);
+                if (string.IsNullOrEmpty(oid))
+                {
+                    return Json(new { success = false, message = "OID not found for the specified Lcode." });
+                }
+
+                return Json(new { success = true, oid });
+
+               
+
+                //return RedirectToAction("ViewBoDetails", new { oid });
             }
 
-            await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while saving the mapping. Please try again." });
+                TempData["ErrorMessage"] = "An error occurred while saving the mapping. Please try again.";
+                //return RedirectToAction("Index");
+            }
         }
 
 
