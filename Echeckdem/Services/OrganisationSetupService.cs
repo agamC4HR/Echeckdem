@@ -83,7 +83,7 @@ namespace Echeckdem.Services
             return new CombinedOrganisationSetupViewModel
             {
                 OrganisationsList = organisationsList,
-                SelectedOrganisation = selectedOrganisation
+                SelectedOrganisation = selectedOrganisation                                
             };
         }
         public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)                           // update the details in general info 
@@ -183,7 +183,7 @@ namespace Echeckdem.Services
                         foreach (var row in rows)
                         {
                             var lname = row.Cell(1).GetValue<string>()?.Trim();
-//                          Resolve lcode based on lname
+                    //  Resolve lcode based on lname
                            var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
                             if (site == null)
                                 throw new InvalidOperationException($"Invalid Location Name (Lname): {lname} for BO site.");

@@ -300,14 +300,15 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 4].Value = "GeneralContractor(GC)";
                 worksheet.Cells[1, 5].Value = "ProjectAddress";
                 worksheet.Cells[1, 6].Value = "NatureofWork";
-                worksheet.Cells[1, 7].Value = "ProjectArea";
+                worksheet.Cells[1, 7].Value = "ProjectArea(in m²)";
                 worksheet.Cells[1, 8].Value = "ProjectCost(est)";
                 worksheet.Cells[1, 9].Value = "ProjectStartDate(est)";
                 worksheet.Cells[1, 10].Value = "ProjectEndDate(est)";
                 worksheet.Cells[1, 11].Value = "VendorCount";
                 worksheet.Cells[1, 12].Value = "WorkerHeadcount";
                 worksheet.Cells[1, 13].Value = "ProjectLead";
-                                         
+                
+                                                         
                 // Populate rows with BOCW site details
                 int row = 2;
                 foreach (var site in boSites)

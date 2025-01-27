@@ -13,7 +13,7 @@ namespace Echeckdem.CustomFolder
         public string oid { get; set; }
         public string Oname { get; set; }
 
-        //OrganisationGeneralInfoViewModel
+        //OrganisationGeneralInfoViewModel  
         public string Spoc { get; set; }
         public int TotalCount { get; set; }
         public int? styear { get; set; }
