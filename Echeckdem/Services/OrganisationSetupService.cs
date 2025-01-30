@@ -7,6 +7,7 @@ using Echeckdem.CustomFolder;
 using Echeckdem.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Security.Policy;
 
 namespace Echeckdem.Services
@@ -190,49 +191,73 @@ namespace Echeckdem.Services
 
                             var lcode = site.Lcode; // Use the resolved lcode for further processing
 
-                            //var lcode = row.Cell(1).GetValue<string>()?.Trim();
-                            //if (!boSites.Any(b => b.Lcode == lcode))
-                            //    throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
+                            var resolvedLname = site.Lname; // Use the resolved lname for population
 
-                            //var matchingSite = boSites.FirstOrDefault(b => b.Lcode == lcode);
-                            //if (matchingSite == null)
-                            //    throw new InvalidOperationException($"Invalid Lcode: {lcode} for BO site.");
-
-                            //var lname = matchingSite.Lname; // Get lname from Ncmloc table
-
-                            // Logic to handle date fromat 
+                            // Logic to handle date format for ProjectStartDateEst
                             var projectStartDateValue = row.Cell(9).GetValue<string>()?.Trim();
                             DateOnly? projectStartDate = null;
                             if (!string.IsNullOrEmpty(projectStartDateValue))
                             {
-                                if (DateTime.TryParse(projectStartDateValue, out var parsedStartDate))
+                                if (DateTime.TryParseExact(projectStartDateValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate))
                                 {
-                                    projectStartDate = DateOnly.FromDateTime(parsedStartDate.Date);  // Strips the time
+                                    projectStartDate = DateOnly.FromDateTime(parsedStartDate);
                                 }
                                 else
                                 {
-                                    throw new InvalidOperationException($"Invalid date format in ProjectStartDateEst: {projectStartDateValue}");
+                                    throw new InvalidOperationException($"Invalid date format in ProjectStartDateEst: {projectStartDateValue}. Expected format: DD/MM/YYYY.");
                                 }
                             }
 
-                            // Logic to handle date fromat 
+                            // Logic to handle date format for ProjectEndDateEst
                             var projectEndDateValue = row.Cell(10).GetValue<string>()?.Trim();
                             DateOnly? projectEndDate = null;
                             if (!string.IsNullOrEmpty(projectEndDateValue))
                             {
-                                if (DateTime.TryParse(projectEndDateValue, out var parsedEndDate))
+                                if (DateTime.TryParseExact(projectEndDateValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate))
                                 {
-                                    projectEndDate = DateOnly.FromDateTime(parsedEndDate.Date);
+                                    projectEndDate = DateOnly.FromDateTime(parsedEndDate);
                                 }
                                 else
                                 {
-                                    throw new InvalidOperationException($"Invalid date format in ProjectEndDateEst: {projectEndDateValue}");
+                                    throw new InvalidOperationException($"Invalid date format in ProjectEndDateEst: {projectEndDateValue}. Expected format: DD/MM/YYYY.");
                                 }
                             }
+
+
+                            // Logic to handle date fromat 
+                            //var projectStartDateValue = row.Cell(9).GetValue<string>()?.Trim();
+                            //DateOnly? projectStartDate = null;
+                            //if (!string.IsNullOrEmpty(projectStartDateValue))
+                            //{
+                            //    if (DateTime.TryParse(projectStartDateValue, out var parsedStartDate))
+                            //    {
+                            //        projectStartDate = DateOnly.FromDateTime(parsedStartDate.Date);  // Strips the time
+                            //    }
+                            //    else
+                            //    {
+                            //        throw new InvalidOperationException($"Invalid date format in ProjectStartDateEst: {projectStartDateValue}");
+                            //    }
+                            //}
+
+                            //// Logic to handle date fromat 
+                            //var projectEndDateValue = row.Cell(10).GetValue<string>()?.Trim();
+                            //DateOnly? projectEndDate = null;
+                            //if (!string.IsNullOrEmpty(projectEndDateValue))
+                            //{
+                            //    if (DateTime.TryParse(projectEndDateValue, out var parsedEndDate))
+                            //    {
+                            //        projectEndDate = DateOnly.FromDateTime(parsedEndDate.Date);
+                            //    }
+                            //    else
+                            //    {
+                            //        throw new InvalidOperationException($"Invalid date format in ProjectEndDateEst: {projectEndDateValue}");
+                            //    }
+                            //}
 
                             var boDetail = new Ncmlocbo
                             {
                                 Lcode = lcode,
+                                Lname = resolvedLname,
                                 ProjectCode = Guid.NewGuid().ToString().Substring(0, 6),
                                 OvalId = row.Cell(2).GetValue<string>().Trim(),
                                 ClientName = row.Cell(3).GetValue<string>().Trim(),
@@ -287,7 +312,19 @@ namespace Echeckdem.Services
                 .FirstOrDefaultAsync();
             return oid;
         }
-        public async Task<List<Ncmlocbo>> GetAllBocwDetailsAsync(string oid)
+
+        public async Task<List<string>> GetActiveScopesByLcodeAsync(string lcode)
+        {
+            var activeScopeNames = await( from map in _EcheckContext.BoScopeMaps 
+                                          join scope in _EcheckContext.BocwScopes
+                                          on map.ScopeId equals scope.ScopeId 
+                                          where map.Lcode == lcode && map.Active == true
+                                          select scope.ScopeName).ToListAsync();
+
+            return activeScopeNames;
+        }
+
+        public async Task<List<Ncmlocbo>> GetAllBocwDetailsWithScopesAsync(string oid)
         {
             var query = @"
                         SELECT * 
@@ -295,12 +332,18 @@ namespace Echeckdem.Services
                         WHERE Lcode IN (
                         SELECT Lcode 
                         FROM Ncmloc 
-                        WHERE Oid = @oid
+                        WHERE Oid = @oid AND Ltype = 'bo'
                         )";
 
             var bocwDetails = await _EcheckContext.Ncmlocbos
                 .FromSqlRaw(query, new SqlParameter("@oid", oid))
                 .ToListAsync();
+
+            foreach(var bo in bocwDetails)
+            {
+                var activeScopes = await GetActiveScopesByLcodeAsync(bo.Lcode);
+                bo.ActiveScopes = string.Join(",", activeScopes);   
+            }
 
             return bocwDetails;
         }
@@ -346,7 +389,7 @@ namespace Echeckdem.Services
         }
         public async Task<List<BocwScope>> GetScopesAsync()
         {
-            return await _EcheckContext.BocwScopes.ToListAsync();
+            return await _EcheckContext.BocwScopes.Where(scope => scope.ScopeActive == 1).ToListAsync();
         }
 
         public async Task AddOrUpdateMapping (string lcode, string projectCode, List<string> selectedScopeIds)

@@ -50,11 +50,15 @@
     <thead>
         <tr>
             <th>Location Code</th>
-            <th>Project Code</th>
+            <th> Location Name</th>
+            <th> Oval ID</th>
             <th>Client Name</th>
-            <th>Project Address</th>
-            <th>Nature of Work</th>
-            <th>Project Cost</th>
+            <th> General Contractor Name</th>
+            <th> Construction Cost (est) </th>
+            <th> Construction Start (est) </th>
+            <th> Construction End (est) </th>
+            <th>Vendor Count</th>
+            <th> Active Scopes</th>
             <th>Scope Management</th>
             
             
@@ -66,12 +70,16 @@
         {
             <tr>
                 <td>@bo.Lcode</td>
-                <td>@bo.ProjectCode</td>
+                <td>@bo.Lname</td>
+                <td>@bo.OvalId</td>
                 <td>@bo.ClientName</td>
-                <td>@bo.ProjectAddress</td>
-                <td>@bo.NatureofWork</td>
+                <td>@bo.GeneralContractor</td>
                 <td>@bo.ProjectCostEst</td>
-             @* <td> <a asp-controller="OrganisationSetup" asp-action="GetScopesPartial" asp-route-lcode="@bo.Lcode" asp-route-projectCode="@bo.ProjectCode"><i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a> </td> *@
+                <td>@bo.ProjectStartDateEst?.ToString("dd MMM yyyy")</td>
+                <td>@bo.ProjectEndDateEst?.ToString("dd MMM yyyy")</td>
+                <td>@bo.VendorCount</td>
+                <td>@bo.ActiveScopes</td>
+            
                 <td>
                     <a href="#" class="edit-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
                         <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>

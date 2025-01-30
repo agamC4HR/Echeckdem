@@ -113,6 +113,11 @@ namespace Echeckdem.Controllers
         "Pondicherry", "Punjab", "Rajasthan", "Sikkim", "Telangana","Tamil Nadu", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
         };
 
+
+            // Predefined values for "Site Act"
+            var siteActValues = new List<string> { "S", "F", "BO" };
+
+
             // Create a new Excel package
             using (var package = new ExcelPackage())
             {
@@ -135,17 +140,37 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 14].Value = "Site Active";
 
                 var validationSheet = package.Workbook.Worksheets.Add("Validation"); // Add a hidden sheet for validation
+                // Populate state names in the validation sheet
                 for (int i = 0; i < stateNames.Count; i++)
                 {
                     validationSheet.Cells[i + 1, 1].Value = stateNames[i]; // Populate state names in column A
                 }
 
+                // Populate site act values in the validation sheet
+                for (int i = 0; i < siteActValues.Count; i++)
+                {
+                    validationSheet.Cells[i + 1, 2].Value = siteActValues[i];
+                }
+
+
+                // range for state dropdown
                 var stateRange = validationSheet.Cells[1, 1, stateNames.Count, 1]; // Range of state names
                 var validation = worksheet.DataValidations.AddListValidation("C2:C1000"); // Apply to "Site State" column (up to 1000 rows)
                 validation.ShowErrorMessage = true;
                 validation.ErrorTitle = "Invalid State";
                 validation.Error = "Please select a state from the dropdown.";
-                validation.Formula.ExcelFormula = $"Validation!{stateRange.Address}"; // Reference the state names
+                validation.Formula.ExcelFormula = $"Validation!$A$1:$A${stateNames.Count}";
+                //validation.Formula.ExcelFormula = $"Validation!{stateRange.Address}"; // Reference the state names
+
+                // range for Site Act dropdown
+                
+                var siteActRange = validationSheet.Cells[1, 2, siteActValues.Count, 2];
+                var siteActValidation = worksheet.DataValidations.AddListValidation("E2:E1000"); // Apply to "Site Act" column
+                siteActValidation.ShowErrorMessage = true;
+                siteActValidation.ErrorTitle = "Invalid Site Act";
+                siteActValidation.Error = "Please select a valid Site Act from the dropdown.";
+                siteActValidation.Formula.ExcelFormula = $"Validation!$B$1:$B${siteActValues.Count}";  // Reference the site act values in the validation sheet
+                                                                                                       //  siteActValidation.Formula.ExcelFormula = $"Validation!{siteActRange.Address}";
 
 
                 // Hide the validation sheet
@@ -337,7 +362,7 @@ namespace Echeckdem.Controllers
                 return RedirectToAction("Error", new { message = "OID is required." });
             }
 
-            var boDetails = await _organisationsetupservice.GetAllBocwDetailsAsync(oid);
+            var boDetails = await _organisationsetupservice.GetAllBocwDetailsWithScopesAsync(oid);
             return PartialView(boDetails);
         }
 
