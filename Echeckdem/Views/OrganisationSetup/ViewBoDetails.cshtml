@@ -49,28 +49,34 @@
 <table class="org-details-body-table" id="bodetailsdata">
     <thead>
         <tr>
-            <th>Location Code</th>
-            <th> Location Name</th>
-            <th> Oval ID</th>
-            <th>Client Name</th>
-            <th> General Contractor Name</th>
-            <th> Construction Cost (est) </th>
-            <th> Construction Start (est) </th>
-            <th> Construction End (est) </th>
+            <th>Location</th>
+            <th>Oval</th>
+            <th>Client</th>
+            <th>General</th>
+            <th colspan="3" style="text-align:center">Construction</th>
             <th>Vendor Count</th>
-            <th> Active Scopes</th>
-            <th>Scope Management</th>
-            
-            
-            
+            <th>Active Scopes</th>
+            <th>Edit Scope</th>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th></th>
+            <th>Cost (est)</th>
+            <th>Start (est)</th>
+            <th>End (est)</th>
+            <th></th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody id="boDetailsTable">
         @foreach (var bo in Model)
         {
             <tr>
-                <td>@bo.Lcode</td>
-                <td>@bo.Lname</td>
+@*                 <td>@bo.Lcode</td>
+ *@                <td>@bo.Lname</td>
                 <td>@bo.OvalId</td>
                 <td>@bo.ClientName</td>
                 <td>@bo.GeneralContractor</td>
