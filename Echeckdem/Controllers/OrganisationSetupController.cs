@@ -310,6 +310,7 @@ namespace Echeckdem.Controllers
             {
                 return Json(new { success = false, message = "No BO sites found for the provided OID." });
             }
+                                
             // Set EPPlus license context for .NET Core
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial; 
             // Create a new Excel package
@@ -325,7 +326,7 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 4].Value = "GeneralContractor(GC)";
                 worksheet.Cells[1, 5].Value = "ProjectAddress";
                 worksheet.Cells[1, 6].Value = "NatureofWork";
-                worksheet.Cells[1, 7].Value = "ProjectArea(in m²)";
+                worksheet.Cells[1, 7].Value = "ProjectArea(in sq.ft)";
                 worksheet.Cells[1, 8].Value = "ProjectCost(est)";
                 worksheet.Cells[1, 9].Value = "ProjectStartDate(est)";
                 worksheet.Cells[1, 10].Value = "ProjectEndDate(est)";
@@ -366,7 +367,7 @@ namespace Echeckdem.Controllers
             return PartialView(boDetails);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()                                                                        // Get all sites under bocw that can be further used for scope mapping.
         {
             try
             {
@@ -383,7 +384,7 @@ namespace Echeckdem.Controllers
 
         [HttpGet]
 
-        public async Task<IActionResult> GetScopesPartial(string lcode, string projectCode)
+        public async Task<IActionResult> GetScopesPartial(string lcode, string projectCode)                                 //  
         {
             try
             {

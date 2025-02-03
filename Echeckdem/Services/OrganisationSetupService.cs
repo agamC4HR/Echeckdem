@@ -151,7 +151,6 @@ namespace Echeckdem.Services
                 locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
                 locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
                 locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
-                // locationInDb.Ltype = string.IsNullOrEmpty(addlocationdata.Ltype) ? null : addlocationdata.Ltype;
                 locationInDb.Ltype = string.IsNullOrEmpty(addlocationdata.Ltype) ? locationInDb.Ltype : addlocationdata.Ltype;
 
                 locationInDb.Lsetup = addlocationdata.Lsetup;
@@ -222,38 +221,7 @@ namespace Echeckdem.Services
                                     throw new InvalidOperationException($"Invalid date format in ProjectEndDateEst: {projectEndDateValue}. Expected format: DD/MM/YYYY.");
                                 }
                             }
-
-
-                            // Logic to handle date fromat 
-                            //var projectStartDateValue = row.Cell(9).GetValue<string>()?.Trim();
-                            //DateOnly? projectStartDate = null;
-                            //if (!string.IsNullOrEmpty(projectStartDateValue))
-                            //{
-                            //    if (DateTime.TryParse(projectStartDateValue, out var parsedStartDate))
-                            //    {
-                            //        projectStartDate = DateOnly.FromDateTime(parsedStartDate.Date);  // Strips the time
-                            //    }
-                            //    else
-                            //    {
-                            //        throw new InvalidOperationException($"Invalid date format in ProjectStartDateEst: {projectStartDateValue}");
-                            //    }
-                            //}
-
-                            //// Logic to handle date fromat 
-                            //var projectEndDateValue = row.Cell(10).GetValue<string>()?.Trim();
-                            //DateOnly? projectEndDate = null;
-                            //if (!string.IsNullOrEmpty(projectEndDateValue))
-                            //{
-                            //    if (DateTime.TryParse(projectEndDateValue, out var parsedEndDate))
-                            //    {
-                            //        projectEndDate = DateOnly.FromDateTime(parsedEndDate.Date);
-                            //    }
-                            //    else
-                            //    {
-                            //        throw new InvalidOperationException($"Invalid date format in ProjectEndDateEst: {projectEndDateValue}");
-                            //    }
-                            //}
-
+                                                       
                             var boDetail = new Ncmlocbo
                             {
                                 Lcode = lcode,
@@ -379,7 +347,7 @@ namespace Echeckdem.Services
             else
             {
                throw new KeyNotFoundException("BO detail not found.");
-            }
+            } 
         }
 
 
