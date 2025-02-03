@@ -89,11 +89,14 @@
                 </div>
         </div>
         <div class="main_child">
-            @if (ViewData["Title"]?.ToString() == "Organisation List")
+            @if (ViewData["Title"]?.ToString() == "Organisation List" || ViewData["Title"]?.ToString() == "BOCW Scope Setup")
             {
                 <div class="table-heading-container">
                     @RenderSection("TableHeadingContent", required: false)
                 </div>
+            }
+            @if (ViewData["Title"]?.ToString() == "Organisation List")
+            {
                 <div class="table-container">
                     @RenderSection("TableContent", required: false)
                 </div>

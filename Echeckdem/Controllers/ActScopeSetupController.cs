@@ -59,7 +59,7 @@ namespace Echeckdem.Controllers
             if (scopeToEdit == null)
                 return NotFound();
 
-            return View(scopeToEdit);
+            return PartialView(scopeToEdit);
         }
 
         [HttpPost]

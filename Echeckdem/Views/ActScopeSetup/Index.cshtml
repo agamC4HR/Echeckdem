@@ -1,42 +1,135 @@
 ﻿@model IEnumerable<Echeckdem.Models.BocwScope>
+@{
+    ViewData["Title"] = "BOCW Scope Setup";
+    ViewData["Heading"] = "BOCW Scope Setup";
+    ViewData["Heading_child"] = "Comprehensive labor compliance insights and actions.";
+}
 
-<h2 class="my-4">BOCW Scope Setup</h2>
+<style>
+    .custom-popup {
+        display: none; /* Initially hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">BOCW Scope List</h4>
-                    <a href="/ActScopeSetup/Create" class="btn btn-success">Add New Scope</a>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered table-striped">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Scope ID</th>
-                                <th>Scope Name</th>
-                                <th>Scope Active</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var scope in Model)
-                            {
-                                <tr>
-                                    <td>@scope.ScopeId</td>
-                                    <td>@scope.ScopeName</td>
-                                    <td>@(scope.ScopeActive == 1 ? "YES" : "NO")</td>
-                                    <td>
-                                        <a href="/ActScopeSetup/Edit/@scope.ScopeId" class="btn btn-warning"> Edit</a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                    
-                </div>
+    .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px;
+        width: 60%;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-popup {
+        float: right;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+</style>
+@if (Context.Session.GetInt32("User Level") == 1)
+{
+      @section TableHeadingContent {
+    <!-- Search bar -->
+@*     <input type="text" id="searchBar" placeholder="Search Organisation..." class="table-search-input" onkeyup="searchTable()">
+ *@
+    <!-- Add button -->
+    <button class="table-add-btn" onclick="showAddScopeForm()">
+        Add
+    </button>
+    }
+    <div class="table-container-detailsView">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>Scope ID</th>
+                    <th>Scope Name</th>
+                    <th>Scope Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int sno = 1;
+                }
+                @foreach (var scope in Model)
+                {
+                    <tr class="registration-row">
+                        <td>@sno</td>
+                        <td>@scope.ScopeId</td>
+                        <td>@scope.ScopeName</td>
+                        <td>@(scope.ScopeActive == 1 ? "YES" : "NO")</td>
+                        <td>
+                            <a href="#" class="edit-scope" data-id="@scope.ScopeId">
+                                <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    sno++;
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Hidden popup container -->
+    <div class="custom-popup" id="scopePopup">
+        <div class="popup-content">
+            <span class="close-popup">&times;</span>
+            <div id="popupBodyContent">
+                <!-- Scope mapping content will be dynamically loaded here -->
+                <div class="text-center">Loading...</div>
             </div>
         </div>
     </div>
-</div>
+
+    <script>
+        function showAddScopeForm() {
+            window.location.href = "/ActScopeSetup/Create";
+        }
+
+        $(document).ready(function () {
+            // Handle the scope edit click
+            $('.edit-scope').on('click', function (e) {
+                e.preventDefault();
+                console.log("Edit scope clicked");
+
+                const ScopeId = $(this).data('id');
+
+                // Load the scope mapping data into the popup
+                $.ajax({
+                    url: `/ActScopeSetup/Edit/${ScopeId}`,
+                    type: 'GET',
+                    data: { ScopeId: ScopeId },
+                    success: function (data) {
+                        $('#popupBodyContent').html(data);
+                    },
+                    error: function () {
+                        $('#popupBodyContent').html('<p>Error loading data.</p>');
+                    }
+                });
+
+                // Show the popup
+                $('#scopePopup').fadeIn();
+            });
+
+            // Close the popup
+            $('.close-popup').on('click', function () {
+                console.log("Close popup clicked");
+                $('#scopePopup').fadeOut();
+            });
+
+       
+        });
+    </script>
+}
+

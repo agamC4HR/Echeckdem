@@ -2,7 +2,7 @@
 
 <h2>Edit Scope</h2>
 
-<form method="post">
+<form asp-action="Edit" method="post" id="saveScopeForm">
     <input type="hidden" name="ScopeId" value="@Model.ScopeId" />
     <div class="form-group">
         <label for="ScopeName">Scope Name</label>
