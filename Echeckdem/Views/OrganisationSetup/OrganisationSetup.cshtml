@@ -219,7 +219,7 @@
 
     <!-- Add button -->
     <button class="table-add-btn" onclick="showAddOrganisationForm()">
-        Add
+        Add New Organisation
     </button>
     }
 
@@ -289,10 +289,11 @@
 
                 <div class="org-details-lower-links">
                     <!-- Bottom links -->
-                        <a href="javascript:void(0);" onclick="showBOCWUploadForm()">BOCWSITESETUP</a>
-                        <a href="javascript:void(0);" onclick="viewBOCWData()" id="viewBOCWDataButton">View BOCW Data</a>
-                        <a asp-controller="OrganisationSetup" asp-action="viewbodetails" asp-route-oid="@Model.SelectedOrganisation.oid" id="viewBOCWDataButton">View BOCW Data</a>
-@*                         <a href="javascript:void(0);" onclick="editBOCWData()" id="editBOCWDataButton">Edit BOCW Data</a>
+                        <a href="javascript:void(0);" onclick="showBOCWUploadForm()">BOCW SITE SETUP</a>
+                        <a href="javascript:void(0);" onclick="viewBOCWData()" id="viewBOCWDataButton">BOCW Site Data</a>
+
+                        @* <a asp-controller="OrganisationSetup" asp-action="viewbodetails" asp-route-oid="@Model.SelectedOrganisation.oid" id="viewBOCWDataButton">View BOCW Data</a> *@
+@*                         <a href="javascript:void(0);" onclick="editBOCWData()" id="editBOCWDataButton">Edit BOCW Data</a> 
  *@                </div>
 
             </div>

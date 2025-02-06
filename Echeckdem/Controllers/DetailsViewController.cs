@@ -75,7 +75,7 @@ namespace Echeckdem.Controllers
             //var ReturnData = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
 
 
-            return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);
+            return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);     
         }
         
         [HttpGet]
@@ -91,6 +91,19 @@ namespace Echeckdem.Controllers
             var locations = await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
             return Json(locations);
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> EditContribution(ContributionViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        await _contService.UpdateContributionAsync(model);
+        //        return RedirectToAction("CombinedDetailed");
+        //    }
+
+        //    return View(model);
+        //}
+
 
      
     }

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml.Office.CustomXsn;
 using DocumentFormat.OpenXml.InkML;
+using OfficeOpenXml.DataValidation;
 
 namespace Echeckdem.Controllers
 
@@ -80,23 +81,31 @@ namespace Echeckdem.Controllers
         {
             ViewBag.SelectedOid = oid;
             return PartialView("bulkupload");
-            
-         }
+        }
 
         [HttpPost]                                                                                                                                   // Add Locations process        --  1)  BULK UPLOAD
         public async Task<IActionResult> Upload(IFormFile file, string oid )
         {
-            if (String.IsNullOrEmpty(oid))
+            try
             {
-                return Json(new { success =  false, message = "*Error: Please select an organisation." });
+
+                if (String.IsNullOrEmpty(oid))
+                {
+                    return Json(new { success = false, message = "*Error: Please select an organisation." });
+                }
+                if (file == null || file.Length == 0)
+                {
+                    return Json(new { success = false, message = "*Error: Please upload a valid Excel file." });
+                }
+
+                var recordCount = await _bulkUploadService.UploadLocationDataAsync(file, oid);
+                return Json(new { success = true, message = $"{recordCount} records uploaded successfully." });
             }
-            if (file == null || file.Length == 0)
+
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = "*Error: Please upload a valid Excel file." });
+                return Json(new { success = false, message = ex.Message });
             }
-            
-            var recordCount = await _bulkUploadService.UploadLocationDataAsync(file, oid);
-            return Json(new { success = true, message = $"{recordCount} records uploaded successfully." });
         }
 
         public IActionResult DownloadExcelFile()                             // Downloading excel tempelate file 
@@ -117,6 +126,7 @@ namespace Echeckdem.Controllers
             // Predefined values for "Site Act"
             var siteActValues = new List<string> { "S", "F", "BO" };
 
+            var boolValues = new List<string> { "Yes", "No" };
 
             // Create a new Excel package
             using (var package = new ExcelPackage())
@@ -152,6 +162,14 @@ namespace Echeckdem.Controllers
                     validationSheet.Cells[i + 1, 2].Value = siteActValues[i];
                 }
 
+                // Populate "Yes" and "No" values in the validation sheet (Column C)
+                for (int i = 0; i < boolValues.Count; i++)
+                {
+                    validationSheet.Cells[i + 1, 3].Value = boolValues[i];
+                }
+
+
+
 
                 // range for state dropdown
                 var stateRange = validationSheet.Cells[1, 1, stateNames.Count, 1]; // Range of state names
@@ -160,18 +178,36 @@ namespace Echeckdem.Controllers
                 validation.ErrorTitle = "Invalid State";
                 validation.Error = "Please select a state from the dropdown.";
                 validation.Formula.ExcelFormula = $"Validation!$A$1:$A${stateNames.Count}";
-                //validation.Formula.ExcelFormula = $"Validation!{stateRange.Address}"; // Reference the state names
+                
 
                 // range for Site Act dropdown
-                
                 var siteActRange = validationSheet.Cells[1, 2, siteActValues.Count, 2];
                 var siteActValidation = worksheet.DataValidations.AddListValidation("E2:E1000"); // Apply to "Site Act" column
                 siteActValidation.ShowErrorMessage = true;
                 siteActValidation.ErrorTitle = "Invalid Site Act";
                 siteActValidation.Error = "Please select a valid Site Act from the dropdown.";
                 siteActValidation.Formula.ExcelFormula = $"Validation!$B$1:$B${siteActValues.Count}";  // Reference the site act values in the validation sheet
-                                                                                                       //  siteActValidation.Formula.ExcelFormula = $"Validation!{siteActRange.Address}";
 
+                // range for dropdown values of yes and no for central govt, clra, site active.
+                var boolRange = validationSheet.Cells[1, 3, boolValues.Count, 3];
+
+                var centralGovtValidation = worksheet.DataValidations.AddListValidation("K2:K1000");
+                centralGovtValidation.ShowErrorMessage = true;
+                centralGovtValidation.ErrorTitle = "Invalid Entry";
+                centralGovtValidation.Error = "Please select Yes or No.";
+                centralGovtValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
+
+                var clraValidation = worksheet.DataValidations.AddListValidation("L2:L1000");
+                clraValidation.ShowErrorMessage = true;
+                clraValidation.ErrorTitle = "Invalid Entry";
+                clraValidation.Error = "Please select Yes or No.";
+                clraValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
+
+                var siteActiveValidation = worksheet.DataValidations.AddListValidation("N2:N1000");
+                siteActiveValidation.ShowErrorMessage = true;
+                siteActiveValidation.ErrorTitle = "Invalid Entry";
+                siteActiveValidation.Error = "Please select Yes or No.";
+                siteActiveValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
 
                 // Hide the validation sheet
                 validationSheet.Hidden = eWorkSheetHidden.Hidden;
@@ -180,7 +216,7 @@ namespace Echeckdem.Controllers
                 // Return file as download
                 return File(fileContent,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "Location Template.xlsx");    
+                    "Location Setup Template.xlsx");    
             }
         }
 
@@ -320,21 +356,42 @@ namespace Echeckdem.Controllers
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
                 // Add headers to the worksheet
 
-                worksheet.Cells[1, 1].Value = "LocationName";
-                worksheet.Cells[1, 2].Value = "OvalId";
-                worksheet.Cells[1, 3].Value = "ClientName";
-                worksheet.Cells[1, 4].Value = "GeneralContractor(GC)";
-                worksheet.Cells[1, 5].Value = "ProjectAddress";
-                worksheet.Cells[1, 6].Value = "NatureofWork";
-                worksheet.Cells[1, 7].Value = "ProjectArea(in sq.ft)";
-                worksheet.Cells[1, 8].Value = "ProjectCost(est)";
-                worksheet.Cells[1, 9].Value = "ProjectStartDate(est)";
-                worksheet.Cells[1, 10].Value = "ProjectEndDate(est)";
-                worksheet.Cells[1, 11].Value = "VendorCount";
-                worksheet.Cells[1, 12].Value = "WorkerHeadcount";
-                worksheet.Cells[1, 13].Value = "ProjectLead";
-                
-                                                         
+                string[] headers = {
+                "LocationName", "OvalId", "ClientName", "GeneralContractor(GC)", "ProjectAddress",
+                "NatureofWork", "ProjectArea(in sq.ft)", "ProjectCost(est)", "ProjectStartDate(est)",
+                "ProjectEndDate(est)", "VendorCount", "WorkerHeadcount", "ProjectLead"
+                };
+
+                for (int col = 0; col < headers.Length; col++)
+                {
+                    worksheet.Cells[1, col + 1].Value = headers[col];
+                }
+
+                // Force Excel to store the date in dd/MM/yyyy
+                worksheet.Cells[2, 9, 100, 9].Style.Numberformat.Format = "dd/MM/yyyy"; // Start Date
+                worksheet.Cells[2, 10, 100, 10].Style.Numberformat.Format = "dd/MM/yyyy"; // End Date
+
+                // Force users to pick date using Excel’s Date Picker
+                var startDateValidation = worksheet.DataValidations.AddDateTimeValidation("I2:I100"); // Column 9
+                startDateValidation.ShowErrorMessage = true;
+                startDateValidation.ErrorTitle = "Invalid Date Format";
+                startDateValidation.Error = "Please use the date picker to enter a valid date in DD/MM/YYYY format.";
+                startDateValidation.Operator = ExcelDataValidationOperator.between;
+                startDateValidation.Formula.Value = new DateTime(2000, 1, 1);
+                startDateValidation.Formula2.Value = new DateTime(2100, 12, 31);
+
+                var endDateValidation = worksheet.DataValidations.AddDateTimeValidation("J2:J100"); // Column 10
+                endDateValidation.ShowErrorMessage = true;
+                endDateValidation.ErrorTitle = "Invalid Date Format";
+                endDateValidation.Error = "Please use the date picker to enter a valid date in DD/MM/YYYY format.";
+                endDateValidation.Operator = ExcelDataValidationOperator.between;
+                endDateValidation.Formula.Value = new DateTime(2000, 1, 1);
+                endDateValidation.Formula2.Value = new DateTime(2100, 12, 31);
+
+
+
+
+
                 // Populate rows with BOCW site details
                 int row = 2;
                 foreach (var site in boSites)
@@ -351,7 +408,7 @@ namespace Echeckdem.Controllers
                 // Return file as download
                 return File(fileContent,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "Location Template.xlsx");
+                    "BOCW Site Setup Template.xlsx");
             }
         }
 

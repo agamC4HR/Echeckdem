@@ -192,36 +192,54 @@ namespace Echeckdem.Services
 
                             var resolvedLname = site.Lname; // Use the resolved lname for population
 
-                            // Logic to handle date format for ProjectStartDateEst
-                            var projectStartDateValue = row.Cell(9).GetValue<string>()?.Trim();
+                            var projectStartDateCell = row.Cell(9);
                             DateOnly? projectStartDate = null;
-                            if (!string.IsNullOrEmpty(projectStartDateValue))
+                            if (!projectStartDateCell.IsEmpty())
                             {
-                                if (DateTime.TryParseExact(projectStartDateValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate))
+                                if (projectStartDateCell.DataType == XLDataType.DateTime)
                                 {
-                                    projectStartDate = DateOnly.FromDateTime(parsedStartDate);
+                                    // Read the date directly, Excel always stores dates in proper format
+                                    projectStartDate = DateOnly.FromDateTime(projectStartDateCell.GetDateTime());
                                 }
                                 else
                                 {
-                                    throw new InvalidOperationException($"Invalid date format in ProjectStartDateEst: {projectStartDateValue}. Expected format: DD/MM/YYYY.");
+                                    // Handle cases where the date is stored as a text string
+                                    string dateString = projectStartDateCell.GetString().Trim();
+                                    if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedStartDate))
+                                    {
+                                        projectStartDate = DateOnly.FromDateTime(parsedStartDate);
+                                    }
+                                    else
+                                    {
+                                        throw new InvalidOperationException($"Invalid date format in ProjectStartDateEst at row {row.RowNumber()}. Expected format: DD/MM/YYYY.");
+                                    }
                                 }
                             }
 
-                            // Logic to handle date format for ProjectEndDateEst
-                            var projectEndDateValue = row.Cell(10).GetValue<string>()?.Trim();
+                            var projectEndDateCell = row.Cell(10);
                             DateOnly? projectEndDate = null;
-                            if (!string.IsNullOrEmpty(projectEndDateValue))
+                            if (!projectEndDateCell.IsEmpty())
                             {
-                                if (DateTime.TryParseExact(projectEndDateValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate))
+                                if (projectEndDateCell.DataType == XLDataType.DateTime)
                                 {
-                                    projectEndDate = DateOnly.FromDateTime(parsedEndDate);
+                                    projectEndDate = DateOnly.FromDateTime(projectEndDateCell.GetDateTime());
                                 }
                                 else
                                 {
-                                    throw new InvalidOperationException($"Invalid date format in ProjectEndDateEst: {projectEndDateValue}. Expected format: DD/MM/YYYY.");
+                                    string dateString = projectEndDateCell.GetString().Trim();
+                                    if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedEndDate))
+                                    {
+                                        projectEndDate = DateOnly.FromDateTime(parsedEndDate);
+                                    }
+                                    else
+                                    {
+                                        throw new InvalidOperationException($"Invalid date format in ProjectEndDateEst at row {row.RowNumber()}. Expected format: DD/MM/YYYY.");
+                                    }
                                 }
                             }
-                                                       
+
+
+
                             var boDetail = new Ncmlocbo
                             {
                                 Lcode = lcode,

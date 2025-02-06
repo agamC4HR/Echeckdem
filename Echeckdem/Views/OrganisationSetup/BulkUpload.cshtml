@@ -58,21 +58,23 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
+
+                    $('#messageContainer').fadeIn();
+
                     if (response.success) {
-                        // Display success message
                         $('#messageContainer').removeClass('alert-danger').addClass('alert-success');
-                        $('#messageContainer').text(response.message).fadeIn().delay(3000).fadeOut();
                     } else {
-                        // Display error message
                         $('#messageContainer').removeClass('alert-success').addClass('alert-danger');
-                        $('#messageContainer').text(response.message).fadeIn().delay(3000).fadeOut();
                     }
+
+                    $('#messageContainer').text(response.message).fadeIn().delay(10000).fadeOut();
                 },
-                error: function () {
-                    // Display general error message
+                error: function (xhr) {
                     $('#messageContainer').removeClass('alert-success').addClass('alert-danger');
-                    $('#messageContainer').text('An error occurred. Please try again.').fadeIn().delay(3000).fadeOut();
+                    $('#messageContainer').text('An error occurred: ' + xhr.responseText).fadeIn().delay(10000).fadeOut();
                 }
+
+               
             });
         });
     });
