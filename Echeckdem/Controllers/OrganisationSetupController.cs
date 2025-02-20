@@ -497,16 +497,18 @@ namespace Echeckdem.Controllers
                     return Json(new { success = false, message = "OID not found for the specified Lcode." });
                 }
 
-                return Json(new { success = true, oid });
+                return Json(new { success = true, oid, refresh = true });
                             
             }
 
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "An error occurred while saving the mapping. Please try again." });
+                _logger.LogError(ex, "Error saving scope mapping for Lcode: {Lcode}, ProjectCode: {ProjectCode}", lcode, projectCode);
                 TempData["ErrorMessage"] = "An error occurred while saving the mapping. Please try again.";
+                return Json(new { success = false, message = "An error occurred while saving the mapping. Please try again." });
             }
         }
+                                                                                                                                
     }
 }
 

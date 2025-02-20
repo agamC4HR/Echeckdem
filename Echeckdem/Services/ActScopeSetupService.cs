@@ -20,7 +20,7 @@ namespace Echeckdem.Services
 
 
         public async Task AddScope(BocwScope boscope)                                     // Add Scopes or data in BOCWSCOPES
-        {
+        {                               
             var scopeId = GenerateScopeId();
             boscope.ScopeId = scopeId;
             
@@ -28,7 +28,7 @@ namespace Echeckdem.Services
             _context.BocwScopes.Add(boscope);
             await _context.SaveChangesAsync();
         }
-
+                                    
     
 
         private string GenerateScopeId()                                                                                                  // Logic to generate a 3-character scope ID (e.g., "S01", "S02", etc.)

@@ -378,29 +378,86 @@ namespace Echeckdem.Services
             return await _EcheckContext.BocwScopes.Where(scope => scope.ScopeActive == 1).ToListAsync();
         }
 
-        public async Task AddOrUpdateMapping (string lcode, string projectCode, List<string> selectedScopeIds)
+
+        public async Task AddOrUpdateMapping(string lcode, string projectCode, List<string> selectedScopeIds)
         {
-            // Remove existing mappings for the site
-            var existingMappings = _EcheckContext.BoScopeMaps.Where(m => m.Lcode == lcode && m.ProjectCode == projectCode);
-            _EcheckContext.BoScopeMaps.RemoveRange(existingMappings);
+            // Fetch all existing active mappings for this site & project
+            var existingMappings = await _EcheckContext.BoScopeMaps
+                .Where(m => m.Lcode == lcode && m.ProjectCode == projectCode && m.Active)
+                .ToListAsync();
 
-            foreach (var scopeId in selectedScopeIds)
+            var existingScopeIds = existingMappings.Select(m => m.ScopeId).ToHashSet(); // Fast lookup
+
+            // Step 1: Update existing mappings - Set Active = true for selected ones, false for others
+            foreach (var mapping in existingMappings)
             {
-                var mapping = new BoScopeMap
-                {
-                    ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
-                    ScopeId = scopeId,
-                    Lcode = lcode,
-                    ProjectCode = projectCode,
-                    Active = true
-
-                };
-                _EcheckContext.BoScopeMaps.Add(mapping);
+                mapping.Active = selectedScopeIds.Contains(mapping.ScopeId);
             }
+
+            // Step 2: Identify new scopes to add (those that don't already exist in active mappings)
+            var scopesToAdd = selectedScopeIds.Except(existingScopeIds).ToList();
+
+            // Step 3: Add only new scopes that are not already in the DB
+            foreach (var scopeId in scopesToAdd)
+            {
+                // Check if the new scope already exists for this Lcode and ProjectCode and is not marked as active
+                var existingScope = await _EcheckContext.BoScopeMaps
+                    .FirstOrDefaultAsync(m => m.ScopeId == scopeId && m.Lcode == lcode && m.ProjectCode == projectCode);
+
+                if (existingScope == null) // If the scope doesn't exist, insert a new mapping
+                {
+                    var newMapping = new BoScopeMap
+                    {
+                        ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6), // Unique ID
+                        ScopeId = scopeId,
+                        Lcode = lcode,
+                        ProjectCode = projectCode,
+                        Active = true  // New scopes should be active
+                    };
+
+                    _EcheckContext.BoScopeMaps.Add(newMapping);
+                }
+                else
+                {
+                    // If the scope exists but is not active, update its status to Active
+                    if (!existingScope.Active)
+                    {
+                        existingScope.Active = true;
+                    }
+                }
+            }
+
+            // Save changes once to optimize database writes
             await _EcheckContext.SaveChangesAsync();
         }
-            
-        
+
+
+
+
+        //public async Task AddOrUpdateMapping(string lcode, string projectCode, List<string> selectedScopeIds)
+        //{
+        //    // Remove existing mappings for the site
+        //    var existingMappings = _EcheckContext.BoScopeMaps.Where(m => m.Lcode == lcode && m.ProjectCode == projectCode).ToList();       // Force query execution and tracking
+
+        //    _EcheckContext.BoScopeMaps.RemoveRange(existingMappings);
+
+        //    foreach (var scopeId in selectedScopeIds)
+        //    {
+        //        var mapping = new BoScopeMap
+        //        {
+        //            ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
+        //            ScopeId = scopeId,
+        //            Lcode = lcode,
+        //            ProjectCode = projectCode,
+        //            Active = true
+
+        //        };
+        //        _EcheckContext.BoScopeMaps.Add(mapping);
+        //    }
+        //    await _EcheckContext.SaveChangesAsync();
+        //}
+
+
 
     }
 }
