@@ -1,0 +1,64 @@
+﻿@model Echeckdem.Models.TrackScope
+
+@{
+    ViewBag.Title = "Create TrackScope";
+}
+
+<h2>Create TrackScope</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>TrackScope</h4>
+        <hr />
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ScopeId, "Scope", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ScopeID", ViewBag.ScopeList as SelectList, "Select Scope", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ScopeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Task, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Task, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Task, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Stateid, "State", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("StateID", ViewBag.StateList as SelectList, "Select State", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Stateid, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class=" form-group">
+            @Html.LabelFor(model => model.FirstAlert, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.FirstAlert, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.FirstAlert, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Reminder, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Reminder, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Reminder, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+} ```html
+@Html.ActionLink("Back to List", "Index")

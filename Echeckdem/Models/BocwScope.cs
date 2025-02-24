@@ -12,8 +12,8 @@ public partial class BocwScope
 
     public int ScopeActive { get; set; }
 
-    public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
-
     [NotMapped]
     public bool IsSelected { get; set; }
+
+    public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 }

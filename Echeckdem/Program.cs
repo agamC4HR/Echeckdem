@@ -38,6 +38,8 @@ builder.Services.AddScoped<ContributionService>();
 builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<IBulkUploadService, BulkUploadService>();
 builder.Services.AddScoped<ActScopeSetupService>();
+builder.Services.AddScoped<ITrackScopeSetupService, TrackScopeSetupService>();
+
 // Configuring the Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStrings");              //ECHECK
 builder.Services.AddDbContext<DbEcheckContext>(options =>

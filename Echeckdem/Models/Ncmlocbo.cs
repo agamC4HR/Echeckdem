@@ -37,7 +37,7 @@ public partial class Ncmlocbo
     public string? Lname { get; set; }
 
     [NotMapped]
-    public string ActiveScopes { get; set; }                                                            // created for showing the active scopes for a location in a specific <th>
+    public string ActiveScopes { get; set; }
 
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
