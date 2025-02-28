@@ -20,9 +20,37 @@ namespace Echeckdem.Controllers
             _EcheckContext = EcheckContext;
         }
 
+        public ActionResult Index()
+        {
+            var trackScopes = _EcheckContext.TrackScopes
+                .Join(_EcheckContext.BocwScopes,
+                    ts => ts.ScopeId,
+                    bs => bs.ScopeId,
+                    (ts, bs) => new { ts, bs })
+                .Join(_EcheckContext.Maststates,
+                    tsbs => tsbs.ts.Stateid,
+                    ms => ms.Stateid,
+                    (tsbs, ms) => new
+                    {
+                        tsbs.ts.WorkId,
+                        tsbs.ts.Task,
+                        tsbs.ts.Reminder,
+                        tsbs.ts.FirstAlert,
+                        ScopeName = tsbs.bs.ScopeName,
+                        StateName = ms.Statedesc
+                    })
+                .ToList();
+
+            return View(trackScopes);
+        }
+
+
+
+
+
         public ActionResult Create()
         {
-            ViewBag.ScopesList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName");
+            ViewBag.ScopeList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName");
             ViewBag.StateList = new SelectList(_EcheckContext.Maststates.ToList(), "Stateid", "Statedesc");
             return View();
         }
@@ -35,63 +63,15 @@ namespace Echeckdem.Controllers
             {
                 _EcheckContext.TrackScopes.Add(trackScope);
                 _EcheckContext.SaveChanges();
+                
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ScopesList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName", trackScope.ScopeId);
+            ViewBag.ScopeList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName", trackScope.ScopeId);
             ViewBag.StateList = new SelectList(_EcheckContext.Maststates.ToList(), "Stateid", "Statedesc", trackScope.Stateid);
 
             return View(trackScope);
         }
 
-        //[HttpGet]
-        //public IActionResult Create()
-        //{
-        //    try
-        //    {
-        //        var scopes = _EcheckContext.BocwScopes.ToList();
-        //        var states = _EcheckContext.Maststates.ToList();
-
-        //        if (scopes == null || !scopes.Any())
-        //        {
-        //            scopes = new List<BocwScope> { new BocwScope { ScopeId = "", ScopeName = "No Scope Available" } };
-        //        }
-
-        //        if (states == null || !states.Any())
-        //        {
-        //            states = new List<Maststate> { new Maststate { Stateid = "", Statedesc = "No State Available" } };
-        //        }
-
-        //        ViewBag.Scopes = new SelectList(scopes, "ScopeId", "ScopeName");
-        //        ViewBag.States = new SelectList(states, "Stateid", "StateDesc");
-
-        //        return View();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error fetching data: {ex.Message}");
-        //        return View("Error");
-        //    }
-        //}
-
-
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Create(TrackScope model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _trackscopesetupservice.AddTrackScope(model);
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    var scopes = _EcheckContext.BocwScopes.ToList();
-        //    var states = _EcheckContext.Maststates.ToList();
-        //    // Repopulate dropdowns if validation fails
-        //    ViewBag.Scopes = new SelectList(scopes, "ScopeId", "ScopeName", model.ScopeId);
-        //    ViewBag.States = new SelectList(states, "Stateid", "StateDesc", model.Stateid);
-        //    return View(model);
-        //}
     }
 }

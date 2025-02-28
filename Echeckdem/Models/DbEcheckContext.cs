@@ -151,8 +151,8 @@ public partial class DbEcheckContext : DbContext
     {
 
         modelBuilder.Entity<ReturnsViewModel>()
-    .HasNoKey()
-    .ToView(null);
+        .HasNoKey()
+        .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()
@@ -2291,10 +2291,11 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<TrackScope>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Track_Scope");
+            entity.HasKey(e => e.WorkId).HasName("PK_TrackScope");
 
+            entity.ToTable("Track_Scope");
+
+            entity.Property(e => e.WorkId).HasColumnName("WorkID");
             entity.Property(e => e.ScopeId)
                 .HasMaxLength(10)
                 .IsUnicode(false)
@@ -2307,11 +2308,8 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Task)
                 .HasMaxLength(200)
                 .IsUnicode(false);
-            entity.Property(e => e.WorkId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("WorkID");
 
-            entity.HasOne(d => d.Scope).WithMany()
+            entity.HasOne(d => d.Scope).WithMany(p => p.TrackScopes)
                 .HasForeignKey(d => d.ScopeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Track_Scope_BOCW_SCOPE");

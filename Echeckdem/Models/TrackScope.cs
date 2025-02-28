@@ -17,5 +17,5 @@ public partial class TrackScope
 
     public int WorkId { get; set; }
 
-    public virtual BocwScope Scope { get; set; } = null!;
+    public virtual BocwScope? Scope { get; set; } = null!;
 }
