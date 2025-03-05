@@ -20,6 +20,31 @@ namespace Echeckdem.Controllers
             _EcheckContext = EcheckContext;
         }
 
+        //public ActionResult Index()
+        //{
+        //    var trackScopes = _EcheckContext.TrackScopes
+        //        .Join(_EcheckContext.BocwScopes,
+        //            ts => ts.ScopeId,
+        //            bs => bs.ScopeId,
+        //            (ts, bs) => new { ts, bs })
+        //        .Join(_EcheckContext.Maststates,
+        //            tsbs => tsbs.ts.Stateid,
+        //            ms => ms.Stateid,
+        //            (tsbs, ms) => new
+        //            {
+        //                tsbs.ts.WorkId,
+        //                tsbs.ts.Task,
+        //                tsbs.ts.Reminder,
+        //                tsbs.ts.FirstAlert,
+        //                ScopeName = tsbs.bs.ScopeName,
+        //                StateName = ms.Statedesc
+        //            })
+        //        .ToList();
+
+        //    return View("Index", trackScopes);
+        //}
+
+
         public ActionResult Index()
         {
             var trackScopes = _EcheckContext.TrackScopes
@@ -30,29 +55,26 @@ namespace Echeckdem.Controllers
                 .Join(_EcheckContext.Maststates,
                     tsbs => tsbs.ts.Stateid,
                     ms => ms.Stateid,
-                    (tsbs, ms) => new
+                    (tsbs, ms) => new TrackScopeViewModel
                     {
-                        tsbs.ts.WorkId,
-                        tsbs.ts.Task,
-                        tsbs.ts.Reminder,
-                        tsbs.ts.FirstAlert,
+                        WorkId = tsbs.ts.WorkId,
+                        Task = tsbs.ts.Task,
+                        Reminder = tsbs.ts.Reminder,
+                        FirstAlert = tsbs.ts.FirstAlert,
                         ScopeName = tsbs.bs.ScopeName,
                         StateName = ms.Statedesc
                     })
                 .ToList();
 
-            return View(trackScopes);
+            return View(trackScopes); // No need to specify "Index" if the view name matches the action.
         }
-
-
-
 
 
         public ActionResult Create()
         {
             ViewBag.ScopeList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName");
             ViewBag.StateList = new SelectList(_EcheckContext.Maststates.ToList(), "Stateid", "Statedesc");
-            return View();
+            return PartialView();
         }
 
         [HttpPost]

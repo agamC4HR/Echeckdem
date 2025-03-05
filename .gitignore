@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 appsettings.json
 /Echeckdem/appsettings.json
+/Echeckdem/Models/DbEcheckContext.cs

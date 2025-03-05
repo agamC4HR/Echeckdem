@@ -10,7 +10,7 @@ namespace Echeckdem.Services
 
         public TrackScopeSetupService(DbEcheckContext EcheckContext)
         {
-            _EcheckContext = EcheckContext; 
+            _EcheckContext = EcheckContext;
         }
 
 

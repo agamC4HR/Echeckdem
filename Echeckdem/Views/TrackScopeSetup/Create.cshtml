@@ -1,10 +1,77 @@
 ﻿@model Echeckdem.Models.TrackScope
 
-@{
-    ViewBag.Title = "Create TrackScope";
-}
+<style>
+    /* General Styles for the Form */
+    .form-horizontal {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
 
-<h2>Create TrackScope</h2>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .control-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+    .text-danger {
+        font-size: 12px;
+        color: #e74c3c;
+        margin-top: 5px;
+    }
+
+    /* Button Styling */
+    .btn-default {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s;
+        width: 100%;
+    }
+
+        .btn-default:hover {
+            background-color: #0056b3;
+        }
+
+    /* Back to List Link */
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+</style>
 
 @using (Html.BeginForm())
 {
@@ -60,5 +127,11 @@
             </div>
         </div>
     </div>
-} ```html
+}
 @Html.ActionLink("Back to List", "Index")
+
+
+
+
+
+
