@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="UploadedDocuments\" />
     <Folder Include="wwwroot\imgs\" />
   </ItemGroup>
 

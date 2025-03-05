@@ -75,7 +75,7 @@ namespace Echeckdem.Controllers
             }
             return BadRequest("Failed to update organization information");
         }
-               
+
         [HttpGet]                                                                                                                                // Add Locations process        --  1)  BULK  UPLOAD 
         public IActionResult Upload(string oid)
         {
@@ -84,7 +84,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpPost]                                                                                                                                   // Add Locations process        --  1)  BULK UPLOAD
-        public async Task<IActionResult> Upload(IFormFile file, string oid )
+        public async Task<IActionResult> Upload(IFormFile file, string oid)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace Echeckdem.Controllers
                 validation.ErrorTitle = "Invalid State";
                 validation.Error = "Please select a state from the dropdown.";
                 validation.Formula.ExcelFormula = $"Validation!$A$1:$A${stateNames.Count}";
-                
+
 
                 // range for Site Act dropdown
                 var siteActRange = validationSheet.Cells[1, 2, siteActValues.Count, 2];
@@ -216,7 +216,7 @@ namespace Echeckdem.Controllers
                 // Return file as download
                 return File(fileContent,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "Location Setup Template.xlsx");    
+                    "Location Setup Template.xlsx");
             }
         }
 
@@ -232,7 +232,7 @@ namespace Echeckdem.Controllers
             var locations = _organisationsetupservice.GetLocationDatabyOidAsync(oid).Result;
 
             // Create an instance of CombinedOrganisationSetupViewModel 
-            var model =  new CombinedOrganisationSetupViewModel
+            var model = new CombinedOrganisationSetupViewModel
             {
                 AddLocation = locations, // Assuming locations is of type List<AddLocationViewModel>
                 oid = oid // Set the OID if needed
@@ -262,7 +262,7 @@ namespace Echeckdem.Controllers
                     // Redirect to the GetLocationDatabyOid action after update
                     return RedirectToAction("GetLocationDatabyOid", new { oid = updatedLocationData.oid });
                 }
-                
+
                 else
                 {
                     TempData["ErrorMessage"] = "Failed to update locations.";
@@ -273,7 +273,7 @@ namespace Echeckdem.Controllers
                 TempData["ErrorMessage"] = $"An error occurred while updating locations: {ex.Message}";
                 Console.WriteLine($"Update error: {ex}");
                 Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-               
+
             }
 
             // If something fails, return the same model to the view
@@ -304,7 +304,7 @@ namespace Echeckdem.Controllers
 
             try
             {
-            
+
                 var boSites = await _organisationsetupservice.GetBoSitesAsync(oid); // Method to fetch BO sites
                 if (!boSites.Any())
                 {
@@ -321,13 +321,13 @@ namespace Echeckdem.Controllers
 
                 return Json(new { success = true, message = $"{recordCount} BO site records uploaded successfully." });
 
-               
+
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
-        
+
 
 
         }
@@ -346,9 +346,9 @@ namespace Echeckdem.Controllers
             {
                 return Json(new { success = false, message = "No BO sites found for the provided OID." });
             }
-                                
+
             // Set EPPlus license context for .NET Core
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; 
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             // Create a new Excel package
             using (var package = new ExcelPackage())
             {
@@ -397,7 +397,7 @@ namespace Echeckdem.Controllers
                 foreach (var site in boSites)
                 {
                     worksheet.Cells[row, 1].Value = site.Lname;
-                    row++;            
+                    row++;
                 }
 
                 // Auto-fit columns for better readability
@@ -433,7 +433,7 @@ namespace Echeckdem.Controllers
             }
             catch (Exception ex)
             {
-               return View("Error");
+                return View("Error");
             }
 
         }
@@ -454,7 +454,7 @@ namespace Echeckdem.Controllers
                     .Select(m => m.ScopeId)
                     .ToListAsync();
 
-                foreach(var scope in scopes)
+                foreach (var scope in scopes)
                 {
                     scope.IsSelected = existingMappings.Contains(scope.ScopeId);
                 }
@@ -470,7 +470,7 @@ namespace Echeckdem.Controllers
                 return PartialView("_ScopesMapping", new List<BocwScope>());
             }
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> SaveMapping(string lcode, string projectCode, List<string> selectedScopeIds)
         {
@@ -483,7 +483,7 @@ namespace Echeckdem.Controllers
                 {
                     ModelState.AddModelError("", "Please select at least one scope.");
                     return Json(new { success = false, message = "No scopes selected." });
-                   
+
                 }
 
                 await _organisationsetupservice.AddOrUpdateMapping(lcode, projectCode, selectedScopeIds);
@@ -498,7 +498,7 @@ namespace Echeckdem.Controllers
                 }
 
                 return Json(new { success = true, oid, refresh = true });
-                            
+
             }
 
             catch (Exception ex)
@@ -508,7 +508,35 @@ namespace Echeckdem.Controllers
                 return Json(new { success = false, message = "An error occurred while saving the mapping. Please try again." });
             }
         }
-                                                                                                                                
+
+
+        [HttpGet]
+        public IActionResult UploadFile()
+        {
+            return View();
+        }
+
+        [HttpPost]                                                                                                              // action for uploading documents for obtaining RC
+
+        public async Task<IActionResult> UploadFile(IFormFile file, string lcode, string projectCode, string oid)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return Json(new { success = false, message = "No file selected." });
+                }
+
+                await _organisationsetupservice.UploadFileAsync(file, lcode, projectCode, oid);
+                return Json(new { success = true, message = "File uploaded successfully." });
+            }
+
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex, "Error Uploading File.");
+                return Json(new { success = false, message = "File upload failed" });
+            }
+        }
     }
 }
 

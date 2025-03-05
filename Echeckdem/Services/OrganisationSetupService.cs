@@ -7,6 +7,7 @@ using Echeckdem.CustomFolder;
 using Echeckdem.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.Globalization;
 using System.Security.Policy;
 
@@ -431,31 +432,45 @@ namespace Echeckdem.Services
             await _EcheckContext.SaveChangesAsync();
         }
 
+        public async Task<bool> UploadFileAsync(IFormFile file, string lcode, string projectCode, string oid)
+        {
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("InvalidFile.");
+
+            string uploadDirectory = @"C:\Users\agam1\source\repos\Echeckdem\Echeckdem\UploadedDocuments";
+            if (!Directory.Exists(uploadDirectory))
+            {
+                Directory.CreateDirectory(uploadDirectory);
+            }
+
+            // Generate unique filename
+            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+            string filePath = Path.Combine(uploadDirectory, fileName);
+
+            // Save file to local directory
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var newUpload = new TempBocw
+            {
+                Lcode = lcode,
+                Oid = oid,
+                ProjectCode = projectCode,
+                FileName = file.FileName,
+                FilePath = filePath,
+                UploadDate = DateOnly.FromDateTime(DateTime.Now)
+            };
+
+            _EcheckContext.TempBocws.Add(newUpload);
+            await _EcheckContext.SaveChangesAsync();
+
+            return true;
+
+        }
 
 
-
-        //public async Task AddOrUpdateMapping(string lcode, string projectCode, List<string> selectedScopeIds)
-        //{
-        //    // Remove existing mappings for the site
-        //    var existingMappings = _EcheckContext.BoScopeMaps.Where(m => m.Lcode == lcode && m.ProjectCode == projectCode).ToList();       // Force query execution and tracking
-
-        //    _EcheckContext.BoScopeMaps.RemoveRange(existingMappings);
-
-        //    foreach (var scopeId in selectedScopeIds)
-        //    {
-        //        var mapping = new BoScopeMap
-        //        {
-        //            ScopeMapId = Guid.NewGuid().ToString("N").Substring(0, 6),
-        //            ScopeId = scopeId,
-        //            Lcode = lcode,
-        //            ProjectCode = projectCode,
-        //            Active = true
-
-        //        };
-        //        _EcheckContext.BoScopeMaps.Add(mapping);
-        //    }
-        //    await _EcheckContext.SaveChangesAsync();
-        //}
 
 
 

@@ -125,6 +125,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<ServcMap> ServcMaps { get; set; }
 
+    public virtual DbSet<TempBocw> TempBocws { get; set; }
+
     public virtual DbSet<TrackScope> TrackScopes { get; set; }
 
     public virtual DbSet<Trig> Trigs { get; set; }
@@ -140,19 +142,13 @@ public partial class DbEcheckContext : DbContext
     public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
-
-
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("server=AGAM\\SQLEXPRESS01;database=DB_echeck;Trusted_Connection=True; TrustServerCertificate=True;");
-
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
         modelBuilder.Entity<ReturnsViewModel>()
-        .HasNoKey()
-        .ToView(null);
+       .HasNoKey()
+       .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()
@@ -161,7 +157,6 @@ public partial class DbEcheckContext : DbContext
         modelBuilder.Entity<RegistrationViewModel>()
       .HasNoKey()
       .ToView(null);
-
 
         modelBuilder.Entity<Act>(entity =>
         {
@@ -2287,6 +2282,26 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Vcoid).HasColumnName("vcoid");
             entity.Property(e => e.Vproid).HasColumnName("vproid");
             entity.Property(e => e.Vuno).HasColumnName("vuno");
+        });
+
+        modelBuilder.Entity<TempBocw>(entity =>
+        {
+            entity.HasKey(e => e.UploadId).HasName("PK__TempBocw__6D16C86D6FB0CA90");
+
+            entity.ToTable("TempBocw");
+
+            entity.Property(e => e.UploadId).HasColumnName("UploadID");
+            entity.Property(e => e.FileName).HasMaxLength(100);
+            entity.Property(e => e.FilePath).HasMaxLength(300);
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("lcode");
+            entity.Property(e => e.Oid)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("oid");
+            entity.Property(e => e.ProjectCode).HasMaxLength(10);
         });
 
         modelBuilder.Entity<TrackScope>(entity =>

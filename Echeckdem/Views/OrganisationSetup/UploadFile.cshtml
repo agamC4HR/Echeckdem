@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Upload File";
+}
+
+<h2>Upload File</h2>
+
+<form id="uploadForm" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="lcode">Lcode:</label>
+        <input type="text" id="lcode" name="lcode" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label for="projectCode">Project Code:</label>
+        <input type="text" id="projectCode" name="projectCode" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label for="oid">OID:</label>
+        <input type="text" id="oid" name="oid" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label for="file">Select File (PDF/DOC only):</label>
+        <input type="file" id="file" name="file" class="form-control" accept=".pdf,.doc,.docx" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+
+<!-- Display Upload Status -->
+<div id="uploadStatus" class="mt-3"></div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#uploadForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var formData = new FormData();
+                formData.append("file", $("#file")[0].files[0]);
+                formData.append("lcode", $("#lcode").val());
+                formData.append("projectCode", $("#projectCode").val());
+                formData.append("oid", $("#oid").val());
+
+                $.ajax({
+                    url: '@Url.Action("UploadFile", "OrganisationSetup")',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $("#uploadStatus").html('<div class="alert alert-success">' + response.message + '</div>');
+                        } else {
+                            $("#uploadStatus").html('<div class="alert alert-danger">' + response.message + '</div>');
+                        }
+                    },
+                    error: function () {
+                        $("#uploadStatus").html('<div class="alert alert-danger">An error occurred while uploading the file.</div>');
+                    }
+                });
+            });
+        });
+    </script>
+}
