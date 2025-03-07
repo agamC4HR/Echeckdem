@@ -17,6 +17,8 @@ public partial class BoScopeMap
 
     public virtual Ncmloc LcodeNavigation { get; set; } = null!;
 
+    public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();
+
     public virtual Ncmlocbo ProjectCodeNavigation { get; set; } = null!;
 
     public virtual BocwScope Scope { get; set; } = null!;

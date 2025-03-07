@@ -193,6 +193,35 @@ namespace Echeckdem.Services
 
                             var resolvedLname = site.Lname; // Use the resolved lname for population
 
+                            var projectAreaCell = row.Cell(7);
+                            decimal? projectArea = null; // Use nullable decimal
+                            if (!projectAreaCell.IsEmpty())
+                            {
+                                projectArea = projectAreaCell.GetValue<decimal>();
+                            }
+
+                            // Similarly for ProjectCostEst
+                            var projectCostEstCell = row.Cell(8);
+                            float? projectCostEst = null; // Use nullable float
+                            if (!projectCostEstCell.IsEmpty())
+                            {
+                                projectCostEst = projectCostEstCell.GetValue<float?>();
+                            }
+
+                            var VendorCountCell = row.Cell(11);
+                            int? VendorCount = null;
+                            if(!VendorCountCell.IsEmpty())
+                            {
+                                VendorCount = VendorCountCell.GetValue<int?>();
+                            }
+
+                            var WorkerHeadCounCellt = row.Cell(12);
+                            int? WorkerHeadCount = null;
+                            if(!VendorCountCell.IsEmpty())
+                            {
+                                WorkerHeadCount = VendorCountCell.GetValue<int?>();
+                            }
+
                             var projectStartDateCell = row.Cell(9);
                             DateOnly? projectStartDate = null;
                             if (!projectStartDateCell.IsEmpty())
@@ -241,6 +270,8 @@ namespace Echeckdem.Services
 
 
 
+
+
                             var boDetail = new Ncmlocbo
                             {
                                 Lcode = lcode,
@@ -251,12 +282,16 @@ namespace Echeckdem.Services
                                 GeneralContractor = row.Cell(4).GetValue<string>().Trim(),
                                 ProjectAddress = row.Cell(5).GetValue<string>().Trim(),
                                 NatureofWork = row.Cell(6).GetValue<string>().Trim(),
-                                ProjectArea = row.Cell(7).GetValue<decimal>(),
-                                ProjectCostEst = row.Cell(8).GetValue<float?>(),
+                                //ProjectArea = row.Cell(7).GetValue<decimal>(),
+                                //ProjectCostEst = row.Cell(8).GetValue<float?>(),
+                                ProjectArea = projectArea, // Use the nullable value
+                                ProjectCostEst = projectCostEst,
                                 ProjectStartDateEst = projectStartDate,
                                 ProjectEndDateEst = projectEndDate,
-                                VendorCount = row.Cell(11).GetValue<int>(),
-                                WorkerHeadCount = row.Cell(12).GetValue<int>(),
+                                //VendorCount = row.Cell(11).GetValue<int>(),
+                                VendorCount = VendorCount,
+                                WorkerHeadCount = WorkerHeadCount,
+                                //WorkerHeadCount = row.Cell(12).GetValue<int>(),
                                 ProjectLead = row.Cell(13).GetValue<string>().Trim(),
 
                             };
@@ -313,18 +348,31 @@ namespace Echeckdem.Services
 
         public async Task<List<Ncmlocbo>> GetAllBocwDetailsWithScopesAsync(string oid)
         {
-            var query = @"
-                        SELECT * 
-                        FROM Ncmlocbo 
-                        WHERE Lcode IN (
-                        SELECT Lcode 
-                        FROM Ncmloc 
-                        WHERE Oid = @oid AND Ltype = 'bo'
-                        )";
+            //var query = @"
+            //            SELECT b.* 
+            //            FROM (SELECT * FROM ncmloc WHERE ltype = 'bo' AND Oid = @oid) AS a 
+            //            LEFT JOIN (SELECT * FROM ncmlocbo) AS b 
+            //            ON a.lcode = b.lcode    
+            //           ";
+
+            var query = @" 
+                        SELECT*
+                       FROM Ncmlocbo
+                       WHERE Lcode IN(
+                       SELECT Lcode
+
+                       FROM Ncmloc
+
+                       WHERE Oid = @oid AND Ltype = 'bo'
+                       )";
+
+
+          
 
             var bocwDetails = await _EcheckContext.Ncmlocbos
                 .FromSqlRaw(query, new SqlParameter("@oid", oid))
                 .ToListAsync();
+       
 
             foreach(var bo in bocwDetails)
             {
@@ -432,43 +480,7 @@ namespace Echeckdem.Services
             await _EcheckContext.SaveChangesAsync();
         }
 
-        public async Task<bool> UploadFileAsync(IFormFile file, string lcode, string projectCode, string oid)
-        {
-            if (file == null || file.Length == 0)
-                throw new ArgumentException("InvalidFile.");
-
-            string uploadDirectory = @"C:\Users\agam1\source\repos\Echeckdem\Echeckdem\UploadedDocuments";
-            if (!Directory.Exists(uploadDirectory))
-            {
-                Directory.CreateDirectory(uploadDirectory);
-            }
-
-            // Generate unique filename
-            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            string filePath = Path.Combine(uploadDirectory, fileName);
-
-            // Save file to local directory
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var newUpload = new TempBocw
-            {
-                Lcode = lcode,
-                Oid = oid,
-                ProjectCode = projectCode,
-                FileName = file.FileName,
-                FilePath = filePath,
-                UploadDate = DateOnly.FromDateTime(DateTime.Now)
-            };
-
-            _EcheckContext.TempBocws.Add(newUpload);
-            await _EcheckContext.SaveChangesAsync();
-
-            return true;
-
-        }
+        
 
 
 

@@ -20,7 +20,7 @@ public partial class Ncmlocbo
 
     public string NatureofWork { get; set; } = null!;
 
-    public decimal ProjectArea { get; set; }
+    public decimal? ProjectArea { get; set; }
 
     public double? ProjectCostEst { get; set; }
 
@@ -28,9 +28,9 @@ public partial class Ncmlocbo
 
     public DateOnly? ProjectEndDateEst { get; set; }
 
-    public int VendorCount { get; set; }
+    public int? VendorCount { get; set; }
 
-    public int WorkerHeadCount { get; set; }
+    public int? WorkerHeadCount { get; set; }
 
     public string? ProjectLead { get; set; }
 
@@ -38,7 +38,9 @@ public partial class Ncmlocbo
 
     [NotMapped]
     public string ActiveScopes { get; set; }
-    public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
+    public virtual ICollection<BoScopeMap>? BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual Ncmloc? LcodeNavigation { get; set; }
+
+    public virtual ICollection<Ncbocw>? Ncbocws { get; set; } = new List<Ncbocw>();
 }

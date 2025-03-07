@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Echeckdem.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Echeckdem.CustomFolder;
 
 
 
@@ -62,7 +63,9 @@ namespace Echeckdem.Controllers
                         Reminder = tsbs.ts.Reminder,
                         FirstAlert = tsbs.ts.FirstAlert,
                         ScopeName = tsbs.bs.ScopeName,
-                        StateName = ms.Statedesc
+                        StateName = ms.Statedesc,
+                        DueMonth = tsbs.ts.DueMonth,
+                        DueDate = tsbs.ts.DueDate
                     })
                 .ToList();
 
@@ -86,7 +89,7 @@ namespace Echeckdem.Controllers
                 _EcheckContext.TrackScopes.Add(trackScope);
                 _EcheckContext.SaveChanges();
                 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index");   
             }
 
             ViewBag.ScopeList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName", trackScope.ScopeId);

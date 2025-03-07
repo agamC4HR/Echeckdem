@@ -510,33 +510,7 @@ namespace Echeckdem.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult UploadFile()
-        {
-            return View();
-        }
-
-        [HttpPost]                                                                                                              // action for uploading documents for obtaining RC
-
-        public async Task<IActionResult> UploadFile(IFormFile file, string lcode, string projectCode, string oid)
-        {
-            try
-            {
-                if (file == null || file.Length == 0)
-                {
-                    return Json(new { success = false, message = "No file selected." });
-                }
-
-                await _organisationsetupservice.UploadFileAsync(file, lcode, projectCode, oid);
-                return Json(new { success = true, message = "File uploaded successfully." });
-            }
-
-            catch (Exception ex) 
-            {
-                _logger.LogError(ex, "Error Uploading File.");
-                return Json(new { success = false, message = "File upload failed" });
-            }
-        }
+       
     }
 }
 

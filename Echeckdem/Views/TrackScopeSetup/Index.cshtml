@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TrackScopeViewModel>
+﻿@model IEnumerable<Echeckdem.CustomFolder.TrackScopeViewModel>
 @{
     ViewData["Title"] = "Track Scope Setup";
     ViewData["Heading"] = "Track Scope Setup";
@@ -62,6 +62,8 @@
                     <th>First Alert</th>
                     <th>Scope Name</th>
                     <th>State Name</th>
+                    <th> Due Date</th>
+                    <th> Due Month</th>
                 </tr>
             </thead>
             <tbody>
@@ -78,6 +80,8 @@
                         <td>@item.FirstAlert</td>
                         <td>@item.ScopeName</td>
                         <td>@item.StateName</td>
+                        <td>@item.DueDate</td>
+                        <td>@item.DueMonth</td>
                     </tr>
                     sno++;
                 }

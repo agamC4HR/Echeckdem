@@ -83,6 +83,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Ncaumap> Ncaumaps { get; set; }
 
+    public virtual DbSet<Ncbocw> Ncbocws { get; set; }
+
     public virtual DbSet<Nccontr> Nccontrs { get; set; }
 
     public virtual DbSet<Ncfile> Ncfiles { get; set; }
@@ -125,8 +127,6 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<ServcMap> ServcMaps { get; set; }
 
-    public virtual DbSet<TempBocw> TempBocws { get; set; }
-
     public virtual DbSet<TrackScope> TrackScopes { get; set; }
 
     public virtual DbSet<Trig> Trigs { get; set; }
@@ -142,13 +142,15 @@ public partial class DbEcheckContext : DbContext
     public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
-   
+
+    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
         modelBuilder.Entity<ReturnsViewModel>()
-       .HasNoKey()
-       .ToView(null);
+      .HasNoKey()
+      .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()
@@ -1343,6 +1345,63 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Uno).HasColumnName("UNO");
         });
 
+        modelBuilder.Entity<Ncbocw>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId);
+
+            entity.ToTable("NCBOCW");
+
+            entity.Property(e => e.TransactionId)
+                .ValueGeneratedNever()
+                .HasColumnName("TransactionID");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("lcode");
+            entity.Property(e => e.Lname)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("lname");
+            entity.Property(e => e.ProjectCode).HasMaxLength(10);
+            entity.Property(e => e.ScopeId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ScopeID");
+            entity.Property(e => e.ScopeMapId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ScopeMapID");
+            entity.Property(e => e.Task)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.WorkId).HasColumnName("WorkID");
+
+            entity.HasOne(d => d.LcodeNavigation).WithMany(p => p.Ncbocws)
+                .HasForeignKey(d => d.Lcode)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NCBOCW_NCMLOC");
+
+            entity.HasOne(d => d.ProjectCodeNavigation).WithMany(p => p.Ncbocws)
+                .HasForeignKey(d => d.ProjectCode)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NCBOCW_NCMLOCBO");
+
+            entity.HasOne(d => d.Scope).WithMany(p => p.Ncbocws)
+                .HasForeignKey(d => d.ScopeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NCBOCW_BOCW_SCOPE");
+
+            entity.HasOne(d => d.ScopeMap).WithMany(p => p.Ncbocws)
+                .HasForeignKey(d => d.ScopeMapId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NCBOCW_BO_SCOPE_MAP");
+
+            entity.HasOne(d => d.Work).WithMany(p => p.Ncbocws)
+                .HasForeignKey(d => d.WorkId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NCBOCW_Track_Scope");
+        });
+
         modelBuilder.Entity<Nccontr>(entity =>
         {
             entity
@@ -2282,26 +2341,6 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Vcoid).HasColumnName("vcoid");
             entity.Property(e => e.Vproid).HasColumnName("vproid");
             entity.Property(e => e.Vuno).HasColumnName("vuno");
-        });
-
-        modelBuilder.Entity<TempBocw>(entity =>
-        {
-            entity.HasKey(e => e.UploadId).HasName("PK__TempBocw__6D16C86D6FB0CA90");
-
-            entity.ToTable("TempBocw");
-
-            entity.Property(e => e.UploadId).HasColumnName("UploadID");
-            entity.Property(e => e.FileName).HasMaxLength(100);
-            entity.Property(e => e.FilePath).HasMaxLength(300);
-            entity.Property(e => e.Lcode)
-                .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("lcode");
-            entity.Property(e => e.Oid)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("oid");
-            entity.Property(e => e.ProjectCode).HasMaxLength(10);
         });
 
         modelBuilder.Entity<TrackScope>(entity =>

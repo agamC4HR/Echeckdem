@@ -59,5 +59,7 @@ public partial class Ncmloc
 
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
+    public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();
+
     public virtual ICollection<Ncmlocbo> Ncmlocbos { get; set; } = new List<Ncmlocbo>();
 }
