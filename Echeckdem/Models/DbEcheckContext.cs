@@ -136,12 +136,12 @@ public partial class DbEcheckContext : DbContext
     public virtual DbSet<UserActivation> UserActivations { get; set; }
 
     public virtual DbSet<Webinar> Webinars { get; set; }
-
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
     public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
+
 
     
 
@@ -149,8 +149,8 @@ public partial class DbEcheckContext : DbContext
     {
 
         modelBuilder.Entity<ReturnsViewModel>()
-      .HasNoKey()
-      .ToView(null);
+    .HasNoKey()
+    .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()

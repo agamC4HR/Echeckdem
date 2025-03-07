@@ -56,8 +56,9 @@
             <th colspan="3" style="text-align:center">Construction</th>
             <th>Vendor Count</th>
             <th>Active Scopes</th>
-           
-            <th>Edit Scope</th>
+           <th> Edit</th>
+            <th>Add Scope</th>
+            <th> Project Setup</th>
         </tr>
         <tr>
             <th>Name</th>
@@ -86,13 +87,18 @@
                 <td>@bo.ProjectEndDateEst?.ToString("dd MMM yyyy")</td>
                 <td>@bo.VendorCount</td>
                 <td>@bo.ActiveScopes</td>
-                
+                <td>
+                    <a href="#" class="edit-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
+                        <i class="fas fa-pen edit-icon" style="color: #dd1; font-size: 14px; cursor: pointer;"></i>
+                    </a>
+                </td>
                
                 <td>
                     <a href="#" class="edit-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
                         <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                     </a>
                 </td>
+                <td>  <button class="btn btn-success complete-setup" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode" >Complete Setup</button></td>
              </tr>
           
         }
@@ -138,6 +144,8 @@
                 }
             });
 
+
+
             // Show the popup
             $('#scopePopup').fadeIn();
         });
@@ -147,6 +155,50 @@
             console.log("Close popup clicked");
             $('#scopePopup').fadeOut();
         });
+
+
+
+
+
+
+        $(document).ready(function () {
+            $('.complete-setup').on('click', function (e) {
+                e.preventDefault();
+
+                const lcode = $(this).data('lcode');
+                const projectCode = $(this).data('project-code');
+                const scopeId = $(this).data('scope-id')
+
+                // Make an AJAX call to complete the project setup
+                $.ajax({
+                    url: '@Url.Action("PopulateNCBOCW", "OrganisationSetup")',
+                    type: 'POST',
+                    data: { lcode: lcode, projectCode: projectCode },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            // Optionally, refresh the table or update the UI as needed
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while processing your request.");
+                    }
+                });
+            });
+        });
+
+
+
+
+
+
+
+
+
+
+
 
         // Handle form submission (via AJAX)
         $(document).on('submit', '#saveMappingForm', function (e) {

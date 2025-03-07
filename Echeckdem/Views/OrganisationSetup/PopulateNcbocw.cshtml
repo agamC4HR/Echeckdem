@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Populate Ncbocw";
+}
+
+<h2>Populate Ncbocw</h2>
+
+<form id="populateNcbocwForm">
+    <div class="mb-3">
+        <label for="lcode" class="form-label">Lcode</label>
+        <input type="text" class="form-control" id="lcode" name="lcode" required />
+    </div>
+    <div class="mb-3">
+        <label for="projectCode" class="form-label">Project Code</label>
+        <input type="text" class="form-control" id="projectCode" name="projectCode" required />
+    </div>
+    <div class="mb-3">
+        <label for="scopeId" class="form-label">Scope ID</label>
+        <input type="text" class="form-control" id="scopeId" name="scopeId" required />
+    </div>
+    <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <input type="number" class="form-control" id="status" name="status" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#populateNcbocwForm').on('submit', function (e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+
+            $.ajax({
+                url: '@Url.Action("PopulateNcbocw", "OrganisationSetup")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert('Ncbocw populated successfully with Transaction ID: ' + response.transactionId);
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('An unexpected error occurred. Please try again.');
+                }
+            });
+        });
+    });
+</script>

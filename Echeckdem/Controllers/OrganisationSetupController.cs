@@ -424,6 +424,52 @@ namespace Echeckdem.Controllers
             return PartialView(boDetails);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetEditNcmlocbo(string lcode)                 // editing the details in ncmlocbo
+        {
+            if (string.IsNullOrEmpty(lcode))
+            {
+                return Json(new { success = false, message = "Invalid Lcode." });
+            }
+
+            var boDetail = await _EcheckContext.Ncmlocbos.FirstOrDefaultAsync(b => b.Lcode == lcode);
+            if (boDetail == null)
+            {
+                return Json(new { success = false, message = "BOCW site not found." });
+            }
+
+            return PartialView("_EditNcmlocbo", boDetail);
+        }
+
+        [HttpPost]
+
+
+        public async Task<IActionResult> UpdateNcmlocbo(Ncmlocbo updatedBo)                            // editing the details in ncmlocbo
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Invalid data." });
+            }
+
+            var existingBo = await _EcheckContext.Ncmlocbos.FindAsync(updatedBo.Lcode);
+            if (existingBo == null)
+            {
+                return Json(new { success = false, message = "BO site not found." });
+            }
+
+            // Update the properties
+            existingBo.ClientName = updatedBo.ClientName;
+            existingBo.ProjectCostEst = updatedBo.ProjectCostEst;
+            existingBo.ProjectStartDateEst = updatedBo.ProjectStartDateEst;
+            existingBo.ProjectEndDateEst = updatedBo.ProjectEndDateEst;
+            existingBo.VendorCount = updatedBo.VendorCount;
+
+
+            await _EcheckContext.SaveChangesAsync();
+
+            return Json(new { success = true, message = "BO site updated successfully." });
+        }
+
         public async Task<IActionResult> Index()                                                                        // Get all sites under bocw that can be further used for scope mapping.
         {
             try
@@ -509,6 +555,26 @@ namespace Echeckdem.Controllers
             }
         }
 
+
+        //---------------------------------PROJECT SETUP AFTER SCOPE SETUP--------------------------------------------------//
+
+        [HttpPost]
+
+        public async Task<IActionResult> PopulateNCBOCW(string lcode, string projectCode, string scopeId, int status)
+        {
+            try
+            {
+                var transactionId = await _organisationsetupservice.ProjectSetupAsync(lcode, projectCode, scopeId, status);
+                     return Json(new { success = true, transactionId });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
+    
 
        
     }
