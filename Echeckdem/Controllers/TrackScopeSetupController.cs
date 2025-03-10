@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Echeckdem.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Echeckdem.CustomFolder;
+using Microsoft.EntityFrameworkCore;
 
 
 
@@ -11,40 +12,13 @@ namespace Echeckdem.Controllers
     public class TrackScopeSetupController : Controller
     {
 
-        private readonly ITrackScopeSetupService _trackscopesetupservice;
         private readonly DbEcheckContext _EcheckContext;
 
-        public TrackScopeSetupController(ITrackScopeSetupService trackscopesetupservice, DbEcheckContext EcheckContext)
+        public TrackScopeSetupController(DbEcheckContext EcheckContext)
 
         {
-            _trackscopesetupservice = trackscopesetupservice;
             _EcheckContext = EcheckContext;
         }
-
-        //public ActionResult Index()
-        //{
-        //    var trackScopes = _EcheckContext.TrackScopes
-        //        .Join(_EcheckContext.BocwScopes,
-        //            ts => ts.ScopeId,
-        //            bs => bs.ScopeId,
-        //            (ts, bs) => new { ts, bs })
-        //        .Join(_EcheckContext.Maststates,
-        //            tsbs => tsbs.ts.Stateid,
-        //            ms => ms.Stateid,
-        //            (tsbs, ms) => new
-        //            {
-        //                tsbs.ts.WorkId,
-        //                tsbs.ts.Task,
-        //                tsbs.ts.Reminder,
-        //                tsbs.ts.FirstAlert,
-        //                ScopeName = tsbs.bs.ScopeName,
-        //                StateName = ms.Statedesc
-        //            })
-        //        .ToList();
-
-        //    return View("Index", trackScopes);
-        //}
-
 
         public ActionResult Index()
         {
@@ -96,6 +70,48 @@ namespace Echeckdem.Controllers
             ViewBag.StateList = new SelectList(_EcheckContext.Maststates.ToList(), "Stateid", "Statedesc", trackScope.Stateid);
 
             return View(trackScope);
+        }
+
+        public ActionResult Edit(int WorkId)
+        {
+         
+            var trackScope = _EcheckContext.TrackScopes.FirstOrDefault(w => w.WorkId == WorkId);
+            if (trackScope == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new TrackScopeViewModel
+            {
+                WorkId = trackScope.WorkId,
+                Task = trackScope.Task,
+                Reminder = trackScope.Reminder,
+                FirstAlert = trackScope.FirstAlert,
+                ScopeName = _EcheckContext.BocwScopes.FirstOrDefault(s => s.ScopeId == trackScope.ScopeId)?.ScopeName,
+                StateName = _EcheckContext.Maststates.FirstOrDefault(s => s.Stateid == trackScope.Stateid)?.Statedesc,
+                DueMonth = trackScope.DueMonth,
+                DueDate = trackScope.DueDate
+            };
+
+            ViewBag.ScopeList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName", trackScope.ScopeId);
+            ViewBag.StateList = new SelectList(_EcheckContext.Maststates.ToList(), "Stateid", "Statedesc", trackScope.Stateid);
+            return PartialView(viewModel);
+        }
+
+        [HttpPost]
+      
+        public ActionResult Edit(TrackScope trackScope)
+        {
+            if (ModelState.IsValid)
+            {
+                _EcheckContext.TrackScopes.Update(trackScope);
+                _EcheckContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.ScopeList = new SelectList(_EcheckContext.BocwScopes.ToList(), "ScopeId", "ScopeName", trackScope.ScopeId);
+            ViewBag.StateList = new SelectList(_EcheckContext.Maststates.ToList(), "Stateid", "Statedesc", trackScope.Stateid);
+            return PartialView(trackScope);
         }
 
     }

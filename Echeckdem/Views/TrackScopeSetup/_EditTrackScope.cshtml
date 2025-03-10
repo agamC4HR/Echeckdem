@@ -1,0 +1,52 @@
+﻿@model Echeckdem.CustomFolder.TrackScopeViewModel
+
+<div>
+    <h4>Edit Track Scope</h4>
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="WorkId" />
+
+        <div class="form-group">
+            <label asp-for="Task"></label>
+            <input asp-for="Task" class="form-control" />
+            <span asp-validation-for="Task" class="text-danger"></span>
+        </div>
+
+        @* <div class="form-group">
+            <label asp-for="ScopeId"></label>
+            <select asp-for="ScopeId" class="form-control" asp-items="ViewBag.ScopeList"></select>
+            <span asp-validation-for="ScopeId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Stateid"></label>
+            <select asp-for="Stateid" class="form-control" asp-items="ViewBag.StateList"></select>
+            <span asp-validation-for="Stateid" class="text-danger"></span>
+        </div> *@
+
+        <div class="form-group">
+            <label asp-for="FirstAlert"></label>
+            <input asp-for="FirstAlert" class="form-control" />
+            <span asp-validation-for="FirstAlert" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Reminder"></label>
+            <input asp-for="Reminder" class="form-control" />
+            <span asp-validation-for="Reminder" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DueMonth"></label>
+            <input asp-for="DueMonth" class="form-control" />
+            <span asp-validation-for="DueMonth" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DueDate"></label>
+            <input asp-for="DueDate" class="form-control" />
+            <span asp-validation-for="DueDate" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>

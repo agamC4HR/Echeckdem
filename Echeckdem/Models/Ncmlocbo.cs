@@ -38,9 +38,9 @@ public partial class Ncmlocbo
 
     [NotMapped]
     public string ActiveScopes { get; set; }
-    public virtual ICollection<BoScopeMap>? BoScopeMaps { get; set; } = new List<BoScopeMap>();
+    public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual Ncmloc? LcodeNavigation { get; set; }
 
-    public virtual ICollection<Ncbocw>? Ncbocws { get; set; } = new List<Ncbocw>();
+    public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();
 }

@@ -29,10 +29,11 @@
     $(document).ready(function () {
         $('#populateNcbocwForm').on('submit', function (e) {
             e.preventDefault();
+            $('#loading').show();
             const formData = $(this).serialize();
 
             $.ajax({
-                url: '@Url.Action("PopulateNcbocw", "OrganisationSetup")',
+                url: '@Url.Action("PopulateNCBOCW", "OrganisationSetup")',
                 type: 'POST',
                 data: formData,
                 success: function (response) {
@@ -43,6 +44,7 @@
                     }
                 },
                 error: function () {
+                    $('#loading').show();
                     alert('An unexpected error occurred. Please try again.');
                 }
             });

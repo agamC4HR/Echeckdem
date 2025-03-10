@@ -64,6 +64,7 @@
                     <th>State Name</th>
                     <th> Due Date</th>
                     <th> Due Month</th>
+                    <th> Edit </th>
                 </tr>
             </thead>
             <tbody>
@@ -82,6 +83,11 @@
                         <td>@item.StateName</td>
                         <td>@item.DueDate</td>
                         <td>@item.DueMonth</td>
+                        <td>
+                            <a href="#" class="edit-icon" data-workid="@item.WorkId" style="color: #dd3432; font-size: 14px; cursor: pointer;">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                        </td>
                     </tr>
                     sno++;
                 }
@@ -101,43 +107,58 @@
     </div>
 </div>
 
-<script>
-    function showTrackScopeForm() {
-            window.location.href = "/trackscopesetup/Create";
-    }
-
-    $(document).ready(function () {
-        // Handle the scope edit click
+    <script>
+        $(document).ready(function () {
+            // Handle the add button click
             $('.table-add-btn').on('click', function (e) {
-            e.preventDefault();
-            console.log("Edit scope clicked");
+                e.preventDefault();
+                console.log("Add button clicked");
 
-            
-
-            // Load the scope mapping data into the popup
-            $.ajax({
+                // Load the create form data into the popup
+                $.ajax({
                     url: `/trackscopesetup/Create`,
-                type: 'GET',
-                
-                success: function (data) {
-                    $('#popupBodyContent').html(data);
-                },
-                error: function () {
-                    $('#popupBodyContent').html('<p>Error loading data.</p>');
-                }
+                    type: 'GET',
+                    success: function (data) {
+                        $('#popupBodyContent').html(data);
+                    },
+                    error: function () {
+                        $('#popupBodyContent').html('<p>Error loading data.</p>');
+                    }
+                });
+
+                // Show the popup
+                $('#scopePopup').fadeIn();
             });
 
-            // Show the popup
-            $('#scopePopup').fadeIn();
+            // Handle the scope edit click
+            $('.edit-icon').on('click', function (e) {
+                e.preventDefault();
+                var workId = $(this).data('workid');
+                console.log("Edit scope clicked for Work ID: " + workId);
+            
+            
+
+                // Load the edit form data into the popup
+                $.ajax({
+                    url: `/trackscopesetup/Edit/${workId}`,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#popupBodyContent').html(data);
+                    },
+                    error: function () {
+                        $('#popupBodyContent').html('<p>Error loading data.</p>');
+                    }
+                });
+
+                // Show the popup
+                $('#scopePopup').fadeIn();
+            });
+
+            // Close the popup
+            $('.close-popup').on('click', function () {
+                console.log("Close popup clicked");
+                $('#scopePopup').fadeOut();
+            });
         });
-
-        // Close the popup
-        $('.close-popup').on('click', function () {
-            console.log("Close popup clicked");
-            $('#scopePopup').fadeOut();
-        });
-
-
-    });
-</script>
+    </script>
 }

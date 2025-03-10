@@ -423,16 +423,25 @@ namespace Echeckdem.Services
         public async Task AddOrUpdateMapping(string lcode, string projectCode, List<string> selectedScopeIds)
         {
             // Fetch all existing active mappings for this site & project
-            var existingMappings = await _EcheckContext.BoScopeMaps
-                .Where(m => m.Lcode == lcode && m.ProjectCode == projectCode && m.Active)
-                .ToListAsync();
+            var existingMappings = await _EcheckContext.BoScopeMaps.Where(m => m.Lcode == lcode && m.ProjectCode == projectCode && m.Active).ToListAsync();
 
             var existingScopeIds = existingMappings.Select(m => m.ScopeId).ToHashSet(); // Fast lookup
 
             // Step 1: Update existing mappings - Set Active = true for selected ones, false for others
             foreach (var mapping in existingMappings)
             {
-                mapping.Active = selectedScopeIds.Contains(mapping.ScopeId);
+
+                //mapping.Active = selectedScopeIds.Contains(mapping.ScopeId);
+
+                if (selectedScopeIds.Contains(mapping.ScopeId))
+                {
+                    mapping.Active = true; 
+                }
+                else
+                {
+                    mapping.Active = false;
+                }
+                    
             }
 
             // Step 2: Identify new scopes to add (those that don't already exist in active mappings)
@@ -442,8 +451,7 @@ namespace Echeckdem.Services
             foreach (var scopeId in scopesToAdd)
             {
                 // Check if the new scope already exists for this Lcode and ProjectCode and is not marked as active
-                var existingScope = await _EcheckContext.BoScopeMaps
-                    .FirstOrDefaultAsync(m => m.ScopeId == scopeId && m.Lcode == lcode && m.ProjectCode == projectCode);
+                var existingScope = await _EcheckContext.BoScopeMaps.FirstOrDefaultAsync(m => m.ScopeId == scopeId && m.Lcode == lcode && m.ProjectCode == projectCode);
 
                 if (existingScope == null) // If the scope doesn't exist, insert a new mapping
                 {
@@ -460,10 +468,10 @@ namespace Echeckdem.Services
                 }
                 else
                 {
-                    // If the scope exists but is not active, update its status to Active
+                // If the scope exists but is not active, update its status to Active
                     if (!existingScope.Active)
                     {
-                        existingScope.Active = true;
+                        existingScope.Active = true; // Ensure it is set to active
                     }
                 }
             }
@@ -515,7 +523,7 @@ namespace Echeckdem.Services
                 ProjectCode = projectCode,
                 Lname = lname,
                 ScopeId = fetchedScopeId,
-                ScopeMapId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.ScopeId == scopeId && bsm.Lcode == lcode && bsm.ProjectCode == projectCode).Select(bsm => bsm.ScopeMapId).FirstOrDefaultAsync(),
+                ScopeMapId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.ScopeId == fetchedScopeId && bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeMapId).FirstOrDefaultAsync(),
                 WorkId = trackScope.WorkId,
                 DueDate = dueDate,
                 Status = status,
@@ -524,7 +532,7 @@ namespace Echeckdem.Services
             };
             _EcheckContext.Ncbocws.Add(ncbocw);
             return await _EcheckContext.SaveChangesAsync();
-        }
+         }
 
 
 

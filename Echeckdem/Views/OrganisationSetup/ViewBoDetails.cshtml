@@ -98,7 +98,7 @@
                         <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                     </a>
                 </td>
-                <td>  <button class="btn btn-success complete-setup" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode" >Complete Setup</button></td>
+                <td>  <button class="complete-setup" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode" >Complete Setup</button></td>
              </tr>
           
         }
@@ -136,6 +136,9 @@
                 url: '/OrganisationSetup/GetScopesPartial',
                 type: 'GET',
                 data: { lcode, projectCode },
+                beforeSend: function () {
+                    $('#popupBodyContent').html('<div class="text-center">Loading...</div>'); // Show loading message
+                },
                 success: function (data) {
                     $('#popupBodyContent').html(data);
                 },

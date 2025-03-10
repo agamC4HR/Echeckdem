@@ -136,18 +136,16 @@ public partial class DbEcheckContext : DbContext
     public virtual DbSet<UserActivation> UserActivations { get; set; }
 
     public virtual DbSet<Webinar> Webinars { get; set; }
+
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
     public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
 
-
-    
-
+  
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         modelBuilder.Entity<ReturnsViewModel>()
     .HasNoKey()
     .ToView(null);
@@ -318,6 +316,8 @@ public partial class DbEcheckContext : DbContext
             entity.HasKey(e => e.ScopeMapId);
 
             entity.ToTable("BO_SCOPE_MAP");
+
+            entity.HasIndex(e => new { e.Lcode, e.ProjectCode, e.ScopeId }, "IX_BoScopeMaps").IsUnique();
 
             entity.Property(e => e.ScopeMapId)
                 .HasMaxLength(10)
@@ -1347,13 +1347,11 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncbocw>(entity =>
         {
-            entity.HasKey(e => e.TransactionId);
+            entity.HasKey(e => e.TransactionId).HasName("PK__NCBOCW__55433A4B862B9DDF");
 
             entity.ToTable("NCBOCW");
 
-            entity.Property(e => e.TransactionId)
-                .ValueGeneratedNever()
-                .HasColumnName("TransactionID");
+            entity.Property(e => e.TransactionId).HasColumnName("TransactionID");
             entity.Property(e => e.Lcode)
                 .HasMaxLength(15)
                 .IsUnicode(false)
