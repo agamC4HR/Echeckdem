@@ -424,6 +424,8 @@ namespace Echeckdem.Controllers
             return PartialView(boDetails);
         }
 
+
+        // START->  EDIT for BOCW SITE DATA-------------------------------------------------------------
         [HttpGet]
         public async Task<IActionResult> GetEditNcmlocbo(string lcode)                 // editing the details in ncmlocbo
         {
@@ -469,7 +471,9 @@ namespace Echeckdem.Controllers
 
             return Json(new { success = true, message = "BO site updated successfully." });
         }
+        // END->  EDIT for BOCW SITE DATA-------------------------------------------------------------
 
+        // START->  add scopes for BOCW SITE DATA-------------------------------------------------------------
         public async Task<IActionResult> Index()                                                                        // Get all sites under bocw that can be further used for scope mapping.
         {
             try
@@ -484,7 +488,7 @@ namespace Echeckdem.Controllers
 
         }
 
-
+       
         [HttpGet]
 
         public async Task<IActionResult> GetScopesPartial(string lcode, string projectCode)                                 //  
@@ -555,6 +559,7 @@ namespace Echeckdem.Controllers
             }
         }
 
+        //// END->  add scopes for BOCW SITE DATA-------------------------------------------------------------
 
         //---------------------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
 

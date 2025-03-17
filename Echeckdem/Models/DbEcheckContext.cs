@@ -143,12 +143,14 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
 
-  
+   
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         modelBuilder.Entity<ReturnsViewModel>()
-    .HasNoKey()
-    .ToView(null);
+   .HasNoKey()
+   .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()

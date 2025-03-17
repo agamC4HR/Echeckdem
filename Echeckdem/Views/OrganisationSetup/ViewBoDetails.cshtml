@@ -1,6 +1,6 @@
 ﻿@model List<Ncmlocbo>
 <style>
-    .custom-popup {
+    .custom-popup, .custom-popup2 {
         display: none; /* Initially hidden */
         position: fixed;
         top: 0;
@@ -11,7 +11,7 @@
         z-index: 1000;
     }
 
-    .popup-content {
+    .popup-content, .popup-content2 {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -23,7 +23,7 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .close-popup {
+    .close-popup, .close-popup2 {
         float: right;
         font-size: 20px;
         cursor: pointer;
@@ -88,13 +88,13 @@
                 <td>@bo.VendorCount</td>
                 <td>@bo.ActiveScopes</td>
                 <td>
-                    <a href="#" class="edit-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
+                    <a href="#" class="edit-scope" data-lcode="@bo.Lcode">
                         <i class="fas fa-pen edit-icon" style="color: #dd1; font-size: 14px; cursor: pointer;"></i>
                     </a>
                 </td>
                
                 <td>
-                    <a href="#" class="edit-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
+                    <a href="#" class="add-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
                         <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                     </a>
                 </td>
@@ -107,7 +107,7 @@
     </tbody>
 </table>
 
-<!-- Hidden popup container -->
+<!-- Hidden popup container1 -->
 <div class="custom-popup" id="scopePopup">
     <div class="popup-content">
         <span class="close-popup">&times;</span>
@@ -117,16 +117,27 @@
         </div>
     </div>
 </div>
-    
+
+<!-- Hidden popup container2 -->
+<div class="custom-popup2" id="scopePopup2">
+    <div class="popup-content2">
+        <span class="close-popup2">&times;</span>
+        <div id="popupBodyContent2">
+            <!-- Scope mapping content will be dynamically loaded here -->
+            <div class="text-center">Loading...</div>
+        </div>
+    </div>
+</div>
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        // Handle the scope edit click
-        $('.edit-scope').on('click', function (e) {
+
+        // Handle the Add Scope click
+        $('.add-scope').on('click', function (e) {
             e.preventDefault();
-            console.log("Edit scope clicked");
+            console.log("Add scope clicked");
 
             const lcode = $(this).data('lcode');
             const projectCode = $(this).data('project-code');
@@ -137,7 +148,7 @@
                 type: 'GET',
                 data: { lcode, projectCode },
                 beforeSend: function () {
-                    $('#popupBodyContent').html('<div class="text-center">Loading...</div>'); // Show loading message
+                    $('#popupBodyContent').html('<div class="text-center">Loading...</div>');
                 },
                 success: function (data) {
                     $('#popupBodyContent').html(data);
@@ -147,83 +158,88 @@
                 }
             });
 
-
-
             // Show the popup
             $('#scopePopup').fadeIn();
         });
 
-        // Close the popup
+        // Handle the Edit Scope click
+        $('.edit-scope').on('click', function (e) {
+            e.preventDefault();
+            console.log("Edit scope clicked");
+
+            const lcode = $(this).data('lcode');
+
+            // Load the scope mapping data into the popup
+            $.ajax({
+                url: '/OrganisationSetup/GetEditNcmlocbo',
+                type: 'GET',
+                data: { lcode },
+                beforeSend: function () {
+                    $('#popupBodyContent2').html('<div class="text-center">Loading...</div>');
+                },
+                success: function (data) {
+                    $('#popupBodyContent2').html(data);
+                },
+                error: function () {
+                    $('#popupBodyContent2').html('<p>Error loading data.</p>');
+                }
+            });
+
+            // Show the second popup
+            $('#scopePopup2').fadeIn();
+        });
+
+        // Close Popups
         $('.close-popup').on('click', function () {
             console.log("Close popup clicked");
             $('#scopePopup').fadeOut();
         });
 
+        $('.close-popup2').on('click', function () {
+            console.log("Close popup2 clicked");
+            $('#scopePopup2').fadeOut();
+        });
 
+        // Handle Complete Setup button
+        $('.complete-setup').on('click', function (e) {
+            e.preventDefault();
 
+            const lcode = $(this).data('lcode');
+            const projectCode = $(this).data('project-code');
 
-
-
-        $(document).ready(function () {
-            $('.complete-setup').on('click', function (e) {
-                e.preventDefault();
-
-                const lcode = $(this).data('lcode');
-                const projectCode = $(this).data('project-code');
-                const scopeId = $(this).data('scope-id')
-
-                // Make an AJAX call to complete the project setup
-                $.ajax({
-                    url: '@Url.Action("PopulateNCBOCW", "OrganisationSetup")',
-                    type: 'POST',
-                    data: { lcode: lcode, projectCode: projectCode },
-                    success: function (response) {
-                        if (response.success) {
-                            alert(response.message);
-                            // Optionally, refresh the table or update the UI as needed
-                        } else {
-                            alert("Error: " + response.message);
-                        }
-                    },
-                    error: function () {
-                        alert("An error occurred while processing your request.");
+            // Make an AJAX call to complete the project setup
+            $.ajax({
+                url: '@Url.Action("PopulateNCBOCW", "OrganisationSetup")',
+                type: 'POST',
+                data: { lcode: lcode, projectCode: projectCode },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                    } else {
+                        alert("Error: " + response.message);
                     }
-                });
+                },
+                error: function () {
+                    alert("An error occurred while processing your request.");
+                }
             });
         });
 
-
-
-
-
-
-
-
-
-
-
-
-        // Handle form submission (via AJAX)
+        // Handle form submission via AJAX
         $(document).on('submit', '#saveMappingForm', function (e) {
-            e.preventDefault(); // Prevent the default form submission
+            e.preventDefault();
 
             const form = $(this);
-            const formData = form.serialize(); // Serialize the form data
+            const formData = form.serialize();
 
             $.ajax({
-                url: form.attr('action'), // URL from the form's action attribute
-                type: form.attr('method'), // HTTP method from the form
-                data: formData, // Form data to send
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: formData,
                 success: function (response) {
                     if (response.success) {
                         const oid = response.oid;
-
-                        // Dynamically load the ViewBoDetails view into the orgDetailsBody section
-                        $("#orgDetailsBody").load(`/OrganisationSetup/ViewBoDetails?oid=${oid}`, function () {
-                            // Optionally, you can add any additional actions after the content loads
-                        });
-
-                        // Close the popup
+                        $("#orgDetailsBody").load(`/OrganisationSetup/ViewBoDetails?oid=${oid}`);
                         $('#scopePopup').fadeOut();
                     } else {
                         alert(response.message || "An error occurred. Please try again.");
@@ -236,7 +252,7 @@
         });
 
     });
-
 </script>
+
 
               

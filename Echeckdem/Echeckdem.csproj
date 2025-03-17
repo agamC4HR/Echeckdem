@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\OrganisationSetup\_EditNcmlocbo.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Asa.Personal.MongoDB.Driver" Version="1.0.3" />
     <PackageReference Include="ClosedXML" Version="0.104.1" />
     <PackageReference Include="EPPlus" Version="7.5.1" />
@@ -34,18 +30,6 @@
   <ItemGroup>
     <Folder Include="UploadedDocuments\" />
     <Folder Include="wwwroot\imgs\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\OrganisationSetup\_EditNcmlocbo.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\OrganisationSetup\_EditNcmlocbo.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\OrganisationSetup\_EditNcmlocbo.cshtml" />
   </ItemGroup>
 
 </Project>
