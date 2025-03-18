@@ -49,6 +49,7 @@ namespace Echeckdem.Controllers
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
+                    
 
                     if (userLevel==2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
 
@@ -72,6 +73,7 @@ namespace Echeckdem.Controllers
         {
             // Clear the user session
             HttpContext.Session.Clear();
+            //HttpContext.Session.Remove("UserID");
 
             // Redirect to the login page
             return RedirectToAction("Index", "Login");

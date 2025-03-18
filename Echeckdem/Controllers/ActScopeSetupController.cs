@@ -34,6 +34,7 @@ namespace Echeckdem.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                   // boscope.ScopeId = _actscopesetup.
                     await _actscopesetup.AddScope(boscope);
                     return RedirectToAction(nameof(Index));  // Redirect to Index after adding
                 }

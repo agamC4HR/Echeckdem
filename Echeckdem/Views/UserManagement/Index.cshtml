@@ -1,0 +1,33 @@
+﻿@model List<Ncuser>
+<h2>Users List</h2>
+<a href="@Url.Action("Create", "UserManagement")" class="btn btn-primary">Add User</a>
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>UserID</th>
+            <th>Username</th>
+            <th>Organization</th>
+            <th>User Level</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.OrderByDescending(u=>u.Uactive))
+        {
+            <tr>
+                <td>@user.Userid</td>
+                <td>@user.Uname</td>
+                <td>@user.OName</td>
+                <td>@user.UserLevelName</td>
+                <td>@(user.Uactive == 1 ? "Active" : "Inactive")</td>
+                <td>
+                    <a href="@Url.Action("MapUser", "UserManagement", new { userId = user.Userid })" class="btn btn-info">
+                        Map Organization
+                    </a>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

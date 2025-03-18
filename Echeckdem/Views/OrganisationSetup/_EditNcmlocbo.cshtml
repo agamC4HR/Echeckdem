@@ -4,10 +4,48 @@
     <h4>Edit BO Site Details</h4>
     <form id="editNcmlocboForm" method="post" action="/OrganisationSetup/UpdateNcmlocbo">
         <input type="hidden" name="Lcode" value="@Model.Lcode" />
+        <input type="hidden" name="ProjectCode" value="@Model.ProjectCode" />
+
+        <div class="mb-3">
+            <label for="lname" class="form-label">Location Name</label>
+            <input type="text" class="form-control" id="lname" name="lname" value="@Model.Lname" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="OvalId" class="form-label">OvalID</label>
+            <input type="text" class="form-control" id="OvalId" name="OvalId" value="@Model.OvalId" required />
+        </div>
+
         <div class="mb-3">
             <label for="ClientName" class="form-label">Client Name</label>
             <input type="text" class="form-control" id="ClientName" name="ClientName" value="@Model.ClientName" required />
         </div>
+
+        <div class="mb-3">
+            <label for="GeneralContractor" class="form-label">General Contractor</label>
+            <input type="text" class="form-control" id="GeneralContractor" name="GeneralContractor" value="@Model.GeneralContractor" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="ProjectAddress" class="form-label">Project Address</label>
+            <input type="text" class="form-control" id="ProjectAddress" name="ProjectAddress" value="@Model.GeneralContractor" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="NatureofWork" class="form-label">Nature of Work </label>
+            <input type="text" class="form-control" id="NatureofWork" name="NatureofWork" value="@Model.NatureofWork" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="NatureofWork" class="form-label">Nature of Work </label>
+            <input type="text" class="form-control" id="NatureofWork" name="NatureofWork" value="@Model.NatureofWork" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="ProjectArea" class="form-label">Project Area </label>
+            <input type="text" class="form-control" id="ProjectArea" name="ProjectArea" value="@Model.ProjectArea" required />
+        </div>
+
         <div class="mb-3">
             <label for="ProjectCostEst" class="form-label">Project Cost Est.</label>
             <input type="number" class="form-control" id="ProjectCostEst" name="ProjectCostEst" value="@Model.ProjectCostEst" step="0.01" />
@@ -24,6 +62,25 @@
             <label for="VendorCount" class="form-label">Vendor Count</label>
             <input type="number" class="form-control" id="VendorCount" name="VendorCount" value="@Model.VendorCount" />
         </div>
+
+        <div class="mb-3">
+            <label for="WorkerHeadCount" class="form-label">Worker Head Count</label>
+            <input type="number" class="form-control" id="WorkerHeadCount" name="WorkerHeadCount" value="@Model.WorkerHeadCount" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ProjectLead" class="form-label">Project Lead</label>
+            <input type="text" class="form-control" id="ProjectLead" name="ProjectLead" value="@Model.ProjectLead" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ActiveScopes" class="form-label">Active Scopes </label>
+            <input type="text" class="form-control" id="ActiveScopes" name="ActiveScopes" value="@Model.ActiveScopes" />
+        </div>
+
+
+
+
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
 </div>

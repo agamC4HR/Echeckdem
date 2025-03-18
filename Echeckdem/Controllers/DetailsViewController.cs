@@ -92,17 +92,7 @@ namespace Echeckdem.Controllers
             return Json(locations);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> EditContribution(ContributionViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        await _contService.UpdateContributionAsync(model);
-        //        return RedirectToAction("CombinedDetailed");
-        //    }
-
-        //    return View(model);
-        //}
+       
 
 
      

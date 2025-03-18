@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Echeckdem.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,7 @@ namespace Echeckdem.Services
             AND b.oid = a.oid
             AND a.lcode = b.lcode ";
 
+            
 
             // Apply year condition only if no filters are specified
             if (string.IsNullOrEmpty(organizationName) &&

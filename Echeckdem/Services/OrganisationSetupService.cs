@@ -8,6 +8,7 @@ using Echeckdem.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System;
 using System.Globalization;
 using System.Security.Policy;
 
@@ -493,7 +494,7 @@ namespace Echeckdem.Services
                 throw new InvalidOperationException("Site not found for the specified Lcode.");
 
             // Fetch the scopeId from BoScopeMap based on lcode and projectCode
-            var fetchedScopeId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.Lcode == lcode && bsm.ProjectCode == projectCode).Select(bsm => bsm.ScopeId).FirstOrDefaultAsync();
+            var fetchedScopeId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeId).FirstOrDefaultAsync();
 
             if (fetchedScopeId == null)
                 throw new InvalidOperationException("ScopeId not found for the specified Lcode and ProjectCode.");
@@ -517,6 +518,9 @@ namespace Echeckdem.Services
             DateTime calculatedDueDate = startDateTime.AddDays(daysToAdd); // Add days
             DateOnly dueDate = DateOnly.FromDateTime(calculatedDueDate); // Convert back to DateOnly
 
+            var CreateDate = DateOnly.FromDateTime(DateTime.Now);
+
+            int calculatedStatus = CreateDate > dueDate ? 0 : 2;
             var ncbocw = new Ncbocw
             {
                 Lcode = lcode,
@@ -526,9 +530,10 @@ namespace Echeckdem.Services
                 ScopeMapId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.ScopeId == fetchedScopeId && bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeMapId).FirstOrDefaultAsync(),
                 WorkId = trackScope.WorkId,
                 DueDate = dueDate,
-                Status = status,
+                FirstAlert = DateOnly.FromDateTime(DateTime.Now),
+                Status = calculatedStatus,
                 Task = trackScope.Task,
-                CreateDate = DateOnly.FromDateTime(DateTime.Now)
+                CreateDate = CreateDate
             };
             _EcheckContext.Ncbocws.Add(ncbocw);
             return await _EcheckContext.SaveChangesAsync();

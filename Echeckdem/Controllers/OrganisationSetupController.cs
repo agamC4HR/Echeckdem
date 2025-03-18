@@ -425,7 +425,7 @@ namespace Echeckdem.Controllers
         }
 
 
-        // START->  EDIT for BOCW SITE DATA-------------------------------------------------------------
+        // <<--------------------START-------------------------------------------EDIT for BOCW SITE DATA----------------------------------------------------------------------->>
         [HttpGet]
         public async Task<IActionResult> GetEditNcmlocbo(string lcode)                 // editing the details in ncmlocbo
         {
@@ -446,34 +446,44 @@ namespace Echeckdem.Controllers
         [HttpPost]
 
 
-        public async Task<IActionResult> UpdateNcmlocbo(Ncmlocbo updatedBo)                            // editing the details in ncmlocbo
+        public async Task<IActionResult> UpdateNcmlocbo(Ncmlocbo updatedBo, string lcode)                            // editing the details in ncmlocbo
         {
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = "Invalid data." });
             }
 
-            var existingBo = await _EcheckContext.Ncmlocbos.FindAsync(updatedBo.Lcode);
+            var existingBo = await _EcheckContext.Ncmlocbos.FirstOrDefaultAsync(b => b.Lcode == lcode);
             if (existingBo == null)
             {
                 return Json(new { success = false, message = "BO site not found." });
             }
 
             // Update the properties
+            existingBo.ProjectCode = updatedBo.ProjectCode;
+            existingBo.OvalId = updatedBo.OvalId;
             existingBo.ClientName = updatedBo.ClientName;
+            existingBo.GeneralContractor = updatedBo.GeneralContractor;
+            existingBo.ProjectAddress = updatedBo.ProjectAddress;
+            existingBo.NatureofWork = updatedBo.NatureofWork;
+            existingBo.ProjectArea = updatedBo.ProjectArea;
             existingBo.ProjectCostEst = updatedBo.ProjectCostEst;
             existingBo.ProjectStartDateEst = updatedBo.ProjectStartDateEst;
             existingBo.ProjectEndDateEst = updatedBo.ProjectEndDateEst;
             existingBo.VendorCount = updatedBo.VendorCount;
+            existingBo.WorkerHeadCount = updatedBo.WorkerHeadCount;
+            existingBo.ProjectLead = updatedBo.ProjectLead;
+            existingBo.Lname = updatedBo.Lname;
+            existingBo.ActiveScopes = updatedBo.ActiveScopes;
 
 
             await _EcheckContext.SaveChangesAsync();
 
             return Json(new { success = true, message = "BO site updated successfully." });
         }
-        // END->  EDIT for BOCW SITE DATA-------------------------------------------------------------
+        // <<--------------------END-------------------------------------------EDIT for BOCW SITE DATA----------------------------------------------------------------------->>
 
-        // START->  add scopes for BOCW SITE DATA-------------------------------------------------------------
+        //-----------------------START-----------------------------------------SCOPE SETUP-------------------------------------------------------------------------------------------------//
         public async Task<IActionResult> Index()                                                                        // Get all sites under bocw that can be further used for scope mapping.
         {
             try
@@ -559,9 +569,9 @@ namespace Echeckdem.Controllers
             }
         }
 
-        //// END->  add scopes for BOCW SITE DATA-------------------------------------------------------------
+        //-------------------------END------------------------SCOPE SETUP-------------------------------------------------------------------------------------------------//
 
-        //---------------------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
+        //-------------------------START------------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
 
         [HttpPost]
 
@@ -578,10 +588,10 @@ namespace Echeckdem.Controllers
             }
         }
 
+        //-------------------------END-------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
 
-    
 
-       
+
     }
 }
 

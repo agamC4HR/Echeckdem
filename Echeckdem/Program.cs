@@ -38,6 +38,7 @@ builder.Services.AddScoped<ContributionService>();
 builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<IBulkUploadService, BulkUploadService>();
 builder.Services.AddScoped<ActScopeSetupService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 
 
 // Configuring the Database

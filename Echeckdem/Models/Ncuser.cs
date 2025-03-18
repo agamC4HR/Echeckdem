@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Echeckdem.Models;
 
@@ -22,4 +23,10 @@ public partial class Ncuser
     public string? Stcode { get; set; }
 
     public string? Emailid { get; set; }
+
+    [NotMapped]
+    public string? OName { get; set; } // Organization name (For Display)
+    [NotMapped]
+    public string? UserLevelName { get; set; } // User Level Name (For Display)
+
 }

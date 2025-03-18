@@ -1,0 +1,45 @@
+﻿@model Ncumap
+
+
+<h2>Map User to Organization & Location</h2>
+<form asp-action="MapUser" method="post">
+    <input type="hidden" name="userId" value="@ViewBag.UserId" />
+
+
+    <div class="form-group">
+        <label>Organization</label>
+        <select asp-for="Oid" asp-items="ViewBag.Organizations" class="form-control" id="orgDropdown">
+            <option value="">-- Select Organization --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Location</label>
+        <select asp-for="Lcode" class="form-control" id="locationDropdown">
+            <option value="">-- Select Location --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>User Level</label>
+        <select asp-for="Ulevel" asp-items="ViewBag.UserLevels" class="form-control"></select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Mapping</button>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#orgDropdown').change(function () {
+            var oid = $(this).val();
+            $.get('/UserManagement/GetLocations', { oid: oid }, function (data) {
+                var locationDropdown = $('#locationDropdown');
+                locationDropdown.empty();
+                locationDropdown.append('<option value="">-- Select Location --</option>');
+                $.each(data, function (index, item) {
+                    locationDropdown.append('<option value="' + item.value + '">' + item.text + '</option>');
+                });
+            });
+        });
+    });
+</script>

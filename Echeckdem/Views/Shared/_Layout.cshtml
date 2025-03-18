@@ -3,6 +3,7 @@
  *@
 <!DOCTYPE html>
 <html lang="en">
+@if (Context.Session.GetInt32("User Level") == null) { Context.Response.Redirect("/Login/Index"); }
 <head>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     @*  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
@@ -56,9 +57,11 @@
                         }
                         else
                         {
-                            <a href=""> Operations Calendar</a>
-                            <a href=""> Graphical Details</a>
-                            <a href=""> Bulk Upload</a>
+                           @*  <a href=""> Operations Calendar</a>
+                        <a href=""> Graphical Details</a>*@
+                            
+                            <a href="/DetailedView/CombinedDetailedView">Track Compliance </a>
+
                         }
                     </div>
             </div>
