@@ -137,11 +137,13 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Webinar> Webinars { get; set; }
 
+
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
     public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
+
 
    
 
@@ -361,6 +363,9 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("ScopeID");
+            entity.Property(e => e.Category)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.ScopeName)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -1925,23 +1930,23 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncumap>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCUMAP");
+            entity.HasKey(e => new { e.Uno, e.Oid, e.Lcode }).HasName("pk_NCUMAP");
 
-            entity.Property(e => e.Lcode)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("lcode");
+            entity.ToTable("NCUMAP");
+
+            entity.Property(e => e.Uno).HasColumnName("uno");
             entity.Property(e => e.Oid)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("oid");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("lcode");
             entity.Property(e => e.Ulevel)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("ulevel");
-            entity.Property(e => e.Uno).HasColumnName("uno");
         });
 
         modelBuilder.Entity<Ncuser>(entity =>

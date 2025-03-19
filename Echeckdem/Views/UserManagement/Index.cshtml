@@ -9,6 +9,7 @@
             <th>Organization</th>
             <th>User Level</th>
             <th>Active</th>
+            <th>Edit</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -22,6 +23,11 @@
                 <td>@user.UserLevelName</td>
                 <td>@(user.Uactive == 1 ? "Active" : "Inactive")</td>
                 <td>
+                    <button class="btn btn-warning btn-sm edit-btn" data-userid="@user.Userid">
+                        Edit
+                    </button>
+                </td>
+                <td>
                     <a href="@Url.Action("MapUser", "UserManagement", new { userId = user.Userid })" class="btn btn-info">
                         Map Organization
                     </a>
@@ -31,3 +37,35 @@
         }
     </tbody>
 </table>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="editUserContent">
+                    <!-- Partial view will load here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".edit-btn").click(function () {
+            var userId = $(this).data("userid");
+
+            $.get("/UserManagement/EditPartial", { userId: userId }, function (data) {
+                $("#editUserContent").html(data);
+                $("#editUserModal").modal("show");
+            });
+        });
+    });
+</script>

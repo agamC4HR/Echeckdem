@@ -50,14 +50,7 @@ namespace Echeckdem.Services
             return "S01";
         }
 
-        //private string GenerateScopeId()                                                                                                  // Logic to generate a 3-character scope ID (e.g., "S01", "S02", etc.)
-        //{                                                            
-        //    var scopeCount = _context.BocwScopes.Count();
-        //    var newId = "S" + (scopeCount + 1).ToString("D2"); 
-
-        //    return newId;
-        //}
-
+       
         public async Task UpdateScope(BocwScope updatedboscope)
         {
             var existingScope = await _context.BocwScopes.FirstOrDefaultAsync(s => s.ScopeId == updatedboscope.ScopeId);
@@ -66,6 +59,7 @@ namespace Echeckdem.Services
             {
                 existingScope.ScopeName = updatedboscope.ScopeName;
                 existingScope.ScopeActive = updatedboscope.ScopeActive;
+                existingScope.Category = updatedboscope.Category;
                 
 
                 await _context.SaveChangesAsync();

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Echeckdem.Models;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.EntityFrameworkCore;
 
 namespace Echeckdem.Services
 {
@@ -13,6 +14,7 @@ namespace Echeckdem.Services
         bool MapUserToOrgLocation(Ncumap mapping);
         Ncuser GetUserById(string userId);
 
+        bool UpdateUser(Ncuser updatedUser);
     }
 
     public class UserManagementService : IUserManagementService
@@ -30,11 +32,8 @@ namespace Echeckdem.Services
         { 2, "SPOC" },
         { 3, "Reports" },
         { 4, "Data Entry User" },
-        { 5, "Data Viewer" },
-        { 6, "Planner" },
-        { 7, "Tax Team" },
-        { 8, "Payroll Team" },
-        { 9, "Company Secretary" }
+        { 5, "Data Viewer" }
+        
     };
 
         public List<Ncuser> GetUsers()
@@ -55,6 +54,10 @@ namespace Echeckdem.Services
 
 
         }
+
+
+
+
 
         public bool AddUser(Ncuser user)
         {
@@ -86,7 +89,7 @@ namespace Echeckdem.Services
                 .Where(u => u.Userid == userId)
                 .Select(u => new Ncuser
                 {
-                    Uno = u.Uno,   // ✅ Ensure Uno is fetched
+                    Uno = u.Uno,  
                     Userid = u.Userid,
                     Uname = u.Uname,
                     Userlevel = u.Userlevel,
@@ -116,5 +119,24 @@ namespace Echeckdem.Services
             }
             return false;
         }
+
+        public bool UpdateUser(Ncuser updatedUser)
+        {
+            var existingUser = _EcheckContext.Ncusers.FirstOrDefault(u => u.Userid == updatedUser.Userid);
+            if (existingUser != null)
+            {
+                existingUser.Uname = updatedUser.Uname;
+                existingUser.Userlevel = updatedUser.Userlevel;
+                existingUser.Uactive = updatedUser.Uactive;
+                existingUser.Oid = updatedUser.Oid;
+
+                _EcheckContext.SaveChanges();
+                return true;
+
+            }
+            return false;
+
+        }
+
     }
 }

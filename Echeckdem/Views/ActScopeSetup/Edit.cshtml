@@ -3,7 +3,8 @@
 <h2>Edit Scope</h2>
 
 <form asp-action="Edit" method="post" id="saveScopeForm">
-    <input type="hidden" name="ScopeId" value="@Model.ScopeId" />
+    <input type="hidden" id="ScopeId" name="ScopeId" value="@Model.ScopeId" />
+
     <div class="form-group">
         <label for="ScopeName">Scope Name</label>
         <input type="text" class="form-control" id="ScopeName" name="ScopeName" value="@Model.ScopeName" required />
@@ -15,6 +16,10 @@
             <option value="1">Yes</option>
             <option value="0">No</option>
         </select>
+    </div>
+    <div class="form-group">
+        <label for="Category">Category</label>
+        <input type="text" class="form-control" id="Category" name="Category" value="@Model.Category" />
     </div>
     <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>

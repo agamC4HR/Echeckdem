@@ -55,7 +55,8 @@
                     <th>Scope ID</th>
                     <th>Scope Name</th>
                     <th>Scope Active</th>
-                    <th>Actions</th>
+                    <th>Category</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -69,6 +70,7 @@
                         <td>@scope.ScopeId</td>
                         <td>@scope.ScopeName</td>
                         <td>@(scope.ScopeActive == 1 ? "YES" : "NO")</td>
+                        <td>@scope.Category</td>
                         <td>
                             <a href="#" class="edit-scope" data-id="@scope.ScopeId">
                                 <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>

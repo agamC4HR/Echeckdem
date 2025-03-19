@@ -18,7 +18,7 @@ public partial class Ncmlocbo
 
     public string? ProjectAddress { get; set; }
 
-    public string? NatureofWork { get; set; } = null!;
+    public string NatureofWork { get; set; } = null!;
 
     public decimal? ProjectArea { get; set; }
 
@@ -33,7 +33,7 @@ public partial class Ncmlocbo
     public int? WorkerHeadCount { get; set; }
 
     public string? ProjectLead { get; set; }
-    
+
     public string? Lname { get; set; }
 
     [NotMapped]
