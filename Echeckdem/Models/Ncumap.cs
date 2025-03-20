@@ -12,4 +12,6 @@ public partial class Ncumap
     public string Lcode { get; set; } = null!;
 
     public string? Ulevel { get; set; }
+
+
 }

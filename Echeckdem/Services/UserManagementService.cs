@@ -11,7 +11,7 @@ namespace Echeckdem.Services
         bool AddUser(Ncuser user);
         List<SelectListItem> GetOrganizations();
         List<SelectListItem> GetLocationsByOrg(string oid);
-        bool MapUserToOrgLocation(Ncumap mapping);
+        bool MapUserToOrgLocation(Ncumap mapping);      
         Ncuser GetUserById(string userId);
 
         bool UpdateUser(Ncuser updatedUser);
@@ -51,7 +51,7 @@ namespace Echeckdem.Services
                         OName = o.Oname,
                         UserLevelName = _userLevels.ContainsKey(u.Userlevel ?? 0) ? _userLevels[u.Userlevel ?? 0] : "Unknown"
                     }).ToList();
-
+                                
 
         }
 
@@ -61,15 +61,25 @@ namespace Echeckdem.Services
 
         public bool AddUser(Ncuser user)
         {
-            if (!_EcheckContext.Ncusers.Any(u => u.Userid == user.Userid))
+            try
             {
-                user.Uactive = 1;
-                _EcheckContext.Ncusers.Add(user);
-                _EcheckContext.SaveChanges();
-                return true;
+
+
+                if (!_EcheckContext.Ncusers.Any(u => u.Userid == user.Userid))
+                {
+                    user.Uactive = 1;
+                    _EcheckContext.Ncusers.Add(user);
+                    _EcheckContext.SaveChanges();
+                    return true;
+                }
+
+                return false;
             }
 
-            return false;
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while adding the user.", ex);
+            }
         }
 
         public List<SelectListItem> GetOrganizations()
