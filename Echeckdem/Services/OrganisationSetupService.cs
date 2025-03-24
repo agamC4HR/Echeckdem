@@ -48,7 +48,28 @@ namespace Echeckdem.Services
 
             _EcheckContext.Ncmorgs.Add(organisation);
             await _EcheckContext.SaveChangesAsync();
+
+            // ✅ Create Directory Structure in wwwroot/files
+            CreateOrganisationFolder(generatedOid);
+
+
             return true;
+        }
+
+        private void CreateOrganisationFolder(string oid)
+        {
+            string rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", oid);
+
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath); // Create Main Folder
+
+                // Create Subfolders
+                Directory.CreateDirectory(Path.Combine(rootPath, "Contr"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "Reg"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "Ret"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "Bocw"));
+            }
         }
 
         public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)                // service for getting organisation list and general info of that organisation
@@ -537,7 +558,7 @@ namespace Echeckdem.Services
             };
             _EcheckContext.Ncbocws.Add(ncbocw);
             return await _EcheckContext.SaveChangesAsync();
-         }
+        }
 
 
 

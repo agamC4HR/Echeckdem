@@ -40,6 +40,9 @@ builder.Services.AddScoped<IBulkUploadService, BulkUploadService>();
 builder.Services.AddScoped<ActScopeSetupService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 
+builder.Services.AddSingleton<MailService>();
+
+
 
 // Configuring the Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStrings");              //ECHECK

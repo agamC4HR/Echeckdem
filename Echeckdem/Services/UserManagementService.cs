@@ -2,6 +2,7 @@
 using Echeckdem.Models;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
+using DocumentFormat.OpenXml.InkML;
 
 namespace Echeckdem.Services
 {
@@ -11,7 +12,7 @@ namespace Echeckdem.Services
         bool AddUser(Ncuser user);
         List<SelectListItem> GetOrganizations();
         List<SelectListItem> GetLocationsByOrg(string oid);
-        bool MapUserToOrgLocation(Ncumap mapping);      
+        bool MapUserToOrgLocation(Ncumap mapping);
         Ncuser GetUserById(string userId);
 
         bool UpdateUser(Ncuser updatedUser);
@@ -51,7 +52,7 @@ namespace Echeckdem.Services
                         OName = o.Oname,
                         UserLevelName = _userLevels.ContainsKey(u.Userlevel ?? 0) ? _userLevels[u.Userlevel ?? 0] : "Unknown"
                     }).ToList();
-                                
+
 
         }
 
@@ -92,14 +93,14 @@ namespace Echeckdem.Services
                 }).ToList();
         }
 
-       
+
         public Ncuser GetUserById(string userId)
         {
             return _EcheckContext.Ncusers
                 .Where(u => u.Userid == userId)
                 .Select(u => new Ncuser
                 {
-                    Uno = u.Uno,  
+                    Uno = u.Uno,
                     Userid = u.Userid,
                     Uname = u.Uname,
                     Userlevel = u.Userlevel,
@@ -145,7 +146,7 @@ namespace Echeckdem.Services
 
             }
             return false;
-
+            
         }
 
     }

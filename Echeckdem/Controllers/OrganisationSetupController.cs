@@ -221,7 +221,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetLocationDatabyOid(string oid)                                 // Viewing the Location DATA tab
+        public IActionResult GetLocationDatabyOid(string oid)                                     // Viewing the Location DATA tab
         {
             if (string.IsNullOrEmpty(oid))
             {
@@ -234,8 +234,8 @@ namespace Echeckdem.Controllers
             // Create an instance of CombinedOrganisationSetupViewModel 
             var model = new CombinedOrganisationSetupViewModel
             {
-                AddLocation = locations, // Assuming locations is of type List<AddLocationViewModel>
-                oid = oid // Set the OID if needed
+                AddLocation = locations, 
+                oid = oid 
             };
 
             return PartialView("EditLocations", model);
@@ -412,6 +412,8 @@ namespace Echeckdem.Controllers
             }
         }
 
+        //<<---------------------START----------------------------------VIEW DATA FOR BOCW SITES----------------------------------------->
+
         [HttpGet]
         public async Task<IActionResult> ViewBoDetails(string oid)                                             // View BOCW sites details under VIEW BOCW DATA Button
         {
@@ -424,7 +426,7 @@ namespace Echeckdem.Controllers
             return PartialView(boDetails);
         }
 
-
+        //<<---------------------END----------------------------------VIEW DATA FOR BOCW SITES----------------------------------------->
         // <<--------------------START-------------------------------------------EDIT for BOCW SITE DATA----------------------------------------------------------------------->>
         [HttpGet]
         public async Task<IActionResult> GetEditNcmlocbo(string lcode)                 // editing the details in ncmlocbo

@@ -27,20 +27,20 @@
 
             public IActionResult Create()
             {
-                ViewBag.Organizations = _userManagementService.GetOrganizations();
+            ViewBag.Organizations = _userManagementService.GetOrganizations();
 
-                ViewBag.UserLevels = new List<SelectListItem>
+            ViewBag.UserLevels = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "1", Text = "Admin" },
                     new SelectListItem { Value = "2", Text = "SPOC" },
                     new SelectListItem { Value = "3", Text = "Reports" },
                     new SelectListItem { Value = "4", Text = "Data Entry User" },
                     new SelectListItem { Value = "5", Text = "Data Viewer" }
-          
+
                 };
 
-                return View();
-            }
+            return View();
+        }
 
             [HttpPost]
 
