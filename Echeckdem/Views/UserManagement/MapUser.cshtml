@@ -1,121 +1,121 @@
-﻿@model Ncumap
+﻿    @model Ncumap
 
 
-<h2>Map User to Organization & Location</h2>
+    <h2>Map User to Organization & Location</h2>
 
-<h4>Authorized Organizations:</h4>
-<ul>
-    @if (ViewBag.AuthorizedMappings != null)
-    {
-        foreach (var org in ViewBag.AuthorizedMappings)
+    <h4>Authorized Organizations:</h4>
+    <ul>
+        @if (ViewBag.AuthorizedMappings != null)
         {
-            <li>
-                <a href="#" class="org-link" data-orgid="@org.Oid">@org.Oname</a>
-                <ul class="location-list" id="locations-@org.Oid" style="display:none;">
-                    @foreach (var location in org.Locations)
-                    {
-                        <li>
+            foreach (var org in ViewBag.AuthorizedMappings)
+            {
+                <li>
+                    <a href="#" class="org-link" data-orgid="@org.Oid">@org.Oname</a>
+                    <ul class="location-list" id="locations-@org.Oid" style="display:none;">
+                        @foreach (var location in org.Locations)
+                        {
+                            <li>
 
                                                  
-                            @location.Lname (Level: @(int.TryParse(location.Ulevel, out int ulevel) && ViewBag.UserLevelNames.ContainsKey(ulevel)
-                             ? ViewBag.UserLevelNames[ulevel]
-                :            "Unknown"))
-                        </li>
-                        @*     @location.Lname
+                                @location.Lname (Level: @(int.TryParse(location.Ulevel, out int ulevel) && ViewBag.UserLevelNames.ContainsKey(ulevel)
+                                 ? ViewBag.UserLevelNames[ulevel]
+                    :            "Unknown"))
+                            </li>
+                            @*     @location.Lname
 
-            <select class="user-level-dropdown" data-lcode="@location.Lcode" data-userid="@ViewBag.UserId">
-            @foreach (var level in ViewBag.UserLevels)
-            {
-            <option value="@level.Value" selected="@(level.Value == location.Ulevel.ToString() ? "selected" : null)">
-            @level.Text
-            </option>
+                <select class="user-level-dropdown" data-lcode="@location.Lcode" data-userid="@ViewBag.UserId">
+                @foreach (var level in ViewBag.UserLevels)
+                {
+                <option value="@level.Value" selected="@(level.Value == location.Ulevel.ToString() ? "selected" : null)">
+                @level.Text
+                </option>
+                }
+                </select> *@
+                        }
+                    </ul>
+                </li>
             }
-            </select> *@
-                    }
-                </ul>
-            </li>
         }
-    }
-    else
-    {
-        <li>No authorized organizations found for this user.</li>
-    }
-</ul>
-<script>
+        else
+        {
+            <li>No authorized organizations found for this user.</li>
+        }
+    </ul>
+    <script>
 
-    // $(document).ready(function () {
-    //     $('.org-link').click(function (e) {
-    //         e.preventDefault();
-    //         var orgId = $(this).data('orgid');
-    //         $('#locations-' + orgId).toggle();
-    //     });
+        // $(document).ready(function () {
+        //     $('.org-link').click(function (e) {
+        //         e.preventDefault();
+        //         var orgId = $(this).data('orgid');
+        //         $('#locations-' + orgId).toggle();
+        //     });
 
-    //     $('.user-level-dropdown').change(function () {
-    //         var newLevel = $(this).val();
-    //         var lcode = $(this).data('lcode');
-    //         var userId = $(this).data('userid');
+        //     $('.user-level-dropdown').change(function () {
+        //         var newLevel = $(this).val();
+        //         var lcode = $(this).data('lcode');
+        //         var userId = $(this).data('userid');
 
-    //         $.ajax({
-    //             url: '/UserManagement/UpdateUserLevel',
-    //             type: 'POST',
-    //             data: { uno: uno, userId: userId, lcode: lcode, newLevel: newLevel },
-    //             success: function (response) {
-    //                 alert('User level updated successfully!');
-    //             },
-    //             error: function () {
-    //                 alert('Error updating user level.');
-    //             }
-    //         });
-    //     });
-    // });
-    $(document).ready(function () {
-        $('.org-link').click(function (e) {
-            e.preventDefault(); // Prevent the default anchor click behavior
-            var orgId = $(this).data('orgid'); // Get the organization ID from the data attribute
-            $('#locations-' + orgId).toggle(); // Toggle the display of the corresponding location list
+        //         $.ajax({
+        //             url: '/UserManagement/UpdateUserLevel',
+        //             type: 'POST',
+        //             data: { uno: uno, userId: userId, lcode: lcode, newLevel: newLevel },
+        //             success: function (response) {
+        //                 alert('User level updated successfully!');
+        //             },
+        //             error: function () {
+        //                 alert('Error updating user level.');
+        //             }
+        //         });
+        //     });
+        // });
+        $(document).ready(function () {
+            $('.org-link').click(function (e) {
+                e.preventDefault(); // Prevent the default anchor click behavior
+                var orgId = $(this).data('orgid'); // Get the organization ID from the data attribute
+                $('#locations-' + orgId).toggle(); // Toggle the display of the corresponding location list
+            });
         });
-    });
-</script>
+    </script>
 
-<form asp-action="MapUser" method="post">
-    <input type="hidden" name="userId" value="@ViewBag.UserId" />
+    <form asp-action="MapUser" method="post">
+        <input type="hidden" name="userId" value="@ViewBag.UserId" />
 
 
-    <div class="form-group">
-        <label>Organization</label>
-        <select asp-for="Oid" asp-items="ViewBag.Organizations" class="form-control" id="orgDropdown">
-            <option value="">-- Select Organization --</option>
-        </select>
-    </div>
+        <div class="form-group">
+            <label>Organization</label>
+            <select asp-for="Oid" asp-items="ViewBag.Organizations" class="form-control" id="orgDropdown">
+                <option value="">-- Select Organization --</option>
+            </select>
+        </div>
 
-    <div class="form-group">
-        <label>Location</label>
-        <select asp-for="Lcode" class="form-control" id="locationDropdown">
-            <option value="">-- Select Location --</option>
-        </select>
-    </div>
+        <div class="form-group">
+            <label>Location</label>
+            <select asp-for="Lcode" class="form-control" id="locationDropdown">
+                <option value="">-- Select Location --</option>
+            </select>
+        </div>
 
-    <div class="form-group">
-        <label>User Level</label>
-        <select asp-for="Ulevel" asp-items="ViewBag.UserLevels" class="form-control"></select>
-    </div>
+        <div class="form-group">
+            <label>User Level</label>
+            <select asp-for="Ulevel" asp-items="ViewBag.UserLevels" class="form-control"></select>
+        </div>
 
-    <button type="submit" class="btn btn-success">Save Mapping</button>
-</form>
+        <button type="submit" class="btn btn-success">Save Mapping</button>x`
+    </form>
 
-<script>
-    $(document).ready(function () {
-        $('#orgDropdown').change(function () {
-            var oid = $(this).val();
-            $.get('/UserManagement/GetLocations', { oid: oid }, function (data) {
-                var locationDropdown = $('#locationDropdown');
-                locationDropdown.empty();
-                locationDropdown.append('<option value="">-- Select Location --</option>');
-                $.each(data, function (index, item) {
-                    locationDropdown.append('<option value="' + item.value + '">' + item.text + '</option>');
+    <script>
+        $(document).ready(function () {
+            $('#orgDropdown').change(function () {
+                var oid = $(this).val();
+                $.get('/UserManagement/GetLocations', { oid: oid }, function (data) {
+                    var locationDropdown = $('#locationDropdown');
+                    locationDropdown.empty();
+                    locationDropdown.append('<option value="">-- Select Location --</option>');
+                    $.each(data, function (index, item) {
+                        locationDropdown.append('<option value="' + item.value + '">' + item.text + '</option>');
                     
+                    });
                 });
             });
         });
-    });
-</script>
+    </script>

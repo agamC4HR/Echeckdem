@@ -32,10 +32,10 @@
                 ViewBag.UserLevels = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "1", Text = "Admin" },
-                new SelectListItem { Value = "2", Text = "SPOC" },
-                new SelectListItem { Value = "3", Text = "Reports" },
-                new SelectListItem { Value = "4", Text = "Data Entry User" },
-                new SelectListItem { Value = "5", Text = "Data Viewer" }
+                    new SelectListItem { Value = "2", Text = "SPOC" },
+                    new SelectListItem { Value = "3", Text = "Reports" },
+                    new SelectListItem { Value = "4", Text = "Data Entry User" },
+                    new SelectListItem { Value = "5", Text = "Data Viewer" }
           
                 };
 
@@ -124,7 +124,12 @@
                     { 1, "Reports" },
                     { 5, "Uploader" },
                     { 10, "Auditor" },
-                    { 15, "Owner" }
+                    { 15, "Owner" },
+                    { 101, "Contribution" },
+                    { 102, "Registration" },    
+                    { 103, "Return" },
+                    { 104, "Registration and Return" },
+                    { 105, "All 3" }
                 };
             public IActionResult MapUser(string userId)
             {
@@ -192,7 +197,7 @@
                 {
                     {
                     
-                        ViewBag.UserLevels = new List<SelectListItem>(); // No options for other levels
+                        ViewBag.UserLevels = new List<SelectListItem>(); // No options for other levels  
                     }
 
                 }

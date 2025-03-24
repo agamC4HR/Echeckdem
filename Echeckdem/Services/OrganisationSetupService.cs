@@ -251,7 +251,7 @@ namespace Echeckdem.Services
                             DateOnly? projectEndDate = null;
                             if (!projectEndDateCell.IsEmpty())
                             {
-                                if (projectEndDateCell.DataType == XLDataType.DateTime)
+                                if (projectEndDateCell.DataType == XLDataType.DateTime)   
                                 {
                                     projectEndDate = DateOnly.FromDateTime(projectEndDateCell.GetDateTime());
                                 }
@@ -477,7 +477,7 @@ namespace Echeckdem.Services
                 }
             }
 
-            // Save changes once to optimize database writes
+            // Save changes once to optimize database writes 
             await _EcheckContext.SaveChangesAsync();
         }
 
@@ -496,7 +496,7 @@ namespace Echeckdem.Services
             // Fetch the scopeId from BoScopeMap based on lcode and projectCode
             var fetchedScopeId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeId).FirstOrDefaultAsync();
 
-            if (fetchedScopeId == null)
+            if (fetchedScopeId == null) 
                 throw new InvalidOperationException("ScopeId not found for the specified Lcode and ProjectCode.");
 
             // Fetch WorkId and DueDate from TrackScope

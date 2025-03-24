@@ -33,7 +33,7 @@ namespace Echeckdem.Services
         { 3, "Reports" },
         { 4, "Data Entry User" },
         { 5, "Data Viewer" }
-        
+
     };
 
         public List<Ncuser> GetUsers()
@@ -150,3 +150,5 @@ namespace Echeckdem.Services
 
     }
 }
+
+
