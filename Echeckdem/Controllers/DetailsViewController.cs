@@ -92,9 +92,128 @@ namespace Echeckdem.Controllers
             return Json(locations);
         }
 
-       
+        //----------------START----------------------------------REGISTRATION--------  ----------------------------------------------------------------------//
 
+        public async Task<IActionResult> EditReg(int uid, string oid, string lcode)
+        {
+            var ncreg = await _regService.GetByIdAsync(uid, oid, lcode);
+            if (ncreg == null)
+            {
+                return NotFound();
+            }
 
-     
+            var registrationViewModel = new RegistrationViewModel
+            {
+                Uid = ncreg.Uid,
+                Oid = ncreg.Oid,
+                Lcode = ncreg.Lcode,
+                Status = ncreg.Status,
+                Rno = ncreg.Rno,
+                Noe = ncreg.Noe,
+                Nmoe = ncreg.Nmoe,
+                Doi = ncreg.Doi,
+                Doe = ncreg.Doe,
+                Dolr = ncreg.Dolr,
+                Remarks = ncreg.Remarks,
+                // Map other properties as needed
+            };
+            return View("~/Views/DetailedView/EditReg.cshtml", registrationViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrUpdateReg(int? uid, string oid, string lcode, string status, string rno, int noe, string nmoe, DateOnly? doi, DateOnly? doe, DateOnly? dolr, string remarks, IFormFile file)
+        {
+            var result = await _regService.UpdateRegAsync(uid, oid, lcode, status, rno, noe, nmoe, doi, doe, dolr, remarks, file);
+
+            if (result.StartsWith("Error") || result == "Record not found.")
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(new { Message = result });
+        }
+        //----------------END----------------------------------REGISTRATION------------------------------------------------------------------------------//
+
+        //----------------START----------------------------------CONTRIBUTION ------------------------------------------------------------------------------//
+
+        public async Task<IActionResult> EditContr(int contid, string oid, string lcode)
+        {
+            var nccontr = await _contService.GetByIdAsync(contid, oid, lcode);
+            if (nccontr == null)
+            {
+                return NotFound();
+            }
+
+            var contributionviewmodel = new ContributionViewModel
+            {
+                //Uid = ncreg.Uid,
+                Contid = nccontr.Contid,
+                oid = nccontr.Oid,
+                Lcode = nccontr.Lcode,
+                Status = nccontr.Status,
+                LastDate = nccontr.Lastdate,
+                Amount = nccontr.Amount,
+                Chqno = nccontr.Chqno,
+                chqdate = nccontr.Chqdate,
+                Depdate = nccontr.Depdate,
+                Remarks = nccontr.Remarks,
+                // Map other properties as needed
+            };
+            return View("~/Views/DetailedView/EditContr.cshtml", contributionviewmodel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrUpdateContr(int? contid, string oid, string lcode, int status, string amount, string chqno, DateOnly? chqdate, DateOnly? deptdate, DateOnly? lastdate, string remarks, IFormFile file)
+        {
+            var result = await _contService.UpdateContrAsync(contid, oid, lcode, status, amount, chqno, chqdate, deptdate, lastdate, remarks, file);
+
+            if (result.StartsWith("Error") || result == "Record not found.")
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(new { Message = result });
+        }
+
+        //----------------END----------------------------------CONTRIBUTION ------------------------------------------------------------------------------/
+        
+        //----------------START----------------------------------RETURNS ----------------------------------------------------------------------------------//
+
+        public async Task<IActionResult> EditRet(int rtid, string oid, string lcode)
+        {
+            var ncret = await _retService.GetByIdAsync(rtid, oid, lcode);
+            if (ncret == null)
+            {
+                return NotFound();
+            }
+
+            var returnviewmodel = new ReturnsViewModel
+            {
+                Rtid = ncret.Rtid,
+                oid = ncret.Oid,
+                Lcode = ncret.Lcode,
+                Status = ncret.Status,
+               Depdate = ncret.Depdate,
+               LastDate = ncret.Lastdate,
+               Remarks = ncret.Remarks,
+                 
+            };
+            return View("~/Views/DetailedView/EditRet.cshtml", returnviewmodel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOrUpdateRet(int? rtid, string oid, string lcode, int status, DateOnly? deptdate, DateOnly? lastdate, string remarks, IFormFile file)
+        {
+            var result = await _retService.UpdateRetAsync(rtid, oid, lcode, status, deptdate, lastdate,  remarks, file);
+
+            if (result.StartsWith("Error") || result == "Record not found.")
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(new { Message = result });
+        }
+
+        //----------------END----------------------------------RETURNS ----------------------------------------------------------------------------------//
     }
 }

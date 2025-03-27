@@ -1,9 +1,15 @@
-﻿namespace Echeckdem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Echeckdem.Models
 {
     public class RegistrationViewModel
     {
-        
-        public string oid { get; set; }
+        [Key]
+        public int Uid { get; set; }
+        [Key]
+        public string Lcode { get; set; }
+        [Key]
+        public string Oid { get; set; }
         public string Lname { get; set; }
         public string LState { get; set; }
         public string State { get; set; }
@@ -11,11 +17,17 @@
         public string LRegion { get; set; }
         public string OName { get; set; }
 
-        public DateTime? Doe { get; set; }
+        public string? Rno { get; set; }
+        public int? Noe { get; set; }
+        public string? Nmoe { get; set; }
+        public DateOnly? Doi { get; set; }
+        public DateOnly? Doe { get; set; }
         public string TP { get; set; }
        public string Status { get; set; }
 
         public DateOnly? Dolr { get; set; }
+
+        public string? Remarks { get; set; }
 
 
         public string GetStatusDescription()

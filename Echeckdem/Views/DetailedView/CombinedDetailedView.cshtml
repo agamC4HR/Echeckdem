@@ -106,6 +106,7 @@
                 <th>City</th>
                 <th>State</th>
                 <th>Region</th>
+                <th>Edit</th>
                 @* <th>Form</th> *@
             </tr>
         </thead>
@@ -128,6 +129,7 @@
                     <td>@registration.LCity</td>
                     <td>@registration.State</td>
                     <td>@registration.LRegion</td>
+                    <td><a href="@Url.Action("EditReg", "DetailsView", new {uid = registration.Uid, oid = registration.Oid, lcode = registration.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @* <td></td> <!-- Empty for Registrations --> *@
                 </tr>
                 sno++;
@@ -148,7 +150,10 @@
                     <td>@contribution.State</td>
                     <td>@contribution.LRegion</td>
                     @* <td></td> <!-- Empty for Contributions --> *@
+                    <td><a href="@Url.Action("EditContr", "DetailsView", new {contid = contribution.Contid, oid = contribution.oid, lcode = contribution.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
+                    @* <td></td> <!-- Empty for Registrations --> *@
                 </tr>
+              
                 sno++;
             }
             @foreach (var returnData in Model.Returns)
@@ -166,7 +171,9 @@
                     <td>@returnData.LCity</td>
                     <td>@returnData.State</td>
                     <td>@returnData.LRegion</td>
+                    <td><a href="@Url.Action("EditRet", "DetailsView", new {rtid = returnData.Rtid, oid = returnData.oid, lcode = returnData.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @*  <td>@returnData.RForm</td>  *@
+
                 </tr>
                 sno++;
             }

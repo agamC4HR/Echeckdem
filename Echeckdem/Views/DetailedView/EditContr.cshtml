@@ -1,0 +1,35 @@
+﻿@model Echeckdem.Models.ContributionViewModel
+
+<h2>Edit Registration</h2>
+
+<form asp-action="AddOrUpdateContr" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="oid" />
+    <input type="hidden" asp-for="Contid" />
+    <input type="hidden" asp-for="Lcode" />
+
+    <label>Status:</label>
+    <input type="text" asp-for="Status" class="form-control" />
+
+    <labael> Amount: </labael>
+    <input type="text" asp-for="Amount" class="form-control" />
+
+    <labael> CHQNO: </labael>
+    <input type="text" asp-for="Chqno" class="form-control" />
+
+    <label>CHQ DATE:</label>
+    <input type="date" asp-for="chqdate" class="form-control" />
+
+    <label>Last Date:</label>
+    <input type="date" asp-for="LastDate" class="form-control" />
+
+    <label>Date of Deposit:</label>
+    <input type="date" asp-for="Depdate" class="form-control" />
+    
+    <label>Remarks:</label>
+    <textarea asp-for="Remarks" class="form-control"></textarea>
+
+    <label>Upload File (PDF only):</label>
+    <input type="file" name="file" class="form-control" accept="application/pdf" />
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

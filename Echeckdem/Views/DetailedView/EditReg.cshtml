@@ -1,0 +1,38 @@
+﻿@model Echeckdem.Models.RegistrationViewModel
+
+<h2>Edit Registration</h2>
+
+<form asp-action="AddOrUpdateReg" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Oid" />
+    <input type="hidden" asp-for="Uid" />
+    <input type="hidden" asp-for="Lcode" />
+
+    <label>Status:</label>
+    <input type="text" asp-for="Status" class="form-control" />
+
+    <label>RNO:</label>
+    <input type="text" asp-for="Rno" class="form-control" />
+
+    <label>NOE:</label>
+    <input type="number" asp-for="Noe" class="form-control" />
+
+    <label>NMOE:</label>
+    <input type="text" asp-for="Nmoe" class="form-control" />
+
+    <label>Date of Issue (DOI):</label>
+    <input type="date" asp-for="Doi" class="form-control" />
+
+    <label>Date of Expiryt (DOE):</label>
+    <input type="date" asp-for="Doe" class="form-control" />
+
+    <label>Date of Last Renewal (DOLR):</label>
+    <input type="date" asp-for="Dolr" class="form-control" />
+
+    <label>Remarks:</label>
+    <textarea asp-for="Remarks" class="form-control"></textarea>
+
+    <label>Upload File (PDF only):</label>
+    <input type="file" name="file" class="form-control" accept="application/pdf" />
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

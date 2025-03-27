@@ -1,0 +1,41 @@
+﻿@model List<Echeckdem.CustomFolder.DetailViewCombinedViewModel>
+
+@{
+    ViewData["Title"] = "Detail View Combined Data";
+}
+
+<h2>Detail View Combined Data</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>OID</th>
+            <th>Dep Date</th>
+            <th>Status</th>
+            <th>Last Date</th>
+            <th>Location</th>
+            <th>State</th>
+            <th>City</th>
+            <th>Region</th>
+            <th>Organization</th>
+            <th>Record Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Oid</td>
+                <td>@item.Depdate.ToString("yyyy-MM-dd")</td>
+                <td>@item.Status</td>
+                <td>@item.Lastdate.ToString("yyyy-MM-dd")</td>
+                <td>@item.Lname</td>
+                <td>@item.Lstate</td>
+                <td>@item.Lcity</td>
+                <td>@item.Lregion</td>
+                <td>@item.Oname</td>
+                <td>@item.RecordType</td>
+            </tr>
+        }
+    </tbody>
+</table>

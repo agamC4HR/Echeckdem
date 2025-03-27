@@ -5,16 +5,19 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Mono.TextTemplating;
 using System.Security.Policy;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Echeckdem.Services
 {
     public class ReturnsService
     {
         private readonly DbEcheckContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ReturnsService(DbEcheckContext context)
+        public ReturnsService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
@@ -22,7 +25,7 @@ namespace Echeckdem.Services
             var currentYear = DateTime.Now.Year;
 
             var sqlQuery = @"
-                                SELECT a.oid, a.Depdate, a.Status, a.lastdate,
+                                SELECT a.oid, a.Depdate, a.Status, a.lastdate, a.remarks, a.rtid, a.lcode,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.rtitle, c.rform, c.RM, c.YROFF, 
                                 d.oname,
@@ -198,6 +201,84 @@ namespace Echeckdem.Services
                 .ToListAsync();
 
             return cityNames;
+        }
+
+        public async Task<Ncret> GetByIdAsync(int rtid, string oid, string lcode)
+        {
+            var returns = await _context.Ncrets
+         .FirstOrDefaultAsync(r => r.Rtid == rtid && r.Oid == oid && r.Lcode == lcode);
+
+            if (returns == null)
+            {
+                Console.WriteLine("⚠️ No record found in database!");
+            }
+
+            return returns;
+        }
+
+
+        public async Task<string> UpdateRetAsync(int? rtid, string oid, string lcode, int status, DateOnly? deptdate, DateOnly? lastdate, string remarks, IFormFile file)
+        {
+            try
+            {
+                var ncretRecord = rtid.HasValue
+                    ? await _context.Ncrets.FirstOrDefaultAsync(n => n.Rtid == rtid && n.Oid == oid && n.Lcode == lcode)
+                    : new Ncret();
+
+                if (ncretRecord == null && rtid.HasValue)
+                {
+                    return "Record not found.";
+                }
+
+                ncretRecord.Oid = oid;
+                ncretRecord.Lcode = lcode;
+                ncretRecord.Status = status;
+                ncretRecord.Depdate = deptdate;
+                ncretRecord.Lastdate = lastdate;
+                ncretRecord.Remarks = remarks;
+
+             
+
+                if (file != null && file.Length > 0)
+                {
+                    if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+                    {
+                        return "Only PDF files are allowed.";
+                    }
+
+                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "RET");
+                    Directory.CreateDirectory(folderPath);
+
+                    string filePath = Path.Combine(folderPath, file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    ncretRecord.Filename = file.FileName;
+                }
+
+                // Insert or update record
+                if (!rtid.HasValue)
+                {
+                    _context.Ncrets.Add(ncretRecord);
+                }
+                else
+                {
+                    _context.Ncrets.Update(ncretRecord);
+                }
+
+                await _context.SaveChangesAsync();
+                return "Data Saved Successfully!!!";
+
+
+
+            }
+
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
         }
     }
 }
