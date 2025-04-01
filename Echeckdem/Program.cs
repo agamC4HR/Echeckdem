@@ -40,7 +40,6 @@ builder.Services.AddScoped<IBulkUploadService, BulkUploadService>();
 builder.Services.AddScoped<ActScopeSetupService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<DetailViewCombinedService>();
-
 builder.Services.AddSingleton<MailService>();
 
 

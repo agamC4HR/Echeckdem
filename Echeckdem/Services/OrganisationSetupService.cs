@@ -69,6 +69,7 @@ namespace Echeckdem.Services
                 Directory.CreateDirectory(Path.Combine(rootPath, "Reg"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Ret"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Bocw"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "Acts"));
             }
         }
 
