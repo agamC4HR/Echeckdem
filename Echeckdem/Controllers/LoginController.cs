@@ -41,10 +41,6 @@ namespace Echeckdem.Controllers
                     // Generate JWT token
                     //var token = await _jwtService.GenerateJwtToken(model.userID);
 
-                    // Storing UserLevel in session
-
-
-                    //ViewBag.UserLevel = userLevel;
 
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);

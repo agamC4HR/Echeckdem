@@ -41,7 +41,7 @@ builder.Services.AddScoped<ActScopeSetupService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<DetailViewCombinedService>();
 builder.Services.AddSingleton<MailService>();
-
+builder.Services.AddScoped<TrackerService>();
 
 
 // Configuring the Database

@@ -37,6 +37,7 @@ namespace Echeckdem.Services
             var user = await _dbEcheckContext.Ncusers
                 .Where (u => u.Userid == userId)
                 .FirstOrDefaultAsync();
+            
 
             return user?.Uno ?? 0;
         }

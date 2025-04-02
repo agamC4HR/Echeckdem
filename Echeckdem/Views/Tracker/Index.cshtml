@@ -1,0 +1,73 @@
+﻿@model Echeckdem.CustomFolder.TrackerViewModel
+
+@{
+    ViewData["Title"] = "Tracker";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="SelectedUno" id="SelectedUno" />
+
+    <div class="form-group">
+        <label for="SelectedOid">Select Organization</label>
+        <select asp-for="SelectedOid" class="form-control" asp-items="Model.Organizations" id="SelectedOid" name="SelectedOid">
+            <option value="">-- Select Organization --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="SelectedLCODE">Select Location</label>
+        <select asp-for="SelectedLCODE" class="form-control" asp-items="Model.Locations" id="SelectedLCODE" name="SelectedLCODE">
+            <option value="">-- Select Location --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="SelectedTPP">Inspection/Notice For:</label>
+        <select asp-for="SelectedTPP" class="form-control" asp-items="Model.TPPDropdown" id="SelectedTPP" name="SelectedTPP">
+            <option value="">-- Select TPP --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="SelectedACTITLE">ACT:</label>
+        <select asp-for="SelectedACTITLE" class="form-control" asp-items="Model.ActDropdown" id="SelectedACTITLE" name="SelectedACTITLE">
+            <option value="">-- Select ACT --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="SelectedSBTP">SLA:</label>
+        <select asp-for="SelectedSBTP" class="form-control" asp-items="Model.SlaDropdown" id="SelectedSBTP" name="SelectedSBTP">
+            <option value="">-- Select SLA --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#SelectedOid').change(function () {
+                var oid = $(this).val();
+                if (oid) {
+                    $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
+                        .done(function (data) {
+                            $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+                            $.each(data, function (i, location) {
+                                $('#SelectedLCODE').append('<option value="' + location.value + '">' + location.text + '</option>');
+                            });
+                        })
+                        .fail(function () {
+                            alert("Failed to fetch locations. Please try again.");
+                        });
+                } else {
+                    $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+                }
+            });
+        });
+    </script>
+}
