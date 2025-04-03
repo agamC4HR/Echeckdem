@@ -143,15 +143,13 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
 
-
-
-
+  
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
         modelBuilder.Entity<ReturnsViewModel>()
-   .HasNoKey()
-   .ToView(null);
+  .HasNoKey()
+  .ToView(null);
 
         modelBuilder.Entity<ContributionViewModel>()
        .HasNoKey()
@@ -1219,17 +1217,15 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncaction>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCACTION");
+            entity.HasKey(e => e.Acid).HasName("pk_ncaction");
 
+            entity.ToTable("NCACTION");
+
+            entity.Property(e => e.Acid).HasColumnName("ACID");
             entity.Property(e => e.Accldate).HasColumnName("ACCLDATE");
             entity.Property(e => e.Acdetail)
                 .HasColumnType("text")
                 .HasColumnName("ACDETAIL");
-            entity.Property(e => e.Acid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("ACID");
             entity.Property(e => e.Acidate).HasColumnName("ACIDATE");
             entity.Property(e => e.Acistatus)
                 .HasMaxLength(1)

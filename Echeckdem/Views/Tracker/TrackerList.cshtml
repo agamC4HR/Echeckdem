@@ -1,0 +1,98 @@
+﻿@model List<Echeckdem.CustomFolder.TrackerViewModel>
+
+@{
+    ViewData["Title"] = "Tracker List";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    
+    <thead>
+        <tr>
+            <th>Organisation</th>
+            <th>Location</th>
+            <th>TPP</th>
+            <th>ACT</th>
+            <th>SLA</th>
+            <th>Details</th>
+            <th> Act Taken</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var action in Model)
+        
+        {
+            <tr>
+                <td>@action.Oname</td>  <!-- Full Org Name -->
+                <td>@action.Lname</td>  <!-- Full Location Name -->
+                <td>@action.SelectedTPP</td>
+                <td>@action.SelectedACTITLE</td>
+                <td>@action.SelectedSBTP</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="openEditModal('@action.Acid')">Edit</button>
+
+
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="openNcActTakenModal('@action.Acid')">Manage Actions</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div id="editNcActionModalContainer"></div>
+<div id="editNcActTakenModalContainer"></div>
+
+<script>
+    function openEditModal(acid) {
+        console.log("Opening Edit Modal with Acid:", acid);
+
+        $.get('@Url.Action("EditNcAction", "Tracker")', { acid: acid }, function (data) {
+            let modalContainer = $("#editNcActionModalContainer");
+
+            if (modalContainer.length === 0) {
+                $("body").append('<div id="editNcActionModalContainer"></div>');
+                modalContainer = $("#editNcActionModalContainer");
+            }
+
+            modalContainer.html(data);  // Load the partial view into the container
+
+            // Ensure modal exists before showing it
+            setTimeout(() => {
+                let modal = $("#editNcActionModal");
+                if ($.fn.modal) {
+                    modal.modal("show");
+                } else {
+                    console.error("Bootstrap modal function is not available.");
+                }
+            }, 100);
+        });
+    }
+
+</script>
+
+<script>
+    function openNcActTakenModal(acid) {
+        $.get('@Url.Action("EditNcActTaken", "Tracker")', { acid: acid }, function (data) {
+            let modalContainer = $("#editNcActTakenModalContainer");
+
+            if (modalContainer.length === 0) {
+                $("body").append('<div id="editNcActTakenModalContainer"></div>');
+                modalContainer = $("#editNcActTakenModalContainer");
+            }
+
+            modalContainer.html(data);  // Load the partial view into the container
+
+            setTimeout(() => {
+                let modal = $("#editNcActTakenModal");
+                if ($.fn.modal) {
+                    modal.modal("show");
+                } else {
+                    console.error("Bootstrap modal function is not available.");
+                }
+            }, 100);
+        });
+    }
+
+</script>

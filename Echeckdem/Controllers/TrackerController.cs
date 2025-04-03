@@ -22,9 +22,20 @@ namespace Echeckdem.Controllers
             return httpContext.Session.GetInt32("UNO") ?? 0;
         }
 
+    
+
+        public IActionResult TrackerList()
+        {
+            int uno = _trackerService.GetUnoFromSession(HttpContext);
+            var actions = _trackerService.GetNcActionsForUser(uno);
+            return View(actions);
+        }
+
+
+
         public async Task<IActionResult> Index()
         {
-           // string userId = User.Identity.Name; // Assuming user is authenticated
+           
             int uno = _trackerService.GetUnoFromSession(HttpContext);
 
 
@@ -53,7 +64,7 @@ namespace Echeckdem.Controllers
 
         public async Task<JsonResult> GetLocations(string oid)
         {
-            //string userId = User.Identity.Name;
+         
             int uno = _trackerService.GetUnoFromSession(HttpContext);
 
             var locations = _trackerService.GetLocations(uno, oid);
@@ -63,7 +74,12 @@ namespace Echeckdem.Controllers
         [HttpPost]
         public IActionResult Create(TrackerViewModel model)
         {
-            if (!ModelState.IsValid) // ✅ Check if model is valid before saving
+            foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine(modelError.ErrorMessage); // Log errors
+            }
+
+            if (!ModelState.IsValid) 
             {
                 model.SelectedUno = _trackerService.GetUnoFromSession(HttpContext);
                 model.Organizations = _trackerService.GetOrganizations(model.SelectedUno);
@@ -71,7 +87,7 @@ namespace Echeckdem.Controllers
                 model.TPPDropdown = _trackerService.GetTPPDropdown();
                 model.ActDropdown = _trackerService.GetActDropdown();
                 model.SlaDropdown = _trackerService.GetSlaDropdown();
-                return View("Index", model); // ✅ Return to form with errors
+                return View("Index", model); 
             }
 
            
@@ -79,20 +95,79 @@ namespace Echeckdem.Controllers
             try
             {
                 _trackerService.SaveNcAction(model);
-                return RedirectToAction("Index");
+                return RedirectToAction("TrackerList");
             }
             catch (Exception ex)
             {
-                // Log or display error message
+                
                 ModelState.AddModelError("", "An error occurred while saving data.");
                 model.Organizations = _trackerService.GetOrganizations(model.SelectedUno);
                 model.Locations = _trackerService.GetLocations(model.SelectedUno, model.SelectedOid);
-                //model.TPPDropdown = _trackerService.GetTPPDropdown();
-                //model.ActDropdown = _trackerService.GetActDropdown();
-                //model.SlaDropdown = _trackerService.GetSlaDropdown();
                 return View("Index", model); // Return to form with error message
             }
         }
+
+        [HttpGet]
+        public IActionResult EditNcAction(int acid)
+        {
+            var ncAction = _trackerService.GetNcActionById(acid);
+            if (ncAction == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditNcAction", ncAction);
+        }
+
+
+        [HttpPost]
+        public IActionResult SaveNcAction(TrackerViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _trackerService.SaveOrUpdateNcAction(model);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error: " + ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult EditNcActTaken(int acid)
+        {
+            var actionTaken = _trackerService.GetNcActTakenByAcid(acid);
+            //if (actionTaken == null)
+            //{
+            //    actionTaken = new TrackerTakenViewModel { Acid = acid };
+            //}
+            return PartialView("_EditNcActTaken", actionTaken);
+        }
+
+        [HttpPost]
+        public IActionResult SaveNcActTaken(TrackerTakenViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _trackerService.SaveOrUpdateNcActTaken(model);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error: " + ex.Message);
+            }
+        }
+
 
 
 
