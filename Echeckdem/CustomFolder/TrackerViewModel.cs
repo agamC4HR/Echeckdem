@@ -7,21 +7,21 @@ namespace Echeckdem.CustomFolder
     {
 
 
-        [BindNever]
+       // [BindNever]
         public string? SelectedOid { get; set; }
 
         public int SelectedUno { get; set; }
 
-        [BindNever]
+        //[BindNever]
         public string? SelectedLCODE { get; set; }
 
-        [BindNever]
+        //[BindNever]
         public string? SelectedTPP { get; set; }
 
-        [BindNever]
+        //[BindNever]
         public string? SelectedACTITLE { get; set; }
 
-        [BindNever]
+        //[BindNever]
         public string? SelectedSBTP { get; set; }
 
         public List<SelectListItem>? Organizations { get; set; }
@@ -37,15 +37,15 @@ namespace Echeckdem.CustomFolder
 
         // Fields for Editing NCACTION
         public int Acid { get; set; }
-        public string Title { get; set; }
-        public string ExternalStatus { get; set; }
+        public string? Title { get; set; }
+        public string? ExternalStatus { get; set; }
         public int? VisibleToClient { get; set; } = 0; // Default to 0 if null
-        public string InternalStatus { get; set; }
-        public string DetailOfIssue { get; set; }
+        public string? InternalStatus { get; set; }
+        public string? DetailOfIssue { get; set; }
         public DateOnly? StartDate { get; set; }
         public DateOnly? DocsReceiptDate { get; set; }
         public DateOnly? CloseDate { get; set; }
-        public string Remarks { get; set; }
+        public string? Remarks { get; set; }
         [BindNever]
         public IFormFile? FileUpload { get; set; }
 
