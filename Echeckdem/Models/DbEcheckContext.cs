@@ -143,7 +143,7 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
 
-  
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
@@ -1197,19 +1197,17 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncactaken>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCACTAKEN");
+            entity.HasKey(e => e.Actid);
 
+            entity.ToTable("NCACTAKEN");
+
+            entity.Property(e => e.Actid).HasColumnName("ACTID");
             entity.Property(e => e.Accrdate).HasColumnName("ACCRDATE");
             entity.Property(e => e.Acdate).HasColumnName("ACDATE");
             entity.Property(e => e.Acid).HasColumnName("ACID");
             entity.Property(e => e.Actaken)
                 .HasColumnType("text")
                 .HasColumnName("ACTAKEN");
-            entity.Property(e => e.Actid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("ACTID");
             entity.Property(e => e.Nacdate).HasColumnName("NACDATE");
             entity.Property(e => e.Showclient).HasColumnName("SHOWCLIENT");
             entity.Property(e => e.Uno).HasColumnName("UNO");

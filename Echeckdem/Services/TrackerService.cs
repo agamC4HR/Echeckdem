@@ -1,5 +1,6 @@
 ﻿using Echeckdem.CustomFolder;
 using Echeckdem.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Echeckdem.Services
@@ -9,11 +10,13 @@ namespace Echeckdem.Services
     {
         private readonly DbEcheckContext _dbEcheckContext;
         private readonly ILogger<TrackerService> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public TrackerService(DbEcheckContext dbEcheckContext, ILogger<TrackerService> logger)
+        public TrackerService(DbEcheckContext dbEcheckContext, ILogger<TrackerService> logger, IWebHostEnvironment webHostEnvironment)
         {
             _dbEcheckContext = dbEcheckContext;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public int GetUnoFromSession(HttpContext httpContext)
@@ -156,6 +159,42 @@ namespace Echeckdem.Services
             _dbEcheckContext.Ncactions.Add(newRecord);
             _dbEcheckContext.SaveChanges();
         }
+
+        public void SaveNcFile(int acid, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                throw new Exception("Invalid file.");
+
+            var action = _dbEcheckContext.Ncactions.FirstOrDefault(a => a.Acid == acid);
+            if (action == null)
+                throw new Exception("Action not found.");
+
+            string oid = action.Oid.ToString();
+            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid, "Acts");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+            string filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            var ncFile = new Ncfile
+            {
+                Oid = action.Oid,
+                Flink = action.Acid,  // Same as ACID
+                Fname = fileName,
+                Fupdate = DateOnly.FromDateTime(DateTime.Now)
+            };
+
+            _dbEcheckContext.Ncfiles.Add(ncFile);
+            _dbEcheckContext.SaveChanges();
+        }
+
 
         public TrackerViewModel GetNcActionById(int acid)
         {

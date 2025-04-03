@@ -47,6 +47,7 @@ namespace Echeckdem.CustomFolder
         public DateOnly? CloseDate { get; set; }
         public string Remarks { get; set; }
 
-      
+        public IFormFile FileUpload { get; set; }
+        public string UploadedFileName { get; set; }
     }
 }

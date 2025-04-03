@@ -138,6 +138,24 @@ namespace Echeckdem.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult UploadNcFile(int acid, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            try
+            {
+                _trackerService.SaveNcFile(acid, file);
+                return Json(new { success = true, message = "File uploaded successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+
         [HttpGet]
         public IActionResult EditNcActTaken(int acid)
         {
@@ -167,6 +185,8 @@ namespace Echeckdem.Controllers
                 return StatusCode(500, "Error: " + ex.Message);
             }
         }
+
+
 
 
 

@@ -83,6 +83,16 @@
                         <textarea class="form-control" asp-for="Remarks"></textarea>
                     </div>
 
+                    <div class="form-group">
+                        <label>Upload PDF</label>
+                        <input type="file" id="uploadedFile" name="file" class="form-control" accept=".pdf" />
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.UploadedFileName))
+                    {
+                        <p>Uploaded File: <a href="~/Files/@Model.UploadedFileName" target="_blank">@Model.UploadedFileName</a></p>
+                    }
+
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>
@@ -107,6 +117,29 @@
                     alert("Error saving data.");
                 }
             });
+        });
+    });
+</script>
+<script>
+    $("#editNcActionForm").submit(function (e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+        formData.append("acid", $("#Acid").val());
+
+        $.ajax({
+            url: '@Url.Action("UploadNcFile", "Tracker")',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                alert(response.message);
+                location.reload();
+            },
+            error: function (xhr) {
+                alert("Error: " + xhr.responseText);
+            }
         });
     });
 </script>

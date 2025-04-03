@@ -17,6 +17,7 @@ public partial class BocwScope
     [NotMapped]
     public bool IsSelected { get; set; }
 
+
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();
