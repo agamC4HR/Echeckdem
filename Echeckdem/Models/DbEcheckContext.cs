@@ -1456,14 +1456,12 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncfile>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCFILES");
+            entity.HasKey(e => e.Fid);
 
+            entity.ToTable("NCFILES");
+
+            entity.Property(e => e.Fid).HasColumnName("FID");
             entity.Property(e => e.Farc).HasColumnName("FARC");
-            entity.Property(e => e.Fid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("FID");
             entity.Property(e => e.Flink).HasColumnName("FLINK");
             entity.Property(e => e.Fname)
                 .IsUnicode(false)

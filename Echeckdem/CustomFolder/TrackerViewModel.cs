@@ -46,8 +46,10 @@ namespace Echeckdem.CustomFolder
         public DateOnly? DocsReceiptDate { get; set; }
         public DateOnly? CloseDate { get; set; }
         public string Remarks { get; set; }
+        [BindNever]
+        public IFormFile? FileUpload { get; set; }
 
-        public IFormFile FileUpload { get; set; }
-        public string UploadedFileName { get; set; }
+        [BindNever]
+        public string? UploadedFileName { get; set; }
     }
 }
