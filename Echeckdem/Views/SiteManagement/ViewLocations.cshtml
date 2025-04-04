@@ -1,0 +1,49 @@
+﻿@model List<Echeckdem.CustomFolder.LocationViewModel>
+@{
+    ViewBag.Title = "Locations for Organization";
+}
+
+<h2>Locations</h2>
+<p><strong>OID:</strong> @ViewBag.OID</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Location Code</th>
+            <th>Location Name</th>
+            <th>State</th>
+            <th>Type</th>
+            <th>Central</th>
+            <th>CLRA</th>
+            <th>Region</th>
+            <th>Address</th>
+            <th>Branch Contact</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Client Email</th>
+            <th>Internal Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model[i].Lcode</td>
+                <td>@Model[i].Lname</td>
+                <td>@Model[i].Lstate</td>
+                <td>@Model[i].Ltype</td>
+                <td>@(Model[i].Iscentral == 1 ? "Yes" : "No")</td>
+                <td>@(Model[i].Iscloc == 1 ? "Yes" : "No")</td>
+                <td>@Model[i].Lregion</td>
+                <td>@Model[i].Laddress</td>
+                <td>@Model[i].Lcontact</td>
+                <td>@Model[i].Lconno</td>
+                <td>@Model[i].Lconemail</td>
+                <td>@Model[i].Cemail</td>
+                <td>@Model[i].Iemail</td>
+            </tr>
+        }
+    </tbody>
+</table>

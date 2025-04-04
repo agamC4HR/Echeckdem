@@ -186,10 +186,5 @@ namespace Echeckdem.Controllers
             }
         }
 
-
-
-
-
-
     }
 }
