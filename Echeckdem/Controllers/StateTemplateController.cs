@@ -15,7 +15,8 @@ namespace Echeckdem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var states = await _templateService.GetAllStatesAsync();
+            var (states, counts) = await _templateService.GetAllStatesAsync();
+            ViewBag.ContributionCounts = counts;
             return View(states);
         }
 
@@ -48,6 +49,14 @@ namespace Echeckdem.Controllers
 
             return View(entry);
         }
+
+        public async Task<IActionResult> Delete(int id, string stateId)
+        {
+            await _templateService.DeleteTemplateAsync(id);
+            return RedirectToAction("Details", new { id = stateId });
+        }
+
+
 
     }
 }

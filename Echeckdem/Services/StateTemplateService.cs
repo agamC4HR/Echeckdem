@@ -15,16 +15,24 @@ namespace Echeckdem.Services
             _dbEcheckContext = dbEcheckContext;
         }
 
-        public async Task<List<Maststate>> GetAllStatesAsync()
+      
+
+
+        public async Task<(List<Maststate> states , Dictionary<string, int> counts)> GetAllStatesAsync()
         {
-            return await _dbEcheckContext.Maststates
+            var states = await _dbEcheckContext.Maststates
                 .Select(s => new Maststate
                 {
                     Stateid = s.Stateid,
                     Statedesc = s.Statedesc,
                     Stactive = s.Stactive
-                })
-                .ToListAsync();
+                }).ToListAsync();
+
+            var counts = await _dbEcheckContext.Nctempcnts
+                .GroupBy(c => c.Cstate)
+                .ToDictionaryAsync(g => g.Key, g => g.Count());
+
+            return (states, counts);
         }
 
         public async Task<List<StateTemplateViewModel>> GetTemplatesByStateAsync(string stateId)
@@ -80,7 +88,7 @@ namespace Echeckdem.Services
             else
             {
                 // Add
-                _dbEcheckContext.Nctempcnts.Add(new  Nctempcnt
+                _dbEcheckContext.Nctempcnts.Add(new Nctempcnt
                 {
                     Cstate = entry.CState,
                     Tp = entry.Tp,
@@ -94,5 +102,19 @@ namespace Echeckdem.Services
 
             await _dbEcheckContext.SaveChangesAsync();
         }
+
+        public async Task DeleteTemplateAsync(int id)
+        {
+            var entity = await _dbEcheckContext.Nctempcnts.FirstOrDefaultAsync(e => e.Cid == id);
+            if (entity != null)
+            {
+                _dbEcheckContext.Nctempcnts.Remove(entity);
+                await _dbEcheckContext.SaveChangesAsync();
+            }
+        }
+
+
     }
 }
+
+
