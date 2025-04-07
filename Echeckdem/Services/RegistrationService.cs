@@ -44,7 +44,7 @@ namespace Echeckdem.Services
                 string.IsNullOrEmpty(StateName) &&
                 string.IsNullOrEmpty(CityName))
             {
-                sqlQuery += "AND YEAR(a.doe) = @currentYear ";
+                sqlQuery += "AND YEAR(a.doe) = @currentYear ";                          
             }
 
             if (ulev >= 1)
@@ -79,7 +79,7 @@ namespace Echeckdem.Services
             }
             if (EndDueDate.HasValue)
             {
-                sqlQuery += "AND a.doe <= @EndDueDate";
+                sqlQuery += " AND a.doe <= @EndDueDate";
             }    
             if (StartPeriod.HasValue)
             {

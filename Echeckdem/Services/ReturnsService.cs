@@ -60,11 +60,11 @@ namespace Echeckdem.Services
 
             if (!string.IsNullOrEmpty(organizationName))
             {
-                sqlQuery += "AND d.oname = @organizationName";
+                sqlQuery += " AND d.oname = @organizationName";
             }
             if (!string.IsNullOrEmpty(LocationName))
             {
-                sqlQuery += "AND b.lname = @LocationName";
+                sqlQuery += " AND b.lname = @LocationName";
             }
 
             if (!string.IsNullOrEmpty(StateName))
@@ -236,6 +236,7 @@ namespace Echeckdem.Services
                 ncretRecord.Depdate = deptdate;
                 ncretRecord.Lastdate = lastdate;
                 ncretRecord.Remarks = remarks;
+                
 
              
 
@@ -270,8 +271,6 @@ namespace Echeckdem.Services
 
                 await _context.SaveChangesAsync();
                 return "Data Saved Successfully!!!";
-
-
 
             }
 

@@ -9,7 +9,7 @@ using Echeckdem.CustomFolder;
 namespace Echeckdem.Controllers
 {
     public class DetailsViewController : Controller
-    {
+    {   
         private readonly RegistrationService _regService;
         private readonly ContributionService _contService;
         private readonly ReturnsService _retService;
@@ -82,7 +82,7 @@ namespace Echeckdem.Controllers
         public async Task<IActionResult> GetLocations(string organizationName)  
         {
             int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
-
+                
             if (string.IsNullOrEmpty(organizationName))
             {
                 return Json(await _regService.GetLocationNamesAsync(uno));
@@ -91,6 +91,27 @@ namespace Echeckdem.Controllers
             var locations = await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
             return Json(locations);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetReturnLocations(string organizationName)
+        {
+            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
+            if (string.IsNullOrEmpty(organizationName))
+                return Json(await _retService.GetLocationNamesAsync(uno));
+
+            return Json(await _retService.GetFilteredLocationNamesAsync(uno, organizationName));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetContributionLocations(string organizationName)
+        {
+            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
+            if (string.IsNullOrEmpty(organizationName))
+                return Json(await _contService.GetLocationNamesAsync(uno));
+
+            return Json(await _contService.GetFilteredLocationNamesAsync(uno, organizationName));
+        }
+
 
         //----------------START----------------------------------REGISTRATION--------  ----------------------------------------------------------------------//
 
@@ -214,6 +235,6 @@ namespace Echeckdem.Controllers
             return Ok(new { Message = result });
         }
 
-        //----------------END----------------------------------RETURNS ----------------------------------------------------------------------------------//
+        //----------------END----------------------------------RETURNS------------------------------------------------------------------------------------//
     }
 }

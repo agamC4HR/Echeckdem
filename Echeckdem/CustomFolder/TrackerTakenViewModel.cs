@@ -10,5 +10,7 @@
         public string Actaken { get; set; } 
         public DateOnly? Nacdate { get; set; } 
         public int Showclient { get; set; } 
+
+        
     }
 }

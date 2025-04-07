@@ -277,12 +277,26 @@
     $(document).ready(function () {
         $('#organizationFilter').on('change', function () {
             var organizationName = $(this).val();
+            var filterSource = $('#filterSource').val(); // get the selected filter source
+            var locationDropdown = $('#locationFilter');
+            var endpoint = '';
 
-            $.get('/DetailsView/GetLocations', { organizationName: organizationName }, function (data) {
-                var locationDropdown = $('#locationFilter');
+            // decide which endpoint to call based on filter source
+            switch (filterSource) {
+                case 'contribution':
+                    endpoint = '/DetailsView/GetContributionLocations';
+                    break;
+                case 'return':
+                    endpoint = '/DetailsView/GetReturnLocations';
+                    break;
+                default:
+                    endpoint = '/DetailsView/GetLocations';
+            }
+
+            // make the AJAX request
+            $.get(endpoint, { organizationName: organizationName }, function (data) {
                 locationDropdown.empty();
-
-                locationDropdown.append('<option value="All"></option>');
+                locationDropdown.append('<option value="">-- Select Location --</option>');
 
                 $.each(data, function (index, location) {
                     locationDropdown.append('<option value="' + location + '">' + location + '</option>');
@@ -290,4 +304,21 @@
             });
         });
     });
+
+    // $(document).ready(function () {
+    //     $('#organizationFilter').on('change', function () {
+    //         var organizationName = $(this).val();
+
+    //         $.get('/DetailsView/GetLocations', { organizationName: organizationName }, function (data) {
+    //             var locationDropdown = $('#locationFilter');
+    //             locationDropdown.empty();
+
+    //             locationDropdown.append('<option value="All"></option>');
+
+    //             $.each(data, function (index, location) {
+    //                 locationDropdown.append('<option value="' + location + '">' + location + '</option>');
+    //             });
+    //         });
+    //     });
+    // });
 </script>

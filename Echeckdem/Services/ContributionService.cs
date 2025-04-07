@@ -55,11 +55,11 @@ namespace Echeckdem.Services
             // applying filters
             if (!string.IsNullOrEmpty(organizationName))
             {
-                sqlQuery += "AND c.oname = @organizationName";
+                sqlQuery += " AND c.oname = @organizationName";
             }
             if (!string.IsNullOrEmpty(LocationName))
             {
-                sqlQuery += "AND b.lname = @LocationName";
+                sqlQuery += " AND b.lname = @LocationName";
             }
 
             if (!string.IsNullOrEmpty(StateName))
