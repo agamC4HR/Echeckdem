@@ -21,7 +21,7 @@ public partial class TrackScope
 
     public int? DueDate { get; set; }
 
-    public virtual ICollection<Ncbocw>?Ncbocws { get; set; } = new List<Ncbocw>();
+    public virtual ICollection<Ncbocw>? Ncbocws { get; set; } = new List<Ncbocw>();
 
     public virtual BocwScope? Scope { get; set; } = null!;
 }

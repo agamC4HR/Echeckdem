@@ -137,7 +137,6 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Webinar> Webinars { get; set; }
 
-
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
     public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
@@ -997,12 +996,17 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Maststate>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("MASTSTATES");
+            entity.HasKey(e => e.Stateid).HasName("pk_stateid");
+
+            entity.ToTable("MASTSTATES");
 
             entity.HasIndex(e => new { e.Stateid, e.Statedesc }, "notistate").IsUnique();
 
+            entity.Property(e => e.Stateid)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("STATEID");
             entity.Property(e => e.Stactive)
                 .HasMaxLength(1)
                 .IsUnicode(false)
@@ -1013,11 +1017,6 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("STATEDESC");
-            entity.Property(e => e.Stateid)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("STATEID");
         });
 
         modelBuilder.Entity<Mwcat>(entity =>
@@ -1801,13 +1800,11 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Nctempcnt>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCTEMPCNT");
+            entity.HasKey(e => e.Cid).HasName("pk_cid");
 
-            entity.Property(e => e.Cid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("CID");
+            entity.ToTable("NCTEMPCNT");
+
+            entity.Property(e => e.Cid).HasColumnName("CID");
             entity.Property(e => e.Cstate)
                 .HasMaxLength(5)
                 .IsUnicode(false)
