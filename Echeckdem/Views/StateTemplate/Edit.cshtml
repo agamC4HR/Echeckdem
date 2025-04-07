@@ -1,0 +1,76 @@
+﻿@model Echeckdem.CustomFolder.StateTemplateViewModel
+@{
+    ViewBag.Title = Model.Cid == 0 ? "Add Template" : "Edit Template";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Cid" />
+    <input type="hidden" asp-for="CState" />
+
+    <div class="form-group">
+        <label asp-for="Tp">Type</label>
+        <select asp-for="Tp" class="form-control">
+            <option value="">Choose</option>
+            <option value="PT" selected="@("PT" == Model.Tp)">Prof. Tax</option>
+            <option value="LWF" selected="@("LWF" == Model.Tp)">LWF</option>
+            <option value="PF" selected="@("PF" == Model.Tp)">PF</option>
+            <option value="ESI" selected="@("ESI" == Model.Tp)">ESI</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Freq">Frequency</label>
+        <select asp-for="Freq" class="form-control">
+            <option value="">Choose</option>
+            <option value="M" selected="@("M" == Model.Freq)">Monthly</option>
+            <option value="Q" selected="@("Q" == Model.Freq)">Quarterly</option>
+            <option value="S" selected="@("S" == Model.Freq)">Half Yearly</option>
+            <option value="Y" selected="@("Y" == Model.Freq)">Yearly</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Period">Period (Month)</label>
+        <select asp-for="Period" class="form-control">
+            <option value="">Choose</option>
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" selected="@(i == Model.Period)">
+                    @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Ld">Last Date (Day)</label>
+        <select asp-for="Ld" class="form-control">
+            <option value="">Choose</option>
+            @for (int i = 1; i <= 31; i++)
+            {
+                <option value="@i" selected="@(i == Model.Ld)">@i</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Moffset">Month Offset</label>
+        <select asp-for="Moffset" class="form-control">
+            <option value="0" selected="@(Model.Moffset == 0)">No</option>
+            <option value="1" selected="@(Model.Moffset == 1)">Yes</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Active">Active</label>
+        <select asp-for="Active" class="form-control">
+            <option value="1" selected="@(Model.Active == 1)">Active</option>
+            <option value="0" selected="@(Model.Active == 0)">Inactive</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Details" asp-route-id="@Model.CState" class="btn btn-secondary">Back</a>
+</form>

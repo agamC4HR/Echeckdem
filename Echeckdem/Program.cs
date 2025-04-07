@@ -44,7 +44,7 @@ builder.Services.AddScoped<DetailViewCombinedService>();
 builder.Services.AddSingleton<MailService>();
 builder.Services.AddScoped<TrackerService>();
 builder.Services.AddScoped<ISiteManagementService, SiteManagementService>();
-
+builder.Services.AddScoped<IStateTemplateService, StateTemplateService>();
 
 
 // Configuring the Database

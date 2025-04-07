@@ -1,0 +1,28 @@
+﻿@model List<Echeckdem.Models.Maststate>
+@{
+    ViewBag.Title = "Select a State";
+}
+
+<h2>Select a State</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>State Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var state in Model)
+        {
+            <tr>
+                <td>@state.Statedesc</td>
+                <td>@(state.Stactive == "1" ? "Active" : "Inactive")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@state.Stateid" class="btn btn-primary btn-sm">View Templates</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
