@@ -15,10 +15,10 @@ namespace Echeckdem.Services
             _dbEcheckContext = dbEcheckContext;
         }
 
-      
 
 
-        public async Task<(List<Maststate> states , Dictionary<string, int> counts)> GetAllStatesAsync()
+
+        public async Task<(List<Maststate> states, Dictionary<string, int> counts, Dictionary<string, int> countsRet)> GetAllStatesAsync()
         {
             var states = await _dbEcheckContext.Maststates
                 .Select(s => new Maststate
@@ -32,7 +32,11 @@ namespace Echeckdem.Services
                 .GroupBy(c => c.Cstate)
                 .ToDictionaryAsync(g => g.Key, g => g.Count());
 
-            return (states, counts);
+            var countsRet = await _dbEcheckContext.Nctemprets
+                .GroupBy(c => c.Rstate)
+                .ToDictionaryAsync(g => g.Key, g => g.Count());
+
+            return (states, counts, countsRet);
         }
 
         public async Task<List<StateTemplateViewModel>> GetTemplatesByStateAsync(string stateId)
@@ -52,6 +56,8 @@ namespace Echeckdem.Services
                 })
                 .ToListAsync();
         }
+
+
 
         public async Task<StateTemplateViewModel> GetTemplateByIdAsync(int cid)
         {
@@ -112,6 +118,104 @@ namespace Echeckdem.Services
                 await _dbEcheckContext.SaveChangesAsync();
             }
         }
+
+        //----------------------------------START-------------------------------RETURNS-------------------------------------------------------------//
+
+        public async Task<List<StateTemplateRetViewModel>> GetTemplateRetByStateAsync(string stateId)
+        {
+            return await _dbEcheckContext.Nctemprets
+                .Where(t => t.Rstate == stateId)
+                .Select(t => new StateTemplateRetViewModel
+                {
+                    Rcode = t.Rcode,
+                    Rstate = t.Rstate,
+                    Rtype = t.Rtype,
+                    Rtitle = t.Rtitle,
+                    Rform = t.Rform,
+                    Rd = t.Rd,
+                    Rm = t.Rm ?? 0,
+                    Yroff = t.Yroff,
+                    Roblig = t.Roblig,
+                    Ract = t.Ract,
+                    Ractive = t.Ractive,
+                })
+                .ToListAsync();
+        }
+
+        public async Task<StateTemplateRetViewModel> GetTemplateRetByIdAsync(int rcode)
+        {
+            var entity = await _dbEcheckContext.Nctemprets.FindAsync(rcode);
+            if (entity == null) return null;
+
+            return new StateTemplateRetViewModel
+            {
+               Rcode = entity.Rcode,
+               Rstate = entity.Rstate,
+               Rtype = entity.Rtype,
+               Rtitle = entity.Rtitle,
+               Rform = entity.Rform,
+               Rd = entity.Rd,
+               Rm = entity.Rm ?? 0,
+               Yroff = entity.Yroff,
+               Roblig = entity.Roblig,
+               Ract = entity.Ract,
+               Ractive = entity.Ractive,
+
+            };
+        }
+
+        public async Task AddOrUpdateTemplateRetAsync(StateTemplateRetViewModel entry)
+        {
+            var existing = await _dbEcheckContext.Nctemprets.FindAsync(entry.Rcode);
+
+            if (existing != null)
+            {
+                // Update
+                existing.Rtype = entry.Rtype;
+                existing.Rtitle = entry.Rtitle;
+                existing.Rform  = entry.Rform;
+                existing.Rd = entry.Rd;
+                existing.Rm = entry.Rm;
+                existing.Yroff = entry.Yroff;
+                existing.Roblig = entry.Roblig;
+                existing.Ract = entry.Ract;
+                existing.Ractive = entry.Ractive;
+                
+            }
+            else
+            {
+                // Add
+                _dbEcheckContext.Nctemprets.Add(new Nctempret
+                {
+                    Rstate = entry.Rstate,
+                    Rtype = entry.Rtype,
+                    Rtitle = entry.Rtitle,
+                    Rform = entry.Rform,
+                    Rd = entry.Rd,
+                    Rm = entry.Rm,
+                    Yroff = entry.Yroff,    
+                    Roblig = entry.Roblig,
+                    Ract = entry.Ract,
+                    Ractive = entry.Ractive
+                });
+            }
+
+            await _dbEcheckContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteTemplateRetAsync(int id)
+        {
+            var entity = await _dbEcheckContext.Nctemprets.FirstOrDefaultAsync(e => e.Rcode == id);
+            if (entity != null)
+            {
+                _dbEcheckContext.Nctemprets.Remove(entity);
+                await _dbEcheckContext.SaveChangesAsync();
+            }
+        }
+
+        //----------------------------------END-------------------------------RETURNS-----------------------------------------------------------------//
+
+
 
 
     }

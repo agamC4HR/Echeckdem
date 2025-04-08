@@ -2,16 +2,18 @@
 @{
     ViewData["Title"] = "State Template";
     var counts = ViewBag.ContributionCounts as Dictionary<string, int>;
+    var countsRet = ViewBag.ReturnCounts as Dictionary<string, int>;
 }
 
 <h2 class="mb-4">State Template</h2>
-
 <table class="table table-striped">
+    
     <thead class="thead-dark">
         <tr>
             <th>State Name</th>
             <th>Status</th>
             <th>Cont</th>
+            <th>Ret</th>
             <th>Action</th>
 
 
@@ -23,9 +25,13 @@
             <tr>
                 <td>@state.Statedesc</td>
                 <td>@(state.Stactive == "1" ? "Active" : "Inactive")</td>
-                <td>@(counts != null && counts.ContainsKey(state.Stateid) ? counts[state.Stateid] : 0)</td>
+                <td>
+                    @(counts != null && counts.ContainsKey(state.Stateid) ? counts[state.Stateid] : 0)
+                    @(countsRet != null && countsRet.ContainsKey(state.Stateid) ? countsRet[state.Stateid] : 0)
+                </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@state.Stateid" class="btn btn-primary btn-sm">Contributions</a>
+                    <a asp-action="DetailsRet" asp-route-id="@state.Stateid" class="btn btn-primary btn-sm">Returns</a>
                 </td>
             </tr>
         }
