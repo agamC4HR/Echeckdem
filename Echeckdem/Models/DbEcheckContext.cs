@@ -1697,6 +1697,7 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(250)
                 .IsUnicode(false);
             entity.Property(e => e.Echeck).HasDefaultValue(true);
+            entity.Property(e => e.FileName).HasMaxLength(255);
             entity.Property(e => e.Oactive).HasColumnName("oactive");
             entity.Property(e => e.Oname)
                 .HasMaxLength(100)
