@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Echeckdem.CustomFolder;
 using Echeckdem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
@@ -35,6 +36,12 @@ namespace Echeckdem.Services
             }
             while (await _EcheckContext.Ncmorgs.AnyAsync(org => org.Oid == generatedOid));
 
+            var spocEmail = await _EcheckContext.Ncusers
+            .Where(u => u.Oid == "C4HR" && u.Uname == newOrganisation.Spoc)
+            .Select(u => u.Emailid)
+            .FirstOrDefaultAsync();
+
+
             var organisation = new Ncmorg
             {
                 Oid = generatedOid,
@@ -43,13 +50,13 @@ namespace Echeckdem.Services
                 Styear = newOrganisation.styear,
                 Contname = newOrganisation.Contname,
                 Contemail = newOrganisation.Contemail,
+                SpocEml = spocEmail,
                 Oactive = 1                                     // Assuming all new organizations are active by default
             };
 
             _EcheckContext.Ncmorgs.Add(organisation);
             await _EcheckContext.SaveChangesAsync();
-
-            // ✅ Create Directory Structure in wwwroot/files
+                        
             CreateOrganisationFolder(generatedOid);
 
 
@@ -70,8 +77,23 @@ namespace Echeckdem.Services
                 Directory.CreateDirectory(Path.Combine(rootPath, "Ret"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Bocw"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Acts"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "Copies"));                            
+                
             }
         }
+
+        public async Task<List<SelectListItem>> GetC4HRSPOCListAsync()
+        {
+            return await _EcheckContext.Ncusers
+                .Where(u => u.Oid == "C4HR")
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Uname,
+                    Text = u.Uname
+                })
+                .ToListAsync();
+        }
+
 
         public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)                // service for getting organisation list and general info of that organisation
         {

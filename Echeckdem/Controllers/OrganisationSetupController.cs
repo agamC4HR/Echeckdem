@@ -30,11 +30,23 @@ namespace Echeckdem.Controllers
             _logger = logger;
         }
 
+        //[HttpGet]
+        //public IActionResult AddOrganisation()                                                                                 // Add Organisation details (setting up new organisation)
+        //{
+
+        //    return PartialView("AddOrganisation");
+        //}
+
         [HttpGet]
-        public IActionResult AddOrganisation()                                                                                 // Add Organisation details (setting up new organisation)
+        public async Task<IActionResult> AddOrganisation()
         {
-            return PartialView("AddOrganisation");
+            var model = new OrganisationGeneralInfoViewModel
+            {
+                SpocList = await _organisationsetupservice.GetC4HRSPOCListAsync()
+            };
+            return PartialView("AddOrganisation", model);
         }
+
 
         [HttpPost]                                                                                                          // Add Organisation details (setting up new organisation)
         public async Task<IActionResult> AddOrganisation(OrganisationGeneralInfoViewModel newOrganisation)

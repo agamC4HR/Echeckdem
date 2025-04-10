@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Echeckdem.CustomFolder
 {
@@ -13,5 +14,6 @@ namespace Echeckdem.CustomFolder
         public string? Contname { get; set; }
         public string? Contemail { get; set; }
         public int? Oactive { get; set; }
+        public List<SelectListItem>? SpocList { get; set; }
     }
 }
