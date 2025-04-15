@@ -489,7 +489,7 @@
             return;
         }
 
-            document.getElementById("orgDetailsHeader").innerText = "Locations";
+        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname";
             $("#orgDetailsBody").load(`/OrganisationSetup/upload?oid=${oid}`);
                
         }
@@ -546,7 +546,7 @@
         orgDetailsBody.style.display = "block";
         orgDetailsBody.style.padding = "10px";
 
-        document.getElementById("orgDetailsHeader").innerText = "Location Data - @Model.SelectedOrganisation?.Oname ";
+        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname ";
         $("#orgDetailsBody").load(`/OrganisationSetup/GetLocationDatabyOid?oid=${oid}`);
 
     }
@@ -560,7 +560,7 @@
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "BOCW SITE SETUP";
+        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname";
         $("#orgDetailsBody").load(`/OrganisationSetup/BOCWSiteSetup?oid=${oid}`);
 
     }
@@ -575,7 +575,7 @@
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "BOCW Data - @Model?.SelectedOrganisation?.Oname";
+        document.getElementById("orgDetailsHeader").innerText = "@Model?.SelectedOrganisation?.Oname";
             $("#orgDetailsBody").load(`/OrganisationSetup/viewbodetails?oid=${oid}`);
     }
     // END of viewing BOCW DATA------------------------------------------------------

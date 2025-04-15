@@ -1,0 +1,153 @@
+﻿@model Echeckdem.CustomFolder.ReturnPeriodSelectionViewModel
+
+<h3>Select Returns to Setup</h3>
+
+<form asp-action="SaveSelectedReturns" method="post">
+    @Html.HiddenFor(m => m.Oid)
+    @Html.HiddenFor(m => m.Lcode)
+    @Html.HiddenFor(m => m.Lstate)
+    @Html.HiddenFor(m => m.Ltype)
+    @Html.HiddenFor(m => m.Iscloc)
+    @Html.HiddenFor(m => m.Month)
+    @Html.HiddenFor(m => m.Year)
+
+
+    <table class="table table-bordered table-striped">
+<thead>
+    <tr>
+        <th>Select</th>
+        <th>Title</th>
+        <th>Form</th>
+        <th>Description</th>
+        <th>Due Date</th>
+    </tr>
+</thead>
+<tbody>
+    @for (int i = 0; i < Model.ApplicableReturns.Count; i++)
+    {
+        var item = Model.ApplicableReturns[i];
+        <tr>
+            <td>
+                <input type="checkbox" name="ApplicableReturns[@i].Selected" value="true" />
+                <input type="hidden" name="ApplicableReturns[@i].Selected" value="false" />
+            </td>
+            <td>@item.Rtitle</td>
+            <td>@item.Rform</td>
+            <td>@item.Rdesc</td>
+            <td>
+                @{
+                    if (item.Rd.HasValue && item.Rm.HasValue && item.Yroff.HasValue)
+                    {
+                        try
+                        {
+                            var year = item.Yroff == 1 ? Model.Year + 1 : Model.Year;
+                            var lastDate = new DateOnly(year, item.Rm.Value, item.Rd.Value);
+                            <text>@lastDate.ToString("dd/MM/yyyy")</text>
+                        }
+                        catch
+                        {
+                            <span class="text-danger">Invalid Date</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not Available</span>
+                    }
+                }
+            </td>
+
+            <!-- Preserve all required hidden fields -->
+            <input type="hidden" name="ApplicableReturns[@i].Rcode" value="@item.Rcode" />
+            <input type="hidden" name="ApplicableReturns[@i].Rtitle" value="@item.Rtitle" />
+            <input type="hidden" name="ApplicableReturns[@i].Rform" value="@item.Rform" />
+            <input type="hidden" name="ApplicableReturns[@i].Rdesc" value="@item.Rdesc" />
+            <input type="hidden" name="ApplicableReturns[@i].Rd" value="@item.Rd" />
+            <input type="hidden" name="ApplicableReturns[@i].Rm" value="@item.Rm" />
+            <input type="hidden" name="ApplicableReturns[@i].Yroff" value="@item.Yroff" />
+        </tr>
+    }
+</tbody>
+
+    </table>
+
+    <button type="submit" class="btn btn-success">Proceed</button>
+</form>
+
+
+
+
+
+@* @model Echeckdem.CustomFolder.ReturnPeriodSelectionViewModel
+
+<h3>Select Returns to Setup</h3>
+
+<form asp-action="SaveSelectedReturns" method="post">
+    @Html.HiddenFor(m => m.Oid)
+    @Html.HiddenFor(m => m.Lcode)
+    @Html.HiddenFor(m => m.Lstate)
+    @Html.HiddenFor(m => m.Ltype)
+    @Html.HiddenFor(m => m.Iscloc)
+    @Html.HiddenFor(m => m.Month)
+    @Html.HiddenFor(m => m.Year)
+
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Form</th>
+                <th>Description</th>
+                <th>Due Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.ApplicableReturns.Count; i++)
+            {
+                var item = Model.ApplicableReturns[i];
+                <input type="hidden" name="ApplicableReturns[@i].Rcode" value="@item.Rcode" />
+                <input type="hidden" name="ApplicableReturns[@i].Rtitle" value="@item.Rtitle" />
+                <input type="hidden" name="ApplicableReturns[@i].Rform" value="@item.Rform" />
+                <input type="hidden" name="ApplicableReturns[@i].Rdesc" value="@item.Rdesc" />
+                <input type="hidden" name="ApplicableReturns[@i].Rd" value="@item.Rd" />
+                <input type="hidden" name="ApplicableReturns[@i].Rm" value="@item.Rm" />
+                <input type="hidden" name="ApplicableReturns[@i].Yroff" value="@item.Yroff" />
+
+                <tr>
+                    <td>@item.Rtitle</td>
+                    <td>@item.Rform</td>
+                    <td>@item.Rdesc</td>
+                    <td>
+                        @{
+                            if (item.Rd.HasValue && item.Rm.HasValue && item.Yroff.HasValue)
+                            {
+                                try
+                                {
+                                    var year = item.Yroff == 1 ? Model.Year + 1 : Model.Year;
+                                    var lastDate = new DateOnly(year, item.Rm.Value, item.Rd.Value);
+                                    <text>@lastDate.ToString("dd/MM/yyyy")</text>
+                                }
+                                catch
+                                {
+                                    <span class="text-danger">Invalid Date</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not Available</span>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">Proceed</button>
+</form>
+
+
+
+@*  <input asp-for="ApplicableReturns[@i].Selected" type="checkbox" class="form-check-input" />
+                        <input type="hidden" name="ApplicableReturns[@i].Selected" value="false" /> *@
+@* <input type="checkbox" asp-for="ApplicableReturns[@i].Selected" /> *@
+@*   <input type="hidden" asp-for="ApplicableReturns[@i].Rcode" /> *@ 

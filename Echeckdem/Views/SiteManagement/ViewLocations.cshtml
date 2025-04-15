@@ -6,6 +6,8 @@
 <h2>Locations</h2>
 <p><strong>OID:</strong> @ViewBag.OID</p>
 
+
+
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -23,6 +25,7 @@
             <th>Email</th>
             <th>Client Email</th>
             <th>Internal Email</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -43,6 +46,13 @@
                 <td>@Model[i].Lconemail</td>
                 <td>@Model[i].Cemail</td>
                 <td>@Model[i].Iemail</td>
+                <td>
+                    <form asp-action="ReturnSetup" method="post">
+                        <input type="hidden" name="oid" value="@Model[i].Oid" />
+                        <input type="hidden" name="lcode" value="@Model[i].Lcode" />
+                        <button type="submit" class="btn btn-primary btn-sm">Return Setup</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>
