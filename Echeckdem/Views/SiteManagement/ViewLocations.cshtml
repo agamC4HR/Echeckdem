@@ -25,7 +25,8 @@
             <th>Email</th>
             <th>Client Email</th>
             <th>Internal Email</th>
-            <th>Actions</th>
+            <th>RetActions</th>
+            <th>ContActions</th>
         </tr>
     </thead>
     <tbody>
@@ -52,8 +53,20 @@
                         <input type="hidden" name="lcode" value="@Model[i].Lcode" />
                         <button type="submit" class="btn btn-primary btn-sm">Return Setup</button>
                     </form>
+                    <button class="btn btn-info btn-sm mt-1" onclick="loadReturns('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+<div id="submittedReturnsContainer"></div>
+<script>
+    function loadReturns(oid, lcode) {
+        fetch(`/SiteManagement/SubmittedReturns?oid=${oid}&lcode=${lcode}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("submittedReturnsContainer").innerHTML = html;
+            });
+    }
+
+</script>

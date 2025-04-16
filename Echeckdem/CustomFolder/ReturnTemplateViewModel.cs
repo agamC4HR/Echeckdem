@@ -1,5 +1,6 @@
 ﻿namespace Echeckdem.CustomFolder
 {
+    // SITE MANAGEMENT ---------------------- Model for NCTEMPRET used to map the returns to NCRET 
     public class ReturnTemplateViewModel
     {
         public int Rcode { get; set; }

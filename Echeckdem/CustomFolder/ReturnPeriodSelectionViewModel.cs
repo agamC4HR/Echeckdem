@@ -1,5 +1,6 @@
 ﻿namespace Echeckdem.CustomFolder
 {
+    // SITE MANAGEMENT ---------------------- Month and Year selection for filling of a return for a location.
     public class ReturnPeriodSelectionViewModel
     {
         public string Oid { get; set; }

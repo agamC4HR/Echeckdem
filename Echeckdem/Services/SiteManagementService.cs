@@ -4,6 +4,7 @@ using Echeckdem.CustomFolder;
 using Microsoft.EntityFrameworkCore;
 using DocumentFormat.OpenXml.InkML;
 using System.Linq;
+using Amazon.Runtime;
 
 
 namespace Echeckdem.Services
@@ -11,10 +12,12 @@ namespace Echeckdem.Services
     public class SiteManagementService : ISiteManagementService
     {
         private readonly DbEcheckContext _dbEcheckContext;
+        private readonly ILogger<SiteManagementService> _logger;
 
-        public SiteManagementService(DbEcheckContext dbEcheckContext)
+        public SiteManagementService(DbEcheckContext dbEcheckContext, ILogger<SiteManagementService> logger)
         {
             _dbEcheckContext = dbEcheckContext;
+            _logger = logger;
         }
 
         public async Task<List<OrganisationsListViewModel>> GetActiveOrganizationsAsync()
@@ -113,40 +116,71 @@ namespace Echeckdem.Services
 
         public async Task SaveSelectedReturnsAsync(ReturnPeriodSelectionViewModel input)
         {
-                 var entries = input.ApplicableReturns
-                .Where(r => r.Selected && r.Rd.HasValue && r.Rm.HasValue && r.Yroff.HasValue)
+            var entries = input.ApplicableReturns
+           .Where(r => r.Selected && r.Rd.HasValue && r.Rm.HasValue && r.Yroff.HasValue)
 
-                .Select(r =>
-                {
-                    var year = r.Yroff == 1 ? input.Year + 1 : input.Year;
+           .Select(r =>
+           {
+               var year = r.Yroff == 1 ? input.Year + 1 : input.Year;
 
-                    DateOnly lastDate;
-                    try
-                    {
-                        lastDate = new DateOnly(year, r.Rm.Value, r.Rd.Value);
-                    }
-                    catch
-                    {
-                        // Optionally skip or handle invalid dates
-                        return null;
-                    }
+               DateOnly lastDate;
+               try
+               {
+                   lastDate = new DateOnly(year, r.Rm.Value, r.Rd.Value);
+               }
+               catch
+               {
+                   // Optionally skip or handle invalid dates
+                   return null;
+               }
 
-                    return new Ncret
-                    {
-                        Oid = input.Oid,
-                        Lcode = input.Lcode,
-                        Rcode = r.Rcode,
-                        Ryear = input.Year,
-                        Lastdate = lastDate
-                    };
-                })
-                .Where(x => x != null) // remove nulls from invalid dates
-                .ToList();
+               return new Ncret
+               {
+                   Oid = input.Oid,
+                   Lcode = input.Lcode,
+                   Rcode = r.Rcode,
+                   Ryear = input.Year,
+                   Lastdate = lastDate
+               };
+           })
+           .Where(x => x != null) // remove nulls from invalid dates
+           .ToList();
 
             _dbEcheckContext.Ncrets.AddRange(entries!);
             await _dbEcheckContext.SaveChangesAsync();
         }
 
-       
+        public async Task<List<IGrouping<int, ReturnDetailViewModel>>> GetSubmittedReturnsByOrg(string oid, string lcode)
+        {
+            var result = await (
+                from r in _dbEcheckContext.Ncrets
+                join org in _dbEcheckContext.Ncmorgs on r.Oid equals org.Oid
+                join loc in _dbEcheckContext.Ncmlocs on new { r.Oid, r.Lcode } equals new { loc.Oid, loc.Lcode }
+                join tmpl in _dbEcheckContext.Nctemprets on r.Rcode equals tmpl.Rcode
+                where r.Oid == oid && r.Lcode == lcode
+               // where r.Oid == oid
+                select new ReturnDetailViewModel
+                {
+                    OrganizationName = org.Oname,
+                    LocationName = loc.Lname,
+                    Ryear = r.Ryear,
+                    LastDate = r.Lastdate,
+                    Rtitle = tmpl.Rtitle,
+                    Rform = tmpl.Rform,
+                    Rdesc = tmpl.Rdesc
+                }
+            ).ToListAsync();
+
+            var groupedReturns = result
+        .GroupBy(r => r.Ryear)
+        .ToList();
+
+            return groupedReturns;
+        }
+
     }
+
 }
+
+
+

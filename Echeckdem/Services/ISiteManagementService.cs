@@ -11,7 +11,7 @@ namespace Echeckdem.Services
         Task<List<ReturnTemplateViewModel>> GetApplicableReturnsAsync(ReturnPeriodSelectionViewModel input);
         Task SaveSelectedReturnsAsync(ReturnPeriodSelectionViewModel input);
 
-
+        Task<List<IGrouping<int, ReturnDetailViewModel>>> GetSubmittedReturnsByOrg(string oid, string lcode);
     }
 
 }

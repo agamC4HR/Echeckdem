@@ -1,4 +1,5 @@
 ﻿using Echeckdem.CustomFolder;
+using Echeckdem.Models;
 using Echeckdem.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
@@ -26,7 +27,9 @@ namespace Echeckdem.Controllers
         public async Task<IActionResult> ViewLocations(string oid)
         {
             var locations = await _siteManagementService.GetLocationsByOidAsync(oid);
+            
             ViewBag.OID = oid;
+            
             return View(locations);
         }
 
@@ -67,6 +70,16 @@ namespace Echeckdem.Controllers
             await _siteManagementService.SaveSelectedReturnsAsync(input);
             return RedirectToAction("ViewLocations", new { oid = input.Oid });
         }
+
+        public async Task<IActionResult> SubmittedReturns(string oid, string lcode)
+        {
+            var groupedReturns = await _siteManagementService.GetSubmittedReturnsByOrg(oid, lcode);
+            return PartialView("_SubmittedReturnsPartial", groupedReturns);
+        }
+
+
+
+
 
     }
 }
