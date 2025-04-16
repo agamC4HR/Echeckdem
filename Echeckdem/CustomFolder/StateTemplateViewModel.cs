@@ -19,7 +19,8 @@
             "LWF" => "LWF",
             "PF" => "PF",
             "ESI" => "ESI",
-            _ => ""
+            _ => Tp
+            //_ => ""
         };
 
         public string FreqDisplay => Freq switch
@@ -28,7 +29,8 @@
             "Q" => "Quarterly",
             "S" => "Half Yearly",
             "Y" => "Yearly",
-            _ => ""
+            _ => Freq
+            //_ => ""
         };
 
         public string PeriodDisplay => new DateTime(2023, Period, 1).ToString("MMMM");

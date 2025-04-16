@@ -15,7 +15,9 @@ namespace Echeckdem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var states = await _templateService.GetAllStatesAsync();
+            var (states, counts, countsRet) = await _templateService.GetAllStatesAsync();
+            ViewBag.ContributionCounts = counts;
+            ViewBag.ReturnCounts = countsRet;
             return View(states);
         }
 
@@ -49,5 +51,52 @@ namespace Echeckdem.Controllers
             return View(entry);
         }
 
+        public async Task<IActionResult> Delete(int id, string stateId)
+        {
+            await _templateService.DeleteTemplateAsync(id);
+            return RedirectToAction("Details", new { id = stateId });
+        }
+
+        //----------------------------------START-------------------------------RETURNS-------------------------------------------------------------//
+
+        public async Task<IActionResult> DetailsRet(string id)
+        {
+            var templates = await _templateService.GetTemplateRetByStateAsync(id);
+            ViewBag.StateId = id;
+            return View(templates);
+        }
+
+        public async Task<IActionResult> EditRet(int? id, string stateId)
+        {
+            if (id == null)
+            {
+                return PartialView("_EditRetPartial", new StateTemplateRetViewModel { Rstate = stateId });
+            }
+
+            var template = await _templateService.GetTemplateRetByIdAsync(id.Value);
+
+            return PartialView("_EditRetPartial", template); // return View(template);
+        }           
+
+        [HttpPost]
+        public async Task<IActionResult> EditRet(StateTemplateRetViewModel entry)
+        {
+            if (ModelState.IsValid)
+            {
+                await _templateService.AddOrUpdateTemplateRetAsync(entry);
+                return Ok();
+               // return RedirectToAction("DetailsRet", new { id = entry.Rstate });
+            }
+
+            return PartialView("_EditRetPartial", entry);
+        }
+
+        public async Task<IActionResult> DeleteRet(int id, string stateId)
+        {
+            await _templateService.DeleteTemplateRetAsync(id);
+            return RedirectToAction("DetailsRet", new { id = stateId });
+        }
+
+        //----------------------------------END----------------------------------RETURNS-------------------------------------------------------------//
     }
 }

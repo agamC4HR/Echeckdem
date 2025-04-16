@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Echeckdem.CustomFolder;
 using Echeckdem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
@@ -35,6 +36,11 @@ namespace Echeckdem.Services
             }
             while (await _EcheckContext.Ncmorgs.AnyAsync(org => org.Oid == generatedOid));
 
+            var spocEmail = await _EcheckContext.Ncusers
+            .Where(u => u.Oid == "C4HR" && u.Uname == newOrganisation.Spoc)
+            .Select(u => u.Emailid)
+            .FirstOrDefaultAsync();
+
             var organisation = new Ncmorg
             {
                 Oid = generatedOid,
@@ -43,17 +49,33 @@ namespace Echeckdem.Services
                 Styear = newOrganisation.styear,
                 Contname = newOrganisation.Contname,
                 Contemail = newOrganisation.Contemail,
+                SpocEml = spocEmail,
+                FileName = null,
                 Oactive = 1                                     // Assuming all new organizations are active by default
             };
 
             _EcheckContext.Ncmorgs.Add(organisation);
             await _EcheckContext.SaveChangesAsync();
-
-            // ✅ Create Directory Structure in wwwroot/files
+                        
             CreateOrganisationFolder(generatedOid);
 
 
-            return true;
+            if (newOrganisation.PdfFile != null && newOrganisation.PdfFile.Length > 0)
+            {
+                string copiesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", generatedOid, "Copies");
+
+                string uploadedFileName = Path.GetFileName(newOrganisation.PdfFile.FileName);
+                string fullPath = Path.Combine(copiesFolder, uploadedFileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await newOrganisation.PdfFile.CopyToAsync(stream);
+                }
+                organisation.FileName = uploadedFileName;
+                _EcheckContext.Ncmorgs.Update(organisation);
+                await _EcheckContext.SaveChangesAsync();
+            }
+                return true;
         }
 
         private void CreateOrganisationFolder(string oid)
@@ -70,8 +92,23 @@ namespace Echeckdem.Services
                 Directory.CreateDirectory(Path.Combine(rootPath, "Ret"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Bocw"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Acts"));
+                Directory.CreateDirectory(Path.Combine(rootPath, "Copies"));                            
+                
             }
         }
+
+        public async Task<List<SelectListItem>> GetC4HRSPOCListAsync()
+        {
+            return await _EcheckContext.Ncusers
+                .Where(u => u.Oid == "C4HR")
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Uname,
+                    Text = u.Uname
+                })
+                .ToListAsync();
+        }
+
 
         public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)                // service for getting organisation list and general info of that organisation
         {
@@ -90,17 +127,19 @@ namespace Echeckdem.Services
             OrganisationGeneralInfoViewModel? selectedOrganisation = null;
             if (!string.IsNullOrEmpty(selectedOid))
             {
-                selectedOrganisation = await _EcheckContext.Ncmorgs
+                selectedOrganisation = await _EcheckContext.Ncmorgs 
                     .Where(o => o.Oid == selectedOid)
                     .Select(o => new OrganisationGeneralInfoViewModel
                     {
                         Oname = o.Oname,
                         oid = o.Oid,
                         Spoc = o.Spoc,
+                        spoc_eml = o.SpocEml,
                         styear = o.Styear,
                         Contname = o.Contname,
                         Contemail = o.Contemail,
                         Oactive = o.Oactive,
+                        FileName = o.FileName
                     })
                     .FirstOrDefaultAsync();
             }
@@ -128,6 +167,27 @@ namespace Echeckdem.Services
             organisation.Contname = updatedInfo.Contname;
             organisation.Contemail = updatedInfo.Contemail;
             organisation.Oactive = updatedInfo.Oactive;
+
+
+            if (updatedInfo.PdfFile != null && updatedInfo.PdfFile.Length > 0)
+            {
+                string copiesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", updatedInfo.oid, "Copies");
+
+                if (!Directory.Exists(copiesFolder))
+                {
+                    Directory.CreateDirectory(copiesFolder);
+                }
+
+                string uploadedFileName = Path.GetFileName(updatedInfo.PdfFile.FileName);
+                string fullPath = Path.Combine(copiesFolder, uploadedFileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await updatedInfo.PdfFile.CopyToAsync(stream);
+                }
+
+                organisation.FileName = uploadedFileName;
+            }
 
             // Save changes to the database  
             await _EcheckContext.SaveChangesAsync();

@@ -209,6 +209,23 @@
             color:white ;
         }
 
+    .view-doc-button {
+        display: inline-block;
+        padding: 6px 12px;
+        font-size: 12px;
+        color: black;
+        background-color: white;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+
+       /*  .view-doc-button:hover {
+            background-color: #218838;
+        } */
+
+
+
  
 </style>
 @if (Context.Session.GetInt32("User Level") == 1)
@@ -303,6 +320,7 @@
                 <p><strong>OID:</strong> @Model.SelectedOrganisation.oid</p>
                 <p><strong>Name:</strong> @Model.SelectedOrganisation.Oname</p>
                 <p><strong>SPOC:</strong> @Model.SelectedOrganisation.Spoc</p>
+                    <p><strong>SPOC Email:</strong> @Model.SelectedOrganisation.spoc_eml</p>
                 <p><strong>Start Year:</strong> @Model.SelectedOrganisation.styear</p>
                 <p><strong>Contact Name:</strong> @Model.SelectedOrganisation.Contname</p>
                 <p><strong>Contact Email:</strong> @Model.SelectedOrganisation.Contemail</p>
@@ -317,13 +335,29 @@
                         }
                        
                 </p>
-                
+                    @if (!string.IsNullOrEmpty(Model.SelectedOrganisation.FileName))
+                    {
+                        <p>
+                            <strong>Contract Copy:</strong>
+                            <a class="view-doc-button"
+                               target="_blank"
+                               href="@Url.Content($"~/Files/{Model.SelectedOrganisation.oid}/Copies/{Model.SelectedOrganisation.FileName}")">
+                                View Document
+                            </a>
+                        </p>
+                    }
+                    else
+                    {
+                        <strong>Contract Copy:</strong>
+                        
+                        <span>Contract Copt not uploaded. Upload it using Edit icon.</span>
+                    }
                     
             </div>
 
             <!-- Form for editing organisation info -->
             <div id="editForm" style="display:none;">
-                <form asp-action="EditOrganisationInfo" method="post" class="Edit-OrganisationInfo-Form">
+                    <form asp-action="EditOrganisationInfo" method="post" enctype="multipart/form-data" class="Edit-OrganisationInfo-Form">
                     <label>Oid</label>
                     <input type="text" name="oid" value="@Model.SelectedOrganisation.oid" readonly />
 
@@ -347,6 +381,9 @@
                             <option value=1>Yes</option>
                             <option value=0>No</option>
                         </select>
+
+                        <label>Contract Copy (optional)</label>
+                        <input type="file" name="PdfFile" accept=".pdf" />
 
                     <button type="submit">Save Changes</button>
                     <button type="button" onclick="cancelEdit()">Close</button>
@@ -452,7 +489,7 @@
             return;
         }
 
-            document.getElementById("orgDetailsHeader").innerText = "Locations";
+        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname";
             $("#orgDetailsBody").load(`/OrganisationSetup/upload?oid=${oid}`);
                
         }
@@ -509,7 +546,7 @@
         orgDetailsBody.style.display = "block";
         orgDetailsBody.style.padding = "10px";
 
-        document.getElementById("orgDetailsHeader").innerText = "Location Data - @Model.SelectedOrganisation?.Oname ";
+        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname ";
         $("#orgDetailsBody").load(`/OrganisationSetup/GetLocationDatabyOid?oid=${oid}`);
 
     }
@@ -523,7 +560,7 @@
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "BOCW SITE SETUP";
+        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname";
         $("#orgDetailsBody").load(`/OrganisationSetup/BOCWSiteSetup?oid=${oid}`);
 
     }
@@ -538,7 +575,7 @@
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "BOCW Data - @Model?.SelectedOrganisation?.Oname";
+        document.getElementById("orgDetailsHeader").innerText = "@Model?.SelectedOrganisation?.Oname";
             $("#orgDetailsBody").load(`/OrganisationSetup/viewbodetails?oid=${oid}`);
     }
     // END of viewing BOCW DATA------------------------------------------------------

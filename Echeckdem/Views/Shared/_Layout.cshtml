@@ -62,17 +62,17 @@
                         {
 
                             @* <h2>User Level: @ViewBag.UserLevel</h2> *@
-                            <a href="">Manage Sites</a>
+                            <a href="/SiteManagement/Index">Manage Sites</a>
                             <a href="/OrganisationSetup/OrganisationSetup"> Org Setup</a>
                             <a href="/ActScopeSetup/Index"> BOCW Scope Setup</a>
                             <a href= "/TrackScopeSetup/Index"> Track Scope Setup</a>
                             <a href="/UserManagement/Index"> User Management</a>
+                            <a href="/Tracker/trackerlist"> Tracker</a>
+                            <a href="/StateTemplate/Index"> State Template</a>
                         }
                         else
                         {
-                           @*  <a href=""> Operations Calendar</a>
-                        <a href=""> Graphical Details</a>*@
-                            
+                                                    
                             <a href="/DetailedView/CombinedDetailedView">Track Compliance </a>
 
                         }
