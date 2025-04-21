@@ -3,12 +3,1225 @@
     ViewData["Heading"] = "Compliance Dashboard";
     ViewData["Heading_child"] = "Scope of Service and Status of Labour Compliance";
 }
-
-<partial name="_FilterForm" model="Model" />
-
-
-
 <button class="btn btn-primary" onclick="location.href='@Url.Action("CombinedDetailed", "DetailsView")'">
     Detailed View
 </button>
+<partial name="_FilterForm" model="Model" />
+<div class="container-fluid">
+<!-- if any site is under BOCW -->
+<div class="row" >
+    
+    <div class="col-3">
+        <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Payroll</h5>
+                <h6> Completion Rate: %%</h6>
+                <ul class="nav nav-tabs card-header-tabs mb-auto" id="Payroll" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" href="#payontime" data-bs-toggle="tab" aria-selected="true" role="tab" style="font-size:13px;padding:6px;">On Time</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#paydelay" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px;">Delayed</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#paync" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px;">OverDue</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#payupcoming" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px;">Upcoming</a>
+                    </li>
+                </ul>
+                </div>
+                <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="payontime" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">On Time</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+                                    <th class="text-center">Deposit Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
+                    <div class="tab-pane fade" id="paydelay" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Delayed</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+                                    @* <th class="text-center">Deposit Date</th> *@
+                                    <th class="text-center">Delay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="paync" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Non-Compliant</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">OverDue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="payupcoming" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Upcoming</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">Days Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                </div>
+                
+        </div>
+        
+    </div>
+    <div class="col-3" >
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Returns</h5>
+                    <h6> : %%</h6>
+                    <ul class="nav nav-tabs card-header-tabs mb-auto" id="Return" role="tablist">
+                        <li class="nav-item" role="presentation">
+                        <a class="nav-link active" href="#retontime" data-bs-toggle="tab" aria-selected="true" role="tab" style="font-size:13px;padding:6px">On Time</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#retdelay" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Delayed</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#retnc" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">OverDue</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#retupcoming" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Upcoming</a>
+                        </li>
+                    </ul>
+                    
+                </div>
+                <div class="card-body">
+                   <div class="tab-content">
+                   <div class="tab-pane fade show active" id="retontime" role="tabpanel">
+                       <table class="table table-striped table-responsive">
+                      <thead>
+                          <tr><th class="text-center" colspan="3">On Time</th></tr>
+                          <tr>
+                              <th class="text-center">Site Name</th>
+                              <th class="text-center">Due Date</th>
+                              <th class="text-center">Deposit Date</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td class="text-center"></td>
+                              <td class="text-center"></td>
+                              <td class="text-center"></td>
+                          </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                      </tbody>
+                  </table>
+                   </div>
+
+                        <div class="tab-pane fade" id="retdelay" role="tabpanel">
+                            <table class="table table-striped table-responsive">
+                                <thead>
+                                    <tr><th class="text-center" colspan="3">Delayed</th></tr>
+                                    <tr>
+                                        <th class="text-center">Site Name</th>
+                                        <th class="text-center">Due Date</th>
+                                        @* <th class="text-center">Deposit Date</th> *@
+                                        <th class="text-center">Delay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        @* <td class="text-center"></td> *@
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        @* <td class="text-center"></td> *@
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        @* <td class="text-center"></td> *@
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="tab-pane fade" id="retnc" role="tabpanel">
+                            <table class="table table-striped table-responsive">
+                                <thead>
+                                    <tr><th class="text-center" colspan="3">Non-Compliant</th></tr>
+                                    <tr>
+                                        <th class="text-center">Site Name</th>
+                                        <th class="text-center">Due Date</th>
+                                      
+                                        <th class="text-center">OverDue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="tab-pane fade" id="retupcoming" role="tabpanel">
+                            <table class="table table-striped table-responsive">
+                                <thead>
+                                    <tr><th class="text-center" colspan="3">Upcoming</th></tr>
+                                    <tr>
+                                        <th class="text-center">Site Name</th>
+                                        <th class="text-center">Due Date</th>
+                                        
+                                        <th class="text-center">Days Left</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                   </div>
+                </div>
+            </div>
+
+    
+        </div>
+    <div class="col-3">
+            <div class="card">
+            <div class="card-header">
+                    <h5 class="card-title">Registrations</h5>
+                <h6> %%</h6>
+                <ul class="nav nav-tabs card-header-tabs mb-auto" id="Return" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" href="#regontime" data-bs-toggle="tab" aria-selected="true" role="tab" style="font-size:13px;padding:6px">Compliant</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#regexpiring" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Expiring</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#regexpd" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Expired</a>
+                    </li>
+                    
+                </ul>
+
+            </div>
+                <div class="card-body">
+                <div class="tab-content">
+
+                <div class="tab-pane fade show active" id="regontime" role="tabpanel">
+                    <table class="table table-striped table-responsive">
+                        <thead>
+                            <tr><th class="text-center" colspan="3">On Time</th></tr>
+                            <tr>
+                                <th class="text-center">Site Name</th>
+                                <th class="text-center">Act</th>
+                                <th class="text-center">Expiry Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="regexpiring" role="tabpanel">
+                    <table class="table table-striped table-responsive">
+                        <thead>
+                            <tr><th class="text-center" colspan="3">Expiring</th></tr>
+                            <tr>
+                                <th class="text-center">Site Name</th>
+                                <th class="text-center">Act</th>
+                                <th class="text-center">Expiry Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="regexpd" role="tabpanel">
+                    <table class="table table-striped table-responsive">
+                        <thead>
+                            <tr><th class="text-center" colspan="3">Expired</th></tr>
+                            <tr>
+                                <th class="text-center">Site Name</th>
+                                <th class="text-center">Act</th>
+                                <th class="text-center">Expiry Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+                
+            </div>
+
+            
+        </div>
+    <div class="col-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Projects</h5>
+                    <p>koi summary dena chahte ho</p>
+                    <ul class="nav nav-tabs card-header-tabs mb-auto" id="Projects" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" href="#payontime" style="font-size:13px;padding:6px;">On Time</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#paydelay" style="font-size:13px;padding:6px;">Delayed</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#paync" style="font-size:13px;padding:6px;">OverDue</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#payupcoming" style="font-size:13px;padding:6px;">Upcoming</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="payontime">
+                            <table class="table table-striped table-responsive">
+                                <thead>
+                                    <tr><th class="text-center" colspan="3">On Time</th></tr>
+                                    <tr>
+                                        <th class="text-center">Site Name</th>
+                                        <th class="text-center">Due Date</th>
+                                        <th class="text-center">Deposit Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tab-pane fade" id="paydelay">
+                            <table class="table table-striped table-responsive">
+                                <thead>
+                                    <tr><th class="text-center" colspan="4">Delayed</th></tr>
+                                    <tr>
+                                        <th class="text-center">Site Name</th>
+                                        <th class="text-center">Due Date</th>
+                                        <th class="text-center">Deposit Date</th>
+                                        <th class="text-center">Delay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="tab-pane fade" id="paync">
+                            <table class="table table-striped table-responsive">
+                                <thead>
+                                    <tr><th class="text-center" colspan="3">Non-Compliant</th></tr>
+                                    <tr>
+                                        <th class="text-center">Site Name</th>
+                                        <th class="text-center">Due Date</th>
+
+                                        <th class="text-center">OverDue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="tab-pane fade" id="payupcoming">
+                            <table class="table table-striped table-responsive">
+                                <thead>
+                                    <tr><th class="text-center" colspan="3">Upcoming</th></tr>
+                                    <tr>
+                                        <th class="text-center">Site Name</th>
+                                        <th class="text-center">Due Date</th>
+
+                                        <th class="text-center">Days Left</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+                                        <td class="text-center"></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            
+        </div>
+</div>
+
+<!-- if no site is under BOCW -->
+<div class="row">
+
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Payroll</h5>
+                <h6> : %%</h6>
+                <ul class="nav nav-tabs card-header-tabs mb-auto" id="Payroll" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" href="#payontime" data-bs-toggle="tab" aria-selected="true" role="tab" style="font-size:13px;padding:6px">On Time</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#paydelay" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Delayed</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#paync" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">OverDue</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#payupcoming" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Upcoming</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="payontime" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">On Time</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+                                    <th class="text-center">Deposit Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="paydelay" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Delayed</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+                                    @* <th class="text-center">Deposit Date</th> *@
+                                    <th class="text-center">Delay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="paync" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Non-Compliant</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">OverDue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="payupcoming" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Upcoming</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">Days Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Returns</h5>
+                <h6> : %%</h6>
+                <ul class="nav nav-tabs card-header-tabs mb-auto" id="Return" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" href="#retontime" data-bs-toggle="tab" aria-selected="true" role="tab" style="font-size:13px;padding:6px">On Time</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#retdelay" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Delayed</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#retnc" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">OverDue</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#retupcoming" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Upcoming</a>
+                    </li>
+                </ul>
+
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="retontime" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">On Time</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+                                    <th class="text-center">Deposit Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="retdelay" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Delayed</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+                                    @* <th class="text-center">Deposit Date</th> *@
+                                    <th class="text-center">Delay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    @* <td class="text-center"></td> *@
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="retnc" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Non-Compliant</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">OverDue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="retupcoming" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Upcoming</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">Days Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Registrations</h5>
+                <h6> %%</h6>
+                <ul class="nav nav-tabs card-header-tabs mb-auto" id="Return" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" href="#regontime" data-bs-toggle="tab" aria-selected="true" role="tab" style="font-size:13px;padding:6px">Compliant</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#regexpiring" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Expiring</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="#regexpd" data-bs-toggle="tab" aria-selected="false" role="tab" style="font-size:13px;padding:6px">Expired</a>
+                    </li>
+
+                </ul>
+
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+
+                    <div class="tab-pane fade show active" id="regontime" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">On Time</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Act</th>
+                                    <th class="text-center">Expiry Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="regexpiring" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Expiring</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Act</th>
+                                    <th class="text-center">Expiry Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="regexpd" role="tabpanel">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Expired</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Act</th>
+                                    <th class="text-center">Expiry Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    
+</div>
+
+<!-- if all sites are under BOCW -->
+<div class="row">
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Projects</h5>
+                <p>koi summary dena chahte ho</p>
+                <ul class="nav nav-tabs card-header-tabs mb-auto" id="Projects" role="tablist">
+                    <li class="nav-item" role="presentation">
+                            <a class="nav-link active" href="#scopeservice" style="font-size:13px;padding:6px;">Scope of Services</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#projectstart" style="font-size:13px;padding:6px;">Startup</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#projecton" style="font-size:13px;padding:6px;">Ongoing</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                            <a class="nav-link" href="#projectend" style="font-size:13px;padding:6px;">Project End</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                        <div class="tab-pane fade show active" id="scopeservice">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="4">Scope of Service</th></tr>
+                                <tr>
+                                    <th class="text-center">CLRA RC</th>
+                                    <th class="text-center">BOCW RC</th>
+                                        <th class="text-center">CLRA RC (Client)</th>
+                                        <th class="text-center">BOCW RC (Client)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="paydelay">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="4">Delayed</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+                                    <th class="text-center">Deposit Date</th>
+                                    <th class="text-center">Delay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="paync">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Non-Compliant</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">OverDue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="tab-pane fade" id="payupcoming">
+                        <table class="table table-striped table-responsive">
+                            <thead>
+                                <tr><th class="text-center" colspan="3">Upcoming</th></tr>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Due Date</th>
+
+                                    <th class="text-center">Days Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                                <tr>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+                                    <td class="text-center"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+</div>
+</div>
