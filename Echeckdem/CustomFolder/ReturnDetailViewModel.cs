@@ -9,5 +9,7 @@
         public string Rdesc { get; set; }
         public int Ryear { get; set; }
         public DateOnly? LastDate { get; set; }
+
+        
     }
 }

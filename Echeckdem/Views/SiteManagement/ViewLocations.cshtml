@@ -47,6 +47,7 @@
                 <td>@Model[i].Lconemail</td>
                 <td>@Model[i].Cemail</td>
                 <td>@Model[i].Iemail</td>
+                
                 <td>
                     <form asp-action="ReturnSetup" method="post">
                         <input type="hidden" name="oid" value="@Model[i].Oid" />
@@ -55,17 +56,37 @@
                     </form>
                     <button class="btn btn-info btn-sm mt-1" onclick="loadReturns('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
                 </td>
+                <td>
+                    <form asp-action="ContributionSetup" method="post">
+                        <input type="hidden" name="oid" value="@Model[i].Oid" />
+                        <input type="hidden" name="lcode" value="@Model[i].Lcode" />
+                        <button type="submit" class="btn btn-primary btn-sm">Contribution Setup</button>
+                    </form>
+                    <button class="btn btn-info btn-sm mt-1" onclick="loadContributions('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 <div id="submittedReturnsContainer"></div>
+<div id="submittedContributionsContainer"></div>
 <script>
     function loadReturns(oid, lcode) {
         fetch(`/SiteManagement/SubmittedReturns?oid=${oid}&lcode=${lcode}`)
             .then(res => res.text())
             .then(html => {
                 document.getElementById("submittedReturnsContainer").innerHTML = html;
+            });
+    }
+
+</script>
+
+<script>
+    function loadContributions(oid, lcode) {
+        fetch(`/SiteManagement/SubmittedContributions?oid=${oid}&lcode=${lcode}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("submittedContributionsContainer").innerHTML = html;
             });
     }
 

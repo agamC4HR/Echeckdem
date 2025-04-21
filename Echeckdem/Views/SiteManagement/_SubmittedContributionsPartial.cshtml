@@ -1,8 +1,9 @@
-﻿@model List<IGrouping<int, Echeckdem.CustomFolder.ReturnDetailViewModel>>
+﻿@model List<IGrouping<int, Echeckdem.CustomFolder.ContributionDetailViewModel>>
+
 
 @if (Model != null && Model.Any())
 {
-    <h5>Submitted Returns by Year</h5>
+    <h5>Submitted Contributions by Year</h5>
 
     @foreach (var yearGroup in Model)
     {
@@ -15,9 +16,9 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Return Title</th>
-                            <th>Form</th>
-                            <th>Description</th>
+                            <th>Contribution Title/ FREQ</th>
+                            <th>Type</th>
+                            <th>Year</th>
                             <th>Last Date</th>
                         </tr>
                     </thead>
@@ -25,9 +26,9 @@
                         @foreach (var item in yearGroup)
                         {
                             <tr>
-                                <td>@item.Rtitle</td>
-                                <td>@item.Rform</td>
-                                <td>@item.Rdesc</td>
+                                <td>@item.Freq</td>
+                                <td>@item.Tp</td>
+                                <td>@item.Cyear</td>
                                 <td>@(item.LastDate?.ToString("dd/MM/yyyy") ?? "-")</td>
 
                             </tr>
@@ -40,5 +41,5 @@
 }
 else
 {
-    <p class="text-muted">No returns submitted for this location.</p>
+    <p class="text-muted">No Contributions submitted for this location.</p>
 }

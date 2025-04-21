@@ -77,8 +77,53 @@ namespace Echeckdem.Controllers
             return PartialView("_SubmittedReturnsPartial", groupedReturns);
         }
 
+        //---------------------------------------------------------------------------//
 
 
+        [HttpPost]
+        public async Task<IActionResult> ContributionSetup(string oid, string lcode)
+        {
+            var location = await _siteManagementService.GetLocationDetailsAsync(oid, lcode);
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ContributionPeriodSelectionViewModel
+            {
+                Oid = location.Oid,
+                Lcode = location.Lcode,
+                Lstate = location.Lstate
+                //Ltype = location.Ltype,
+                //Iscloc = location.Iscloc ?? 0
+            };
+
+            return View("SelectContributionPeriod", viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FetchApplicableContributions(ContributionPeriodSelectionViewModel input)
+        {
+            var contributions = await _siteManagementService.GetApplicableContributionsAsync(input);
+            input.ApplicableContributions = contributions;
+           
+
+            return View("SelectContributions", input); // Use a new view or partial for selection UI
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SaveSelectedContributions(ContributionPeriodSelectionViewModel input)
+        {
+            await _siteManagementService.SaveSelectedContributionsAsync(input);
+            return RedirectToAction("ViewLocations", new { oid = input.Oid });
+        }
+
+        public async Task<IActionResult> SubmittedContributions(string oid, string lcode)
+        {
+            var groupedContributions = await _siteManagementService.GetSubmittedContributionsByOrg(oid, lcode);
+            return PartialView("_SubmittedContributionsPartial", groupedContributions);
+        }
 
 
     }

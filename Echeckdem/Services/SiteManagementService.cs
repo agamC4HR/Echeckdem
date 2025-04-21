@@ -80,7 +80,7 @@ namespace Echeckdem.Services
 
             if (ltypeTrimmed == "S" && input.Iscloc == 0)
             {
-                query = query.Where(r => !new[] { "F", "I", "P" }.Contains(r.Rtype));
+                query = query.Where(r => !new[] { "F", "I", "P" }.Contains(r.Rtype));                   
             }
             else if (ltypeTrimmed == "S" && input.Iscloc == 1)
             {
@@ -158,7 +158,6 @@ namespace Echeckdem.Services
                 join loc in _dbEcheckContext.Ncmlocs on new { r.Oid, r.Lcode } equals new { loc.Oid, loc.Lcode }
                 join tmpl in _dbEcheckContext.Nctemprets on r.Rcode equals tmpl.Rcode
                 where r.Oid == oid && r.Lcode == lcode
-               // where r.Oid == oid
                 select new ReturnDetailViewModel
                 {
                     OrganizationName = org.Oname,
@@ -178,9 +177,114 @@ namespace Echeckdem.Services
             return groupedReturns;
         }
 
+        public async Task<List<ContributionTemplateViewModel>> GetApplicableContributionsAsync(ContributionPeriodSelectionViewModel input)
+        {
+            var query = _dbEcheckContext.Nctempcnts
+                .Where(c => c.Cstate == input.Lstate && c.Period >= input.Month && c.Active == 1);
+
+            if (input.SelectedTP != "ALL")
+            {
+                string trimmedTP = input.SelectedTP.Trim().ToUpper();
+                query = query.Where(c => c.Tp.Trim().ToUpper() == trimmedTP);
+            }
+            else
+            {
+                var allowedTypes = new[] { "ESI", "PF", "LWF", "PT" };
+                query = query.Where(c => allowedTypes.Contains(c.Tp.Trim().ToUpper()));
+            }
+
+            var applicableContributions = await query
+                .Select(c => new ContributionTemplateViewModel
+                {
+                    Cid = c.Cid,
+                    TP = c.Tp.Trim(),
+                    Freq = c.Freq,
+                    Ld = c.Ld,
+                    Period = c.Period,
+                    Moffset = c.Moffset
+                })
+                .ToListAsync();
+
+            return applicableContributions;
+        }
+
+        public async Task SaveSelectedContributionsAsync(ContributionPeriodSelectionViewModel input)
+        {
+            var entries = input.ApplicableContributions
+         .Where(c => c.Selected && c.Ld.HasValue && c.Moffset.HasValue && c.Period.HasValue)
+         .Select(c =>
+         {
+             int dueMonth = c.Moffset == 1 ? c.Period.Value : c.Period.Value + 1;
+             int dueYear = input.Year;
+
+             if (dueMonth > 12)
+             {
+                 dueMonth = 1;
+                 dueYear += 1;
+             }
+
+             DateOnly lastDate;
+             try
+             {
+                 lastDate = new DateOnly(dueYear, dueMonth, c.Ld.Value);
+             }
+             catch
+             {
+                 // Invalid date, e.g. Feb 30
+                 return null;
+             }
+
+             return new Nccontr
+               {
+                   Oid = input.Oid,
+                   Lcode = input.Lcode,
+                   Tp = c.TP,
+                   Cyear = input.Year,
+                   //Period = c.Period,
+                   Freq = c.Freq,
+                   Lastdate = lastDate
+               };
+           })
+           .Where(x => x != null) // remove nulls from invalid dates
+           .ToList();
+
+            _dbEcheckContext.Nccontrs.AddRange(entries!);
+            await _dbEcheckContext.SaveChangesAsync();
+        }
+
+        public async Task<List<IGrouping<int, ContributionDetailViewModel>>> GetSubmittedContributionsByOrg(string oid, string lcode)
+        {
+            var result = await (
+                from r in _dbEcheckContext.Nccontrs
+                join org in _dbEcheckContext.Ncmorgs on r.Oid equals org.Oid
+                join loc in _dbEcheckContext.Ncmlocs on new { r.Oid, r.Lcode } equals new { loc.Oid, loc.Lcode }
+                //join tmpl in _dbEcheckContext.Nctempcnts on r.Rcode equals tmpl.Rcode
+                where r.Oid == oid && r.Lcode == lcode
+                select new ContributionDetailViewModel
+                {
+                    OrganizationName = org.Oname,
+                    LocationName = loc.Lname,
+                    Cyear = r.Cyear,
+                    LastDate = r.Lastdate,
+                    Freq = r.Freq,
+                    Tp = r.Tp
+                    
+                    
+                }
+            ).ToListAsync();
+
+            var groupedContributions = result
+        .GroupBy(r => r.Cyear)
+        .ToList();
+
+            return groupedContributions;
+
+        }
+
     }
 
 }
+
 
 
 

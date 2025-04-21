@@ -1,0 +1,87 @@
+﻿@model Echeckdem.CustomFolder.ContributionPeriodSelectionViewModel
+<h3>Select Contributions to Setup</h3>
+
+<form asp-action="SaveSelectedContributions" method="post">
+    @Html.HiddenFor(m => m.Oid)
+    @Html.HiddenFor(m => m.Lcode)
+    @Html.HiddenFor(m => m.Lstate)
+   @*  @Html.HiddenFor(m => m.Ltype)
+    @Html.HiddenFor(m => m.Iscloc) *@
+    @Html.HiddenFor(m => m.SelectedTP)
+    @Html.HiddenFor(m => m.Month)
+    @Html.HiddenFor(m => m.Year)
+
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Title</th>
+                <th>Freq</th>
+              @*   <th>Description</th> *@
+                <th>Due Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.ApplicableContributions.Count; i++)
+            {
+                var item = Model.ApplicableContributions[i];
+                <tr>
+                    <td>
+                        <input type="checkbox" name="ApplicableContributions[@i].Selected" value="true" />
+                        <input type="hidden" name="ApplicableContributions[@i].Selected" value="false" />
+                    </td>
+                    <td>@item.TP</td>
+                    <td>@item.Freq</td>
+                    @* <td>@item.</td> *@
+                    <td>
+                        @{
+                            if (item.Ld.HasValue && item.Moffset.HasValue && item.Period.HasValue)
+                            {
+                                try
+                                {
+                                    int dueMonth = item.Moffset == 1 ? item.Period.Value : item.Period.Value + 1;
+                                    int dueYear = Model.Year;
+
+                                    if (dueMonth > 12)
+                                    {
+                                        dueMonth = 1;
+                                        dueYear += 1;
+                                    }
+
+                                    var lastDate = new DateTime(dueYear, dueMonth, item.Ld.Value);
+                                    <text>@lastDate.ToString("dd/MM/yyyy")</text>
+                                }
+                                catch
+                                {
+                                    <span class="text-danger">Invalid Date</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not Available</span>
+                            }
+                        }
+
+                    </td>
+
+
+                    <!-- Preserve all required hidden fields -->
+                    <input type="hidden" name="ApplicableContributions[@i].Cid" value="@item.Cid" />
+                    <input type="hidden" name="ApplicableContributions[@i].TP" value="@item.TP" />
+                    <input type="hidden" name="ApplicableContributions[@i].Freq" value="@item.Freq" />
+                    <input type="hidden" name="ApplicableContributions[@i].Ld" value="@item.Ld" />
+                    <input type="hidden" name="ApplicableContributions[@i].Period" value="@item.Period" />
+                    <input type="hidden" name="ApplicableContributions[@i].Moffset" value="@item.Moffset" />
+
+                    @* <input type="hidden" name="ApplicableReturns[@i].Yroff" value="@item.Yroff" /> *@
+
+
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+    <button type="submit" class="btn btn-success">Proceed</button>
+</form>

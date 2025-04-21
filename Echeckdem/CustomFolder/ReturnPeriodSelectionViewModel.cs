@@ -9,6 +9,7 @@
         public string Ltype { get; set; }
         public int Iscloc { get; set; }
 
+        public string Tp { get; set; }
         public int Month { get; set; }
         public int Year { get; set; }
 
