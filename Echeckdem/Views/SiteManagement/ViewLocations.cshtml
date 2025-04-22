@@ -27,6 +27,7 @@
             <th>Internal Email</th>
             <th>RetActions</th>
             <th>ContActions</th>
+            <th>Registations</th>
         </tr>
     </thead>
     <tbody>
@@ -64,12 +65,21 @@
                     </form>
                     <button class="btn btn-info btn-sm mt-1" onclick="loadContributions('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
                 </td>
+                <td>
+                    <form asp-action="RegistrationSetup" method="post">
+                        <input type="hidden" name="oid" value="@Model[i].Oid" />
+                        <input type="hidden" name="lcode" value="@Model[i].Lcode" />
+                        <button type="submit" class="btn btn-primary btn-sm">Registration Setup</button>
+                    </form>
+                    <button class="btn btn-info btn-sm mt-1" onclick="loadRegistrations('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 <div id="submittedReturnsContainer"></div>
 <div id="submittedContributionsContainer"></div>
+<div id="submittedRegistrationsContainer"></div>
 <script>
     function loadReturns(oid, lcode) {
         fetch(`/SiteManagement/SubmittedReturns?oid=${oid}&lcode=${lcode}`)
@@ -91,3 +101,16 @@
     }
 
 </script>
+
+
+<script>
+    function loadRegistrations(oid, lcode) {
+        fetch(`/SiteManagement/SubmittedRegistrations?oid=${oid}&lcode=${lcode}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("submittedRegistrationsContainer").innerHTML = html;
+            });
+    }
+
+</script>
+

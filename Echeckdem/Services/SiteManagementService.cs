@@ -71,9 +71,10 @@ namespace Echeckdem.Services
                 .FirstOrDefaultAsync();
         }
 
+        //----------------START----------------------------------------------RETURNS------------------------------------------------------------------------------//
         public async Task<List<ReturnTemplateViewModel>> GetApplicableReturnsAsync(ReturnPeriodSelectionViewModel input)
         {
-            var query = _dbEcheckContext.Nctemprets
+                var query = _dbEcheckContext.Nctemprets
                 .Where(r => r.Rstate == input.Lstate && r.Ractive == 1 && r.Rm >= input.Month);
 
             var ltypeTrimmed = input.Ltype?.Trim();
@@ -177,6 +178,8 @@ namespace Echeckdem.Services
             return groupedReturns;
         }
 
+        //----------------END----------------------------------------------------RETURNS--------------------------------------------------------------------------------//
+        //----------------START----------------------------------------------CONTRIBUTIONS------------------------------------------------------------------------------//
         public async Task<List<ContributionTemplateViewModel>> GetApplicableContributionsAsync(ContributionPeriodSelectionViewModel input)
         {
             var query = _dbEcheckContext.Nctempcnts
@@ -185,7 +188,7 @@ namespace Echeckdem.Services
             if (input.SelectedTP != "ALL")
             {
                 string trimmedTP = input.SelectedTP.Trim().ToUpper();
-                query = query.Where(c => c.Tp.Trim().ToUpper() == trimmedTP);
+                query = query.Where(c => c.Tp.Trim().ToUpper() == trimmedTP); 
             }
             else
             {
@@ -281,6 +284,98 @@ namespace Echeckdem.Services
 
         }
 
+        //----------------END----------------------------------------------CONTRIBUTIONS-----------------------------------------------------------------------------------//
+        //----------------START----------------------------------------------REGISTRATIONS---------------------------------------------------------------------------------//
+        public async Task<List<RegistrationTemplateViewModel>> GetApplicableRegistrationsAsync(string ltype, string lstate)
+        {
+            ltype = ltype?.Trim();
+            List<string> categories;
+
+            switch (ltype)
+            {
+                case "S":
+                    categories = new List<string> { "SE", "Common", "Manual" };
+                    break;
+                case "F":
+                    categories = new List<string> { "Factory", "Common", "Manual" };
+                    break;
+                case "BO":
+                    categories = new List<string> { "BOCW", "Common", "Manual" };
+                    break;
+                default:
+                    return new List<RegistrationTemplateViewModel>();
+            }
+
+            // First fetch only rows from DB that match the state (lightweight)
+            var allRecords = await _dbEcheckContext.Mastregs.ToListAsync();
+
+            var registrations = allRecords
+                .Where(m => m.Category != null &&
+                            categories.Any(cat => cat.Equals(m.Category.Trim(), StringComparison.OrdinalIgnoreCase)))
+                .Select(m => new RegistrationTemplateViewModel
+                {
+                    Rtype = m.Rtype,
+                    Rdesc = m.Rdesc,
+                    Category = m.Category.Trim(),
+                    Selected = false
+                })
+                .ToList();
+            //var rawRecords = await _dbEcheckContext.Mastregs
+            // .Where(m => m.State == lstate)
+            // .ToListAsync();
+
+            //var registrations = rawRecords
+            //    .Where(m => m.Category != null &&
+            //                categories.Any(cat => cat.Equals(m.Category.Trim(), StringComparison.OrdinalIgnoreCase)))
+            //    .Select(m => new RegistrationTemplateViewModel
+            //    {
+            //        Rtype = m.Rtype,
+            //        Rdesc = m.Rdesc,
+            //        Category = m.Category.Trim(),
+            //        Selected = false
+            //    })
+            //    .ToList();
+            return registrations;
+        }
+
+
+        public async Task SaveSelectedRegistrationsAsync(RegistrationSelectionViewModel input)
+        {
+            var selected = input.ApplicableRegistrations
+                .Where(r => r.Selected)
+                .Select(r => new Ncreg
+                {
+                    Oid = input.Oid,
+                    Lcode = input.Lcode,
+                    Tp = r.Rtype
+                }).ToList();
+
+            _dbEcheckContext.Ncregs.AddRange(selected);
+            await _dbEcheckContext.SaveChangesAsync();
+        }
+
+
+        public async Task<List<RegistrationTemplateViewModel>> GetSubmittedRegistrationsAsync(string oid, string lcode)
+        {
+            var result = await (
+                from reg in _dbEcheckContext.Ncregs
+                join mast in _dbEcheckContext.Mastregs on reg.Tp equals mast.Rtype
+                where reg.Oid == oid && reg.Lcode == lcode
+                select new RegistrationTemplateViewModel
+                {
+                    Rtype = reg.Tp,
+                    Rdesc = mast.Rdesc,
+                    Category = mast.Category,
+                    Selected = true
+                }
+            ).ToListAsync();
+
+        return result;
+
+        
+        }
+
+        //----------------END----------------------------------------------REGISTRATIONS---------------------------------------------------------------------------------//
     }
 
 }

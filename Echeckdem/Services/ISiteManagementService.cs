@@ -18,6 +18,12 @@ namespace Echeckdem.Services
         Task SaveSelectedContributionsAsync(ContributionPeriodSelectionViewModel input);
 
         Task<List<IGrouping<int, ContributionDetailViewModel>>> GetSubmittedContributionsByOrg(string oid, string lcode);
+
+        Task<List<RegistrationTemplateViewModel>> GetApplicableRegistrationsAsync(string ltype, string lstate);
+
+        Task SaveSelectedRegistrationsAsync(RegistrationSelectionViewModel input);
+
+        Task<List<RegistrationTemplateViewModel>> GetSubmittedRegistrationsAsync(string oid, string lcode);
     }
 
 }

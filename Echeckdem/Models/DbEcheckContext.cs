@@ -147,20 +147,21 @@ public partial class DbEcheckContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<ReturnsViewModel>()
-  .HasNoKey()
-  .ToView(null);
-
-        modelBuilder.Entity<ContributionViewModel>()
-       .HasNoKey()
-       .ToView(null);
-
-        modelBuilder.Entity<RegistrationViewModel>()
-      .HasNoKey()
-      .ToView(null);
-
         modelBuilder.Entity<Act>(entity =>
         {
+
+            modelBuilder.Entity<ReturnsViewModel>()
+.HasNoKey()
+.ToView(null);
+
+            modelBuilder.Entity<ContributionViewModel>()
+           .HasNoKey()
+           .ToView(null);
+
+            modelBuilder.Entity<RegistrationViewModel>()
+          .HasNoKey()
+          .ToView(null);
+
             entity.HasKey(e => e.Code).IsClustered(false);
 
             entity.ToTable("ACTS");
@@ -983,15 +984,20 @@ public partial class DbEcheckContext : DbContext
             entity.ToTable("MASTREG");
 
             entity.Property(e => e.Rtype)
-                .HasMaxLength(3)
+                .HasMaxLength(7)
                 .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("RTYPE");
+                .IsFixedLength();
+            entity.Property(e => e.Category)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength();
             entity.Property(e => e.Rdesc)
-                .HasMaxLength(40)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.State)
+                .HasMaxLength(5)
                 .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("RDESC");
+                .IsFixedLength();
         });
 
         modelBuilder.Entity<Maststate>(entity =>
@@ -1760,7 +1766,7 @@ public partial class DbEcheckContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("STATUS");
             entity.Property(e => e.Tp)
-                .HasMaxLength(5)
+                .HasMaxLength(7)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("TP");

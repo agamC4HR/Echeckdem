@@ -11,7 +11,7 @@ public partial class Ncreg
 
     public string Lcode { get; set; } = null!;
 
-    public string Tp { get; set; } = null!;
+    public string? Tp { get; set; }
 
     public string? Status { get; set; }
 

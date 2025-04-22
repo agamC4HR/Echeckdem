@@ -1,0 +1,46 @@
+﻿@model Echeckdem.CustomFolder.RegistrationSelectionViewModel
+
+
+<h3>Select Registrations to Setup</h3>
+
+<form asp-action="FetchApplicableRegistrations" method="post">
+    @Html.HiddenFor(m => m.Oid)
+    @Html.HiddenFor(m => m.Lcode)
+    @Html.HiddenFor(m => m.Lstate)
+    @Html.HiddenFor(m => m.Ltype)
+@*     @Html.HiddenFor(m => m.ApplicableRegistrations) *@
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Registration Title</th>
+                <th>RTYPE</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.ApplicableRegistrations.Count; i++)
+            {
+                var item = Model.ApplicableRegistrations[i];
+                <tr>
+                    <td>
+                        <input type="checkbox" name="ApplicableRegistrations[@i].Selected" value="true" />
+                        <input type="hidden" name="ApplicableRegistrations[@i].Selected" value="false" />
+                    </td>
+                    <td>@item.Rdesc</td>
+                    <td>@item.Rtype</td>
+                    <td>@item.Category</td>
+
+                    <!-- Preserve all required hidden fields -->
+                    <input type="hidden" name="ApplicableRegistrations[@i].Rtype" value="@item.Rtype" />
+                    <input type="hidden" name="ApplicableRegistrations[@i].Rdesc" value="@item.Rdesc" />
+                    <input type="hidden" name="ApplicableRegistrations[@i].Category" value="@item.Category" />
+                    @* <input type="hidden" name="ApplicableRegistrations[@i].Selected" value="@item.Selected" /> *@
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">Proceed</button>
+</form>

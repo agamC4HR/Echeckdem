@@ -33,6 +33,8 @@ namespace Echeckdem.Controllers
             return View(locations);
         }
 
+        //----------------START----------------------------------------------RETURNS------------------------------------------------------------------------------//
+
         [HttpPost]
         public async Task<IActionResult> ReturnSetup(string oid, string lcode)
         {
@@ -77,9 +79,9 @@ namespace Echeckdem.Controllers
             return PartialView("_SubmittedReturnsPartial", groupedReturns);
         }
 
-        //---------------------------------------------------------------------------//
 
-
+        //----------------END----------------------------------------------RETURNS---------------------------------------------------------------------------------//
+        //----------------START----------------------------------------------CONTRIBUTION-------------------------------------------------------------------------//
         [HttpPost]
         public async Task<IActionResult> ContributionSetup(string oid, string lcode)
         {
@@ -108,10 +110,9 @@ namespace Echeckdem.Controllers
             input.ApplicableContributions = contributions;
            
 
-            return View("SelectContributions", input); // Use a new view or partial for selection UI
+            return View("SelectContributions", input); 
         }
-
-
+                           
         [HttpPost]
         public async Task<IActionResult> SaveSelectedContributions(ContributionPeriodSelectionViewModel input)
         {
@@ -125,6 +126,61 @@ namespace Echeckdem.Controllers
             return PartialView("_SubmittedContributionsPartial", groupedContributions);
         }
 
+        //----------------END----------------------------------------------CONTRIBUTION-------------------------------------------------------------------------//
+        //----------------START----------------------------------------------REGISTRATION------------------------------------------------------------------------//
+
+        [HttpPost]
+        public async Task<IActionResult> RegistrationSetup(string oid, string lcode)
+        {
+            var location = await _siteManagementService.GetLocationDetailsAsync(oid, lcode);
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            var applicableRegistrations = await _siteManagementService
+                .GetApplicableRegistrationsAsync(location.Ltype?.Trim(), location.Lstate);
+
+            var viewModel = new RegistrationSelectionViewModel
+            {
+                Oid = location.Oid,
+                Lcode = location.Lcode,
+                Lstate = location.Lstate,
+                Ltype = location.Ltype,
+                ApplicableRegistrations = applicableRegistrations
+            };
+
+            return View("SelectRegistrationPeriod", viewModel);
+        }
+
+        // Handles saving of selected registration types
+        [HttpPost]
+        public async Task<IActionResult> FetchApplicableRegistrations(RegistrationSelectionViewModel model)
+        {
+            if (model == null || model.ApplicableRegistrations == null || !model.ApplicableRegistrations.Any(r => r.Selected))
+            {
+                // Log or handle no selections case
+                return View("SelectRegistrationPeriod", model); // or redirect with an error message
+            }
+
+            await _siteManagementService.SaveSelectedRegistrationsAsync(model);
+
+            // Optional: Use TempData to show a success message after redirect
+            TempData["SuccessMessage"] = "Registrations saved successfully.";
+
+            return RedirectToAction("ViewLocations", new { oid = model.Oid });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SubmittedRegistrations(string oid, string lcode)
+        {
+            var groupedRegistrations = await _siteManagementService.GetSubmittedRegistrationsAsync(oid, lcode);
+            return PartialView("_SubmittedRegistrationsPartial", groupedRegistrations);
+        }
+
+
+
+        //----------------END----------------------------------------------REGISTRATION--------------------------------------------------------------------------//
 
     }
 }
