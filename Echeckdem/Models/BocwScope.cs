@@ -14,6 +14,7 @@ public partial class BocwScope
 
     public string? Category { get; set; }
 
+
     [NotMapped]
     public bool IsSelected { get; set; }
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();

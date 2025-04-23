@@ -29,4 +29,3 @@ public partial class Ncuser
     [NotMapped]
     public string? UserLevelName { get; set; } // User Level Name (For Display)
 }
-    

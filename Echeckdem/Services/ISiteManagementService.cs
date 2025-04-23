@@ -19,7 +19,7 @@ namespace Echeckdem.Services
 
         Task<List<IGrouping<int, ContributionDetailViewModel>>> GetSubmittedContributionsByOrg(string oid, string lcode);
 
-        Task<List<RegistrationTemplateViewModel>> GetApplicableRegistrationsAsync(string ltype, string lstate);
+        Task<List<RegistrationTemplateViewModel>> GetApplicableRegistrationsAsync(string ltype, string lstate, string oid, string lcode);
 
         Task SaveSelectedRegistrationsAsync(RegistrationSelectionViewModel input);
 

@@ -160,6 +160,8 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 12].Value = "Under CLRA";
                 worksheet.Cells[1, 13].Value = "Setup Year";
                 worksheet.Cells[1, 14].Value = "Site Active";
+                worksheet.Cells[1, 15].Value = "Under PF";
+                worksheet.Cells[1, 16].Value = "Under ESI";
 
                 var validationSheet = package.Workbook.Worksheets.Add("Validation"); // Add a hidden sheet for validation
                 // Populate state names in the validation sheet
@@ -220,6 +222,18 @@ namespace Echeckdem.Controllers
                 siteActiveValidation.ErrorTitle = "Invalid Entry";
                 siteActiveValidation.Error = "Please select Yes or No.";
                 siteActiveValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
+
+                var pfValidation = worksheet.DataValidations.AddListValidation("O2:O1000");
+                pfValidation.ShowErrorMessage = true;
+                pfValidation.ErrorTitle = "Invalid Entry";
+                pfValidation.Error = "Please select Yes or No.";
+                pfValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
+
+                var esiValidation = worksheet.DataValidations.AddListValidation("P2:P1000");
+                esiValidation.ShowErrorMessage = true;
+                esiValidation.ErrorTitle = "Invalid Entry";
+                esiValidation.Error = "Please select Yes or No.";
+                esiValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
 
                 // Hide the validation sheet
                 validationSheet.Hidden = eWorkSheetHidden.Hidden;

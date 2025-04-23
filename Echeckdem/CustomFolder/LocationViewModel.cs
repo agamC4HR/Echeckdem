@@ -22,5 +22,9 @@
         public string Cemail { get; set; }
         public string Iemail { get; set; }
 
+        public int? isesi { get; set; }
+
+        public int? ispf { get; set; }
+
     }
 }

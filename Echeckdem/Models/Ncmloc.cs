@@ -57,6 +57,10 @@ public partial class Ncmloc
 
     public int? Iscloc { get; set; }
 
+    public int? Ispf { get; set; }
+
+    public int? Isesi { get; set; }
+
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();

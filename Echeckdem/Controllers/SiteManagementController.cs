@@ -139,7 +139,7 @@ namespace Echeckdem.Controllers
             }
 
             var applicableRegistrations = await _siteManagementService
-                .GetApplicableRegistrationsAsync(location.Ltype?.Trim(), location.Lstate);
+                .GetApplicableRegistrationsAsync(location.Ltype?.Trim(), location.Lstate, location.Oid, location.Lcode);
 
             var viewModel = new RegistrationSelectionViewModel
             {

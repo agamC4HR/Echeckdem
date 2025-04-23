@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using DocumentFormat.OpenXml.InkML;
 using System.Linq;
 using Amazon.Runtime;
+using System.Security.Cryptography;
 
 
 namespace Echeckdem.Services
@@ -51,7 +52,10 @@ namespace Echeckdem.Services
                     Lconno = l.Lconno,
                     Lconemail = l.Lconemail,
                     Cemail = l.Cemail,
-                    Iemail = l.Iemail
+                    Iemail = l.Iemail,
+                    isesi = l.Isesi,
+                    ispf = l.Ispf
+
                 })
                 .ToListAsync();
         }
@@ -66,7 +70,10 @@ namespace Echeckdem.Services
                     Lcode = l.Lcode,
                     Lstate = l.Lstate,
                     Ltype = l.Ltype,
-                    Iscloc = l.Iscloc
+                    Iscloc = l.Iscloc,
+                    ispf = l.Ispf,
+                    isesi = l.Isesi
+
                 })
                 .FirstOrDefaultAsync();
         }
@@ -286,7 +293,7 @@ namespace Echeckdem.Services
 
         //----------------END----------------------------------------------CONTRIBUTIONS-----------------------------------------------------------------------------------//
         //----------------START----------------------------------------------REGISTRATIONS---------------------------------------------------------------------------------//
-        public async Task<List<RegistrationTemplateViewModel>> GetApplicableRegistrationsAsync(string ltype, string lstate)
+        public async Task<List<RegistrationTemplateViewModel>> GetApplicableRegistrationsAsync(string ltype, string lstate, string oid, string lcode)
         {
             ltype = ltype?.Trim();
             List<string> categories;
@@ -304,6 +311,19 @@ namespace Echeckdem.Services
                     break;
                 default:
                     return new List<RegistrationTemplateViewModel>();
+            }
+
+            var location = await _dbEcheckContext.Ncmlocs
+        .Where(x => x.Oid == oid && x.Lcode == lcode)
+        .Select(x => new { Ispf = x.Ispf ?? 0, Isesi = x.Isesi ?? 0 })
+        .FirstOrDefaultAsync();
+
+            if (location != null)
+            {
+                if (location.Ispf == 1)
+                    categories.Add("PF");
+                if (location.Isesi == 1)
+                    categories.Add("ESI");
             }
 
             // First fetch only rows from DB that match the state (lightweight)

@@ -19,13 +19,15 @@
             <th>Type</th>
             <th>Central</th>
             <th>CLRA</th>
-            <th>Region</th>
+            <th>PF</th>
+            <th>ESI</th>
+            @* <th>Region</th>
             <th>Address</th>
             <th>Branch Contact</th>
             <th>Phone</th>
             <th>Email</th>
             <th>Client Email</th>
-            <th>Internal Email</th>
+            <th>Internal Email</th> *@
             <th>Returns</th>
             <th>Contributions</th>
             <th>Registations</th>
@@ -42,13 +44,16 @@
                 <td>@Model[i].Ltype</td>
                 <td>@(Model[i].Iscentral == 1 ? "Yes" : "No")</td>
                 <td>@(Model[i].Iscloc == 1 ? "Yes" : "No")</td>
-                <td>@Model[i].Lregion</td>
+                <td>@(Model[i].ispf == 1 ? "Yes" : "No")</td>
+                <td>@(Model[i].isesi == 1 ? "Yes" : "No")</td>
+
+               @*  <td>@Model[i].Lregion</td>
                 <td>@Model[i].Laddress</td>
                 <td>@Model[i].Lcontact</td>
                 <td>@Model[i].Lconno</td>
                 <td>@Model[i].Lconemail</td>
                 <td>@Model[i].Cemail</td>
-                <td>@Model[i].Iemail</td>
+                <td>@Model[i].Iemail</td> *@
                 
                 <td>
                     <form asp-action="ReturnSetup" method="post">

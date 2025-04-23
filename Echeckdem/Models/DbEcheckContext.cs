@@ -1599,6 +1599,8 @@ public partial class DbEcheckContext : DbContext
                 .HasColumnName("iemail");
             entity.Property(e => e.Iscentral).HasColumnName("iscentral");
             entity.Property(e => e.Iscloc).HasColumnName("iscloc");
+            entity.Property(e => e.Isesi).HasColumnName("isesi");
+            entity.Property(e => e.Ispf).HasColumnName("ispf");
             entity.Property(e => e.Lactive).HasColumnName("lactive");
             entity.Property(e => e.Laddress)
                 .HasColumnType("text")
