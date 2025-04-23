@@ -178,8 +178,6 @@ namespace Echeckdem.Controllers
             return PartialView("_SubmittedRegistrationsPartial", groupedRegistrations);
         }
 
-
-
         //----------------END----------------------------------------------REGISTRATION--------------------------------------------------------------------------//
 
     }
