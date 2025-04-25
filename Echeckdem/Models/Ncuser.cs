@@ -27,5 +27,5 @@ public partial class Ncuser
     [NotMapped]
     public string? OName { get; set; } // Organization name (For Display)
     [NotMapped]
-    public string? UserLevelName { get; set; } // User Level Name (For Display)
+    public string? UserLevelName { get; set; }
 }

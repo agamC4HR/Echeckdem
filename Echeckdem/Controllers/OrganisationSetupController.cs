@@ -67,9 +67,9 @@ namespace Echeckdem.Controllers
 
 
         [HttpGet]                            // Getting Organisation List and General Info
-        public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid)
+        public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid, bool? isActiveFilter) // added isActiveFilter paramter here acc to feedback.
         {
-            var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid);
+            var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid, isActiveFilter);
 
             return View("OrganisationSetup", viewModel);
         }

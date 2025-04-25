@@ -230,7 +230,7 @@
 </style>
 @if (Context.Session.GetInt32("User Level") == 1)
                         {
-    @section TableHeadingContent {
+    @section TableHeadingContent { 
     <!-- Search bar -->
     <input type="text" id="searchBar" placeholder="Search Organisation..." class="table-search-input" onkeyup="searchTable()">
 
@@ -240,13 +240,8 @@
     </button>
     }
 
-
-
-<!-- Organization Count -->
-@*     <div class="organization-count">
-        <p>Total Organizations: <span class="count-badge">@Model.Count</span></p>
-    </div> *@   
-
+ 
+ 
 <!-- Table Section -->
     @section TableContent {
     <table class="styled-table">
@@ -302,7 +297,7 @@
                     @* <a href="#">Location Map</a> *@
                     <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
                     <a href="javascript:void(0)" onclick="LocationDataForm()" id="locationDataInfo" class="org-details-upper-links">Location Data</a>
-
+                    
                         
                 </div>
 
@@ -442,6 +437,23 @@
                 }
             });
         });
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Start of Working of Search Bar-------------------------
     function searchTable() {

@@ -23,7 +23,6 @@ namespace Echeckdem.Services
         {
             _EcheckContext = EcheckContext;
         }
-
         public async Task<bool> AddOrganisationAsync(OrganisationGeneralInfoViewModel newOrganisation)                        // Adding ORgansation Details (setting up new organisation)
         {
 
@@ -110,18 +109,48 @@ namespace Echeckdem.Services
         }
 
 
-        public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid)                // service for getting organisation list and general info of that organisation
+        public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid, bool? isActiveFilter)                // service for getting organisation list and general info of that organisation
         {
             // Fetch the list of active organizations
-            var organisationsList = await _EcheckContext.Ncmorgs
-                .Where(ncm => ncm.Oactive == 1 &&
-                              (string.IsNullOrEmpty(searchTerm) || ncm.Oname.Contains(searchTerm)))
+            //var organisationsList = await _EcheckContext.Ncmorgs
+            //    .Where(ncm => ncm.Oactive == 1 &&
+            //                  (string.IsNullOrEmpty(searchTerm) || ncm.Oname.Contains(searchTerm)))
+            //    .Select(ncm => new OrganisationsListViewModel
+            //    {
+            //        Oname = ncm.Oname,
+            //        oid = ncm.Oid
+            //    })
+            //    .ToListAsync();
+
+
+            var query = _EcheckContext.Ncmorgs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(ncm => ncm.Oname.Contains(searchTerm));
+            }
+
+            if (isActiveFilter.HasValue)
+            {
+                query = query.Where(ncm => ncm.Oactive == (isActiveFilter.Value ? 1 : 0)); 
+            }
+
+            var organisationsList = await query
                 .Select(ncm => new OrganisationsListViewModel
                 {
                     Oname = ncm.Oname,
                     oid = ncm.Oid
                 })
                 .ToListAsync();
+
+
+
+
+
+
+
+
+
 
             // Fetch the selected organization's general information
             OrganisationGeneralInfoViewModel? selectedOrganisation = null;
@@ -572,53 +601,72 @@ namespace Echeckdem.Services
             // fetching lname from ncmlocbo
             var lname = await _EcheckContext.Ncmlocbos.Where(n=>n.Lcode==lcode).Select(n=>n.Lname).FirstOrDefaultAsync();
 
-            if (lname == null)
+         if (lname == null)
                 throw new InvalidOperationException("Site not found for the specified Lcode.");
 
             // Fetch the scopeId from BoScopeMap based on lcode and projectCode
-            var fetchedScopeId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeId).FirstOrDefaultAsync();
+            var fetchedScopeId =  _EcheckContext.BoScopeMaps.Where(bsm => bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeId).ToList();
+            if (fetchedScopeId == null || fetchedScopeId.Any() == false) { throw new InvalidOperationException("ScopeId not found for the specified Lname and ProjectCode."); }
+            else {
+                foreach (var k in fetchedScopeId) {
+                    var trackScope = await _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == k).FirstOrDefaultAsync();
+                    if (trackScope == null)
+                        throw new InvalidOperationException("TrackScope not found for the specified SCOPENAME.");
+                    else
+                    {
+                        ///if (trackScope.) { }
+                        //else { }
+                        var projectStartDateEst = await _EcheckContext.Ncmlocbos.Where(n => n.Lcode == lcode && n.ProjectCode == projectCode).Select(n => n.ProjectStartDateEst).FirstOrDefaultAsync();
+                        if (projectStartDateEst == null)
+                            throw new InvalidOperationException("ProjectStartDateEst not found for the specified Lcode and ProjectCode.");
+                        else 
+                        {
+                            DateTime startDateTime = new DateTime(projectStartDateEst.Value.Year, projectStartDateEst.Value.Month, projectStartDateEst.Value.Day);
+                            int daysToAdd = trackScope.DueDate ?? 0; // Get the number of days to add
+                            DateTime calculatedDueDate = startDateTime.AddDays(daysToAdd); // Add days
+                            DateOnly dueDate = DateOnly.FromDateTime(calculatedDueDate); // Convert back to DateOnly
 
-            if (fetchedScopeId == null) 
-                throw new InvalidOperationException("ScopeId not found for the specified Lcode and ProjectCode.");
+                            var CreateDate = DateOnly.FromDateTime(DateTime.Now);
+
+                            int calculatedStatus = CreateDate > dueDate ? 0 : 2;
+                            var ncbocw = new Ncbocw
+                            {
+                                Lcode = lcode,
+                                ProjectCode = projectCode,
+                                Lname = lname,
+                                ScopeId = k,
+                                ScopeMapId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.ScopeId == k && bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeMapId).FirstOrDefaultAsync(),
+                                WorkId = trackScope.WorkId,
+                                DueDate = dueDate,
+                                FirstAlert = DateOnly.FromDateTime(DateTime.Now),
+                                Status = calculatedStatus,
+                              //  Task = trackScope.Task,
+                                CreateDate = CreateDate
+                            };
+                            _EcheckContext.Ncbocws.Add(ncbocw);
+                            await _EcheckContext.SaveChangesAsync();
+                        }
+                    }
+                }
+            }
+            //if (fetchedScopeId == null) 
+
 
             // Fetch WorkId and DueDate from TrackScope
-            var trackScope = await _EcheckContext.TrackScopes.Where(ts=>ts.ScopeId== fetchedScopeId).FirstOrDefaultAsync();
+            //var trackScope = await _EcheckContext.TrackScopes.Where(ts=>ts.ScopeId== fetchedScopeId).FirstOrDefaultAsync();
 
-            if (trackScope == null)
-                throw new InvalidOperationException("TrackScope not found for the specified ScopeId.");
+            //if (trackScope == null)
+            //  throw new InvalidOperationException("TrackScope not found for the specified ScopeId.");
 
             // Fetch ProjectStartDateEst from Ncmlocbo
-            var projectStartDateEst = await _EcheckContext.Ncmlocbos.Where(n => n.Lcode == lcode && n.ProjectCode == projectCode).Select(n => n.ProjectStartDateEst).FirstOrDefaultAsync();
 
-            if (projectStartDateEst == null)
-                throw new InvalidOperationException("ProjectStartDateEst not found for the specified Lcode and ProjectCode.");
+
+
 
             // Calcualte DUeDate for ncbocw
-            
-            DateTime startDateTime = new DateTime(projectStartDateEst.Value.Year, projectStartDateEst.Value.Month, projectStartDateEst.Value.Day);
-            int daysToAdd = trackScope.DueDate ?? 0; // Get the number of days to add
-            DateTime calculatedDueDate = startDateTime.AddDays(daysToAdd); // Add days
-            DateOnly dueDate = DateOnly.FromDateTime(calculatedDueDate); // Convert back to DateOnly
 
-            var CreateDate = DateOnly.FromDateTime(DateTime.Now);
 
-            int calculatedStatus = CreateDate > dueDate ? 0 : 2;
-            var ncbocw = new Ncbocw
-            {
-                Lcode = lcode,
-                ProjectCode = projectCode,
-                Lname = lname,
-                ScopeId = fetchedScopeId,
-                ScopeMapId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.ScopeId == fetchedScopeId && bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeMapId).FirstOrDefaultAsync(),
-                WorkId = trackScope.WorkId,
-                DueDate = dueDate,
-                FirstAlert = DateOnly.FromDateTime(DateTime.Now),
-                Status = calculatedStatus,
-                Task = trackScope.Task,
-                CreateDate = CreateDate
-            };
-            _EcheckContext.Ncbocws.Add(ncbocw);
-            return await _EcheckContext.SaveChangesAsync();
+            return 0;
         }
 
 

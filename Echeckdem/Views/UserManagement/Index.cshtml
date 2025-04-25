@@ -1,4 +1,35 @@
-﻿@model List<Ncuser>
+﻿@model IEnumerable<Echeckdem.CustomFolder.UserManagement.UserManagementViewModel>
+
+
+<h2>User List</h2>
+<table class="table">
+    <thead>
+        <a href="@Url.Action("Create")" class="btn btn-primary">Add New User</a>
+        <tr>
+            <th>UserID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>User Level</th>
+            <th>Organisation</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserID</td>
+                <td>@user.UNAME</td>
+                <td>@user.EmailID</td>
+                <td>@user.UserLevel</td>
+                <td>@user.OrganisationName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="@Url.Action("Create")" class="btn btn-primary">Add New User</a>
+
+
+@* @model List<Ncuser>
 <h2>Users List</h2>
 <a href="@Url.Action("Create", "UserManagement")" class="btn btn-primary">Add User</a>
 <table class="table table-bordered mt-3">
@@ -69,3 +100,4 @@
         });
     });
 </script>
+ *@
