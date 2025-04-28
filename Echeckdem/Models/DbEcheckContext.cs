@@ -145,6 +145,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
 
+    public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
