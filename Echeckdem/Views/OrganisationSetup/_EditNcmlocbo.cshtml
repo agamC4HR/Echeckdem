@@ -1,5 +1,60 @@
 ﻿@model Echeckdem.Models.Ncmlocbo
 
+<style>
+    #editNcmlocboForm {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    }
+
+    /* Headline styling */
+    h4 {
+        text-align: center;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Label styling */
+    .form-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    /* Input field styling */
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+        /* Input field focus effect */
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+    /* Submit button styling */
+    .btn-primary {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            color : white;
+        }
+
+</style>
+
 <div>
     <h4>Edit BO Site Details</h4>
     <form id="editNcmlocboForm" method="post" action="/OrganisationSetup/UpdateNcmlocbo">

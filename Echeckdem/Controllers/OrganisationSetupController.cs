@@ -563,13 +563,13 @@ namespace Echeckdem.Controllers
 
         //---------------------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
 
-        [HttpPost]
+        [HttpGet]
 
-        public async Task<IActionResult> PopulateNCBOCW(string lcode, string projectCode, string scopeId, int status)
+        public async Task<IActionResult> PopulateNCBOCW(string lcode, string projectCode)
         {
             try
             {
-                var transactionId = await _organisationsetupservice.ProjectSetupAsync(lcode, projectCode, scopeId, status);
+                var transactionId = await _organisationsetupservice.ProjectSetupAsync(lcode, projectCode);
                      return Json(new { success = true, transactionId });
             }
             catch (Exception ex)

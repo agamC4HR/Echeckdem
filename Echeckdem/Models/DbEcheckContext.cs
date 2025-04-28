@@ -137,29 +137,12 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Webinar> Webinars { get; set; }
 
-    public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
-
-    public virtual DbSet<ContributionViewModel> ContributionViewModel { get; set; }
-
-    public virtual DbSet<RegistrationViewModel> RegistrationViewModel { get; set; }
-
-   
+//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+//        => optionsBuilder.UseSqlServer("server=ROHIT_ARORA;database=DB_echeck;Trusted_Connection=True; TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
-        modelBuilder.Entity<ReturnsViewModel>()
-   .HasNoKey()
-   .ToView(null);
-
-        modelBuilder.Entity<ContributionViewModel>()
-       .HasNoKey()
-       .ToView(null);
-
-        modelBuilder.Entity<RegistrationViewModel>()
-      .HasNoKey()
-      .ToView(null);
-
         modelBuilder.Entity<Act>(entity =>
         {
             entity.HasKey(e => e.Code).IsClustered(false);
@@ -361,6 +344,14 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("ScopeID");
+            entity.Property(e => e.Category)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("category");
+            entity.Property(e => e.Frequency)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
             entity.Property(e => e.ScopeName)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -980,25 +971,35 @@ public partial class DbEcheckContext : DbContext
             entity.ToTable("MASTREG");
 
             entity.Property(e => e.Rtype)
-                .HasMaxLength(3)
+                .HasMaxLength(7)
                 .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("RTYPE");
+                .IsFixedLength();
+            entity.Property(e => e.Category)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength();
             entity.Property(e => e.Rdesc)
-                .HasMaxLength(40)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.State)
+                .HasMaxLength(5)
                 .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("RDESC");
+                .IsFixedLength();
         });
 
         modelBuilder.Entity<Maststate>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("MASTSTATES");
+            entity.HasKey(e => e.Stateid).HasName("pk_stateid");
+
+            entity.ToTable("MASTSTATES");
 
             entity.HasIndex(e => new { e.Stateid, e.Statedesc }, "notistate").IsUnique();
 
+            entity.Property(e => e.Stateid)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("STATEID");
             entity.Property(e => e.Stactive)
                 .HasMaxLength(1)
                 .IsUnicode(false)
@@ -1009,11 +1010,6 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("STATEDESC");
-            entity.Property(e => e.Stateid)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("STATEID");
         });
 
         modelBuilder.Entity<Mwcat>(entity =>
@@ -1194,19 +1190,17 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncactaken>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCACTAKEN");
+            entity.HasKey(e => e.Actid);
 
+            entity.ToTable("NCACTAKEN");
+
+            entity.Property(e => e.Actid).HasColumnName("ACTID");
             entity.Property(e => e.Accrdate).HasColumnName("ACCRDATE");
             entity.Property(e => e.Acdate).HasColumnName("ACDATE");
             entity.Property(e => e.Acid).HasColumnName("ACID");
             entity.Property(e => e.Actaken)
                 .HasColumnType("text")
                 .HasColumnName("ACTAKEN");
-            entity.Property(e => e.Actid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("ACTID");
             entity.Property(e => e.Nacdate).HasColumnName("NACDATE");
             entity.Property(e => e.Showclient).HasColumnName("SHOWCLIENT");
             entity.Property(e => e.Uno).HasColumnName("UNO");
@@ -1214,17 +1208,15 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncaction>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCACTION");
+            entity.HasKey(e => e.Acid).HasName("pk_ncaction");
 
+            entity.ToTable("NCACTION");
+
+            entity.Property(e => e.Acid).HasColumnName("ACID");
             entity.Property(e => e.Accldate).HasColumnName("ACCLDATE");
             entity.Property(e => e.Acdetail)
                 .HasColumnType("text")
                 .HasColumnName("ACDETAIL");
-            entity.Property(e => e.Acid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("ACID");
             entity.Property(e => e.Acidate).HasColumnName("ACIDATE");
             entity.Property(e => e.Acistatus)
                 .HasMaxLength(1)
@@ -1404,10 +1396,21 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Nccontr>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCCONTR");
+            entity.HasKey(e => new { e.Contid, e.Lcode, e.Oid }).HasName("PK_nccontr");
 
+            entity.ToTable("NCCONTR");
+
+            entity.Property(e => e.Contid)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("CONTID");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("LCODE");
+            entity.Property(e => e.Oid)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("OID");
             entity.Property(e => e.Amount)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -1417,9 +1420,6 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("CHQNO");
-            entity.Property(e => e.Contid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("CONTID");
             entity.Property(e => e.Cyear).HasColumnName("CYEAR");
             entity.Property(e => e.Depdate).HasColumnName("DEPDATE");
             entity.Property(e => e.Filename)
@@ -1433,15 +1433,7 @@ public partial class DbEcheckContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("FREQ");
             entity.Property(e => e.Lastdate).HasColumnName("LASTDATE");
-            entity.Property(e => e.Lcode)
-                .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("LCODE");
             entity.Property(e => e.Ld).HasColumnName("LD");
-            entity.Property(e => e.Oid)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OID");
             entity.Property(e => e.Period).HasColumnName("PERIOD");
             entity.Property(e => e.Remarks)
                 .HasColumnType("text")
@@ -1457,14 +1449,12 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncfile>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCFILES");
+            entity.HasKey(e => e.Fid);
 
+            entity.ToTable("NCFILES");
+
+            entity.Property(e => e.Fid).HasColumnName("FID");
             entity.Property(e => e.Farc).HasColumnName("FARC");
-            entity.Property(e => e.Fid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("FID");
             entity.Property(e => e.Flink).HasColumnName("FLINK");
             entity.Property(e => e.Fname)
                 .IsUnicode(false)
@@ -1596,6 +1586,8 @@ public partial class DbEcheckContext : DbContext
                 .HasColumnName("iemail");
             entity.Property(e => e.Iscentral).HasColumnName("iscentral");
             entity.Property(e => e.Iscloc).HasColumnName("iscloc");
+            entity.Property(e => e.Isesi).HasColumnName("isesi");
+            entity.Property(e => e.Ispf).HasColumnName("ispf");
             entity.Property(e => e.Lactive).HasColumnName("lactive");
             entity.Property(e => e.Laddress)
                 .HasColumnType("text")
@@ -1700,6 +1692,7 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(250)
                 .IsUnicode(false);
             entity.Property(e => e.Echeck).HasDefaultValue(true);
+            entity.Property(e => e.FileName).HasMaxLength(255);
             entity.Property(e => e.Oactive).HasColumnName("oactive");
             entity.Property(e => e.Oname)
                 .HasMaxLength(100)
@@ -1719,10 +1712,21 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncreg>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCREG");
+            entity.HasKey(e => new { e.Uid, e.Oid, e.Lcode }).HasName("pk_your_table");
 
+            entity.ToTable("NCREG");
+
+            entity.Property(e => e.Uid)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("UID");
+            entity.Property(e => e.Oid)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("OID");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("LCODE");
             entity.Property(e => e.Doe).HasColumnName("DOE");
             entity.Property(e => e.Doi).HasColumnName("DOI");
             entity.Property(e => e.Dolr).HasColumnName("DOLR");
@@ -1730,19 +1734,11 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("FILENAME");
-            entity.Property(e => e.Lcode)
-                .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("LCODE");
             entity.Property(e => e.Nmoe)
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("NMOE");
             entity.Property(e => e.Noe).HasColumnName("NOE");
-            entity.Property(e => e.Oid)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("OID");
             entity.Property(e => e.Remarks)
                 .HasColumnType("text")
                 .HasColumnName("REMARKS");
@@ -1759,28 +1755,21 @@ public partial class DbEcheckContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("STATUS");
             entity.Property(e => e.Tp)
-                .HasMaxLength(5)
+                .HasMaxLength(7)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("TP");
-            entity.Property(e => e.Uid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("UID");
         });
 
         modelBuilder.Entity<Ncret>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCRET");
+            entity.HasKey(e => new { e.Rtid, e.Lcode, e.Oid }).HasName("PK_ncret");
 
-            entity.Property(e => e.Depdate).HasColumnName("DEPDATE");
-            entity.Property(e => e.Filename)
-                .HasMaxLength(150)
-                .IsUnicode(false)
-                .HasColumnName("FILENAME");
-            entity.Property(e => e.Fileup).HasColumnName("FILEUP");
-            entity.Property(e => e.Lastdate).HasColumnName("LASTDATE");
+            entity.ToTable("NCRET");
+
+            entity.Property(e => e.Rtid)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("RTID");
             entity.Property(e => e.Lcode)
                 .HasMaxLength(15)
                 .IsUnicode(false)
@@ -1789,13 +1778,17 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("OID");
+            entity.Property(e => e.Depdate).HasColumnName("DEPDATE");
+            entity.Property(e => e.Filename)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .HasColumnName("FILENAME");
+            entity.Property(e => e.Fileup).HasColumnName("FILEUP");
+            entity.Property(e => e.Lastdate).HasColumnName("LASTDATE");
             entity.Property(e => e.Rcode).HasColumnName("RCODE");
             entity.Property(e => e.Remarks)
                 .HasColumnType("text")
                 .HasColumnName("REMARKS");
-            entity.Property(e => e.Rtid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("RTID");
             entity.Property(e => e.Ryear).HasColumnName("RYEAR");
             entity.Property(e => e.Status).HasColumnName("STATUS");
             entity.Property(e => e.Uploaddate).HasColumnName("UPLOADDATE");
@@ -1803,13 +1796,11 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Nctempcnt>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCTEMPCNT");
+            entity.HasKey(e => e.Cid).HasName("pk_cid");
 
-            entity.Property(e => e.Cid)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("CID");
+            entity.ToTable("NCTEMPCNT");
+
+            entity.Property(e => e.Cid).HasColumnName("CID");
             entity.Property(e => e.Cstate)
                 .HasMaxLength(5)
                 .IsUnicode(false)
@@ -1832,10 +1823,11 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Nctempfin>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCTEMPFIN");
+            entity.HasKey(e => e.Rcode).HasName("pk_rcodee");
 
+            entity.ToTable("NCTEMPFIN");
+
+            entity.Property(e => e.Rcode).HasColumnName("RCODE");
             entity.Property(e => e.Frequency)
                 .HasMaxLength(50)
                 .HasColumnName("frequency");
@@ -1844,9 +1836,6 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("RACT");
-            entity.Property(e => e.Rcode)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("RCODE");
             entity.Property(e => e.Rd).HasColumnName("RD");
             entity.Property(e => e.Rdesc)
                 .HasColumnType("text")
@@ -1881,19 +1870,17 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Nctempret>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCTEMPRET");
+            entity.HasKey(e => e.Rcode).HasName("pk_rcode");
 
+            entity.ToTable("NCTEMPRET");
+
+            entity.Property(e => e.Rcode).HasColumnName("RCODE");
             entity.Property(e => e.Ract)
                 .HasMaxLength(8)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("RACT");
             entity.Property(e => e.Ractive).HasColumnName("RACTIVE");
-            entity.Property(e => e.Rcode)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("RCODE");
             entity.Property(e => e.Rd).HasColumnName("RD");
             entity.Property(e => e.Rdesc)
                 .HasColumnType("text")
@@ -1925,23 +1912,23 @@ public partial class DbEcheckContext : DbContext
 
         modelBuilder.Entity<Ncumap>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("NCUMAP");
+            entity.HasKey(e => new { e.Oid, e.Lcode, e.Uno });
 
-            entity.Property(e => e.Lcode)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("lcode");
+            entity.ToTable("NCUMAP");
+
             entity.Property(e => e.Oid)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("oid");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("lcode");
+            entity.Property(e => e.Uno).HasColumnName("uno");
             entity.Property(e => e.Ulevel)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("ulevel");
-            entity.Property(e => e.Uno).HasColumnName("uno");
         });
 
         modelBuilder.Entity<Ncuser>(entity =>
@@ -2350,18 +2337,13 @@ public partial class DbEcheckContext : DbContext
             entity.ToTable("Track_Scope");
 
             entity.Property(e => e.WorkId).HasColumnName("WorkID");
+            entity.Property(e => e.Reference)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.ScopeId)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("ScopeID");
-            entity.Property(e => e.Stateid)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("STATEID");
-            entity.Property(e => e.Task)
-                .HasMaxLength(200)
-                .IsUnicode(false);
 
             entity.HasOne(d => d.Scope).WithMany(p => p.TrackScopes)
                 .HasForeignKey(d => d.ScopeId)

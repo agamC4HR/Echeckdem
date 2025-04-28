@@ -32,4 +32,6 @@ public partial class Ncmorg
     public string? Contname { get; set; }
 
     public string? Contemail { get; set; }
+
+    public string? FileName { get; set; }
 }

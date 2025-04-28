@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Echeckdem.Models;
 
@@ -36,8 +35,6 @@ public partial class Ncmlocbo
 
     public string? Lname { get; set; }
 
-    [NotMapped]
-    public string ActiveScopes { get; set; }
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual Ncmloc? LcodeNavigation { get; set; }

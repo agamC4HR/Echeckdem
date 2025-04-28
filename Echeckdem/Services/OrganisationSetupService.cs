@@ -484,7 +484,7 @@ namespace Echeckdem.Services
         // --------------------------------------PROJECT SETUP AFTER SCOPE SETUP --------------------------------------------//
 
 
-        public async Task<int> ProjectSetupAsync(string lcode, string projectCode, string scopeId, int status)
+        public async Task<int> ProjectSetupAsync(string lcode, string projectCode)
         {
             // fetching lname from ncmlocbo
             var lname = await _EcheckContext.Ncmlocbos.Where(n=>n.Lcode==lcode).Select(n=>n.Lname).FirstOrDefaultAsync();
@@ -526,7 +526,7 @@ namespace Echeckdem.Services
                 ScopeMapId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.ScopeId == fetchedScopeId && bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeMapId).FirstOrDefaultAsync(),
                 WorkId = trackScope.WorkId,
                 DueDate = dueDate,
-                Status = status,
+                //Status = status,
                 Task = trackScope.Task,
                 CreateDate = DateOnly.FromDateTime(DateTime.Now)
             };
