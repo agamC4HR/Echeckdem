@@ -61,8 +61,6 @@
         display:block;
         position: absolute;
         width: 99vw;
-        height: 65vh;
-        padding: 15px;
         top: 40px;
         left: 7px;
         font-family: 'Arial', sans-serif;
@@ -117,6 +115,7 @@
         }
 
     .org-details-links-container {
+       /*  display: none; */
         display: grid;
         grid-template-rows: auto auto;
         row-gap: 10px;
@@ -159,6 +158,7 @@
         }
 
     .org-details-body {
+        /* display:none; */
         display: grid;
         grid-template-columns: 1fr 1fr; /* Two equal columns */
         gap: 15px;
@@ -235,15 +235,14 @@
     }
 
     .styled-dropdown {
-        position:absolute;
+        /* position:absolute;
         right:7px;
-        width: auto;
-        padding: 10px;
-        font-size: 14px;
+        width: auto; */
+        padding: 5px;
+        font-size: 12px;
         border: 2px solid #dd3432;
-        border-radius: 6px;
+        border-radius: .375rem;
         color: #333;
-        font-family: Arial, sans-serif;
     }
 
         .styled-dropdown:focus {
@@ -254,184 +253,63 @@
  
 </style>
 @if (Context.Session.GetInt32("User Level") == 1)
-                        {
- @*    @section TableHeadingContent { 
-    <!-- Search bar -->
-    <input type="text" id="searchBar" placeholder="Search Organisation..." class="table-search-input" onkeyup="searchTable()">
- 
-    <!-- Add button -->
-    <button class="table-add-btn" onclick="showAddOrganisationForm()">
-        Add New Organisation
-    </button> 
-    } *@
+{
+    <div class="org-details-container" id="orgDetailsContainer">
+        
 
- 
- 
-<!-- Table Section -->
-   @*  @section TableContent {
-    <table class="styled-table">
-        <thead>
-            <tr>
-                <th>S.No.</th>
-                <th>Organisation Name</th>
-            </tr>
-        </thead>
-            <tbody>
-            @{
-                int sno = 1;
-            }
-                @if (Model.OrganisationsList?.Any() ?? false)
-                {
-                    
-                    foreach (var org in Model.OrganisationsList)
+        <div class="child-org-details-header">
+            @* <h2 id="orgDetailsHeader">@Model.SelectedOrganisation?.Oname</h2> *@
+            <h2 id="orgDetailsHeader">Select Organisation</h2>
+                <select id="organisationDropdown" class="styled-dropdown" onchange="onOrganisationChange()">
+                    <option value="">Select an Organisation</option>
+                    @foreach (var org in Model.OrganisationsList)
                     {
-
-
-                        <tr>
-                            <td>@sno</td>
-                            <td>
-                                <a asp-action="OrganisationSetup" asp-route-selectedOid="@org.oid" class="org-link">
-                                    @org.Oname
-                                </a>
-                            </td>
-                         
-
-                           
-                    </tr>
-                    sno++;
+                        @:
+                        <option value="@org.oid">@org.Oname</option>
                     }
-                }
-               
-            </tbody>
-        </table>
-        } *@
-
-<!-- Selected Organisation Details Section -->
-<div class="org-details-container" id="orgDetailsContainer">
-        <div class="dropdown-container">
-            <select id="organisationDropdown" class="styled-dropdown" onchange="onOrganisationChange()">
-                <option value="">Select an Organisation</option>
-                @foreach (var org in Model.OrganisationsList)
-                {
-                    <option value="@org.oid">@org.Oname</option>
-                }
-            </select>
+                </select>
+            @*  *@
         </div>
-    @if (Model.SelectedOrganisation != null)
-    {
-        <div class="org-details-header">
-            <div class="child-org-details-header">
-                <h2 id="orgDetailsHeader">@Model.SelectedOrganisation.Oname</h2>
-                <button type="button" onclick="showEditForm()">Edit</button>
+
+        <div class="org-details-links-container" id="org-details-links-container" style="display: grid;">
+            <div class="org-details-upper-links">
+                <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation?.oid" id="generalInfoLink" class="active">General Information</a>
+                <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
+                <a href="javascript:void(0);" onclick="LocationDataForm()" id="locationDataInfo">Location Data</a>
             </div>
-            <div class="org-details-links-container">
-
-                <div class="org-details-upper-links">
-                    <!-- Top links -->
-                    <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation.oid" id="generalInfoLink" class="org-details-upper-links active">General Information</a>
-                    @* <a href="#">Location Map</a> *@
-                    <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
-                    <a href="javascript:void(0)" onclick="LocationDataForm()" id="locationDataInfo" class="org-details-upper-links">Location Data</a>
-                    
-                        
-                </div>
-
-                <div class="org-details-lower-links">
-                    <!-- Bottom links -->
-                        <a href="javascript:void(0);" onclick="showBOCWUploadForm()">BOCW SITE SETUP</a>
-                        <a href="javascript:void(0);" onclick="viewBOCWData()" id="viewBOCWDataButton">BOCW Site Data</a>
-
-                        @* <a asp-controller="OrganisationSetup" asp-action="viewbodetails" asp-route-oid="@Model.SelectedOrganisation.oid" id="viewBOCWDataButton">View BOCW Data</a> *@
-@*                         <a href="javascript:void(0);" onclick="editBOCWData()" id="editBOCWDataButton">Edit BOCW Data</a> 
- *@                </div>
-
+            <div class="org-details-lower-links">
+                <a href="javascript:void(0);" onclick="showBOCWUploadForm()">BOCW SITE SETUP</a>
+                <a href="javascript:void(0);" onclick="viewBOCWData()">BOCW Site Data</a>
             </div>
-            <div id="orgDetailsBody" class="org-details-body">
-                <p><strong>OID:</strong> @Model.SelectedOrganisation.oid</p>
-                <p><strong>Name:</strong> @Model.SelectedOrganisation.Oname</p>
-                <p><strong>SPOC:</strong> @Model.SelectedOrganisation.Spoc</p>
-                    <p><strong>SPOC Email:</strong> @Model.SelectedOrganisation.spoc_eml</p>
-                <p><strong>Start Year:</strong> @Model.SelectedOrganisation.styear</p>
-                <p><strong>Contact Name:</strong> @Model.SelectedOrganisation.Contname</p>
-                <p><strong>Contact Email:</strong> @Model.SelectedOrganisation.Contemail</p>
-                <p><strong>Active:</strong>
-                        @if (Model.SelectedOrganisation.Oactive == 1)
-                        {
-                            <span>Yes</span>
-                        }
-                        else
-                        {
-                            <span>No</span>
-                        }
-                       
-                </p>
-                    @if (!string.IsNullOrEmpty(Model.SelectedOrganisation.FileName))
-                    {
-                        <p>
-                            <strong>Contract Copy:</strong>
-                            <a class="view-doc-button"
-                               target="_blank"
-                               href="@Url.Content($"~/Files/{Model.SelectedOrganisation.oid}/Copies/{Model.SelectedOrganisation.FileName}")">
-                                View Document
-                            </a>
-                        </p>
-                    }
-                    else
-                    {
-                        <strong>Contract Copy:</strong>
-                        
-                        <span>Contract Copt not uploaded. Upload it using Edit icon.</span>
-                    }
-                    
-            </div>
-
-            <!-- Form for editing organisation info -->
-            <div id="editForm" style="display:none;">
-                    <form asp-action="EditOrganisationInfo" method="post" enctype="multipart/form-data" class="Edit-OrganisationInfo-Form">
-                    <label>Oid</label>
-                    <input type="text" name="oid" value="@Model.SelectedOrganisation.oid" readonly />
-
-                    <label>Organization Name</label>
-                    <input type="text" name="Oname" value="@Model.SelectedOrganisation.Oname" />
-
-                    <label>SPOC</label>
-                    <input type="text" name="Spoc" value="@Model.SelectedOrganisation.Spoc" />
-
-                    <label>Start Year</label>
-                    <input type="number" name="styear" value="@Model.SelectedOrganisation.styear" />
-
-                    <label>Contact Name</label>
-                    <input type="text" name="Contname" value="@Model.SelectedOrganisation.Contname" />
-
-                    <label>Contact Email</label>
-                    <input type="email" name="Contemail" value="@Model.SelectedOrganisation.Contemail" />
-
-                    <label for="Oactive">Active</label>
-                    <select id="Oactive" name="Oactive">
-                            <option value=1>Yes</option>
-                            <option value=0>No</option>
-                        </select>
-
-                        <label>Contract Copy (optional)</label>
-                        <input type="file" name="PdfFile" accept=".pdf" />
-
-                    <button type="submit">Save Changes</button>
-                    <button type="button" onclick="cancelEdit()">Close</button>
-
-                </form>
-            </div>
-
-
         </div>
-    }
-    else
-    {
-        <p>Select an organization to view details.</p>
-    }
-</div>
 
-
+        <div id="orgDetailsBody" class="org-details-body" style="display:grid;">
+            <p><strong>OID:</strong> @Model.SelectedOrganisation?.oid</p>
+            <p><strong>Name:</strong> @Model.SelectedOrganisation?.Oname</p>
+            <p><strong>SPOC:</strong> @Model.SelectedOrganisation?.Spoc</p>
+            <p><strong>SPOC Email:</strong> @Model.SelectedOrganisation?.spoc_eml</p>
+            <p><strong>Start Year:</strong> @Model.SelectedOrganisation?.styear</p>
+            <p><strong>Contact Name:</strong> @Model.SelectedOrganisation?.Contname</p>
+            <p><strong>Contact Email:</strong> @Model.SelectedOrganisation?.Contemail</p>
+            <p><strong>Active:</strong> @(Model.SelectedOrganisation?.Oactive == 1 ? "Yes" : "No")</p>
+            <p>
+                <strong>Contract Copy:</strong>
+                @if (!string.IsNullOrEmpty(Model.SelectedOrganisation?.FileName))
+                {
+                    <a class="view-doc-button" target="_blank" href="@Url.Content($"~/Files/{Model.SelectedOrganisation?.oid}/Copies/{Model.SelectedOrganisation?.FileName}")">View Document</a>
+                }
+                else
+                {
+                    <span>Contract Copy not uploaded. Upload it using Edit icon.</span>
+                }
+            </p>
+            <p>
+                <button type="button" id="editButton" style="display:none;" onclick="showEditForm()">Edit</button>
+            </p>
+        </div>
+    </div>
 }
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
@@ -444,9 +322,6 @@
             alert('@TempData["SuccessMessage"]');
         </text>
     }
-
-     
-
 
         document.querySelectorAll('.org-details-links-container a').forEach(link => {
             link.addEventListener('click', function (e) {
@@ -473,60 +348,6 @@
             });
         });
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@* 
-    // Start of Working of Search Bar-------------------------
-    function searchTable() {
-        const input = document.getElementById('searchBar');
-        const filter = input.value.toLowerCase();  
-        const rows = document.querySelectorAll('.styled-table tbody tr');  
-
-        rows.forEach(row => {
-            const orgNameCell = row.cells[1];  // Get the 'Organisation Name' cell (2nd column)
-            const anchor = orgNameCell.querySelector('.org-link');  // Get the <a> tag within the cell
-            let orgNameText = anchor.textContent || anchor.innerText;  // Get the plain text of the organization name
-
-            // Check if the filter text matches any part of the organization name
-            if (orgNameText.toLowerCase().includes(filter)) {
-                row.style.display = "";  // Show the row if it matches
-                highlightText(anchor, filter);  // Highlight the matched text inside the <a> tag
-            } else {
-                row.style.display = "none"; 
-                removeHighlight(anchor); 
-            }
-        });
-    }
-
-    // Function to highlight the text inside the anchor tag
-    function highlightText(anchor, filter) {
-        removeHighlight(anchor);  // Remove any previous highlights first
-
-        const regex = new RegExp(`(${filter})`, 'gi');  // Create a case-insensitive regex for the filter
-        anchor.innerHTML = anchor.innerHTML.replace(regex, '<span class="highlight">$1</span>');  // Wrap matched text in a span with a highlight class
-    }
-
-    // Function to remove the highlighting from the anchor tag
-
-    function removeHighlight(anchor) {
-        // Remove any previous highlights from the <a> tag
-        anchor.innerHTML = anchor.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
-    }
-    // End of Working of Search Bar------------------------ *@
 
     //Start of Working Of Add Location-------------------------
         function showUploadForm() {
@@ -627,49 +448,26 @@
     }
     // END of viewing BOCW DATA------------------------------------------------------
 
-    @*
-    // START of editing BOCW DATA---------------------------------------------------
-    function editBOCWData() {
-        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
-        if (!oid) {
-            alert("Organisation ID is not available. Please select a valid organisation.");
-            return;
+
+    function onOrganisationChange() {
+        var oid = document.getElementById('organisationDropdown').value;  
+        var orgDetailsHeader = document.getElementById("orgDetailsHeader");
+        var orgDetailsLinksContainer = document.getElementById("org-details-links-container");
+        var orgDetailsBody = document.getElementById("orgDetailsBody");
+
+        if (oid) {
+            orgDetailsHeader.innerText = document.querySelector('#organisationDropdown option:checked').textContent;
+
+            orgDetailsLinksContainer.style.display = "grid";  
+            orgDetailsBody.style.display = "grid"; 
+
+            window.location.href = '/OrganisationSetup/OrganisationSetup?selectedOid=' + oid;
+        } else {
+            orgDetailsHeader.innerText = "Select Organisation";
+            orgDetailsLinksContainer.style.display = "none";  
+            orgDetailsBody.style.display = "none";  
         }
-
-        document.getElementById("orgDetailsHeader").innerText = "Edit BOCW Data - @Model.SelectedOrganisation?.Oname";
-        $("#orgDetailsBody").load(/OrganisationSetup/EditBOCWData ? oid = ${ oid });
-
-        // END of editing BOCW DATA--------------------------------------------------- *@
-
-
-
-
-
-
-
-    // Function to show the edit form for location data
-@*     function showLocationEditForm() {
-        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
-        if (!oid) {
-            alert("Organisation ID is not available. Please select a valid organisation.");
-            return;
-        }
-
-        // Hide the org-details-body
-        document.getElementById("orgDetailsBody").style.display = "none";
-
-        // Load the edit form for location data
-        const editForm = document.getElementById("editForm");
-        editForm.style.display = "block";
-        $("#editForm").load(`/OrganisationSetup/EditLocationData?oid=${oid}`);
     }
- *@
 
 
-      function onOrganisationChange() {
-            var oid = document.getElementById('organisationDropdown').value;
-            if (oid) {
-                window.location.href = '/OrganisationSetup/OrganisationSetup?selectedOid=' + oid;
-            }
-        }
 </script>
