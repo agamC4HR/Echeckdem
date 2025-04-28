@@ -1,5 +1,6 @@
 ﻿using Echeckdem.CustomFolder;
 using Echeckdem.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace Echeckdem.Services
@@ -28,17 +29,28 @@ namespace Echeckdem.Services
             _context.BocwScopes.Add(boscope);
             await _context.SaveChangesAsync();
         }
-                                    
-    
 
-        private string GenerateScopeId()                                                                                                  // Logic to generate a 3-character scope ID (e.g., "S01", "S02", etc.)
-        {                                                            
-            var scopeCount = _context.BocwScopes.Count();
-            var newId = "S" + (scopeCount + 1).ToString("D2"); 
 
-            return newId;
+        private string GenerateScopeId()
+        {
+            var lastScope = _context.BocwScopes
+                                   .OrderByDescending(x => x.ScopeId)
+                                   .FirstOrDefault();
+
+            if (lastScope != null)
+            {
+                string lastId = lastScope.ScopeId.Substring(1); // Remove 'S' prefix
+                if (int.TryParse(lastId, out int numericPart))
+                {
+                    return "S" + (numericPart + 1).ToString("D2");
+                }
+            }
+
+            // If no record exists, start from S01
+            return "S01";
         }
 
+       
         public async Task UpdateScope(BocwScope updatedboscope)
         {
             var existingScope = await _context.BocwScopes.FirstOrDefaultAsync(s => s.ScopeId == updatedboscope.ScopeId);
@@ -47,6 +59,8 @@ namespace Echeckdem.Services
             {
                 existingScope.ScopeName = updatedboscope.ScopeName;
                 existingScope.ScopeActive = updatedboscope.ScopeActive;
+                existingScope.Category = updatedboscope.Category;
+                
 
                 await _context.SaveChangesAsync();
             }

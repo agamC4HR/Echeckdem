@@ -14,26 +14,32 @@ namespace Echeckdem.Controllers
             _actscopesetup = actscopesetup;
         }
 
-        public async Task<IActionResult> Index()                                               // View scope data from BOCWSCOPES
+        //------------------------START---------------------------FETCH/VIEW ALL SCOPES FORM SCOPEMASTER(BOCWSCOPES)------------------------------------------------------------//
+        public async Task<IActionResult> Index()                                              
         {
             var scopes = await _actscopesetup.GetAllScopes();
-            return View(scopes);  // Pass data to the view
+            return View(scopes);
         }
-
+        //------------------------END---------------------------FETCH/VIEW ALL SCOPES FORM SCOPEMASTER(BOCWSCOPES)--------------------------------------------------------- ------//
 
         public IActionResult Create()
         {
             return View(new BocwScope());
         }
 
+
+        //-----------------------START--------------------------------ADD DATA IN SCOPEMASTER(BOCWSCOPES)----------------------------------------------------------------------//
         [HttpPost]
-        [ValidateAntiForgeryToken]                                                                                                          // Add scope data into BOCWSCOPES
-        public async Task<IActionResult> Create([Bind("ScopeName,ScopeActive")] BocwScope boscope)
+        [ValidateAntiForgeryToken]                                                                                                          
+        public async Task<IActionResult> Create([Bind("ScopeName,ScopeActive,Category")] BocwScope boscope)
         {
             try
             {
+                ModelState.Remove("ScopeId");                                                                           // Removing the binding of scopeid becauase setup is completed in service class.
+
                 if (ModelState.IsValid)
                 {
+                   
                     await _actscopesetup.AddScope(boscope);
                     return RedirectToAction(nameof(Index));  // Redirect to Index after adding
                 }
@@ -49,6 +55,10 @@ namespace Echeckdem.Controllers
             return View(boscope);
         }
 
+        //-----------------------END--------------------------------ADD DATA IN SCOPEMASTER(BOCWSCOPES)------------------------------------------------------------------------------//
+
+
+        // --------------------START------------------------------------EDIT DATA IN SCOPEMASTER(BOCWSCOPES-------------------------------------------------------------------------//)
         public async Task<IActionResult> Edit(string id)
         {
             if(string.IsNullOrEmpty(id))
@@ -64,7 +74,7 @@ namespace Echeckdem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ScopeId,ScopeName,ScopeActive")] BocwScope boscope)
+        public async Task<IActionResult> Edit(string id, [Bind("ScopeId,ScopeName,ScopeActive,Category")] BocwScope boscope)
         {
             if (id != boscope.ScopeId)
                 return NotFound();
@@ -84,5 +94,7 @@ namespace Echeckdem.Controllers
 
             return View(boscope);
         }
+
+        // --------------------END------------------------------------EDIT DATA IN SCOPEMASTER(BOCWSCOPES-------------------------------------------------------------------------//)
     }
 }

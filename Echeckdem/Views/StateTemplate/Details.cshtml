@@ -1,0 +1,40 @@
+﻿@model List<Echeckdem.CustomFolder.StateTemplateViewModel>
+@{
+    ViewBag.Title = "Templates for State";
+    var stateId = ViewBag.StateId as string;
+}
+
+<h2>Templates for @stateId</h2>
+
+<a asp-action="Edit" asp-route-stateId="@stateId" class="btn btn-primary">Add New Template</a>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Frequency</th>
+            <th>Period</th>
+            <th>Last Date</th>
+            <th>Month Offset</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TpDisplay</td>
+                <td>@item.FreqDisplay</td>
+                <td>@item.PeriodDisplay</td>
+                <td>@item.Ld</td>
+                <td>@item.MoffsetDisplay</td>
+                <td>@item.ActiveDisplay</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Cid" asp-route-stateId="@item.CState" class="btn btn-sm btn-info">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Cid" asp-route-stateId="@item.CState" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

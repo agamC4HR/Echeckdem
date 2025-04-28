@@ -1,4 +1,5 @@
 ﻿using Echeckdem.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Mono.TextTemplating;
@@ -9,10 +10,12 @@ namespace Echeckdem.Services
     public class ContributionService
     {
         private readonly DbEcheckContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ContributionService(DbEcheckContext context)
+        public ContributionService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
@@ -20,7 +23,7 @@ namespace Echeckdem.Services
 
             var currentYear = DateTime.Now.Year;
             var sqlQuery = @"
-                                SELECT a.oid, a.tp, a.Status, a.depdate, a.Period, a.Cyear, a.lastdate,
+                                SELECT a.oid, a.tp, a.Status, a.depdate, a.Period, a.Cyear, a.lastdate, a.contid, a.lcode, a.amount, a.chqdate, a.chqno, a.remarks,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.oname,
                                 d.statedesc as State
@@ -52,11 +55,11 @@ namespace Echeckdem.Services
             // applying filters
             if (!string.IsNullOrEmpty(organizationName))
             {
-                sqlQuery += "AND c.oname = @organizationName";
+                sqlQuery += " AND c.oname = @organizationName";
             }
             if (!string.IsNullOrEmpty(LocationName))
             {
-                sqlQuery += "AND b.lname = @LocationName";
+                sqlQuery += " AND b.lname = @LocationName";
             }
 
             if (!string.IsNullOrEmpty(StateName))
@@ -191,6 +194,86 @@ namespace Echeckdem.Services
                 .ToListAsync();
 
             return cityNames;
+        }
+
+
+        public async Task<Nccontr> GetByIdAsync(int contid, string oid, string lcode)
+        {
+            var Contribution = await _context.Nccontrs
+         .FirstOrDefaultAsync(r => r.Contid == contid && r.Oid == oid && r.Lcode == lcode);
+
+            if (Contribution == null)
+            {
+                Console.WriteLine("⚠️ No record found in database!");
+            }
+
+            return Contribution;
+        }
+
+
+        public async Task<string> UpdateContrAsync(int? contid, string oid, string lcode, int status, string amount , string chqno, DateOnly? chqdate, DateOnly? deptdate, DateOnly? lastdate, string remarks, IFormFile file)
+        {
+            try
+            {
+                var contrRecord = contid.HasValue
+                    ? await _context.Nccontrs.FirstOrDefaultAsync(n => n.Contid == contid && n.Oid == oid && n.Lcode == lcode)
+                    : new Nccontr();
+
+                if (contrRecord == null && contid.HasValue)
+                {
+                    return "Record not found.";
+                }
+
+                contrRecord.Oid = oid;
+                contrRecord.Lcode = lcode;
+                contrRecord.Status = status;
+                contrRecord.Amount = amount;
+                contrRecord.Chqno = chqno;
+                contrRecord.Chqdate = chqdate;
+                contrRecord.Depdate = deptdate;
+                contrRecord.Lastdate = lastdate;
+                contrRecord.Remarks = remarks;
+
+                if (file != null && file.Length > 0)
+                {
+                    if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+                    {
+                        return "Only PDF files are allowed.";
+                    }
+
+                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "CONTR");
+                    Directory.CreateDirectory(folderPath);
+
+                    string filePath = Path.Combine(folderPath, file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    contrRecord.Filename = file.FileName;
+                }
+
+                // Insert or update record
+                if (!contid.HasValue)
+                {
+                    _context.Nccontrs.Add(contrRecord);
+                }
+                else
+                {
+                    _context.Nccontrs.Update(contrRecord);
+                }
+
+                await _context.SaveChangesAsync();
+                return "Data Saved Successfully!!!";
+
+
+
+            }
+
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
         }
     }
 }

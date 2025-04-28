@@ -40,15 +40,13 @@ namespace Echeckdem.Controllers
                     Console.WriteLine("USERID:", model.userID);
                     // Generate JWT token
                     //var token = await _jwtService.GenerateJwtToken(model.userID);
+                    var token = _jwtService.GenerateJwtToken(model);
 
-                    // Storing UserLevel in session
-
-
-                    //ViewBag.UserLevel = userLevel;
-
+                    HttpContext.Session.SetString("JWTToken", token);
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
+                    
 
                     if (userLevel==2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
 
@@ -72,6 +70,7 @@ namespace Echeckdem.Controllers
         {
             // Clear the user session
             HttpContext.Session.Clear();
+            //HttpContext.Session.Remove("UserID");
 
             // Redirect to the login page
             return RedirectToAction("Index", "Login");

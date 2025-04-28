@@ -59,8 +59,19 @@
 
                
 
+                @* <label for="Spoc">C4HR SPOC:</label>
+                <input type="text" id="Spoc" name="Spoc" /> *@
+
                 <label for="Spoc">C4HR SPOC:</label>
-                <input type="text" id="Spoc" name="Spoc" />
+                <select id="Spoc" name="Spoc">
+                    <option value="">-- Select SPOC --</option>
+                    @foreach (var item in Model.SpocList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+
+                
 
                 <label for="styear">Contract Year:</label>
                 <input type="text" id="styear" name="styear" />
@@ -70,6 +81,10 @@
 
                 <label for="Contemail">Client SPOC Email:</label>
                 <input type="email" id="Contemail" name="Contemail" />
+
+                <label for="PdfFile">Upload Contract Copy (PDF):</label>
+                <input type="file" id="PdfFile" name="PdfFile" accept=".pdf" />
+
 
                 
 

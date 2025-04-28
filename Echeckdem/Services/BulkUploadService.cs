@@ -115,7 +115,9 @@ namespace Echeckdem.Services
                                     Iscentral = ParseYesNo(row.Cell(11).GetValue<string>()), // Yes - 1 No - 0
                                     Iscloc = ParseYesNo(row.Cell(12).GetValue<string>()),
                                     Lsetup = row.Cell(13).GetValue<int?>(),
-                                    Lactive = ParseYesNo(row.Cell(14).GetValue<string>())
+                                    Lactive = ParseYesNo(row.Cell(14).GetValue<string>()),
+                                    Ispf = ParseYesNo(row.Cell(15).GetValue<string>()),
+                                    Isesi = ParseYesNo(row.Cell(16).GetValue<string>())
                                 };
                                 locations.Add(location);
                             }

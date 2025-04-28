@@ -1,8 +1,17 @@
-﻿    namespace Echeckdem.Models
-    {
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Echeckdem.Models
+{
         public class ReturnsViewModel
         {
-            public string oid { get; set; }
+
+        [Key]
+        public int Rtid { get; set; }
+        [Key]
+        public string Lcode { get; set; }
+
+        [Key]
+        public string oid { get; set; }
             public string Lname { get; set; }
             //public string LState { get; set; }
             public string State { get; set; }
@@ -11,13 +20,17 @@
             public string RTitle { get; set; }
             public string RForm { get; set; }
             public string OName { get; set; }
-            public DateTime? LastDate { get; set; }
-            public int Status { get; set; }
+            public DateOnly? LastDate { get; set; }
+            public int? Status { get; set; }
 
             public DateOnly? Depdate {  get; set; }
 
+            public string? Remarks { get; set; }
+
             public int RM {  get; set; }
             public int YROFF { get; set; }
+
+        
             public DateTime? Period => CalculatePeriod();
             public string GetStatusDescription()
             {

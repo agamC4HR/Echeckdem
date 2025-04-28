@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UploadedDocuments\" />
     <Folder Include="wwwroot\imgs\" />
+    <Folder Include="wwwroot\Files\" />
   </ItemGroup>
 
 </Project>

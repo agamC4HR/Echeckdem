@@ -1,0 +1,43 @@
+﻿@model Echeckdem.CustomFolder.UserManagement.UserCreateViewModel
+
+
+<h2>Create New User</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="UserID">UserID</label>
+        <input type="text" class="form-control" id="UserID" name="UserID" required />
+    </div>
+    <div class="form-group">
+        <label for="UNAME">Full Name</label>
+        <input type="text" class="form-control" id="UNAME" name="UNAME" required />
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input type="password" class="form-control" id="Password" name="Password" required />
+    </div>
+    <div class="form-group">
+        <label for="EmailID">Email</label>
+        <input type="email" class="form-control" id="EmailID" name="EmailID" required />
+    </div>
+    <div class="form-group">
+        <label for="UserLevel">User Level</label>
+        <select class="form-control" id="UserLevel" name="UserLevel">
+            <option value="1">Admin</option>
+            <option value="2">SPOC</option>
+            <option value="3">Reports</option>
+            <option value="4">Data Entry User</option>
+            <option value="5">Data Viewer</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="OID">Organisation</label>
+        <select class="form-control" id="OID" name="OID">
+            @foreach (var org in ViewBag.Organisations as SelectList)
+            {
+                <option value="@org.Value">@org.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create User</button>
+</form>

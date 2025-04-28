@@ -1,0 +1,44 @@
+﻿@model List<IGrouping<int, Echeckdem.CustomFolder.ReturnDetailViewModel>>
+
+@if (Model != null && Model.Any())
+{
+    <h5>Submitted Returns by Year</h5>
+
+    @foreach (var yearGroup in Model)
+    {
+        <div class="year-group">
+            <button class="btn btn-secondary btn-sm mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#returns-year-@yearGroup.Key" aria-expanded="false" aria-controls="returns-year-@yearGroup.Key">
+                @yearGroup.Key
+            </button>
+
+            <div class="collapse" id="returns-year-@yearGroup.Key">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Return Title</th>
+                            <th>Form</th>
+                            <th>Description</th>
+                            <th>Last Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in yearGroup)
+                        {
+                            <tr>
+                                <td>@item.Rtitle</td>
+                                <td>@item.Rform</td>
+                                <td>@item.Rdesc</td>
+                                <td>@(item.LastDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted">No returns submitted for this location.</p>
+}

@@ -30,11 +30,23 @@ namespace Echeckdem.Controllers
             _logger = logger;
         }
 
+        //[HttpGet]
+        //public IActionResult AddOrganisation()                                                                                 // Add Organisation details (setting up new organisation)
+        //{
+
+        //    return PartialView("AddOrganisation");
+        //}
+
         [HttpGet]
-        public IActionResult AddOrganisation()                                                                                 // Add Organisation details (setting up new organisation)
+        public async Task<IActionResult> AddOrganisation()
         {
-            return PartialView("AddOrganisation");
+            var model = new OrganisationGeneralInfoViewModel
+            {
+                SpocList = await _organisationsetupservice.GetC4HRSPOCListAsync()
+            };
+            return PartialView("AddOrganisation", model);
         }
+
 
         [HttpPost]                                                                                                          // Add Organisation details (setting up new organisation)
         public async Task<IActionResult> AddOrganisation(OrganisationGeneralInfoViewModel newOrganisation)
@@ -55,9 +67,9 @@ namespace Echeckdem.Controllers
 
 
         [HttpGet]                            // Getting Organisation List and General Info
-        public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid)
+        public async Task<IActionResult> OrganisationSetup(string? searchTerm, string? selectedOid, bool? isActiveFilter) // added isActiveFilter paramter here acc to feedback.
         {
-            var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid);
+            var viewModel = await _organisationsetupservice.GetOrganisationSetupAsync(searchTerm, selectedOid, isActiveFilter);
 
             return View("OrganisationSetup", viewModel);
         }
@@ -148,6 +160,8 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 12].Value = "Under CLRA";
                 worksheet.Cells[1, 13].Value = "Setup Year";
                 worksheet.Cells[1, 14].Value = "Site Active";
+                worksheet.Cells[1, 15].Value = "Under PF";
+                worksheet.Cells[1, 16].Value = "Under ESI";
 
                 var validationSheet = package.Workbook.Worksheets.Add("Validation"); // Add a hidden sheet for validation
                 // Populate state names in the validation sheet
@@ -209,6 +223,18 @@ namespace Echeckdem.Controllers
                 siteActiveValidation.Error = "Please select Yes or No.";
                 siteActiveValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
 
+                var pfValidation = worksheet.DataValidations.AddListValidation("O2:O1000");
+                pfValidation.ShowErrorMessage = true;
+                pfValidation.ErrorTitle = "Invalid Entry";
+                pfValidation.Error = "Please select Yes or No.";
+                pfValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
+
+                var esiValidation = worksheet.DataValidations.AddListValidation("P2:P1000");
+                esiValidation.ShowErrorMessage = true;
+                esiValidation.ErrorTitle = "Invalid Entry";
+                esiValidation.Error = "Please select Yes or No.";
+                esiValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
+
                 // Hide the validation sheet
                 validationSheet.Hidden = eWorkSheetHidden.Hidden;
                 // Generate file content
@@ -221,7 +247,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetLocationDatabyOid(string oid)                                 // Viewing the Location DATA tab
+        public IActionResult GetLocationDatabyOid(string oid)                                     // Viewing the Location DATA tab
         {
             if (string.IsNullOrEmpty(oid))
             {
@@ -234,8 +260,8 @@ namespace Echeckdem.Controllers
             // Create an instance of CombinedOrganisationSetupViewModel 
             var model = new CombinedOrganisationSetupViewModel
             {
-                AddLocation = locations, // Assuming locations is of type List<AddLocationViewModel>
-                oid = oid // Set the OID if needed
+                AddLocation = locations, 
+                oid = oid 
             };
 
             return PartialView("EditLocations", model);
@@ -412,6 +438,8 @@ namespace Echeckdem.Controllers
             }
         }
 
+        //<<---------------------START----------------------------------VIEW DATA FOR BOCW SITES----------------------------------------->
+
         [HttpGet]
         public async Task<IActionResult> ViewBoDetails(string oid)                                             // View BOCW sites details under VIEW BOCW DATA Button
         {
@@ -424,8 +452,8 @@ namespace Echeckdem.Controllers
             return PartialView(boDetails);
         }
 
-
-        // START->  EDIT for BOCW SITE DATA-------------------------------------------------------------
+        //<<---------------------END----------------------------------VIEW DATA FOR BOCW SITES----------------------------------------->
+        // <<--------------------START-------------------------------------------EDIT for BOCW SITE DATA----------------------------------------------------------------------->>
         [HttpGet]
         public async Task<IActionResult> GetEditNcmlocbo(string lcode)                 // editing the details in ncmlocbo
         {
@@ -446,34 +474,44 @@ namespace Echeckdem.Controllers
         [HttpPost]
 
 
-        public async Task<IActionResult> UpdateNcmlocbo(Ncmlocbo updatedBo)                            // editing the details in ncmlocbo
+        public async Task<IActionResult> UpdateNcmlocbo(Ncmlocbo updatedBo, string lcode)                            // editing the details in ncmlocbo
         {
             if (!ModelState.IsValid)
             {
                 return Json(new { success = false, message = "Invalid data." });
             }
 
-            var existingBo = await _EcheckContext.Ncmlocbos.FindAsync(updatedBo.Lcode);
+            var existingBo = await _EcheckContext.Ncmlocbos.FirstOrDefaultAsync(b => b.Lcode == lcode);
             if (existingBo == null)
             {
                 return Json(new { success = false, message = "BO site not found." });
             }
 
             // Update the properties
+            existingBo.ProjectCode = updatedBo.ProjectCode;
+            existingBo.OvalId = updatedBo.OvalId;
             existingBo.ClientName = updatedBo.ClientName;
+            existingBo.GeneralContractor = updatedBo.GeneralContractor;
+            existingBo.ProjectAddress = updatedBo.ProjectAddress;
+            existingBo.NatureofWork = updatedBo.NatureofWork;
+            existingBo.ProjectArea = updatedBo.ProjectArea;
             existingBo.ProjectCostEst = updatedBo.ProjectCostEst;
             existingBo.ProjectStartDateEst = updatedBo.ProjectStartDateEst;
             existingBo.ProjectEndDateEst = updatedBo.ProjectEndDateEst;
             existingBo.VendorCount = updatedBo.VendorCount;
+            existingBo.WorkerHeadCount = updatedBo.WorkerHeadCount;
+            existingBo.ProjectLead = updatedBo.ProjectLead;
+            existingBo.Lname = updatedBo.Lname;
+            existingBo.ActiveScopes = updatedBo.ActiveScopes;
 
 
             await _EcheckContext.SaveChangesAsync();
 
             return Json(new { success = true, message = "BO site updated successfully." });
         }
-        // END->  EDIT for BOCW SITE DATA-------------------------------------------------------------
+        // <<--------------------END-------------------------------------------EDIT for BOCW SITE DATA----------------------------------------------------------------------->>
 
-        // START->  add scopes for BOCW SITE DATA-------------------------------------------------------------
+        //-----------------------START-----------------------------------------SCOPE SETUP-------------------------------------------------------------------------------------------------//
         public async Task<IActionResult> Index()                                                                        // Get all sites under bocw that can be further used for scope mapping.
         {
             try
@@ -559,9 +597,9 @@ namespace Echeckdem.Controllers
             }
         }
 
-        //// END->  add scopes for BOCW SITE DATA-------------------------------------------------------------
+        //-------------------------END------------------------SCOPE SETUP-------------------------------------------------------------------------------------------------//
 
-        //---------------------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
+        //-------------------------START------------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
 
         [HttpGet]
 
@@ -578,10 +616,10 @@ namespace Echeckdem.Controllers
             }
         }
 
+        //-------------------------END-------------------PROJECT SETUP AFTER SCOPE SETUP-------------------------------------------------------------------------------//
 
-    
 
-       
+
     }
 }
 

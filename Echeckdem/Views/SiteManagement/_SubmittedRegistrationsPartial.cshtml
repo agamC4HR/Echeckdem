@@ -1,0 +1,31 @@
+﻿@model List< Echeckdem.CustomFolder.RegistrationTemplateViewModel>
+
+
+@if (Model != null && Model.Any())
+{
+    <h5>Submitted Registrations</h5>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Registration Title</th>
+                <th>RType</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Rdesc</td>
+                    <td>@item.Rtype</td>
+                    <td>@item.Category</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">No registrations submitted for this location.</p>
+}

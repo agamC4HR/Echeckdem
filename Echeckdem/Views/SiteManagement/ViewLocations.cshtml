@@ -1,0 +1,122 @@
+﻿@model List<Echeckdem.CustomFolder.LocationViewModel>
+@{
+    ViewBag.Title = "Locations for Organization";
+}
+
+<h2>Locations</h2>
+<p><strong>OID:</strong> @ViewBag.OID</p>
+<p><strong>Oname:</strong> @ViewBag.Oname</p>
+
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Location Code</th>
+            <th>Location Name</th>
+            <th>State</th>
+            <th>Type</th>
+            <th>Central</th>
+            <th>CLRA</th>
+            <th>PF</th>
+            <th>ESI</th>
+            @* <th>Region</th>
+            <th>Address</th>
+            <th>Branch Contact</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Client Email</th>
+            <th>Internal Email</th> *@
+            <th>Returns</th>
+            <th>Contributions</th>
+            <th>Registations</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model[i].Lcode</td>
+                <td>@Model[i].Lname</td>
+                <td>@Model[i].Lstate</td>
+                <td>@Model[i].Ltype</td>
+                <td>@(Model[i].Iscentral == 1 ? "Yes" : "No")</td>
+                <td>@(Model[i].Iscloc == 1 ? "Yes" : "No")</td>
+                <td>@(Model[i].ispf == 1 ? "Yes" : "No")</td>
+                <td>@(Model[i].isesi == 1 ? "Yes" : "No")</td>
+
+               @*  <td>@Model[i].Lregion</td>
+                <td>@Model[i].Laddress</td>
+                <td>@Model[i].Lcontact</td>
+                <td>@Model[i].Lconno</td>
+                <td>@Model[i].Lconemail</td>
+                <td>@Model[i].Cemail</td>
+                <td>@Model[i].Iemail</td> *@
+                
+                <td>
+                    <form asp-action="ReturnSetup" method="post">
+                        <input type="hidden" name="oid" value="@Model[i].Oid" />
+                        <input type="hidden" name="lcode" value="@Model[i].Lcode" />
+                        <button type="submit" class="btn btn-primary btn-sm">Return Setup</button>
+                    </form>
+                    <button class="btn btn-info btn-sm mt-1" onclick="loadReturns('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                </td>
+                <td>
+                    <form asp-action="ContributionSetup" method="post">
+                        <input type="hidden" name="oid" value="@Model[i].Oid" />
+                        <input type="hidden" name="lcode" value="@Model[i].Lcode" />
+                        <button type="submit" class="btn btn-primary btn-sm">Contribution Setup</button>
+                    </form>
+                    <button class="btn btn-info btn-sm mt-1" onclick="loadContributions('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                </td>
+                <td>
+                    <form asp-action="RegistrationSetup" method="post">
+                        <input type="hidden" name="oid" value="@Model[i].Oid" />
+                        <input type="hidden" name="lcode" value="@Model[i].Lcode" />
+                        <button type="submit" class="btn btn-primary btn-sm">Registration Setup</button>
+                    </form>
+                    <button class="btn btn-info btn-sm mt-1" onclick="loadRegistrations('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div id="submittedReturnsContainer"></div>
+<div id="submittedContributionsContainer"></div>
+<div id="submittedRegistrationsContainer"></div>
+<script>
+    function loadReturns(oid, lcode) {
+        fetch(`/SiteManagement/SubmittedReturns?oid=${oid}&lcode=${lcode}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("submittedReturnsContainer").innerHTML = html;
+            });
+    }
+
+</script>
+
+<script>
+    function loadContributions(oid, lcode) {
+        fetch(`/SiteManagement/SubmittedContributions?oid=${oid}&lcode=${lcode}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("submittedContributionsContainer").innerHTML = html;
+            });
+    }
+
+</script>
+
+
+<script>
+    function loadRegistrations(oid, lcode) {
+        fetch(`/SiteManagement/SubmittedRegistrations?oid=${oid}&lcode=${lcode}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("submittedRegistrationsContainer").innerHTML = html;
+            });
+    }
+
+</script>
+

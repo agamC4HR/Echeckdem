@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,12 @@ builder.Services.AddScoped<ContributionService>();
 builder.Services.AddScoped<RegistrationService>();
 builder.Services.AddScoped<IBulkUploadService, BulkUploadService>();
 builder.Services.AddScoped<ActScopeSetupService>();
+builder.Services.AddScoped<IUserManagementService, UserManagementService>();
+builder.Services.AddScoped<DetailViewCombinedService>();
+builder.Services.AddSingleton<MailService>();
+builder.Services.AddScoped<TrackerService>();
+builder.Services.AddScoped<ISiteManagementService, SiteManagementService>();
+builder.Services.AddScoped<IStateTemplateService, StateTemplateService>();
 
 
 // Configuring the Database

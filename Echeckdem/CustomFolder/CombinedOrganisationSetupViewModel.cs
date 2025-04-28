@@ -16,6 +16,8 @@ namespace Echeckdem.CustomFolder
         //OrganisationGeneralInfoViewModel  
         public string Spoc { get; set; }
         public int TotalCount { get; set; }
+
+        //public string? FileName { get; set; } //////////////gefgrfesffedfgrfew///////////////////////
         public int? styear { get; set; }
         public string? Contname { get; set; }
         public string? Contemail { get; set; }

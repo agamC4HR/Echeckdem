@@ -12,8 +12,8 @@ public partial class BocwScope
     public int ScopeActive { get; set; }
 
     public string? Category { get; set; }
-
-    public string? Frequency { get; set; }
+    [NotMapped]
+    public bool IsSelected { get; set; }
 
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 

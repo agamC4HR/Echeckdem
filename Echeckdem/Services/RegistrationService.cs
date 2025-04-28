@@ -2,24 +2,28 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Echeckdem.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using ZstdSharp.Unsafe;
 
 namespace Echeckdem.Services
 {
     public class RegistrationService
     {
         private readonly DbEcheckContext _context;
-        public RegistrationService(DbEcheckContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public RegistrationService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
         public async Task<List<RegistrationViewModel>> GetDataAsync( int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
         {
             var currentYear = DateTime.Now.Year;
 
             var sqlQuery = @"
-            SELECT a.oid, a.doe, a.status, a.Dolr, a.tp,  
+            SELECT a.oid, a.doe, a.status, a.Dolr, a.tp, a.doi, a.lcode, a.nmoe, a.noe, a.remarks, a.rno, a.uid,  
             b.lname, b.lstate, b.lcity, b.lregion,
             c.oname,
             d.statedesc as State
@@ -32,6 +36,7 @@ namespace Echeckdem.Services
             AND b.oid = a.oid
             AND a.lcode = b.lcode ";
 
+            
 
             // Apply year condition only if no filters are specified
             if (string.IsNullOrEmpty(organizationName) &&
@@ -39,7 +44,7 @@ namespace Echeckdem.Services
                 string.IsNullOrEmpty(StateName) &&
                 string.IsNullOrEmpty(CityName))
             {
-                sqlQuery += "AND YEAR(a.doe) = @currentYear ";
+                sqlQuery += "AND YEAR(a.doe) = @currentYear ";                          
             }
 
             if (ulev >= 1)
@@ -74,7 +79,7 @@ namespace Echeckdem.Services
             }
             if (EndDueDate.HasValue)
             {
-                sqlQuery += "AND a.doe <= @EndDueDate";
+                sqlQuery += " AND a.doe <= @EndDueDate";
             }    
             if (StartPeriod.HasValue)
             {
@@ -192,8 +197,86 @@ namespace Echeckdem.Services
             return cityNames;
         }
 
-        
 
+        public async Task<Ncreg> GetByIdAsync(int uid, string oid, string lcode)
+        {
+            var registration = await _context.Ncregs
+         .FirstOrDefaultAsync(r => r.Uid == uid && r.Oid == oid && r.Lcode == lcode);
+
+            if (registration == null)
+            {
+                Console.WriteLine("⚠️ No record found in database!");
+            }
+
+            return registration;
+        }
+
+
+        public async Task<string> UpdateRegAsync (int? uid, string oid, string lcode, string status, string rno, int noe, string nmoe, DateOnly? doi, DateOnly? doe, DateOnly? dolr, string remarks, IFormFile file )
+        {
+            try
+            {
+                var ncregRecord = uid.HasValue
+                    ? await _context.Ncregs.FirstOrDefaultAsync(n => n.Uid == uid && n.Oid == oid && n.Lcode == lcode)
+                    : new Ncreg();
+
+                if (ncregRecord == null && uid.HasValue)
+                {
+                    return "Record not found.";
+                }
+
+                ncregRecord.Oid = oid;
+                ncregRecord.Lcode = lcode;
+                ncregRecord.Status = status;
+                ncregRecord.Rno = rno;
+                ncregRecord.Noe = noe;
+                ncregRecord.Nmoe = nmoe;
+                ncregRecord.Doi = doi;
+                ncregRecord.Doe = doe;
+                ncregRecord.Dolr = dolr;
+                ncregRecord.Remarks = remarks;
+
+                if(file != null && file.Length>0)
+                {
+                    if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+                    {
+                        return "Only PDF files are allowed.";
+                    }
+
+                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "REG");
+                    Directory.CreateDirectory(folderPath);
+
+                    string filePath = Path.Combine(folderPath, file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    ncregRecord.Filename = file.FileName;
+                }
+
+                // Insert or update record
+                if (!uid.HasValue)
+                {
+                    _context.Ncregs.Add(ncregRecord);
+                }
+                else
+                {
+                    _context.Ncregs.Update(ncregRecord);
+                }
+
+                await _context.SaveChangesAsync();
+                return "Data Saved Successfully!!!";
+
+
+
+            }
+
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
 
     }
 }

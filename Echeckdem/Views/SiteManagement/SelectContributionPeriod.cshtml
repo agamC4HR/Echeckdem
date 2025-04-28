@@ -1,0 +1,34 @@
+﻿@model Echeckdem.CustomFolder.ContributionPeriodSelectionViewModel
+
+
+<h3>Select Contribution Period</h3>
+
+<form asp-action="FetchApplicableContributions" method="post">
+    @Html.HiddenFor(m => m.Oid)
+    @Html.HiddenFor(m => m.Lcode)
+    @Html.HiddenFor(m => m.Lstate)
+  
+    <div class="form-group mb-3">
+        <label for="SelectedTP">Contribution Type:</label>
+        <select asp-for="SelectedTP" class="form-control" required>
+            <option value="">-- Select Contribution Type --</option>
+            <option value="ESI">ESI</option>
+            <option value="PF">PF</option>
+            <option value="LWF">LWF</option>
+            <option value="PT">PT</option>
+            <option value="ALL">ALL</option>
+        </select>
+    </div>
+
+
+
+    <div class="form-group mb-2">
+        <label for="Month">Return Month:</label>
+        <input type="number" name="Month" class="form-control" min="1" max="12" required />
+    </div>
+    <div class="form-group mb-3">
+        <label for="Year">Return Year:</label>
+        <input type="number" name="Year" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Fetch Contributions</button>
+</form>
