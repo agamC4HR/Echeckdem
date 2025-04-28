@@ -1,9 +1,11 @@
-﻿using Echeckdem.CustomFolder.UserManagement;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Echeckdem.CustomFolder.UserManagement;
 using Echeckdem.Models;
     using Echeckdem.Services;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
-    using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
     namespace Echeckdem.Controllers
 {
@@ -12,7 +14,7 @@ using Echeckdem.Models;
 
         private readonly IUserManagementService _userManagementService;
         private readonly DbEcheckContext _EcheckContext;
-
+        
         public UserManagementController(IUserManagementService userManagementService, DbEcheckContext echeckContext)
         {
             _userManagementService = userManagementService;
@@ -31,8 +33,7 @@ using Echeckdem.Models;
             var organisations = await _userManagementService.GetAllOrganisationsAsync();
             if (organisations == null || !organisations.Any())
             {
-                // Optionally, you can add a default organization or show an error message
-                // Example:
+               
                 ViewBag.Organisations = new List<OrganisationViewModel> { new OrganisationViewModel { OID = "0", OrganisationName = "No Organisations Available" } };
             }
             else
@@ -41,8 +42,7 @@ using Echeckdem.Models;
             }
 
             return View();
-            //ViewBag.Organisations = new SelectList(organisations, "OID", "Oname");
-            //return View();
+           
         }
 
         [HttpPost]
@@ -51,14 +51,59 @@ using Echeckdem.Models;
             if (ModelState.IsValid)
             {
                 await _userManagementService.AddUserAsync(model);
-                return RedirectToAction(nameof(Index)); // Redirect to user list after adding
+                return RedirectToAction(nameof(Index)); // Redirection to user list after adding
             }
 
-            // Fetch organisations if form validation fails
+            
             var organisations = await _userManagementService.GetAllOrganisationsAsync();
             ViewBag.Organisations = new SelectList(organisations, "OID", "Oname");
             return View(model);
         }
+
+       
+        [HttpPost]
+        public IActionResult MapOrganisation(string userId)
+        {
+           
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest();
+            }
+            HttpContext.Session.SetString("UserId", userId);
+            // userid storing in session so that wwe dontget data in link.
+
+
+
+            return RedirectToAction("MapOrganisation");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> MapOrganisation()
+
+        {
+
+            string userId = HttpContext.Session.GetString("UserId"); 
+
+                                                                     
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("failed to get userid");
+            }
+
+            try
+            {
+                var mappings = await _userManagementService.GetUserMappingAsync(userId);
+                ViewBag.UserId = userId;
+                return View(mappings);
+            }
+            catch (Exception ex)
+            {
+                
+                return NotFound(ex.Message);
+            }
+        }
+
 
 
         //public async Task<IActionResult> Index()

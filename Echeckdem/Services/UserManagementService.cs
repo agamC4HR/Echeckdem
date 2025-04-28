@@ -15,6 +15,7 @@ namespace Echeckdem.Services
 
         Task AddUserAsync(UserCreateViewModel model);
         Task<List<OrganisationViewModel>> GetAllOrganisationsAsync();
+        Task<List<UserMappingViewModel>> GetUserMappingAsync(string userId);
         //Task<Ncuser> GetUserByIdAsync(string userId);
         //Task<string> GetOrganizationNameByOidAsync(string oid);
         //Task<List<SelectListItem>> GetUserLevelOptionsAsync();
@@ -26,10 +27,12 @@ namespace Echeckdem.Services
     public class UserManagementService : IUserManagementService
     {
         private readonly DbEcheckContext _EcheckContext;
+        private readonly ILogger<UserManagementService> _logger;
 
-        public UserManagementService(DbEcheckContext echeckContext)
+        public UserManagementService(DbEcheckContext echeckContext, ILogger<UserManagementService> logger)
         {
             _EcheckContext = echeckContext;
+            _logger = logger;
         }
 
         public async Task<List<UserManagementViewModel>> GetAllUsersAsync()
@@ -90,6 +93,24 @@ namespace Echeckdem.Services
             };
         }
 
+        private string GetMappingUserLevelName(int level)
+        {
+            return level switch
+            {
+                1 => "Reports",
+                5 => "Uploader",
+                10 => "Auditor",
+                15 => "Owner",
+                101 => "Contributions",
+                102 => "Registrations",
+                103 => "Returns",
+                104 => "Registrations and Contributions",
+                105 => "All 3",
+                _ => "Unknown"
+            };
+        }
+
+
         public async Task<List<OrganisationViewModel>> GetAllOrganisationsAsync()
         {
             return await _EcheckContext.Ncmorgs
@@ -101,6 +122,62 @@ namespace Echeckdem.Services
                                       .ToListAsync();
         }
 
+        public async Task<List<UserMappingViewModel>> GetUserMappingAsync(string userId)
+        {
+            _logger.LogInformation("Starting GetUserMappingAsync for userId: {UserId}", userId);
+            var user = await _EcheckContext.Ncusers.Where(u=>u.Userid == userId).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                _logger.LogWarning("User with UserId: {UserId} not found.", userId);
+                throw new Exception("User not found.");
+            }
+
+            var uno = user.Uno;
+            _logger.LogInformation("User found. Fetching mappings for Uno: {Uno}", uno);
+
+            var rawMappings = await (from map in _EcheckContext.Ncumaps
+                                  join org in _EcheckContext.Ncmorgs on map.Oid equals org.Oid
+                                  join loc in _EcheckContext.Ncmlocs on map.Lcode equals loc.Lcode
+                                  where map.Uno == uno
+                                     select new
+                                     {
+                                         org.Oname,
+                                         loc.Lname,
+                                         map.Ulevel
+                                     }).ToListAsync();
+
+            _logger.LogInformation("Mappings retrieved for Uno: {Uno}. Processing user levels...", uno);
+
+            var mappings = rawMappings.Select(m =>
+            {
+                // Safely try to convert Ulevel to int
+                int parsedUlevel = 0; // Default value
+                if (!string.IsNullOrEmpty(m.Ulevel) && int.TryParse(m.Ulevel, out parsedUlevel))
+                {
+                    _logger.LogInformation("Successfully parsed UserLevel: {UserLevel} to integer", m.Ulevel);
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to parse UserLevel: {UserLevel}, using default value: {DefaultUserLevel}", m.Ulevel, parsedUlevel);
+                }
+
+                return new UserMappingViewModel
+                {
+                    OrganisationName = m.Oname,
+                    LocationName = m.Lname,
+                    UserLevel = GetMappingUserLevelName(parsedUlevel) // Use parsed int value
+                };
+            }).ToList();
+
+            _logger.LogInformation("Finished processing mappings for Uno: {Uno}. Total mappings: {MappingsCount}", uno, mappings.Count);
+
+
+            return mappings;
+
+
+
+        }
 
 
 

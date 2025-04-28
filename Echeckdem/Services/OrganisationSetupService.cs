@@ -143,15 +143,6 @@ namespace Echeckdem.Services
                 })
                 .ToListAsync();
 
-
-
-
-
-
-
-
-
-
             // Fetch the selected organization's general information
             OrganisationGeneralInfoViewModel? selectedOrganisation = null;
             if (!string.IsNullOrEmpty(selectedOid))

@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Echeckdem.CustomFolder.UserManagement.UserMappingViewModel>
+
+
+<h2>Mapped Organisations and Locations for User: @ViewBag.UserId</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Organisation</th>
+            <th>Location</th>
+            <th>User Level</th>
+        </tr>
+    </thead>
+    <tbody> 
+        @foreach (var mapping in Model)
+        {
+            <tr>
+                <td>@mapping.OrganisationName</td>
+                <td>@mapping.LocationName</td>
+                <td>@mapping.UserLevel</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Back to User List</a>
