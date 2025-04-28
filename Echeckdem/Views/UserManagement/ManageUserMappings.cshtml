@@ -1,0 +1,69 @@
+﻿@model Echeckdem.CustomFolder.UserManagement.UserMappingViewModel
+
+@{
+    ViewBag.Title = "Map Organisation";
+}
+
+<h2>Map Organisation</h2>
+
+<form method="post" asp-action="SaveMapping">
+    <!-- we'll create SaveMapping later -->
+    <div class="form-group">
+        <label for="OrganisationDropdown">Select Organisation</label>
+        <select id="OrganisationDropdown" name="OID" class="form-control" required>
+            <option value="">-- Select Organisation --</option>
+            @foreach (var org in ViewBag.Organisations as List<Echeckdem.CustomFolder.UserManagement.OrganisationViewModel>)
+            {
+                <option value="@org.OID">@org.OrganisationName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="LocationDropdown">Select Location</label>
+        <select id="LocationDropdown" name="LCode" class="form-control" required>
+            <option value="">-- Select Location --</option>
+        </select>
+    </div>
+
+    <input type="hidden" name="UserId" value="@ViewBag.UserId" /> <!-- session userId if needed -->
+
+    <button type="submit" class="btn btn-primary">Save Mapping</button>
+</form>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#OrganisationDropdown').change(function () {
+                var oid = $(this).val();
+
+                if (oid) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetLocationsByOrganisation", "UserManagement")',
+                        data: { oid: oid },
+                        success: function (response) {
+                            if (response.success) {
+                                var locations = response.data;
+                                var locationDropdown = $('#LocationDropdown');
+                                locationDropdown.empty();
+                                locationDropdown.append('<option value="">-- Select Location --</option>');
+
+                                $.each(locations, function (i, location) {
+                                    locationDropdown.append('<option value="' + location.lCode + '">' + location.locationName + '</option>');
+                                });
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function () {
+                            alert('Error fetching locations.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

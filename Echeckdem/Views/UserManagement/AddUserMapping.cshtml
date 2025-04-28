@@ -1,0 +1,72 @@
+﻿@model Echeckdem.CustomFolder.UserManagement.UserMappingCreationModel
+
+<h2>Add New User Mapping</h2>
+
+@if (ViewBag.UserId != null)
+{
+    <p><strong>User ID:</strong> @ViewBag.UserId</p>
+}
+@if (ViewBag.Uno != null)
+{
+    <p><strong>User Uno:</strong> @ViewBag.Uno</p>
+}
+
+<form method="post" asp-action="AddUserMapping" asp-controller="UserManagement">
+    <input type="hidden" asp-for="Uno" value="@ViewBag.Uno" />
+
+    <div class="form-group">
+        <label for="Oid">Organisation</label>
+        <select class="form-control" id="Oid" asp-for="Oid" asp-items="@ViewBag.Organisations" required>
+            <option value="">-- Select Organisation --</option>
+        </select>
+        <span asp-validation-for="Oid" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Lcode">Location</label>
+        <select class="form-control" id="Lcode" asp-for="Lcode" asp-items="@ViewBag.Locations" required>
+            <option value="">-- Select Location --</option>
+        </select>
+        <span asp-validation-for="Lcode" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="SelectedUserLevel">User Level for this Mapping</label>
+        <select class="form-control" id="SelectedUserLevel" asp-for="SelectedUserLevel" asp-items="@ViewBag.UserLevelOptions" required>
+            <option value="">-- Select User Level --</option>
+        </select>
+        <span asp-validation-for="SelectedUserLevel" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Mapping</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#Oid').change(function () {
+                var oid = $(this).val();
+                $('#Lcode').empty(); // Clear existing options
+                $('#Lcode').append('<option value="">-- Select Location --</option>');
+
+                if (oid) {
+                    $.ajax({
+                        url: '@Url.Action("GetLocations", "UserManagement")',
+                        type: 'GET',
+                        data: { oid: oid },
+                        dataType: 'json',
+                        success: function (data) {
+                            $.each(data, function (i, location) {
+                                $('#Lcode').append('<option value="' + location.id + '">' + location.name + '</option>');
+                            });
+                        },
+                        error: function (error) {
+                            console.log('Error loading locations: ' + error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -12,6 +12,7 @@
             <th>User Level</th>
             <th>Organisation</th>
             <th>Actions</th>
+            <th>Map Org</th>
         </tr>
     </thead>
     <tbody>
@@ -24,13 +25,18 @@
                 <td>@user.UserLevel</td>
                 <td>@user.OrganisationName</td>
                 <td>
-                    @* <a href="@Url.Action("MapOrganisation", "UserManagement", new { userId = user.UserID })" class="btn btn-info btn-sm">Map Organisation</a> *@
+                   
                     <form method="post" action="@Url.Action("MapOrganisation", "UserManagement")">
                         <input type="hidden" name="userId" value="@user.UserID" />
-                        <!-- Form fields -->
-                        <button type="submit">Submit</button>
+                        <button type="submit">Map Organisations</button>
                     </form>
 
+                </td>
+                <td>
+                    <form method="post" asp-action="InitiateAddMapping" asp-controller="UserManagement">
+                        <input type="hidden" name="userId" value="@user.UserID" />
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Add Mapping</button>
+                    </form>
                 </td>
             </tr>
         }
