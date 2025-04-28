@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
     namespace Echeckdem.Controllers
 {
+
     public class UserManagementController : Controller
     {
 
@@ -69,10 +70,11 @@ using Microsoft.EntityFrameworkCore;
             {
                 return BadRequest();
             }
-            HttpContext.Session.SetString("UserId", userId);
+            //HttpContext.Session.SetString("UserId", userId);
+            //var userId = HttpContext.Session.GetString("UserID");
             // userid storing in session so that wwe dontget data in link.
 
-
+            HttpContext.Session.SetString("UserId", userId);
 
             return RedirectToAction("MapOrganisation");
         }
@@ -82,8 +84,8 @@ using Microsoft.EntityFrameworkCore;
         public async Task<IActionResult> MapOrganisation()
 
         {
-
-            string userId = HttpContext.Session.GetString("UserId"); 
+            string userId = HttpContext.Session.GetString("UserId");
+            //string userId = HttpContext.Session.GetString("UserId"); 
 
                                                                      
             if (string.IsNullOrEmpty(userId))

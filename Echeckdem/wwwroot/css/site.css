@@ -160,15 +160,14 @@ a {
 
 .heading_background_parent {
     position: relative;
-    width: 98vw;
+    width: 100vw;
     height: 10vh;
     top: 80px;
-    left: 20px;
-    overflow: hidden;
+    left: 7px;
 }
 .heading_background {
     position: absolute;
-    width: 98%;
+    width: 99%;
     height: 100%;
     object-fit: cover;
     background: white;
@@ -181,7 +180,7 @@ a {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 13px;
+    padding: 7px;
     gap: 3px;
 }
 .heading_parent {
@@ -276,6 +275,8 @@ a {
     }
 
 .table-add-btn {
+    position:relative;
+    top: -10px;
     background-color: #3AC47D;
     color: white;
     border: 2px solid #3AC47D;

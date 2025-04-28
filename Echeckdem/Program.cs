@@ -20,6 +20,8 @@ builder.Services.AddHttpContextAccessor();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSession();
+
 // Add session services
 builder.Services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
 builder.Services.AddSession(options =>

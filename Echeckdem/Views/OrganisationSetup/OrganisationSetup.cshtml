@@ -20,6 +20,7 @@
 
     .styled-table {
         margin: 0;
+        display:none;
     }
 
         .styled-table thead {
@@ -57,15 +58,18 @@
         }
 
     .org-details-container {
-       /*  display: none; */
+        display:block;
         position: absolute;
-        width: 66vw;
-        margin: 20px auto;
-        padding: 0 15px;
+        width: 99vw;
+        height: 65vh;
+        padding: 15px;
         top: 40px;
-        left: 420px;
+        left: 7px;
         font-family: 'Arial', sans-serif;
         color: #333;
+        background: #ffffff;
+        border: 2px solid red;
+        border-radius: .375rem;
     }
 
     .org-details-header {
@@ -226,24 +230,45 @@
 
 
 
+    .dropdown-container {
+        margin-bottom: 20px;
+    }
+
+    .styled-dropdown {
+        position:absolute;
+        right:7px;
+        width: auto;
+        padding: 10px;
+        font-size: 14px;
+        border: 2px solid #dd3432;
+        border-radius: 6px;
+        color: #333;
+        font-family: Arial, sans-serif;
+    }
+
+        .styled-dropdown:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
  
 </style>
 @if (Context.Session.GetInt32("User Level") == 1)
                         {
-    @section TableHeadingContent { 
+ @*    @section TableHeadingContent { 
     <!-- Search bar -->
     <input type="text" id="searchBar" placeholder="Search Organisation..." class="table-search-input" onkeyup="searchTable()">
-
+ 
     <!-- Add button -->
     <button class="table-add-btn" onclick="showAddOrganisationForm()">
         Add New Organisation
-    </button>
-    }
+    </button> 
+    } *@
 
  
  
 <!-- Table Section -->
-    @section TableContent {
+   @*  @section TableContent {
     <table class="styled-table">
         <thead>
             <tr>
@@ -279,9 +304,19 @@
                
             </tbody>
         </table>
-        }
+        } *@
+
 <!-- Selected Organisation Details Section -->
 <div class="org-details-container" id="orgDetailsContainer">
+        <div class="dropdown-container">
+            <select id="organisationDropdown" class="styled-dropdown" onchange="onOrganisationChange()">
+                <option value="">Select an Organisation</option>
+                @foreach (var org in Model.OrganisationsList)
+                {
+                    <option value="@org.oid">@org.Oname</option>
+                }
+            </select>
+        </div>
     @if (Model.SelectedOrganisation != null)
     {
         <div class="org-details-header">
@@ -454,7 +489,7 @@
 
 
 
-
+@* 
     // Start of Working of Search Bar-------------------------
     function searchTable() {
         const input = document.getElementById('searchBar');
@@ -471,8 +506,8 @@
                 row.style.display = "";  // Show the row if it matches
                 highlightText(anchor, filter);  // Highlight the matched text inside the <a> tag
             } else {
-                row.style.display = "none";  // Hide the row if it doesn't match
-                removeHighlight(anchor);  // Remove previous highlights from the <a> tag
+                row.style.display = "none"; 
+                removeHighlight(anchor); 
             }
         });
     }
@@ -491,7 +526,7 @@
         // Remove any previous highlights from the <a> tag
         anchor.innerHTML = anchor.innerHTML.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
     }
-    // End of Working of Search Bar------------------------
+    // End of Working of Search Bar------------------------ *@
 
     //Start of Working Of Add Location-------------------------
         function showUploadForm() {
@@ -629,4 +664,12 @@
         $("#editForm").load(`/OrganisationSetup/EditLocationData?oid=${oid}`);
     }
  *@
+
+
+      function onOrganisationChange() {
+            var oid = document.getElementById('organisationDropdown').value;
+            if (oid) {
+                window.location.href = '/OrganisationSetup/OrganisationSetup?selectedOid=' + oid;
+            }
+        }
 </script>

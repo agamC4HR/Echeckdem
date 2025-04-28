@@ -26,6 +26,7 @@
                 <td>
                     @* <a href="@Url.Action("MapOrganisation", "UserManagement", new { userId = user.UserID })" class="btn btn-info btn-sm">Map Organisation</a> *@
                     <form method="post" action="@Url.Action("MapOrganisation", "UserManagement")">
+                        <input type="hidden" name="userId" value="@user.UserID" />
                         <!-- Form fields -->
                         <button type="submit">Submit</button>
                     </form>
