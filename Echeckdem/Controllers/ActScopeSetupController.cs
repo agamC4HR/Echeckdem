@@ -31,7 +31,7 @@ namespace Echeckdem.Controllers
         //-----------------------START--------------------------------ADD DATA IN SCOPEMASTER(BOCWSCOPES)----------------------------------------------------------------------//
         [HttpPost]
         [ValidateAntiForgeryToken]                                                                                                          
-        public async Task<IActionResult> Create([Bind("ScopeName,ScopeActive,Category")] BocwScope boscope)
+        public async Task<IActionResult> Create([Bind("ScopeName,ScopeActive,Category,Frequency")] BocwScope boscope)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace Echeckdem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ScopeId,ScopeName,ScopeActive,Category")] BocwScope boscope)
+        public async Task<IActionResult> Edit(string id, [Bind("ScopeId,ScopeName,ScopeActive,Category,Frequency")] BocwScope boscope)
         {
             if (id != boscope.ScopeId)
                 return NotFound();

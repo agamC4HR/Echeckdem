@@ -25,7 +25,6 @@ namespace Echeckdem.Services
         }
         public async Task<bool> AddOrganisationAsync(OrganisationGeneralInfoViewModel newOrganisation)                        // Adding ORgansation Details (setting up new organisation)
         {
-
             string generatedOid;
             do
             {
@@ -50,6 +49,7 @@ namespace Echeckdem.Services
                 Contemail = newOrganisation.Contemail,
                 SpocEml = spocEmail,
                 FileName = null,
+                ContractExpiryDate = newOrganisation.ContractExpiryDate,
                 Oactive = 1                                     // Assuming all new organizations are active by default
             };
 
@@ -159,7 +159,8 @@ namespace Echeckdem.Services
                         Contname = o.Contname,
                         Contemail = o.Contemail,
                         Oactive = o.Oactive,
-                        FileName = o.FileName
+                        FileName = o.FileName,
+                        ContractExpiryDate = o.ContractExpiryDate
                     })
                     .FirstOrDefaultAsync();
             }
@@ -187,6 +188,8 @@ namespace Echeckdem.Services
             organisation.Contname = updatedInfo.Contname;
             organisation.Contemail = updatedInfo.Contemail;
             organisation.Oactive = updatedInfo.Oactive;
+            organisation.ContractExpiryDate = updatedInfo.ContractExpiryDate;
+            
 
 
             if (updatedInfo.PdfFile != null && updatedInfo.PdfFile.Length > 0)

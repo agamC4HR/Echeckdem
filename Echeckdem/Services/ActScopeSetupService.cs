@@ -60,6 +60,7 @@ namespace Echeckdem.Services
                 existingScope.ScopeName = updatedboscope.ScopeName;
                 existingScope.ScopeActive = updatedboscope.ScopeActive;
                 existingScope.Category = updatedboscope.Category;
+                existingScope.Frequency = updatedboscope.Frequency;
                 
 
                 await _context.SaveChangesAsync();

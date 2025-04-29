@@ -22,12 +22,14 @@ using Microsoft.EntityFrameworkCore;
             _EcheckContext = echeckContext;
         }
 
+        // ----------------START-------------------------------VIEW ALL USERS---------------------------------------------------------------------------------------
         public async Task<IActionResult> Index()
         {
             var users = await _userManagementService.GetAllUsersAsync();
             return View(users);
         }
-
+        // ----------------END-------------------------------VIEW ALL USERS---------------------------------------------------------------------------------------
+        // ----------------START-------------------------------Adding Users/ Populating NCMLOC USERS---------------------------------------------------------------------------------------
         public async Task<IActionResult> Create()
         {
             // Fetch all organisations for the dropdown
@@ -63,7 +65,51 @@ using Microsoft.EntityFrameworkCore;
             return View(model);
         }
 
-       
+        // ----------------EnD-------------------------------Adding Users/ Populating NCMLOC USERS---------------------------------------------------------------------------------------
+        //------------------------START--------------------------Editing the data for user/ Editing NCMLOC------------------------------------------------------------------------------------------------
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var user = await _userManagementService.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+
+            await PopulateDropDownsAsync(user);
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UserCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                await _userManagementService.UpdateUserAsync(model);
+                return RedirectToAction(nameof(Index));
+            }
+
+            await PopulateDropDownsAsync(model);
+            return View(model);
+        }
+
+        private async Task PopulateDropDownsAsync(UserCreateViewModel model = null)
+        {
+            var organisations = await _userManagementService.GetAllOrganisationsAsync();
+            ViewBag.Organisations = new SelectList(organisations, "OID", "OrganisationName", model?.OID);
+
+            var userLevels = _userManagementService.GetUserLevelOptions();
+            ViewBag.UserLevels = new SelectList(userLevels, "Key", "Value", model?.UserLevel);
+
+            var activeOptions = new[]
+            {
+                new SelectListItem { Text = "Yes", Value = "1", Selected = model != null && model.Uactive == 1 },
+                new SelectListItem { Text = "No", Value = "0", Selected = model != null && model.Uactive == 0 }
+            };
+
+            ViewBag.ActiveOptions = activeOptions;
+        }
+
+        //------------------------END--------------------------Editing the data for user/ Editing NCMLOC------------------------------------------------------------------------------------------------
+
         [HttpPost]
         public IActionResult MapOrganisation(string userId)
         {
@@ -229,7 +275,7 @@ using Microsoft.EntityFrameworkCore;
             ViewBag.UserLevelOptions = userLevelOptions;
             ViewBag.Organisations = new SelectList(creationData.Organisations, "OID", "OrganisationName", model.Oid);
 
-            // We need to fetch locations again based on the selected Oid in the invalid model
+            
             var locations = await _userManagementService.GetLocationsByOrganisationAsync(model.Oid);
             ViewBag.Locations = new SelectList(locations, "Lcode", "Lname", model.Lcode);
 

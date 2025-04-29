@@ -255,6 +255,7 @@
             <p><strong>Contact Name:</strong> @Model.SelectedOrganisation?.Contname</p>
             <p><strong>Contact Email:</strong> @Model.SelectedOrganisation?.Contemail</p>
             <p><strong>Active:</strong> @(Model.SelectedOrganisation?.Oactive == 1 ? "Yes" : "No")</p>
+
             <p>
                 <strong>Contract Copy:</strong>
                 @if (!string.IsNullOrEmpty(Model.SelectedOrganisation?.FileName))
@@ -266,6 +267,7 @@
                     <span>Contract Copy not uploaded. Upload it using Edit icon.</span>
                 }
             </p>
+            <p><strong>Contract Expiry Date:</strong> @Model.SelectedOrganisation?.ContractExpiryDate</p>
             <p>
                 <button type="button" class="editButton" id="editButton" onclick="showEditForm()">Edit</button>
             </p>

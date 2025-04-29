@@ -126,13 +126,16 @@ namespace Echeckdem.Controllers
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             // Predefined state names from the database
-            var stateNames = new List<string>
-        {
-        "Andaman and Nicobar", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "National", "Chandigarh", "Central Govt", "Chattisgarh",
-        "Daman Diu", "Dadra Nagar Haveli", "Goa", "Gujarat", "Haryana","Himachal Pradesh", "Jammu and Kashmir", "Jharkand", "Karnataka",
-        "Kerala", "Maharashtra", "Manipur", "Meghalaya", "Mizoram","Madhya Pradesh", "Nagaland", "New Delhi", "No State", "Orissa",
-        "Pondicherry", "Punjab", "Rajasthan", "Sikkim", "Telangana","Tamil Nadu", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
-        };
+            //    var stateNames = new List<string>
+            //{
+            //"Andaman and Nicobar", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "National", "Chandigarh", "Central Govt", "Chattisgarh",
+            //"Daman Diu", "Dadra Nagar Haveli", "Goa", "Gujarat", "Haryana","Himachal Pradesh", "Jammu and Kashmir", "Jharkand", "Karnataka",
+            //"Kerala", "Maharashtra", "Manipur", "Meghalaya", "Mizoram","Madhya Pradesh", "Nagaland", "New Delhi", "No State", "Orissa",
+            //"Pondicherry", "Punjab", "Rajasthan", "Sikkim", "Telangana","Tamil Nadu", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+            //};
+
+            var stateNames = _EcheckContext.Maststates.Select(s => s.Statedesc).ToList();
+
 
 
             // Predefined values for "Site Act"
@@ -155,7 +158,7 @@ namespace Echeckdem.Controllers
                 worksheet.Cells[1, 7].Value = "Site FM";
                 worksheet.Cells[1, 8].Value = "Site FM Email";
                 worksheet.Cells[1, 9].Value = "Site FM Contact Number";
-                worksheet.Cells[1, 10].Value = "Site Escalation1";
+                worksheet.Cells[1, 10].Value = "Site Escalation1 Email";
                 worksheet.Cells[1, 11].Value = "Under CentralGovt";
                 worksheet.Cells[1, 12].Value = "Under CLRA";
                 worksheet.Cells[1, 13].Value = "Setup Year";
@@ -165,9 +168,13 @@ namespace Echeckdem.Controllers
 
                 var validationSheet = package.Workbook.Worksheets.Add("Validation"); // Add a hidden sheet for validation
                 // Populate state names in the validation sheet
+                //for (int i = 0; i < stateNames.Count; i++)
+                //{
+                //    validationSheet.Cells[i + 1, 1].Value = stateNames[i]; // Populate state names in column A
+                //}
                 for (int i = 0; i < stateNames.Count; i++)
                 {
-                    validationSheet.Cells[i + 1, 1].Value = stateNames[i]; // Populate state names in column A
+                    validationSheet.Cells[i + 1, 1].Value = stateNames[i];
                 }
 
                 // Populate site act values in the validation sheet
@@ -202,6 +209,31 @@ namespace Echeckdem.Controllers
                 siteActValidation.Error = "Please select a valid Site Act from the dropdown.";
                 siteActValidation.Formula.ExcelFormula = $"Validation!$B$1:$B${siteActValues.Count}";  // Reference the site act values in the validation sheet
 
+
+
+                // Email validation for "Site FM Email" (Column H)
+                var fmEmailValidation = worksheet.DataValidations.AddCustomValidation("H2:H1000");
+                fmEmailValidation.Formula.ExcelFormula = "AND(ISNUMBER(SEARCH(\"@\",H2)), ISNUMBER(SEARCH(\".\",H2)))";
+                fmEmailValidation.ShowErrorMessage = true;
+                fmEmailValidation.ErrorTitle = "Invalid Email";
+                fmEmailValidation.Error = "Invalid Email Format";
+
+                // Validation for "Site FM Contact Number" (Column I)
+                var contactValidation = worksheet.DataValidations.AddCustomValidation("I2:I1000");
+                contactValidation.Formula.ExcelFormula = "AND(ISNUMBER(I2),LEN(I2)=10)";
+                contactValidation.ShowErrorMessage = true;
+                contactValidation.ErrorTitle = "Invalid Contact Number";
+                contactValidation.Error = "Please enter a 10-digit contact number.";
+
+
+                // Email validation for "Site Escalation1" (Column J)
+                var escalationEmailValidation = worksheet.DataValidations.AddCustomValidation("J2:J1000");
+                escalationEmailValidation.Formula.ExcelFormula = "AND(ISNUMBER(SEARCH(\"@\",J2)), ISNUMBER(SEARCH(\".\",J2)))";
+                escalationEmailValidation.ShowErrorMessage = true;
+                escalationEmailValidation.ErrorTitle = "Invalid Email";
+                escalationEmailValidation.Error = "Invalid Email Format";
+
+
                 // range for dropdown values of yes and no for central govt, clra, site active.
                 var boolRange = validationSheet.Cells[1, 3, boolValues.Count, 3];
 
@@ -234,7 +266,7 @@ namespace Echeckdem.Controllers
                 esiValidation.ErrorTitle = "Invalid Entry";
                 esiValidation.Error = "Please select Yes or No.";
                 esiValidation.Formula.ExcelFormula = $"Validation!$C$1:$C${boolValues.Count}";
-
+                  
                 // Hide the validation sheet
                 validationSheet.Hidden = eWorkSheetHidden.Hidden;
                 // Generate file content
