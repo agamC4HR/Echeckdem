@@ -15,5 +15,5 @@ public partial class TrackScope
 
     public virtual ICollection<Ncbocw>? Ncbocws { get; set; } = new List<Ncbocw>();
 
-    public virtual BocwScope Scope { get; set; } = null!;
+    public virtual BocwScope? Scope { get; set; } = null!;
 }

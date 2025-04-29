@@ -13,6 +13,7 @@ public partial class BocwScope
     public int ScopeActive { get; set; }
 
     public string? Category { get; set; }
+
     [NotMapped]
     public bool IsSelected { get; set; }
 

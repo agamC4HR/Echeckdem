@@ -34,4 +34,6 @@ public partial class Ncmorg
     public string? Contemail { get; set; }
 
     public string? FileName { get; set; }
+
+    public DateOnly? ContractExpiryDate { get; set; }
 }
