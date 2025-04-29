@@ -20,7 +20,7 @@ namespace Echeckdem.CustomFolder
         public string? FileName { get; set; }
         public IFormFile? PdfFile { get; set; }
 
-        public DateOnly ContractExpiryDate { get; set; }
+        public DateOnly? ContractExpiryDate { get; set; }
         public List<SelectListItem>? SpocList { get; set; }
     }
 }
