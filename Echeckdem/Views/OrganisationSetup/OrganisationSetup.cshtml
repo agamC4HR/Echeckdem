@@ -203,9 +203,6 @@
     }
 
     .styled-dropdown {
-        /* position:absolute;
-        right:7px;
-        width: auto; */
         padding: 5px;
         font-size: 12px;
         border: 2px solid #dd3432;
@@ -225,7 +222,6 @@
         
 
         <div class="child-org-details-header">
-            @* <h2 id="orgDetailsHeader">@Model.SelectedOrganisation?.Oname</h2> *@
             <h2 id="orgDetailsHeader">Select Organisation</h2>
                 <select id="organisationDropdown" class="styled-dropdown" onchange="onOrganisationChange()">
                     <option value="">Select an Organisation</option>
@@ -240,7 +236,7 @@
 
         <div class="org-details-links-container" id="org-details-links-container" style="display:none;">
             <div class="org-details-upper-links">
-                <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation?.oid" id="generalInfoLink" class="active">General Information</a>
+                <a href="javascript:void(0);" onclick="loadGeneralInfo()" id="generalInfoLink" class="active">General Information</a>
                 <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
                 <a href="javascript:void(0);" onclick="LocationDataForm()" id="locationDataInfo">Location Data</a>
             </div>
@@ -274,6 +270,41 @@
                 <button type="button" class="editButton" id="editButton" onclick="showEditForm()">Edit</button>
             </p>
         </div>
+        <!-- Form for editing organisation info -->
+        <div id="editForm" style="display:none;">
+            <form asp-action="EditOrganisationInfo" method="post" enctype="multipart/form-data" class="Edit-OrganisationInfo-Form">
+                <label>Oid</label>
+                <input type="text" name="oid" value="@Model.SelectedOrganisation?.oid" readonly />
+
+                <label>Organization Name</label>
+                <input type="text" name="Oname" value="@Model.SelectedOrganisation?.Oname" />
+
+                <label>SPOC</label>
+                <input type="text" name="Spoc" value="@Model.SelectedOrganisation?.Spoc" />
+
+                <label>Start Year</label>
+                <input type="number" name="styear" value="@Model.SelectedOrganisation?.styear" />
+
+                <label>Contact Name</label>
+                <input type="text" name="Contname" value="@Model.SelectedOrganisation?.Contname" />
+
+                <label>Contact Email</label>
+                <input type="email" name="Contemail" value="@Model.SelectedOrganisation?.Contemail" />
+
+                <label for="Oactive">Active</label>
+                <select id="Oactive" name="Oactive">
+                    <option value=1>Yes</option>
+                    <option value=0>No</option>
+                </select>
+
+                <label>Contract Copy (optional)</label>
+                <input type="file" name="PdfFile" accept=".pdf" />
+
+                <button type="submit">Save Changes</button>
+                <button type="button" onclick="cancelEdit()">Close</button>
+
+            </form>
+        </div>
     </div>
 }
 
@@ -290,41 +321,86 @@
         </text>
     }
 
-        document.querySelectorAll('.org-details-links-container a').forEach(link => {
-            link.addEventListener('click', function (e) {
-                // Remove active class from all links
-                document.querySelectorAll('.org-details-links-container a').forEach(link => {
-                    link.classList.remove('active');
-                });
+        document.addEventListener('DOMContentLoaded', () => {
+            const linksContainer = document.getElementById('org-details-links-container');
 
-                // Add active class to the clicked link
-                e.target.classList.add('active');
+            linksContainer.addEventListener('click', function (e) {
+                if (e.target.tagName === 'A') {
+                    // Remove 'active' from all links
+                    const allLinks = linksContainer.querySelectorAll('a');
+                    allLinks.forEach(link => link.classList.remove('active'));
 
-                // Show or hide the Edit button based on the active link
-                if (e.target.id === "generalInfoLink" && e.target.classList.contains('active')) {
-                    document.querySelector('.child-org-details-header button').style.display = 'block';  // Show the Edit button
-                    document.querySelector('.child-org-details-header button').onclick = 'showUploadForm()'
-                }
-              @*   else if (e.target.id === "locationDataInfo" && e.target.classList.contains('active')) {
-                    document.querySelector('.child-org-details-header button').style.display = 'block';  // Show the Edit button
-                    document.querySelector('.child-org-details-header button').onclick = 'showLocationForm()';
-                }  *@
-                else {
-                    document.querySelector('.child-org-details-header button').style.display = 'none';  // Hide the Edit button
+                    // Add 'active' to the clicked link
+                    e.target.classList.add('active');
                 }
             });
         });
-        
+
+    let originalOrgDetailsBodyHtml = "";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const bodyEl = document.getElementById("orgDetailsBody");
+        if (bodyEl) {
+            originalOrgDetailsBodyHtml = bodyEl.innerHTML;
+        }
+    });
+
+    //Start of Working Of General INFO-------------------------
+    function loadGeneralInfo() {
+        const oid = document.getElementById('organisationDropdown').value;
+        if (!oid) {
+            alert("Please select an organisation.");
+            return;
+        }
+        const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
+        document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
+
+        // Set loading text
+        const orgDetailsBody = document.getElementById("orgDetailsBody");
+        orgDetailsBody.innerHTML = "Loading...";
+
+        fetch(`/OrganisationSetup/OrganisationSetup?selectedOid=${oid}`)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const newBody = doc.getElementById("orgDetailsBody");
+
+                if (newBody) {
+                    orgDetailsBody.innerHTML = newBody.innerHTML;
+                    orgDetailsBody.style.display = "grid";
+                }
+
+                // document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname";
+
+
+                // Mark this link as active
+                document.querySelectorAll('.org-details-links-container a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.getElementById("generalInfoLink").classList.add('active');
+            })
+            .catch(err => {
+                console.error("Error loading general info:", err);
+                orgDetailsBody.innerHTML = "Failed to load data.";
+            });
+    }
+
+    //End of Working Of General INFO-------------------------
+
 
     //Start of Working Of Add Location-------------------------
         function showUploadForm() {
-        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        const oid = document.getElementById("organisationDropdown").value;
         if (!oid) {
             alert("Organisation ID is not available. Please select a valid organisation.");
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname";
+        const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
+        document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
+
             $("#orgDetailsBody").load(`/OrganisationSetup/upload?oid=${oid}`);
                
         }
@@ -333,19 +409,13 @@
 
     //Start of Edit Organisation------------------------------ 
     function showEditForm() {
-        // Hide the org-details-body
-        document.getElementById("orgDetailsBody").style.display = "none";
-
-        // Show the edit form
-        document.getElementById("editForm").style.display = "block";
+        document.getElementById("orgDetailsBody").style.display = "none";           // Hide the org-details-body        
+        document.getElementById("editForm").style.display = "block";                // Show the edit form
     }
 
     function cancelEdit() {
-        // Hide the edit form
-        document.getElementById("editForm").style.display = "none";
-
-        // Show the org-details-body again (General Information section)
-        document.getElementById("orgDetailsBody").style.display = "grid";
+        document.getElementById("editForm").style.display = "none";                   // Hide the edit form  
+        document.getElementById("orgDetailsBody").style.display = "grid";             // Show the org-details-body again (General Information section)
     }
     //End of Edit Organisation-------------------------------------------
     
@@ -369,18 +439,20 @@
 
     //Start of Location data Form------------------------------
     function LocationDataForm() {
-        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        const oid = document.getElementById("organisationDropdown").value;
+        console.log(oid + "oid in Location Data")
         if (!oid) {
             alert("Organisation ID is not available. Please select a valid organisation.");
             return;
         }
 
-        // Change the display style of orgDetailsBody to block
+        const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
+        document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
+
         const orgDetailsBody = document.getElementById("orgDetailsBody");
         orgDetailsBody.style.display = "block";
         orgDetailsBody.style.padding = "10px";
 
-        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname ";
         $("#orgDetailsBody").load(`/OrganisationSetup/GetLocationDatabyOid?oid=${oid}`);
 
     }
@@ -388,29 +460,32 @@
 
     //Start of Working Of Add Location for BOCW sites-------------------------
     function showBOCWUploadForm() {
-        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        const oid = document.getElementById("organisationDropdown").value;
         if (!oid) {
             alert("Organisation ID is not available. Please select a valid organisation.");
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "@Model.SelectedOrganisation?.Oname";
-        $("#orgDetailsBody").load(`/OrganisationSetup/BOCWSiteSetup?oid=${oid}`);
+        const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
+        document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
 
+        $("#orgDetailsBody").load(`/OrganisationSetup/BOCWSiteSetup?oid=${oid}`);
     }
     // End of  Add Location for BOCW sites-----------------------------
 
      // Start of viewing BOCW DATA----------------------------------------------------
     function viewBOCWData() {
-        const oid = "@(Model?.SelectedOrganisation?.oid ?? string.Empty)";
+        const oid = document.getElementById("organisationDropdown").value;
         if (!oid) {
             
             alert("Organisation ID is not available. Please select a valid organisation.");
             return;
         }
 
-        document.getElementById("orgDetailsHeader").innerText = "@Model?.SelectedOrganisation?.Oname";
-            $("#orgDetailsBody").load(`/OrganisationSetup/viewbodetails?oid=${oid}`);
+        const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
+        document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
+        
+        $("#orgDetailsBody").load(`/OrganisationSetup/viewbodetails?oid=${oid}`);
     }
     // END of viewing BOCW DATA------------------------------------------------------
 
@@ -422,11 +497,9 @@
         var orgDetailsBody = document.getElementById("orgDetailsBody");
 
         if (oid) {
-            // Show loading state if needed
-            orgDetailsBody.innerHTML = "Loading...";
+            orgDetailsBody.innerHTML = "Loading...";                            // Show loading state if needed
 
-            // Use AJAX to fetch the updated content
-            fetch(`/OrganisationSetup/OrganisationSetup?selectedOid=${oid}`)
+            fetch(`/OrganisationSetup/OrganisationSetup?selectedOid=${oid}`)    // Use AJAX to fetch the updated content
                 .then(response => response.text())
                 .then(html => {
                     // Create a temporary element to parse the response
@@ -438,20 +511,19 @@
                     const newLinksContainer = doc.getElementById("org-details-links-container");
                     const newBody = doc.getElementById("orgDetailsBody");
 
-                    // Update our page elements
+                    // Update page elements
                     if (newHeader) orgDetailsHeader.innerHTML = newHeader.innerHTML;
                     if (newLinksContainer) orgDetailsLinksContainer.innerHTML = newLinksContainer.innerHTML;
                     if (newBody) orgDetailsBody.innerHTML = newBody.innerHTML;
 
-                    // Update the selected organisation name in the header
-                    orgDetailsHeader.innerText = document.querySelector('#organisationDropdown option:checked').textContent;
+                    orgDetailsHeader.innerText = document.querySelector('#organisationDropdown option:checked').textContent;    // Update header
 
-                    // Make sure containers are visible
+                    //containers -> visible
                     orgDetailsLinksContainer.style.display = "grid";
                     orgDetailsBody.style.display = "grid";
 
                     // Update the URL without reloading the page
-                    history.pushState(null, null, `/OrganisationSetup/OrganisationSetup?selectedOid=${oid}`);
+                    // history.pushState(null, null, `/OrganisationSetup/OrganisationSetup?selectedOid=${oid}`);
                 })
                 .catch(error => {
                     console.error('Error:', error);
