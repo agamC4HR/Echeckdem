@@ -11,8 +11,10 @@
             <th>Email</th>
             <th>User Level</th>
             <th>Organisation</th>
+            <th>Edit</th>
             <th>Actions</th>
             <th>Map Org</th>
+            
         </tr>
     </thead>
     <tbody>
@@ -25,10 +27,15 @@
                 <td>@user.UserLevel</td>
                 <td>@user.OrganisationName</td>
                 <td>
+                    <a href="@Url.Action("Edit", "UserManagement", new { id = user.UserID })" class="btn btn-sm btn-primary">
+                        Edit User
+                    </a>
+                </td>
+                <td>
                    
                     <form method="post" action="@Url.Action("MapOrganisation", "UserManagement")">
                         <input type="hidden" name="userId" value="@user.UserID" />
-                        <button type="submit">Map Organisations</button>
+                        <button type="submit">Authorised Organisations</button>
                     </form>
 
                 </td>

@@ -25,7 +25,6 @@ namespace Echeckdem.Services
         }
         public async Task<bool> AddOrganisationAsync(OrganisationGeneralInfoViewModel newOrganisation)                        // Adding ORgansation Details (setting up new organisation)
         {
-
             string generatedOid;
             do
             {
@@ -50,6 +49,7 @@ namespace Echeckdem.Services
                 Contemail = newOrganisation.Contemail,
                 SpocEml = spocEmail,
                 FileName = null,
+                ContractExpiryDate = newOrganisation.ContractExpiryDate,
                 Oactive = 1                                     // Assuming all new organizations are active by default
             };
 

@@ -1,0 +1,65 @@
+﻿@model Echeckdem.CustomFolder.UserManagement.UserCreateViewModel
+
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h2>Edit User</h2>
+
+<form asp-action="Edit" method="post" class="form-horizontal" novalidate>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="UserID" class="control-label"></label>
+        <input asp-for="UserID" class="form-control" readonly />
+        <span asp-validation-for="UserID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="UNAME" class="control-label"></label>
+        <input asp-for="UNAME" class="form-control" />
+        <span asp-validation-for="UNAME" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EmailID" class="control-label"></label>
+        <input asp-for="EmailID" class="form-control" formnovalidate />
+        <span asp-validation-for="EmailID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password" class="control-label"></label>
+        <input asp-for="Password" class="form-control" type="password" formnovalidate />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="UserLevel" class="control-label"></label>
+        <select asp-for="UserLevel" class="form-control" asp-items="ViewBag.UserLevels"></select>
+        <span asp-validation-for="UserLevel" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="OID" class="control-label"></label>
+        <select asp-for="OID" class="form-control" asp-items="ViewBag.Organisations"></select>
+        <span asp-validation-for="OID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Uactive" class="control-label"></label>
+        <select asp-for="Uactive" class="form-control" asp-items="ViewBag.ActiveOptions"></select>
+        <span asp-validation-for="Uactive" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

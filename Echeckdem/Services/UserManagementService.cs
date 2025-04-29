@@ -23,6 +23,10 @@ namespace Echeckdem.Services
 
         Task AddUserMappingAsync(UserMappingCreationModel model);
 
+        Task<UserCreateViewModel> GetUserByIdAsync(string userId);
+        Task UpdateUserAsync(UserCreateViewModel model);
+        Dictionary<int, string> GetUserLevelOptions();
+
 
     }
 
@@ -37,9 +41,23 @@ namespace Echeckdem.Services
             _logger = logger;
         }
 
+        public Dictionary<int, string> GetUserLevelOptions()
+        {
+            return new Dictionary<int, string>
+    {
+        { 1, "Admin" },
+        { 2, "SPOC" },
+        { 3, "Reports" },
+        { 4, "Data Entry User" },
+        { 5, "Data Viewer" }
+    };
+        }
+
+
+        //------------------------START--------------------------Fetching Users list from NCMLOC---------------------------------------------------------------------------
         public async Task<List<UserManagementViewModel>> GetAllUsersAsync()
         {
-            // Step 1: Fetch the data from the database
+            
             var users = await (from user in _EcheckContext.Ncusers
                                join org in _EcheckContext.Ncmorgs on user.Oid equals org.Oid into userOrg
                                from org in userOrg.DefaultIfEmpty()
@@ -52,8 +70,9 @@ namespace Echeckdem.Services
                                    OrganisationName = org != null ? org.Oname : "No Organisation"
                                }).ToListAsync();
 
+            
 
-            // Step 2: Map the user data to UserManagementViewModel
+            
             var userViewModels = users.Select(user => new UserManagementViewModel
             {
                 UserID = user.Userid,
@@ -66,6 +85,8 @@ namespace Echeckdem.Services
             return userViewModels;
         }
 
+        //------------------------END--------------------------Fetching Users list from NCMLOC---------------------------------------------------------------------------
+        //------------------------START--------------------------ADding Users/ Populating NCMLOC---------------------------------------------------------------------------
         public async Task AddUserAsync(UserCreateViewModel model)
         {
             var newUser = new Ncuser
@@ -83,6 +104,9 @@ namespace Echeckdem.Services
             await _EcheckContext.SaveChangesAsync();
         }
 
+        //------------------------END--------------------------Adding Users/ Populating NCMLOC-----------------------------------------------------------------------------
+        //------------------------START--------------------------USerlevel Names for NCUSER ------------------------------------------------------------------------------------------------
+
         private string GetUserLevelName(int level)
         {
             return level switch
@@ -95,9 +119,45 @@ namespace Echeckdem.Services
                 _ => "Unknown"
             };
         }
+        //------------------------END--------------------------USerlevel Names for NCUSER------------------------------------------------------------------------------------------------
+        //------------------------START--------------------------Editing the data for user/ Editing NCMLOC------------------------------------------------------------------------------------------------
+        public async Task<UserCreateViewModel> GetUserByIdAsync(string userId)
+        {
+            var user = await _EcheckContext.Ncusers.FindAsync(userId);
+            if (user == null) return null;
 
+            return new UserCreateViewModel
+            {
+                UserID = user.Userid,
+                UNAME = user.Uname,
+                EmailID = user.Emailid,
+                Password = user.Password,
+                UserLevel = user.Userlevel,
+                OID = user.Oid,
+                Uactive = user.Uactive
+            };
+        }
 
+        public async Task UpdateUserAsync(UserCreateViewModel model)
+        {
+            var user = await _EcheckContext.Ncusers.FindAsync(model.UserID);
+            if (user != null)
+            {
+                user.Uname = model.UNAME;
+                user.Emailid = model.EmailID;
+                if (!string.IsNullOrEmpty(model.Password))
+                {
+                    user.Password = model.Password;
+                }
 
+                user.Userlevel = model.UserLevel;
+                user.Oid = model.OID;
+                user.Uactive = model.Uactive;
+
+                await _EcheckContext.SaveChangesAsync();
+            }
+        }
+        //------------------------END--------------------------Editing the data for user/ Editing NCMLOC------------------------------------------------------------------------------------------------
 
         public async Task<List<OrganisationViewModel>> GetAllOrganisationsAsync()
         {
