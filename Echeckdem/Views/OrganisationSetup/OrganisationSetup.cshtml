@@ -11,38 +11,7 @@
 
 <style>
 
-/*     .table-container {
-        width: 30vw;
-        top: 40px;
-        height: 80vh;
-        overflow: scroll;
-    } */
-
-    .styled-table {
-        margin: 0;
-        display:none;
-    }
-
-        .styled-table thead {
-            top: 0;
-        }
-
-
-    .organization-count {
-        text-align: center;
-        font-size: 1.2em;
-        margin-bottom: 20px;
-    }
-
-    .count-badge {
-        background-color: #007bff;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 12px;
-    }
-
-
-    .org-link {
+ /*    .org-link {
         display: block;
         text-decoration: none;
         color: black;
@@ -55,7 +24,7 @@
 
         .org-link:hover {
             text-decoration: underline;
-        }
+        } */
 
     .org-details-container {
         display:block;
@@ -97,25 +66,24 @@
         font-size: 16px;
     }
 
-    .child-org-details-header button {
-            padding: 5px;
-            font-size: 12px;
-            font-weight: bold;
-            background-color: #dd3432;
-            color: white;
-            border: 2px solid #dd3432;
-            border-radius:4px;
+    .editButton {
+        padding: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: white;
+        color: #dd3432;
+        border: 2px solid #dd3432;
+        border-radius: .375rem;
+        cursor: pointer;
+        width:235px;
     }
 
-        .child-org-details-header button:hover {
-            background-color: white;
-            color: #dd3432;
-
-
+        .editButton:hover {
+            background-color: #dd3432;
+            color: white;
         }
 
     .org-details-links-container {
-       /*  display: none; */
         display: grid;
         grid-template-rows: auto auto;
         row-gap: 10px;
@@ -246,7 +214,6 @@
     }
 
         .styled-dropdown:focus {
-            border-color: #007bff;
             outline: none;
         }
 
@@ -271,7 +238,7 @@
             @*  *@
         </div>
 
-        <div class="org-details-links-container" id="org-details-links-container" style="display: grid;">
+        <div class="org-details-links-container" id="org-details-links-container" style="display:none;">
             <div class="org-details-upper-links">
                 <a asp-controller="OrganisationSetup" asp-action="OrganisationSetup" asp-route-selectedOid="@Model.SelectedOrganisation?.oid" id="generalInfoLink" class="active">General Information</a>
                 <a href="javascript:void(0);" onclick="showUploadForm()">Add Locations</a>
@@ -283,7 +250,7 @@
             </div>
         </div>
 
-        <div id="orgDetailsBody" class="org-details-body" style="display:grid;">
+        <div id="orgDetailsBody" class="org-details-body" style="display:none;">
             <p><strong>OID:</strong> @Model.SelectedOrganisation?.oid</p>
             <p><strong>Name:</strong> @Model.SelectedOrganisation?.Oname</p>
             <p><strong>SPOC:</strong> @Model.SelectedOrganisation?.Spoc</p>
@@ -304,7 +271,7 @@
                 }
             </p>
             <p>
-                <button type="button" id="editButton" style="display:none;" onclick="showEditForm()">Edit</button>
+                <button type="button" class="editButton" id="editButton" onclick="showEditForm()">Edit</button>
             </p>
         </div>
     </div>
@@ -391,7 +358,6 @@
                     return response.text();
                 })
                 .then(html => {
-                    // Inject the form HTML into the orgDetailsBody
                     document.getElementById("orgDetailsContainer").innerHTML = html;
                 })
                 .catch(error => {
@@ -450,22 +416,51 @@
 
 
     function onOrganisationChange() {
-        var oid = document.getElementById('organisationDropdown').value;  
+        var oid = document.getElementById('organisationDropdown').value;
         var orgDetailsHeader = document.getElementById("orgDetailsHeader");
         var orgDetailsLinksContainer = document.getElementById("org-details-links-container");
         var orgDetailsBody = document.getElementById("orgDetailsBody");
 
         if (oid) {
-            orgDetailsHeader.innerText = document.querySelector('#organisationDropdown option:checked').textContent;
+            // Show loading state if needed
+            orgDetailsBody.innerHTML = "Loading...";
 
-            orgDetailsLinksContainer.style.display = "grid";  
-            orgDetailsBody.style.display = "grid"; 
+            // Use AJAX to fetch the updated content
+            fetch(`/OrganisationSetup/OrganisationSetup?selectedOid=${oid}`)
+                .then(response => response.text())
+                .then(html => {
+                    // Create a temporary element to parse the response
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
 
-            window.location.href = '/OrganisationSetup/OrganisationSetup?selectedOid=' + oid;
+                    // Extract the parts we need from the response
+                    const newHeader = doc.getElementById("orgDetailsHeader");
+                    const newLinksContainer = doc.getElementById("org-details-links-container");
+                    const newBody = doc.getElementById("orgDetailsBody");
+
+                    // Update our page elements
+                    if (newHeader) orgDetailsHeader.innerHTML = newHeader.innerHTML;
+                    if (newLinksContainer) orgDetailsLinksContainer.innerHTML = newLinksContainer.innerHTML;
+                    if (newBody) orgDetailsBody.innerHTML = newBody.innerHTML;
+
+                    // Update the selected organisation name in the header
+                    orgDetailsHeader.innerText = document.querySelector('#organisationDropdown option:checked').textContent;
+
+                    // Make sure containers are visible
+                    orgDetailsLinksContainer.style.display = "grid";
+                    orgDetailsBody.style.display = "grid";
+
+                    // Update the URL without reloading the page
+                    history.pushState(null, null, `/OrganisationSetup/OrganisationSetup?selectedOid=${oid}`);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    orgDetailsBody.innerHTML = "Error loading organisation details";
+                });
         } else {
             orgDetailsHeader.innerText = "Select Organisation";
-            orgDetailsLinksContainer.style.display = "none";  
-            orgDetailsBody.style.display = "none";  
+            orgDetailsLinksContainer.style.display = "none";
+            orgDetailsBody.style.display = "none";
         }
     }
 
