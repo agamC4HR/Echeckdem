@@ -29,7 +29,7 @@
     .org-details-container {
         display:block;
         position: absolute;
-        width: 99vw;
+        width: 98vw;
         top: 40px;
         left: 7px;
         font-family: 'Arial', sans-serif;
@@ -76,6 +76,7 @@
         border-radius: .375rem;
         cursor: pointer;
         width:235px;
+        height:30px;
     }
 
         .editButton:hover {
@@ -109,7 +110,8 @@
         border: 2px solid #dd3432;
         transition: background-color 0.3s ease, color 0.3s ease;
         text-align: center;
-        white-space: nowrap; /* Prevent text wrapping */
+        white-space: nowrap; 
+        height:30px;
     }
 
         .org-details-links-container a.active {
@@ -130,9 +132,8 @@
         display: grid;
         grid-template-columns: 1fr 1fr; /* Two equal columns */
         gap: 15px;
-        padding: 20px;
-        font-size: 16px;
-        line-height: 1.6;
+        padding: 10px;
+        font-size: 12px;
     }
 
     .Edit-OrganisationInfo-Form{
@@ -158,13 +159,14 @@
             font-weight: bold;
             color: #dd3432;
             padding-right: 10px;
+            font-size:12px;
    }
 
     .Edit-OrganisationInfo-Form input {
-            padding: 10px;
-            font-size: 14px;
+            padding: 5px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            font-size: 12px;
+            border-radius: .375rem;
         }
 
     .Edit-OrganisationInfo-Form button {
@@ -174,6 +176,7 @@
         background-color: white;
         color: #dd3432;
         border: 2px solid #dd3432;
+        border-radius: .375rem;
     }
 
         .Edit-OrganisationInfo-Form button:hover {
@@ -183,7 +186,7 @@
 
     .view-doc-button {
         display: inline-block;
-        padding: 6px 12px;
+        padding: 0;
         font-size: 12px;
         color: black;
         background-color: white;
@@ -192,9 +195,9 @@
         text-decoration: none;
     }
 
-       /*  .view-doc-button:hover {
-            background-color: #218838;
-        } */
+        .view-doc-button:hover {
+            text-decoration:underline;
+        } 
 
 
 
@@ -208,6 +211,7 @@
         border: 2px solid #dd3432;
         border-radius: .375rem;
         color: #333;
+        height:30px;
     }
 
         .styled-dropdown:focus {
@@ -294,7 +298,7 @@
                 <input type="email" name="Contemail" value="@Model.SelectedOrganisation?.Contemail" />
 
                 <label for="Oactive">Active</label>
-                <select id="Oactive" name="Oactive">
+                <select id="Oactive" name="Oactive" style="font-size: 12px;border-color: #bbbbbb;border-radius: .375rem;">
                     <option value=1>Yes</option>
                     <option value=0>No</option>
                 </select>
@@ -452,7 +456,7 @@
         document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
 
         const orgDetailsBody = document.getElementById("orgDetailsBody");
-        orgDetailsBody.style.display = "block";
+        orgDetailsBody.style.display = "grid";
         orgDetailsBody.style.padding = "10px";
 
         $("#orgDetailsBody").load(`/OrganisationSetup/GetLocationDatabyOid?oid=${oid}`);
