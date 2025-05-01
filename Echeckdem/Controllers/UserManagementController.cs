@@ -198,7 +198,7 @@ using Microsoft.EntityFrameworkCore;
 
                 List<SelectListItem> userLevelOptions = new List<SelectListItem>();
 
-                if (creationData.UserLevel == 0 || creationData.UserLevel == 1)
+                if (creationData.UserLevel == 0 || creationData.UserLevel == 1)           // NOT SURE ABOUT THIS
                 {
                     userLevelOptions.Add(new SelectListItem { Text = "Reports", Value = "1" });
                     userLevelOptions.Add(new SelectListItem { Text = "Uploader", Value = "5" });
