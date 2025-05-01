@@ -9,5 +9,8 @@ namespace Echeckdem.Services
         Task<int> GetUserLevelAsync(string Userid);
         Task<int> GetUserUnoAsync(string Userid);
 
+        Task<List<string>> GetUserLocationTypesAsync(int uno);
+
+
     }
 }
