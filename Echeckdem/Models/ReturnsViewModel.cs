@@ -8,18 +8,18 @@ namespace Echeckdem.Models
         [Key]
         public int Rtid { get; set; }
         [Key]
-        public string Lcode { get; set; }
+        public string? Lcode { get; set; }
 
         [Key]
-        public string oid { get; set; }
-            public string Lname { get; set; }
+        public string? oid { get; set; }
+            public string? Lname { get; set; }
             //public string LState { get; set; }
-            public string State { get; set; }
-            public string LCity { get; set; }
-            public string LRegion { get; set; }
-            public string RTitle { get; set; }
-            public string RForm { get; set; }
-            public string OName { get; set; }
+            public string? State { get; set; }
+            public string? LCity { get; set; }
+            public string? LRegion { get; set; }
+            public string? RTitle { get; set; }
+            public string? RForm { get; set; }
+            public string? OName { get; set; }
             public DateOnly? LastDate { get; set; }
             public int? Status { get; set; }
 

@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.EntityFrameworkCore;
+using DocumentFormat.OpenXml.InkML;
 
 namespace Echeckdem.Services
 {
@@ -41,6 +42,22 @@ namespace Echeckdem.Services
 
             return user?.Uno ?? 0;
         }
+
+        public async Task<List<string>> GetUserLocationTypesAsync(int uno)
+        {
+            var locationTypes = await _dbEcheckContext.Ncumaps
+                .Where(m => m.Uno == uno)
+                .Join(
+                    _dbEcheckContext.Ncmlocs,
+                    map => new { map.Lcode, map.Oid }, // Outer key selector
+                    loc => new { loc.Lcode, loc.Oid }, // Inner key selector
+                    (map, loc) => loc.Ltype.Trim() // Result selector
+                )
+                .ToListAsync();
+
+            return locationTypes;
+        }
+
 
 
     }
