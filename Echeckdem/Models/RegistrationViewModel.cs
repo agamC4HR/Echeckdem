@@ -32,7 +32,7 @@ namespace Echeckdem.Models
 
         public string GetStatusDescription()
         {
-            return Status switch
+            return Status?.Trim().ToUpper() switch
             {
 
                 "E" => "Expired",
@@ -51,6 +51,21 @@ namespace Echeckdem.Models
             };
 
         }
-    
+
+        public Dictionary<string, string> StatusOptions => new()                  // for dropdown in edit column
+    {
+        { "E", "Expired" },
+        { "SU", "Surrendered" },
+        { "A", "Applied" },
+        { "NA", "Not Applicable" },
+        { "C", "Compliant" },
+        { "D", "Documents Required" },
+        { "N", "Non-Compliant" },
+        { "B", "Awaiting Application" },
+        { "AR", "Amendment Required" },
+        { "AA", "Amendment Applied" },
+        { "SC", "Site Closed" },
+        { "UP", "Under Process" }
+    };
     }
 }

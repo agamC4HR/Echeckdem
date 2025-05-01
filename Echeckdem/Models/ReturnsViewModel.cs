@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Echeckdem.Models
 {
@@ -46,7 +47,21 @@ namespace Echeckdem.Models
                 };
             }
 
-            private DateTime? CalculatePeriod()
+        public List<SelectListItem> StatusOptions { get; set; } = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "0", Text = "Future" },
+        new SelectListItem { Value = "1", Text = "Compliant" },
+        new SelectListItem { Value = "2", Text = "Non Compliant" },
+        new SelectListItem { Value = "3", Text = "Not IN Scope" },
+        new SelectListItem { Value = "4", Text = "Not Applicable" },
+        new SelectListItem { Value = "5", Text = "Under Process" }
+    };
+
+
+
+
+
+        private DateTime? CalculatePeriod()
             {
                 if (LastDate.HasValue)
                 {

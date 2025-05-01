@@ -148,6 +148,7 @@ namespace Echeckdem.Services
                    Lcode = input.Lcode,
                    Rcode = r.Rcode,
                    Ryear = input.Year,
+                   
                    Lastdate = lastDate
                };
            })
@@ -250,7 +251,7 @@ namespace Echeckdem.Services
                    Lcode = input.Lcode,
                    Tp = c.TP,
                    Cyear = input.Year,
-                   //Period = c.Period,
+                   Period = c.Period.Value,
                    Freq = c.Freq,
                    Lastdate = lastDate
                };

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Echeckdem.Models
 {
@@ -14,12 +15,12 @@ namespace Echeckdem.Models
         [Key]
         public string? oid { get; set; }
         public string? Lname { get; set; }
-        //public string LState { get; set; }
+       
 
         public string? State { get; set; }
         public string? LCity { get; set; }
         public string? LRegion { get; set; }
-        //public string RTitle { get; set; }
+       
         public string? OName { get; set; }
         public DateOnly? LastDate { get; set; }
         public string? TP {  get; set; }
@@ -66,5 +67,16 @@ namespace Echeckdem.Models
             };
 
         }
+
+        public List<SelectListItem> StatusOptions { get; set; } = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "0", Text = "Future" },
+        new SelectListItem { Value = "1", Text = "Compliant" },
+        new SelectListItem { Value = "2", Text = "Non Compliant" },
+        new SelectListItem { Value = "3", Text = "Not In Scope" },
+        new SelectListItem { Value = "4", Text = "Not Applicable" },
+        new SelectListItem { Value = "5", Text = "Under Process" }
+    };
+
     }
 }

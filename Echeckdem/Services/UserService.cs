@@ -51,9 +51,11 @@ namespace Echeckdem.Services
                     _dbEcheckContext.Ncmlocs,
                     map => new { map.Lcode, map.Oid }, // Outer key selector
                     loc => new { loc.Lcode, loc.Oid }, // Inner key selector
-                    (map, loc) => loc.Ltype.Trim() // Result selector
+                    (map, loc) => loc.Ltype // Result selector
                 )
-                .ToListAsync();
+                 .Where(ltype => !string.IsNullOrWhiteSpace(ltype)) // ignore null, empty, or whitespace
+                 .Select(ltype => ltype.Trim())
+                 .ToListAsync();
 
             return locationTypes;
         }
