@@ -82,7 +82,7 @@
         <tr>
             @* <th>Oid</th> *@
 @*             <th>Location Code</th>
- *@            <th>Name</th>
+ *@            <th>Location Name</th>
             <th>City</th>
             <th>State</th>
             <th>Region</th>
@@ -99,8 +99,8 @@
         {
             <tr>
                 <td data-field="Oid" style="display: none;">@location.Oid</td>
-@*                 <td  data-field="Lcode">@location.Lcode</td>
- *@                
+                <td  data-field="Lcode" hidden>@location.Lcode</td>
+                
                 <td  data-field="Lname">@location.Lname</td>
                 <td  data-field="Lcity">@location.Lcity</td>
                 <td  data-field="Lstate">@location.Lstate</td>
@@ -127,10 +127,6 @@
                             )
 
                 </td>
-
-
-                
-
                 <td>
                     <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                 </td>

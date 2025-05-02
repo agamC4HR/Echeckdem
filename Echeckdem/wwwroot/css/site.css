@@ -396,7 +396,7 @@ a {
 
     .org-details-body-table th,
     .org-details-body-table td {
-        padding: 12px;
+        padding: 10px;
         text-align: left;
         border: 1px solid #dee2e6;
         font-size: 12px;
