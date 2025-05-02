@@ -35,9 +35,9 @@ namespace Echeckdem.Services
                                 WHERE c.oactive = 1 
                                 AND b.oid = a.oid
                                 AND a.lcode = b.lcode
-                                AND a.status <> 99 ";
+                                AND (a.status IS NULL OR a.status <> 99) ";
             //AND YEAR(a.lastdate) = @currentYear";
-
+            //AND a.status <> 99
             if (string.IsNullOrEmpty(organizationName) &&
                 string.IsNullOrEmpty(LocationName) &&
                 string.IsNullOrEmpty(StateName) &&
@@ -94,7 +94,7 @@ namespace Echeckdem.Services
             var result = await _context.ContributionViewModel
                  .FromSqlRaw(sqlQuery,
                              new SqlParameter("@currentYear", currentYear),
-                             new SqlParameter("@uno", uno),
+                             new SqlParameter("@uno", uno), 
                              new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
                              new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
                              new SqlParameter("@StateName", (object)StateName ?? DBNull.Value),

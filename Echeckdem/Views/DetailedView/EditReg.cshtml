@@ -7,8 +7,12 @@
     <input type="hidden" asp-for="Uid" />
     <input type="hidden" asp-for="Lcode" />
 
-    <label>Status:</label>
-    <input type="text" asp-for="Status" class="form-control" />
+    @* <label>Status:</label>
+    <input type="text" asp-for="Status" class="form-control" /> *@
+    <label asp-for="Status">Status</label>
+    <select asp-for="Status" class="form-control" asp-items="@(new SelectList(Model.StatusOptions, "Key", "Value", Model.Status))">
+        <option value="">-- Select Status --</option>
+    </select>
 
     <label>RNO:</label>
     <input type="text" asp-for="Rno" class="form-control" />

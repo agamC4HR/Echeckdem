@@ -38,8 +38,8 @@ namespace Echeckdem.Services
                                 JOIN ncmorg d ON b.oid = d.oid  
                                 JOIN MASTSTATES e ON b.lstate = e.stateid
                                 WHERE d.oactive = 1 
-                                AND a.status <> 99";
-            
+                               AND (a.status IS NULL OR a.status <> 99) ";
+
 
             if (string.IsNullOrEmpty(organizationName) &&
                string.IsNullOrEmpty(LocationName) &&

@@ -125,15 +125,6 @@ namespace Echeckdem.Controllers
             // Set EPPlus license context for .NET Core
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            // Predefined state names from the database
-            //    var stateNames = new List<string>
-            //{
-            //"Andaman and Nicobar", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "National", "Chandigarh", "Central Govt", "Chattisgarh",
-            //"Daman Diu", "Dadra Nagar Haveli", "Goa", "Gujarat", "Haryana","Himachal Pradesh", "Jammu and Kashmir", "Jharkand", "Karnataka",
-            //"Kerala", "Maharashtra", "Manipur", "Meghalaya", "Mizoram","Madhya Pradesh", "Nagaland", "New Delhi", "No State", "Orissa",
-            //"Pondicherry", "Punjab", "Rajasthan", "Sikkim", "Telangana","Tamil Nadu", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
-            //};
-
             var stateNames = _EcheckContext.Maststates.Select(s => s.Statedesc).ToList();
 
 
