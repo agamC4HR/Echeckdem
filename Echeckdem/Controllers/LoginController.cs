@@ -34,21 +34,28 @@ namespace Echeckdem.Controllers
                 {
                     // Retrieve user level and UNO
                     var userLevel = await _loginService.GetUserLevelAsync(model.userID);
-                    var uno = await _loginService.GetUserUnoAsync(model.userID);
-                    
-                    Console.WriteLine("UNO:", uno);
-                    Console.WriteLine("USERID:", model.userID);
-                    // Generate JWT token
-                    //var token = await _jwtService.GenerateJwtToken(model.userID);
+                    var uno = await _loginService.GetUserUnoAsync(model.userID);                                   
                     var token = _jwtService.GenerateJwtToken(model);
 
                     HttpContext.Session.SetString("JWTToken", token);
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
-                    
 
-                    if (userLevel==2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
+                    //var locationTypes = await _loginService.GetUserLocationTypesAsync(uno);
+
+                    //bool allSitesAreSOrF = locationTypes.All(l => l == "S" || l == "F");
+
+                    //if (allSitesAreSOrF)
+                    //{
+                    //    return RedirectToAction("Index", "Home"); // Shows Home.cshtml
+                    //}
+                    //else
+                    //{
+                    //    return RedirectToAction("OtherView", "OtherController"); // Redirect elsewhere
+                    //}
+
+                    if (userLevel == 2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
 
                     ViewBag.UserLevel = userLevel;
 

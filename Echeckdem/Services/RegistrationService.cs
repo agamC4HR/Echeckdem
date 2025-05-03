@@ -20,7 +20,7 @@ namespace Echeckdem.Services
         }
         public async Task<List<RegistrationViewModel>> GetDataAsync( int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
         {
-            var currentYear = DateTime.Now.Year;
+            //var currentYear = DateTime.Now.Year;
 
             var sqlQuery = @"
             SELECT a.oid, a.doe, a.status, a.Dolr, a.tp, a.doi, a.lcode, a.nmoe, a.noe, a.remarks, a.rno, a.uid,  
@@ -44,7 +44,7 @@ namespace Echeckdem.Services
                 string.IsNullOrEmpty(StateName) &&
                 string.IsNullOrEmpty(CityName))
             {
-                sqlQuery += "AND YEAR(a.doe) = @currentYear ";                          
+                //sqlQuery += "AND YEAR(a.doe) = @currentYear ";                          
             }
 
             if (ulev >= 1)
@@ -93,7 +93,7 @@ namespace Echeckdem.Services
 
             var result = await _context.RegistrationViewModel
                 .FromSqlRaw(sqlQuery,
-                new SqlParameter("@currentYear", currentYear),
+                //new SqlParameter("@currentYear", currentYear),
                 new SqlParameter("@uno", uno),
                 new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
                 new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
@@ -243,7 +243,7 @@ namespace Echeckdem.Services
                         return "Only PDF files are allowed.";
                     }
 
-                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "REG");
+                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "REG"); 
                     Directory.CreateDirectory(folderPath);
 
                     string filePath = Path.Combine(folderPath, file.FileName);

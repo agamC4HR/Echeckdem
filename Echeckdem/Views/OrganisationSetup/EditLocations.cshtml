@@ -7,14 +7,26 @@
 }
 
 <style>
+    .modal-content{
+        position:absolute;
+        top:278px;
+        width:98vw;
+        left:-379px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: .375rem;
+        border-bottom-right-radius: .375rem;
+        border: solid 2px red;
+        border-top: 0;
+        padding:10px
+    }
     /* Form */
     .locationDataForm {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 15px;
-        padding: 20px;
-        font-size: 16px;
-        line-height: 1.6;
+        padding: 10px;
+        font-size: 12px;
     }
 
 
@@ -26,10 +38,10 @@
     }
 
         .locationDataForm input, .locationDataForm select {
-        padding: 10px;
-        font-size: 14px;
+        padding: 5px;
+        font-size: 12px;
         border: 1px solid #ddd;
-        border-radius: 4px;
+        border-radius: .375rem;
     }
 
         .locationDataForm button {
@@ -39,6 +51,8 @@
         background-color: white;
         color: #dd3432;
         border: 2px solid #dd3432;
+        height:30px;
+        border-radius:.375rem;
     }
 
             .locationDataForm button:hover {
@@ -67,8 +81,8 @@
     <thead>
         <tr>
             @* <th>Oid</th> *@
-            <th>Location Code</th>
-            <th>Location Name</th>
+@*             <th>Location Code</th>
+ *@            <th>Location Name</th>
             <th>City</th>
             <th>State</th>
             <th>Region</th>
@@ -77,7 +91,7 @@
             <th>Active</th>
             <th>Site Under</th>
             <th>Setup</th>
-            <th>Edit Location Detail</th>
+            <th>Edit</th>
         </tr>
     </thead>
     <tbody>
@@ -85,7 +99,7 @@
         {
             <tr>
                 <td data-field="Oid" style="display: none;">@location.Oid</td>
-                <td  data-field="Lcode">@location.Lcode</td>
+                <td  data-field="Lcode" hidden>@location.Lcode</td>
                 
                 <td  data-field="Lname">@location.Lname</td>
                 <td  data-field="Lcity">@location.Lcity</td>
@@ -113,10 +127,6 @@
                             )
 
                 </td>
-
-
-                
-
                 <td>
                     <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                 </td>

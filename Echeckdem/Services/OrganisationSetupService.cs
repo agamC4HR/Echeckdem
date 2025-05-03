@@ -159,7 +159,8 @@ namespace Echeckdem.Services
                         Contname = o.Contname,
                         Contemail = o.Contemail,
                         Oactive = o.Oactive,
-                        FileName = o.FileName
+                        FileName = o.FileName,
+                        ContractExpiryDate = o.ContractExpiryDate
                     })
                     .FirstOrDefaultAsync();
             }
@@ -187,6 +188,8 @@ namespace Echeckdem.Services
             organisation.Contname = updatedInfo.Contname;
             organisation.Contemail = updatedInfo.Contemail;
             organisation.Oactive = updatedInfo.Oactive;
+            organisation.ContractExpiryDate = updatedInfo.ContractExpiryDate;
+            
 
 
             if (updatedInfo.PdfFile != null && updatedInfo.PdfFile.Length > 0)

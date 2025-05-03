@@ -160,7 +160,7 @@ a {
 
 .heading_background_parent {
     position: relative;
-    width: 99vw;
+    width: 98vw;
     height: 10vh;
     top: 80px;
     left: 7px;
@@ -382,10 +382,9 @@ a {
 
 .org-details-body-table {
     table-layout: fixed;
-    width: 62vw;
+    width: 96vw;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 16px;
+    font-size: 12px;
     color: #333;
     background-color: #fff;
 }
@@ -397,7 +396,7 @@ a {
 
     .org-details-body-table th,
     .org-details-body-table td {
-        padding: 12px;
+        padding: 10px;
         text-align: left;
         border: 1px solid #dee2e6;
         font-size: 12px;

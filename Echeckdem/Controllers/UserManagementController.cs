@@ -197,7 +197,20 @@ using Microsoft.EntityFrameworkCore;
                 ViewBag.Uno = creationData.Uno;
 
                 List<SelectListItem> userLevelOptions = new List<SelectListItem>();
-                if (creationData.UserLevel == 2 || creationData.UserLevel == 3)
+
+                if (creationData.UserLevel == 0 || creationData.UserLevel == 1)           // NOT SURE ABOUT THIS
+                {
+                    userLevelOptions.Add(new SelectListItem { Text = "Reports", Value = "1" });
+                    userLevelOptions.Add(new SelectListItem { Text = "Uploader", Value = "5" });
+                    userLevelOptions.Add(new SelectListItem { Text = "Auditor", Value = "10" });
+                    userLevelOptions.Add(new SelectListItem { Text = "Owner", Value = "15" });
+                    userLevelOptions.Add(new SelectListItem { Text = "Contributions", Value = "101" });
+                    userLevelOptions.Add(new SelectListItem { Text = "Registrations", Value = "102" });
+                    userLevelOptions.Add(new SelectListItem { Text = "Returns", Value = "103" });
+                    userLevelOptions.Add(new SelectListItem { Text = "Registrations and Returns", Value = "104" });
+                    userLevelOptions.Add(new SelectListItem { Text = "All 3", Value = "105" });
+                }
+                else if (creationData.UserLevel == 2 || creationData.UserLevel == 3)
                 {
                     userLevelOptions.Add(new SelectListItem { Text = "Reports", Value = "1" });
                     userLevelOptions.Add(new SelectListItem { Text = "Uploader", Value = "5" });
