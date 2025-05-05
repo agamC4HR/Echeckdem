@@ -1,6 +1,10 @@
 ﻿@model Echeckdem.Models.ReturnsViewModel
+@{
+    ViewData["Title"] = "Edit Category";
+    ViewData["Heading"] = "Edit Return";
+    ViewData["Heading_child"] = ".....";
+}
 
-<h2>Edit Registration</h2>
 
 <form asp-action="AddOrUpdateRet" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="oid" />

@@ -1,38 +1,93 @@
 ﻿@model List<Echeckdem.Models.BocwScope>
+
+<style>
+
+    .addScopeForm {
+        gap: 10px;
+        padding: 5px;
+        font-size: 12px;
+    }
+
+        .addScopeForm label {
+            font-weight: bold;
+            color: #dd3432;
+            padding-right: 10px;
+        }
+
+        .addScopeForm input, .addScopeForm select {
+            padding: 5px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            border-radius: .375rem;
+        }
+
+        .addScopeForm button {
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: white;
+            color: #dd3432;
+            border: 2px solid #dd3432;
+            height: 30px;
+            border-radius: .375rem;
+            width:195px;
+        }
+
+            .addScopeForm button:hover {
+                background-color: #dd3432;
+                color: white;
+            }
+
+    .scope-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .scope-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        border: 1px solid #ddd;
+        border-radius: .375rem;
+        padding: 5px;
+        background-color: #fafafa;
+    }
+
+    .addScopeForm .close-btn {
+        margin-left: 5px;
+    }
+
+</style>
+
 <div>
-    <h4>Select Scopes</h4>
-    @if (Model != null && Model.Any())
-    {
-        <form asp-action="SaveMapping" method="post" id="saveMappingForm">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Select</th>
-                        <th>Scope Name</th>
-                       @*  <th>Active</th> *@
-                    </tr>
-                </thead>
-                <tbody>
+    <div>
+        <h4>Select Scopes</h4>
+        @if (Model != null && Model.Any())
+        {
+            <form asp-action="SaveMapping" method="post" id="saveMappingForm" class="addScopeForm">
+                <div class="scope-grid">
                     @foreach (var scope in Model)
                     {
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="selectedScopeIds" value="@scope.ScopeId" @(scope.IsSelected ? "checked" : "") />
-                            </td>
-                            <td>@scope.ScopeName</td>
-                           
-                        </tr>
+                        <label class="scope-item">
+                            <input type="checkbox" name="selectedScopeIds" value="@scope.ScopeId" @(scope.IsSelected ? "checked" : "") />
+                            @scope.ScopeName
+                        </label>
                     }
-                </tbody>
-            </table>
-            <input type="hidden" name="lcode" value="@ViewBag.Lcode" />
-            <input type="hidden" name="projectCode" value="@ViewBag.ProjectCode" />
-            <button type="submit" class="btn btn-primary">Save</button>
-        </form>
-    }
-    else
-    {
-        <p>No scopes available.</p>
-    }
-</div>
+                </div>
+
+                <input type="hidden" name="lcode" value="@ViewBag.Lcode" />
+                <input type="hidden" name="projectCode" value="@ViewBag.ProjectCode" />
+                <button type="submit">Save</button>
+                <button type="button" class="close-btn">Cancel</button>
+            </form>
+        }
+        else
+        {
+            <p>No scopes available.</p>
+        }
+    </div>
+
                        
