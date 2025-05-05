@@ -529,6 +529,7 @@ namespace Echeckdem.Controllers
 
 
             await _EcheckContext.SaveChangesAsync();
+            TempData["SuccessMessage"] = "BO site updated successfully.";
 
             return Json(new { success = true, message = "BO site updated successfully." });
         }

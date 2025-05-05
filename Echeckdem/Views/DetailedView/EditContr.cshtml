@@ -1,6 +1,10 @@
 ﻿@model Echeckdem.Models.ContributionViewModel
 
-<h2>Edit Registration</h2>
+@{
+    ViewData["Title"] = "Edit Category";
+    ViewData["Heading"] = "Edit Contribution";
+    ViewData["Heading_child"] = ".....";
+}
 
 <form asp-action="AddOrUpdateContr" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="oid" />
