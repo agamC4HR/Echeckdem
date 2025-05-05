@@ -18,10 +18,11 @@ namespace Echeckdem.Services
     public class OrganisationSetupService
     {
         private readonly DbEcheckContext _EcheckContext;
-
-        public OrganisationSetupService(DbEcheckContext EcheckContext)
+        private readonly IConfiguration _configuration;
+        public OrganisationSetupService(DbEcheckContext EcheckContext, IConfiguration configuration)
         {
             _EcheckContext = EcheckContext;
+            _configuration = configuration;
         }
         public async Task<bool> AddOrganisationAsync(OrganisationGeneralInfoViewModel newOrganisation)                        // Adding ORgansation Details (setting up new organisation)
         {
@@ -55,7 +56,7 @@ namespace Echeckdem.Services
 
             _EcheckContext.Ncmorgs.Add(organisation);
             await _EcheckContext.SaveChangesAsync();
-                        
+
             CreateOrganisationFolder(generatedOid);
 
 
@@ -74,7 +75,7 @@ namespace Echeckdem.Services
                 _EcheckContext.Ncmorgs.Update(organisation);
                 await _EcheckContext.SaveChangesAsync();
             }
-                return true;
+            return true;
         }
 
         private void CreateOrganisationFolder(string oid)
@@ -91,8 +92,8 @@ namespace Echeckdem.Services
                 Directory.CreateDirectory(Path.Combine(rootPath, "Ret"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Bocw"));
                 Directory.CreateDirectory(Path.Combine(rootPath, "Acts"));
-                Directory.CreateDirectory(Path.Combine(rootPath, "Copies"));                            
-                
+                Directory.CreateDirectory(Path.Combine(rootPath, "Copies"));
+
             }
         }
 
@@ -132,7 +133,7 @@ namespace Echeckdem.Services
 
             if (isActiveFilter.HasValue)
             {
-                query = query.Where(ncm => ncm.Oactive == (isActiveFilter.Value ? 1 : 0)); 
+                query = query.Where(ncm => ncm.Oactive == (isActiveFilter.Value ? 1 : 0));
             }
 
             var organisationsList = await query
@@ -147,7 +148,7 @@ namespace Echeckdem.Services
             OrganisationGeneralInfoViewModel? selectedOrganisation = null;
             if (!string.IsNullOrEmpty(selectedOid))
             {
-                selectedOrganisation = await _EcheckContext.Ncmorgs 
+                selectedOrganisation = await _EcheckContext.Ncmorgs
                     .Where(o => o.Oid == selectedOid)
                     .Select(o => new OrganisationGeneralInfoViewModel
                     {
@@ -168,7 +169,7 @@ namespace Echeckdem.Services
             return new CombinedOrganisationSetupViewModel
             {
                 OrganisationsList = organisationsList,
-                SelectedOrganisation = selectedOrganisation                                
+                SelectedOrganisation = selectedOrganisation
             };
         }
         public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)                           // update the details in general info 
@@ -189,7 +190,7 @@ namespace Echeckdem.Services
             organisation.Contemail = updatedInfo.Contemail;
             organisation.Oactive = updatedInfo.Oactive;
             organisation.ContractExpiryDate = updatedInfo.ContractExpiryDate;
-            
+
 
 
             if (updatedInfo.PdfFile != null && updatedInfo.PdfFile.Length > 0)
@@ -290,8 +291,8 @@ namespace Echeckdem.Services
                         foreach (var row in rows)
                         {
                             var lname = row.Cell(1).GetValue<string>()?.Trim();
-                    //  Resolve lcode based on lname
-                           var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
+                            //  Resolve lcode based on lname
+                            var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
                             if (site == null)
                                 throw new InvalidOperationException($"Invalid Location Name (Lname): {lname} for BO site.");
 
@@ -316,14 +317,14 @@ namespace Echeckdem.Services
 
                             var VendorCountCell = row.Cell(11);
                             int? VendorCount = null;
-                            if(!VendorCountCell.IsEmpty())
+                            if (!VendorCountCell.IsEmpty())
                             {
                                 VendorCount = VendorCountCell.GetValue<int?>();
                             }
 
                             var WorkerHeadCounCellt = row.Cell(12);
                             int? WorkerHeadCount = null;
-                            if(!VendorCountCell.IsEmpty())
+                            if (!VendorCountCell.IsEmpty())
                             {
                                 WorkerHeadCount = VendorCountCell.GetValue<int?>();
                             }
@@ -356,7 +357,7 @@ namespace Echeckdem.Services
                             DateOnly? projectEndDate = null;
                             if (!projectEndDateCell.IsEmpty())
                             {
-                                if (projectEndDateCell.DataType == XLDataType.DateTime)   
+                                if (projectEndDateCell.DataType == XLDataType.DateTime)
                                 {
                                     projectEndDate = DateOnly.FromDateTime(projectEndDateCell.GetDateTime());
                                 }
@@ -443,9 +444,9 @@ namespace Echeckdem.Services
 
         public async Task<List<string>> GetActiveScopesByLcodeAsync(string lcode)
         {
-            var activeScopeNames = await( from map in _EcheckContext.BoScopeMaps 
+            var activeScopeNames = await (from map in _EcheckContext.BoScopeMaps
                                           join scope in _EcheckContext.BocwScopes
-                                          on map.ScopeId equals scope.ScopeId 
+                                          on map.ScopeId equals scope.ScopeId
                                           where map.Lcode == lcode && map.Active == true
                                           select scope.ScopeName).ToListAsync();
 
@@ -454,7 +455,7 @@ namespace Echeckdem.Services
 
         public async Task<List<Ncmlocbo>> GetAllBocwDetailsWithScopesAsync(string oid)
         {
-            
+
 
             var query = @" 
                         SELECT* FROM Ncmlocbo
@@ -465,17 +466,17 @@ namespace Echeckdem.Services
                        )";
 
 
-          
+
 
             var bocwDetails = await _EcheckContext.Ncmlocbos
                 .FromSqlRaw(query, new SqlParameter("@oid", oid))
                 .ToListAsync();
-       
 
-            foreach(var bo in bocwDetails)
+
+            foreach (var bo in bocwDetails)
             {
                 var activeScopes = await GetActiveScopesByLcodeAsync(bo.Lcode);
-                bo.ActiveScopes = string.Join(",", activeScopes);   
+                bo.ActiveScopes = string.Join(",", activeScopes);
             }
 
             return bocwDetails;
@@ -495,7 +496,7 @@ namespace Echeckdem.Services
                 existingBoDetail.GeneralContractor = updatedBoDetail.GeneralContractor;
                 existingBoDetail.ProjectAddress = updatedBoDetail.ProjectAddress;
                 existingBoDetail.NatureofWork = updatedBoDetail.NatureofWork;
-                existingBoDetail.ProjectArea    = updatedBoDetail.ProjectArea;
+                existingBoDetail.ProjectArea = updatedBoDetail.ProjectArea;
                 existingBoDetail.ProjectCostEst = updatedBoDetail.ProjectCostEst;
                 existingBoDetail.ProjectStartDateEst = updatedBoDetail.ProjectStartDateEst;
                 existingBoDetail.ProjectEndDateEst = updatedBoDetail.ProjectEndDateEst;
@@ -511,8 +512,8 @@ namespace Echeckdem.Services
 
             else
             {
-               throw new KeyNotFoundException("BO detail not found.");
-            } 
+                throw new KeyNotFoundException("BO detail not found.");
+            }
         }
 
 
@@ -541,13 +542,13 @@ namespace Echeckdem.Services
 
                 if (selectedScopeIds.Contains(mapping.ScopeId))
                 {
-                    mapping.Active = true; 
+                    mapping.Active = true;
                 }
                 else
                 {
                     mapping.Active = false;
                 }
-                    
+
             }
 
             // Step 2: Identify new scopes to add (those that don't already exist in active mappings)
@@ -574,7 +575,7 @@ namespace Echeckdem.Services
                 }
                 else
                 {
-                // If the scope exists but is not active, update its status to Active
+                    // If the scope exists but is not active, update its status to Active
                     if (!existingScope.Active)
                     {
                         existingScope.Active = true; // Ensure it is set to active
@@ -586,84 +587,68 @@ namespace Echeckdem.Services
             await _EcheckContext.SaveChangesAsync();
         }
 
-        
+
         // --------------------------------------PROJECT SETUP AFTER SCOPE SETUP --------------------------------------------//
 
 
-        public async Task<int> ProjectSetupAsync(string lcode, string projectCode)
+        public async Task<string> ProjectSetupAsync(string lcode, string projectCode)
         {
             // fetching lname from ncmlocbo
-            var lname = await _EcheckContext.Ncmlocbos.Where(n=>n.Lcode==lcode).Select(n=>n.Lname).FirstOrDefaultAsync();
-
-         if (lname == null)
-                throw new InvalidOperationException("Site not found for the specified Lcode.");
+            var lname = await _EcheckContext.Ncmlocs.Where(n => n.Lcode == lcode && n.Lactive == 1).Select(n => n.Lname).FirstOrDefaultAsync();
+            string retstring = string.Empty;
+            if (lname == null)
+                throw new InvalidOperationException("No Active Site/Project found for the specified Lcode.");
 
             // Fetch the scopeId from BoScopeMap based on lcode and projectCode
-            var fetchedScopeId =  _EcheckContext.BoScopeMaps.Where(bsm => bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeId).ToList();
-            if (fetchedScopeId == null || fetchedScopeId.Any() == false) { throw new InvalidOperationException("ScopeId not found for the specified Lname and ProjectCode."); }
-            else {
-                foreach (var k in fetchedScopeId) {
-                    var trackScope = await _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == k).FirstOrDefaultAsync();
-                    if (trackScope == null)
-                        throw new InvalidOperationException("TrackScope not found for the specified SCOPENAME.");
-                    else
+            var scopeofproject = _EcheckContext.Ncmlocbos.Include(n => n.BoScopeMaps)
+                .Where(n => n.Lcode == lcode && n.ProjectCode == projectCode)
+                .Select(n => new { n.Lcode, n.ProjectCode, n.ProjectStartDateEst, n.ProjectEndDateEst, lname, n.BoScopeMaps })
+                .FirstOrDefault();
+            if (scopeofproject == null) { throw new InvalidOperationException($"Scope not found for the {lname} and {projectCode}."); }
+            else
+            {
+                ProjectCalendarGenerator projectCalendarGenerator = new ProjectCalendarGenerator(scopeofproject.ProjectStartDateEst.Value.ToDateTime(TimeOnly.MinValue), scopeofproject.ProjectEndDateEst.Value.ToDateTime(TimeOnly.MinValue), scopeofproject.ProjectCode, scopeofproject.Lcode, scopeofproject.lname, _configuration, _EcheckContext);
+                bool anyExecuted = false;   
+                foreach (var k in scopeofproject.BoScopeMaps)
+                {
+                    if (k.Active != false)
                     {
-                        ///if (trackScope.) { }
-                        //else { }
-                        var projectStartDateEst = await _EcheckContext.Ncmlocbos.Where(n => n.Lcode == lcode && n.ProjectCode == projectCode).Select(n => n.ProjectStartDateEst).FirstOrDefaultAsync();
-                        if (projectStartDateEst == null)
-                            throw new InvalidOperationException("ProjectStartDateEst not found for the specified Lcode and ProjectCode.");
-                        else 
+                        string scopeId = k.ScopeId;
+                        string? funcname = _EcheckContext.BocwScopes.Where(b => b.ScopeId == scopeId).Select(b => b.FunctionName).FirstOrDefault();
+                        var methodName = typeof(ProjectCalendarGenerator).GetMethod(funcname);
+                        if (methodName == null)
+                            throw new InvalidOperationException($"Method {funcname} not found in ProjectCalendarGenerator.");
+                        else
                         {
-                            DateTime startDateTime = new DateTime(projectStartDateEst.Value.Year, projectStartDateEst.Value.Month, projectStartDateEst.Value.Day);
-                            int daysToAdd = trackScope.DueDate ?? 0; // Get the number of days to add
-                            DateTime calculatedDueDate = startDateTime.AddDays(daysToAdd); // Add days
-                            DateOnly dueDate = DateOnly.FromDateTime(calculatedDueDate); // Convert back to DateOnly
-
-                            var CreateDate = DateOnly.FromDateTime(DateTime.Now);
-
-                            int calculatedStatus = CreateDate > dueDate ? 0 : 2;
-                            var ncbocw = new Ncbocw
+                            var parameter = _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == scopeId).Select(ts => new { ts.Offset, ts.Reference }).FirstOrDefault();
+                            object?[] args = funcname switch
                             {
-                                Lcode = lcode,
-                                ProjectCode = projectCode,
-                                Lname = lname,
-                                ScopeId = k,
-                                ScopeMapId = await _EcheckContext.BoScopeMaps.Where(bsm => bsm.ScopeId == k && bsm.Lcode == lcode && bsm.ProjectCode == projectCode && bsm.Active).Select(bsm => bsm.ScopeMapId).FirstOrDefaultAsync(),
-                                WorkId = trackScope.WorkId,
-                                DueDate = dueDate,
-                                FirstAlert = DateOnly.FromDateTime(DateTime.Now),
-                                Status = calculatedStatus,
-                              //  Task = trackScope.Task,
-                                CreateDate = CreateDate
+                                "GenerateOneTimeDueDate" => new object[] { parameter?.Offset ?? 30, parameter?.Reference ?? "Start", scopeId },
+                                "GenerateMonthlyVendorAuditWindows" => new object[] { scopeId },
+                                "GenerateCalendarYearEndDueDates" => new object[] { scopeId },
+                                "GenerateHalfYearlyDueDates" => new object[] { scopeId },
+                                _ => throw new InvalidOperationException($"Function {funcname} not recognized."),
                             };
-                            _EcheckContext.Ncbocws.Add(ncbocw);
-                            await _EcheckContext.SaveChangesAsync();
+
+                            var result = await (Task<string>)methodName.Invoke(projectCalendarGenerator, args);
+                            if (result == null)
+                                throw new InvalidOperationException($"Error invoking method {funcname}.");
+                            else
+                            {
+                                retstring = retstring + "\n" + result;
+                                Console.WriteLine(result);
+                             
+                            }
+
                         }
                     }
+
+                    
                 }
+
+                return retstring;// anyExecuted ? 0 : -1;
+
             }
-            //if (fetchedScopeId == null) 
-
-
-            // Fetch WorkId and DueDate from TrackScope
-            //var trackScope = await _EcheckContext.TrackScopes.Where(ts=>ts.ScopeId== fetchedScopeId).FirstOrDefaultAsync();
-
-            //if (trackScope == null)
-            //  throw new InvalidOperationException("TrackScope not found for the specified ScopeId.");
-
-            // Fetch ProjectStartDateEst from Ncmlocbo
-
-
-
-
-            // Calcualte DUeDate for ncbocw
-
-
-            return 0;
         }
-
-
-
     }
 }

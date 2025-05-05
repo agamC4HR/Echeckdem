@@ -41,6 +41,8 @@ public partial class Ncmloc
 
     public DateOnly? Enddate { get; set; }
 
+    public DateOnly? ContractExpiryDate { get; set; }
+
     public int? Lactive { get; set; }
 
     public int? Lsetup { get; set; }

@@ -226,31 +226,33 @@
         });
 
         // Handle Complete Setup button
-        // $('.complete-setup').on('click', function (e) {
-        //     e.preventDefault();
+        $('.complete-setup').on('click', function (e) {
+            alert("called");
+            e.preventDefault();
 
-        //     const lcode = $(this).data('lcode');
-        //     const projectCode = $(this).data('project-code');
-        //     $.ajax({
-        //         url: "/OrganisationSetup/PopulateNCBOCW",
-        //         type: "GET",
-        //         data: {
-        //             lcode,
-        //             projectCode,
+            const lcode = $(this).data('lcode');
+            const projectCode = $(this).data('project-code');
+            
+            $.ajax({
+                url: "/OrganisationSetup/PopulateNCBOCW",
+                type: "GET",
+                data: {
+                    lcode,
+                    projectCode,
                     
-        //         },
-        //         success: function (response) {
-        //             if (response.success) {
-        //                 alert("Transaction ID: " + response.transactionId);
-        //             } else {
-        //                 alert("Error: " + response.message);
-        //             }
-        //         },
-        //         error: function (xhr) {
-        //             alert("Request failed: " + xhr.statusText);
-        //         }
-        //     });
-
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("Transaction ID: " + response.transactionId);
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                },
+                error: function (xhr) {
+                    alert("Request failed: " + xhr.statusText);
+                }
+            });
+            });
         // Handle form submission via AJAX
         $(document).on('submit', '#saveMappingForm', function (e) {
             e.preventDefault();

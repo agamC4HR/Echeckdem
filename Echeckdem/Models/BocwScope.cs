@@ -19,6 +19,7 @@ public partial class BocwScope
 
     public string? Frequency { get; set; }
 
+    public string? FunctionName { get; set; }
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();

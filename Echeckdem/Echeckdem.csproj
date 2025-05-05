@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Handlers\" />
     <Folder Include="wwwroot\imgs\" />
     <Folder Include="wwwroot\Files\" />
   </ItemGroup>
