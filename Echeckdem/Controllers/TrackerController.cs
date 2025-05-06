@@ -48,12 +48,12 @@ namespace Echeckdem.Controllers
             {
                 var locations = _trackerService.GetLocations(uno, model.SelectedOid);
                 model.Locations = locations ?? new List<SelectListItem>(); // Ensure non-null list
-                return View(model);
+                return PartialView(model);
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"An error occurred while fetching locations: {ex.Message}";
-                return View(model);
+                return PartialView(model);
             }
         }
 
@@ -197,7 +197,19 @@ namespace Echeckdem.Controllers
             }
         }
 
-     
+        [HttpGet]
+        public IActionResult DetailsTracker(int acid, int actid)
+        {
+
+            var viewModel = new TrackerFullViewModel
+            {
+                Acid = acid,
+                Actid = actid,
+               
+            };
+
+            return View(viewModel);
+        }
 
 
     }

@@ -2,18 +2,51 @@
 
 @{
     ViewData["Title"] = "Tracker List";
+    ViewData["Heading"] = "Tracker List";
+    ViewData["Heading_child"] = "...";
 }
+<style>
+    .saveButton {
+        padding: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: white;
+        color: #dd3432;
+        border: 2px solid #dd3432;
+        border-radius: .375rem;
+        cursor: pointer;
+        width: 70px;
+        height: 30px;
+    }
 
-<h2>@ViewData["Title"]</h2>
+        .saveButton:hover {
+            background-color: #dd3432;
+            color: white;
+        }
 
-<table class="table table-striped">
+    .ItemContainer{
+        position:absolute;
+        width:98vw;
+        background: #ffffff;
+        left: 7px;
+        margin-top:45px;
+        padding:15px;
+        border-radius:.375rem;
+    }
+</style>
+
+<div class="table-container-detailsView" id="table-container-detailsView">
+    <table class="styled-table">
     <thead>
         <tr>
             <th>Organisation</th>
-            <th>Location</th>
-            <th>TPP</th>
+            <th>Site Name</th>
+            <th>Inspection Notice</th>
             <th>Title</th>
-
+            <th>Detail of Issue</th>
+            <th>Status</th>
+            <th>Start Date</th>
+            <th>Close Date</th>
             <th>SLA</th>
             <th>Details</th>
         </tr>
@@ -26,175 +59,25 @@
                 <td>@action.Lname</td>
                 <td>@action.SelectedTPP</td>
                 <td>@action.SelectedACTITLE</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td>@action.SelectedSBTP</td>
+                @* <td>
+                        <button class="saveButton" onclick="openDetails('@action.Acid', '@action.Actid')">Details</button>
+                </td> *@
                 <td>
-                    <button class="btn btn-primary" onclick="openDetails('@action.Acid', '@action.Actid')">Details</button>
+                   <a class="saveButton" href="@Url.Action("DetailsTracker", "Tracker", new { acid = action.Acid, actid = action.Actid })">Details</a>
                 </td>
+
             </tr>
         }
     </tbody>
 </table>
+</div>
+<div class="ItemContainer" id="addItemContainer" style="display:none;">
 
-<div id="editSection" style="display:none; margin-top: 20px;">
-    <div class="row">
-        <!-- NCACTION -->
-        <div class="col-md-6">
-            <h3>Edit NCACTION</h3>
-            <form id="ncactionForm" method="post" asp-action="SaveNcAction" enctype="multipart/form-data">
-                <input type="hidden" id="AcidNcAction" name="Acid" />
-                <input type="hidden" id="SelectedOid" name="SelectedOid" />
-                <input type="hidden" id="SelectedLCODE" name="SelectedLCODE" />
-                <input type="hidden" id="SelectedTPP" name="SelectedTPP" />
-                <input type="hidden" id="SelectedACTITLE" name="SelectedACTITLE" />
-                <input type="hidden" id="SelectedSBTP" name="SelectedSBTP" />
-                <input type="hidden" id="Oname" name="Oname" />
-                <input type="hidden" id="Lname" name="Lname" />
-                <input type="hidden" id="UploadedFileName" name="UploadedFileName" />
-
-                <div class="form-group">
-                    <label for="Title">Title</label>
-                    <input type="text" class="form-control" id="Title" name="Title" required />
-                </div>
-
-                <div class="form-group">
-                    <label for="ExternalStatus">External Status</label>
-                    <select class="form-control" id="ExternalStatus" name="ExternalStatus">
-                        <option value="C">Closed</option>
-                        <option value="O">Open - awaiting action</option>
-                        <option value="I">Docs received, In Process</option>
-                        <option value="D">Documents Requested</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="VisibleToClient">Visible to Client</label>
-                    <select class="form-control" id="VisibleToClient" name="VisibleToClient">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="InternalStatus">Internal Status</label>
-                    <select class="form-control" id="InternalStatus" name="InternalStatus">
-                        <option value="">Choose a status</option>
-                        <option value="N">Normal</option>
-                        <option value="P">Priority</option>
-                        <option value="E">Escalated</option>
-                        <option value="C">Critical</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="DetailOfIssue">Detail of Issue</label>
-                    <textarea class="form-control" id="DetailOfIssue" name="DetailOfIssue"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="StartDate">Start Date of Issue</label>
-                    <input type="date" class="form-control" id="StartDate" name="StartDate" />
-                </div>
-
-                <div class="form-group">
-                    <label for="DocsReceiptDate">Date of Receipt of All Docs/Inputs</label>
-                    <input type="date" class="form-control" id="DocsReceiptDate" name="DocsReceiptDate" />
-                </div>
-
-                <div class="form-group">
-                    <label for="CloseDate">Close Date of Issue</label>
-                    <input type="date" class="form-control" id="CloseDate" name="CloseDate" />
-                </div>
-
-                <div class="form-group">
-                    <label for="Remarks">Remarks</label>
-                    <textarea class="form-control" id="Remarks" name="Remarks"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="FileUpload">Upload PDF</label>
-                    <input type="file" id="FileUpload" name="FileUpload" class="form-control" accept=".pdf" />
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save</button>
-            </form>
-        </div>
-
-        <!-- NCACTAKEN -->
-        <div class="col-md-6">
-            <h3>Edit NCACTAKEN</h3>
-            <form id="ncactionTakenForm" method="post" asp-action="SaveNcActTaken">
-                <input type="hidden" id="AcidNcActTaken" name="Acid" />
-                <input type="hidden" id="Actid" name="Actid" />
-
-                
-
-
-                <div class="form-group">
-                    <label for="Acdate">Date of Action</label>
-                    <input type="date" class="form-control" id="Acdate" name="Acdate" required />
-                </div>
-
-                <div class="form-group">
-                    <label for="Actaken">Action Taken</label>
-                    <textarea class="form-control" id="Actaken" name="Actaken" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="Nacdate">Estimated Date of Next Action</label>
-                    <input type="date" class="form-control" id="Nacdate" name="Nacdate" />
-                </div>
-
-                <div class="form-group">
-                    <label for="Showclient">Visible to Client</label>
-                    <select class="form-control" id="Showclient" name="Showclient">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-success">Save</button>
-            </form>
-
-            @if (Model != null && Model.Any())
-            {
-                <h4 class="mt-4">Previous Actions (NCACTAKEN History)</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>UserName</th>
-                            <th>Date of Action</th>
-                            <th>Action Taken</th>
-                            <th>Next Action Date</th>
-                            <th>Visible to Client</th>
-                            <th>Created On</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var action in Model)
-                        {
-                            if (action.TakenViewModel != null)
-                            {
-                                foreach (var taken in action.TakenViewModel)
-                                {
-                                    <tr>
-                                        <td>@taken.Uname</td>
-                                        <td>@taken.Acdate?.ToString("yyyy-MM-dd")</td>
-                                        <td>@taken.Actaken</td>
-                                        <td>@taken.Nacdate?.ToString("yyyy-MM-dd")</td>
-                                        <td>@(taken.Showclient == 1 ? "Yes" : "No")</td>
-                                        <td>@taken.Acdate?.ToString("yyyy-MM-dd")</td>
-                                    </tr>
-                                }
-                            }
-                        }
-                    </tbody>
-                </table>
-            }
-
-        </div>
-    </div>
-
-    <button class="btn btn-secondary mt-3" onclick="cancelEdit()">Cancel</button>
 </div>
 
 @section Scripts {
@@ -236,5 +119,31 @@
             $('#ncactionForm')[0].reset();
             $('#ncactionTakenForm')[0].reset();
         }
+
+        function onAddNewItemClick() {
+            document.getElementById("table-container-detailsView").style.display = "none";
+            document.getElementById("addItemContainer").style.display = "block";
+
+            showAddForm();
+        }
+
+        //Start of Add Form------------------------------
+        function showAddForm() {
+
+            fetch('/Tracker/Index')
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById("addItemContainer").innerHTML = html;
+
+                })
+                .catch(error => {
+                    console.error("Error loading the form:", error);
+                    document.getElementById("addItemContainer").innerHTML = "<p>Error loading the form. Please try again.</p>";
+                });
+        }
+        //End of Add Form------------------------------
     </script>
 }

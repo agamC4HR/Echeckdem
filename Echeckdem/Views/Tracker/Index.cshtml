@@ -1,15 +1,56 @@
 ﻿@model Echeckdem.CustomFolder.TrackerViewModel
+<style>
+    .form-row-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
 
-@{
-    ViewData["Title"] = "Tracker";
-}
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
 
-<h2>@ViewData["Title"]</h2>
+        .form-group label {
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
 
-<form asp-action="Create" method="post">
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: .375rem;
+            font-size: 12px;
+        }
+
+    .saveButton {
+        padding: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: white;
+        color: #dd3432;
+        border: 2px solid #dd3432;
+        border-radius: .375rem;
+        cursor: pointer;
+        width: 70px;
+        height: 30px;
+    }
+
+        .saveButton:hover {
+            background-color: #dd3432;
+            color: white;
+        }
+
+</style>
+
+<div class="heading">Add Item</div>
+<form asp-action="Create" method="post" style="margin-top:10px;">
     <input type="hidden" asp-for="SelectedUno" id="SelectedUno" />
     <input type="hidden" name="Acid" value="@Model.Acid" />
-
+    <div class="form-row-2col">
     <div class="form-group">
         <label for="SelectedOid">Select Organization</label>
         <select asp-for="SelectedOid" class="form-control" asp-items="Model.Organizations" id="SelectedOid" name="SelectedOid">
@@ -27,7 +68,8 @@
         </select>
         <span asp-validation-for="SelectedLCODE" class="text-danger"></span>
     </div>
-
+    </div>
+    <div class="form-row-2col">
     <div class="form-group">
         <label for="SelectedTPP">Inspection/Notice For:</label>
         <select asp-for="SelectedTPP" class="form-control" asp-items="Model.TPPDropdown" id="SelectedTPP" name="SelectedTPP">
@@ -45,7 +87,8 @@
         </select>
         <span asp-validation-for="SelectedACTITLE" class="text-danger"></span>
     </div>
-
+    </div>
+    <div class="form-row-2col">
     <div class="form-group">
         <label for="SelectedSBTP">SLA:</label>
         <select asp-for="SelectedSBTP" class="form-control" asp-items="Model.SlaDropdown" id="SelectedSBTP" name="SelectedSBTP">
@@ -54,8 +97,9 @@
         </select>
         <span asp-validation-for="SelectedSBTP" class="text-danger"></span>
     </div>
+    </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="saveButton">Submit</button>
 </form>
 
 @section Scripts {
