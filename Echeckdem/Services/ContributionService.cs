@@ -1,4 +1,5 @@
 ﻿using Echeckdem.Models;
+using Echeckdem.CustomFolder.DetailViewDashboard;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace Echeckdem.Services
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
+        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
         {
 
             var currentYear = DateTime.Now.Year;
@@ -89,12 +90,12 @@ namespace Echeckdem.Services
             }
 
             sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
-            
+
             // Execute the SQL query 
             var result = await _context.ContributionViewModel
                  .FromSqlRaw(sqlQuery,
                              new SqlParameter("@currentYear", currentYear),
-                             new SqlParameter("@uno", uno), 
+                             new SqlParameter("@uno", uno),
                              new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
                              new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
                              new SqlParameter("@StateName", (object)StateName ?? DBNull.Value),
@@ -106,6 +107,50 @@ namespace Echeckdem.Services
                 .ToListAsync();
             return result;
         }
+
+        public async Task<DashboardViewModel> GetDashboardDataAsync (int uno)
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var allowedLcodes = await _context.Ncumaps
+           .Where(m => m.Uno == uno)
+           .Select(m => m.Lcode)
+           .ToListAsync();
+
+            var onTimeContributions = await _context.Nccontrs
+                .Where(c => allowedLcodes.Contains(c.Lcode) &&
+                        c.Cyear == currentYear &&
+                        c.Status == 1 &&
+                        c.Depdate <= c.Lastdate)
+                .Join(_context.Ncmlocs, contr => contr.Lcode, loc => loc.Lcode, (contr, loc) => new ContributionViewModel
+                {
+                    Lcode = contr.Lcode,
+                    Depdate = contr.Depdate,
+                    LastDate = contr.Lastdate,
+                    Lname = loc.Lname,
+                    Status = contr.Status,
+                    Cyear = contr.Cyear,
+                    Period = contr.Period,
+                    Remarks = contr.Remarks,
+                    Amount = contr.Amount,
+                    Chqno = contr.Chqno
+                })
+                .ToListAsync();
+
+            return new DashboardViewModel
+            {
+                OnTimeContributions = onTimeContributions,
+                OnTimeCount = onTimeContributions.Count
+            };
+        }
+
+
+
+
+
+
+
+
         public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)
 
         {

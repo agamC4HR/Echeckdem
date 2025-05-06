@@ -111,16 +111,7 @@ namespace Echeckdem.Services
 
         public async Task<CombinedOrganisationSetupViewModel> GetOrganisationSetupAsync(string searchTerm, string? selectedOid, bool? isActiveFilter)                // service for getting organisation list and general info of that organisation
         {
-            // Fetch the list of active organizations
-            //var organisationsList = await _EcheckContext.Ncmorgs
-            //    .Where(ncm => ncm.Oactive == 1 &&
-            //                  (string.IsNullOrEmpty(searchTerm) || ncm.Oname.Contains(searchTerm)))
-            //    .Select(ncm => new OrganisationsListViewModel
-            //    {
-            //        Oname = ncm.Oname,
-            //        oid = ncm.Oid
-            //    })
-            //    .ToListAsync();
+           
 
 
             var query = _EcheckContext.Ncmorgs.AsQueryable();

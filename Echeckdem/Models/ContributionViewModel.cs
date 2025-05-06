@@ -5,8 +5,6 @@ namespace Echeckdem.Models
 {
     public class ContributionViewModel
     {
-        // public int SerialNumber { get; set; }
-
         [Key]
         public int Contid { get; set; }
         [Key]

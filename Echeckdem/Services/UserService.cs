@@ -49,11 +49,11 @@ namespace Echeckdem.Services
                 .Where(m => m.Uno == uno)
                 .Join(
                     _dbEcheckContext.Ncmlocs,
-                    map => new { map.Lcode, map.Oid }, // Outer key selector
-                    loc => new { loc.Lcode, loc.Oid }, // Inner key selector
-                    (map, loc) => loc.Ltype // Result selector
+                    map => new { map.Lcode, map.Oid },
+                    loc => new { loc.Lcode, loc.Oid },
+                    (map, loc) => loc.Ltype
                 )
-                 .Where(ltype => !string.IsNullOrWhiteSpace(ltype)) // ignore null, empty, or whitespace
+                 .Where(ltype => !string.IsNullOrWhiteSpace(ltype))
                  .Select(ltype => ltype.Trim())
                  .ToListAsync();
 

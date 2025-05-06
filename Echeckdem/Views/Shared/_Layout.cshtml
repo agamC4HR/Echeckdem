@@ -41,6 +41,11 @@
 @*     @{
         var userLevel = Context.Session.GetInt32("UserLevel");
     }  *@
+
+    
+
+
+
     <div class="main_parent">
     <nav class="navbar">
         <div class="nav_parent">
@@ -74,19 +79,44 @@
                         {
                                                     
                             <a href="/DetailedView/CombinedDetailedView">Track Compliance </a>
+                            <a href="/Tracker/trackerlist"> Tracker</a>
 
                         }
                     </div>
             </div>
-            <div class="b-links">
-                <a href=""> Settings</a>
-                
-        </div>
 
-               @*  <a href=""> Settings</a> *@
+                <div class="b-links">
+                    <a href=""> Settings</a>
+
+                </div>
+
+                @*  <a href=""> Settings</a> *@
                 <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">
-                    <button  type="submit" class="Logout-button">Logout</button>
+                    <button type="submit" class="Logout-button">Logout</button>
                 </form>
+
+                @{
+                    var userID = Context.Session.GetString("userID");
+                    var initial = !string.IsNullOrEmpty(userID) ? userID.Trim()[0].ToString().ToUpper() : "?";
+
+                }
+
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle rounded-circle text-white bg-primary"
+                            type="button" id="userDropdown" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        @initial
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#">View Account</a></li>
+                        <li><a class="dropdown-item" href="#">Change Password</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    </ul>
+                </div>
+
+
+
+            
     </nav>
         <div class="heading_background_parent">
             <div class="heading_background">

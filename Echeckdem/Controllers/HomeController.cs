@@ -10,11 +10,13 @@ namespace Echeckdem.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserService _loginService;
+        private readonly ContributionService _contributionService;
 
-        public HomeController(ILogger<HomeController> logger, IUserService loginservice)
+        public HomeController(ILogger<HomeController> logger, IUserService loginservice, ContributionService contributionService)
         {
             _logger = logger;
             _loginService = loginservice;
+            _contributionService = contributionService;
         }
                
         public  async Task<IActionResult> Index()
@@ -27,10 +29,6 @@ namespace Echeckdem.Controllers
             if (uno.HasValue)
             {
                 var locationTypes = await _loginService.GetUserLocationTypesAsync(uno.Value);
-                //bool showSpecialView = locationTypes.All(l => l == "S" || l == "F");
-
-                //ViewBag.ShowSpecialView = showSpecialView;
-
                 var typesSet = locationTypes.Select(l => l.ToUpper()).ToHashSet();
 
                 if (typesSet.All(l => l == "S" || l == "F"))
@@ -56,6 +54,22 @@ namespace Echeckdem.Controllers
             return View(model);
 
         }
+        public async Task<IActionResult> Contrbutions()
+        {
+            var uno = HttpContext.Session.GetInt32("UNO");
+
+            if (!uno.HasValue)
+            {
+                // Handle the case where the session doesn't contain UNO
+                return RedirectToAction("Login", "Index"); // or show error
+            }
+
+            var model = await _contributionService.GetDashboardDataAsync(uno.Value);
+            return View(model);
+        }
+
+
+
 
         public IActionResult Privacy()
         {

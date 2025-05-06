@@ -35,6 +35,7 @@ body {
     max-width: 100vw;
 }
 
+
 .navbar {
     width: 100vw;
     position: fixed;
@@ -46,6 +47,24 @@ body {
     background: linear-gradient(to bottom, #8e131f 95%, white);
     /*    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
 }
+
+    .navbar .dropdown {                                                                                                           /*added by agam*/
+        position: fixed; 
+        right: 12x`px;
+        top: 10px; 
+        z-index: 9999;
+    }
+
+
+    .navbar .dropdown-toggle {                                                                                                /*added by agam*/
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
 .nav_parent {
     width: 97%;
