@@ -125,20 +125,31 @@
                 <h1 class="heading"> @ViewData["Heading"] </h1>
                 <p class="heading_child">@ViewData["Heading_child"] </p>
                 </div>
-                    @if (ViewData["Title"]?.ToString() != "Organisation List")
+                    @if (ViewData["Title"]?.ToString() == "Detailed Report")
                     {
+                        <div class="cond-act-buttons">
                         <button class="filter-btn" onclick="toggleFilterForm()">
-                            <!-- Filter button -->
                             FILTER
                         </button>
+                            <div style="width: 10px;"></div>
+                        <button class="table-export-btn" onclick="downloadData()">
+                            EXPORT
+                        </button>
+                        </div>
                     }
 
-                    @if (ViewData["Title"]?.ToString() != "Organisation Management")
+                    @if (ViewData["Title"]?.ToString() == "Organisation List")
                     {
                         <button class="table-add-btn" onclick="showAddOrganisationForm()">
                             Add New Organisation
                         </button>
                     }
+                    @* @if ((string)ViewData["PageKey"] != "OrgList")
+                    {
+                        <button class="table-add-btn" onclick="showAddOrganisationForm()">
+                            Add New Organisation
+                        </button>
+                    } *@
                 </div>
                 </div>
         </div>

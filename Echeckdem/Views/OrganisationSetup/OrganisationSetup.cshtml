@@ -6,6 +6,7 @@
         ViewData["Title"] = "Organisation List";
         ViewData["Heading"] = "Organisation Management";
         ViewData["Heading_child"] = "Organizational intelligence and response toolkit.";
+        ViewData["PageKey"] = "OrgList";
     }
 }
 
@@ -277,7 +278,7 @@
             </p>
         </div>
         <!-- Form for editing organisation info -->
-        <div id="editForm" style="display:none;">
+        <div id="editForm">
             <form asp-action="EditOrganisationInfo" method="post" enctype="multipart/form-data" class="Edit-OrganisationInfo-Form">
                 <label>Oid</label>
                 <input type="text" name="oid" value="@Model.SelectedOrganisation?.oid" readonly />
@@ -463,7 +464,7 @@
 
     }
     // End of Location data Form-----------------------------
-
+        
     //Start of Working Of Add Location for BOCW sites-------------------------
     function showBOCWUploadForm() {
         const oid = document.getElementById("organisationDropdown").value;
@@ -490,6 +491,7 @@
 
         const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
         document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
+        document.getElementById("orgDetailsBody").style.display = "table";
         
         $("#orgDetailsBody").load(`/OrganisationSetup/viewbodetails?oid=${oid}`);
     }

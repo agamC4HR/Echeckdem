@@ -250,7 +250,7 @@ a {
 
 .table-heading-container {
     position: sticky;
-    width: 96vw;
+    width: 98vw;
     top: 70px;
     display: flex;
     justify-content: space-between;
@@ -261,7 +261,7 @@ a {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: -28px;
     margin-top: 38px;
-    margin-left: 19px;
+    margin-left: 7px;
     z-index: 40;
 }
 
@@ -352,12 +352,11 @@ a {
     }
 .table-container-detailsView {
     position: relative;
-    width: 96vw;
+    width: 98vw;
     background-color: white;
-    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     top: 20px;
-    left: 20px;
+    left: 7px;
 }
 .styled-table {
     width: 100%;
@@ -385,8 +384,12 @@ a {
         background-color: #f8f9fa;
     }
 
-
-   /*---------------------------------------------css for tables shown in orgdetilsbody->Organisationsetup.cshtml*/
+.cond-act-buttons{
+    display:flex;
+    margin-bottom:15px;
+    height:30px;
+}
+/*---------------------------------------------css for tables shown in orgdetilsbody->Organisationsetup.cshtml*/
 .table-container {
     width: 30vw;
     top: 40px;
@@ -415,7 +418,7 @@ a {
 
     .org-details-body-table th,
     .org-details-body-table td {
-        padding: 12px;
+        padding: 10px;
         text-align: left;
         border: 1px solid #dee2e6;
         font-size: 12px;

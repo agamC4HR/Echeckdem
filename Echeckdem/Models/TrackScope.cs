@@ -9,7 +9,7 @@ public partial class TrackScope
 
     public int WorkId { get; set; }
 
-    public int? DueDate { get; set; }
+    public int? Offset { get; set; }
 
     public string? Reference { get; set; }
 
