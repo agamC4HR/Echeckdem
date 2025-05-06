@@ -166,6 +166,20 @@
                     <td>@contribution.State</td>
                     <td>@contribution.LRegion</td>
                     @* <td></td> <!-- Empty for Contributions --> *@
+                    <td>
+                        @if (!string.IsNullOrEmpty(contribution.Filename))
+                        {
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "CONTR", nm = contribution.Filename, oid = contribution.oid})"
+                               target="_blank"
+                               class="view-pdf-link">
+                                View FILE
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No file uploaded</span>
+                        }
+                    </td>
                     <td><a href="@Url.Action("EditContr", "DetailsView", new {contid = contribution.Contid, oid = contribution.oid, lcode = contribution.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @* <td></td> <!-- Empty for Registrations --> *@
                 </tr>
@@ -188,6 +202,20 @@
                     <td>@returnData.LCity</td>
                     <td>@returnData.State</td>
                     <td>@returnData.LRegion</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(returnData.Filename))
+                        {
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "RET", nm = returnData.Filename, oid = returnData.oid})"
+                               target="_blank"
+                               class="view-pdf-link">
+                                View FILE
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No file uploaded</span>
+                        }
+                    </td>
                     <td><a href="@Url.Action("EditRet", "DetailsView", new {rtid = returnData.Rtid, oid = returnData.oid, lcode = returnData.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @*  <td>@returnData.RForm</td>  *@
 
