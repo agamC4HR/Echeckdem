@@ -144,12 +144,19 @@
                             Add New Organisation
                         </button>
                     }
-                    @* @if ((string)ViewData["PageKey"] != "OrgList")
+                    @if (ViewData["Title"]?.ToString() == "Tracker List")
                     {
-                        <button class="table-add-btn" onclick="showAddOrganisationForm()">
-                            Add New Organisation
+                        <button class="table-add-btn" onclick="onAddNewItemClick()">
+                            Add New Item
                         </button>
-                    } *@
+                    }
+                    @if (ViewData["Title"]?.ToString() == "Tracker Details")
+                    {
+                        <button class="table-add-btn" onclick="backToTracker()">
+                            Back to Tracker
+                        </button>
+                    }
+
                 </div>
                 </div>
         </div>

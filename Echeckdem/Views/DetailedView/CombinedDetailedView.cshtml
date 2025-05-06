@@ -3,21 +3,13 @@
 @{
     ViewData["Title"] = "Detailed Report";
     ViewData["Heading"] = "Detailed Report";
-    ViewData["Heading_child"] = "Comprehensive labor compliance insights and actions.";
+    ViewData["Heading_child"] = "Comprehensive Labor Compliance Insights and Actions.";
 }
 
 
 <partial name="_FilterForm" model="Model" />
 
 <style>
-  /*   .styled-table {
-        margin: 0;
-    }
-
-        .styled-table thead {
-            top: 0;
-        }
- */
             .styled-table th:nth-child(1) { /* S.No. */
                 width: 4%;
             }
@@ -107,6 +99,7 @@
                 <th>Period</th>
                 <th>Due Date</th>
                 <th>Status</th>
+                <th>File</th>
                 <th>Date of Deposit/Renewal</th>
                 <th>City</th>
                 <th>State</th>
@@ -131,6 +124,7 @@
                     <td>N/A</td>
                     <td>@registration.Doe?.ToString("dd MMM yyyy")</td>
                     <td>@registration.GetStatusDescription()</td>
+                    <td></td>
                     <td></td>
                     <td>@registration.LCity</td>
                     <td>@registration.State</td>
@@ -166,6 +160,7 @@
                     <td>@contribution.FormattedPeriod</td>
                     <td>@contribution.LastDate?.ToString("dd MMM yyyy")</td>
                     <td>@contribution.GetStatusDescription()</td>
+                    <td></td>
                     <td>@contribution.Depdate?.ToString("dd MMM yyyy")</td>
                     <td>@contribution.LCity</td>
                     <td>@contribution.State</td>
@@ -188,6 +183,7 @@
                     <td>@returnData.Period?.ToString("MMMM yyyy")</td>
                     <td>@returnData.LastDate?.ToString("dd MMM yyyy")</td>
                     <td>@returnData.GetStatusDescription()</td>
+                    <td></td>
                     <td>@returnData.Depdate?.ToString("dd MMM yyyy")</td>
                     <td>@returnData.LCity</td>
                     <td>@returnData.State</td>
