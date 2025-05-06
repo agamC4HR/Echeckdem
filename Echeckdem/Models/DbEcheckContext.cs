@@ -1750,7 +1750,7 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Doi).HasColumnName("DOI");
             entity.Property(e => e.Dolr).HasColumnName("DOLR");
             entity.Property(e => e.Filename)
-                .HasMaxLength(50)
+                .HasMaxLength(50)   
                 .IsUnicode(false)
                 .HasColumnName("FILENAME");
             entity.Property(e => e.Nmoe)

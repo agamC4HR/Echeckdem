@@ -29,6 +29,8 @@ namespace Echeckdem.Models
 
         public string? Remarks { get; set; }
 
+        public string? Filename { get; set; }
+
 
         public string GetStatusDescription()
         {

@@ -38,7 +38,9 @@ namespace Echeckdem.Models
 
         public string? Chqno { get; set; }
 
-     
+        public string? Filename { get; set; }
+
+
 
         public string FormattedPeriod
         {

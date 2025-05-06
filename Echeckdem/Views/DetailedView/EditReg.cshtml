@@ -1,144 +1,172 @@
-﻿@model Echeckdem.Models.RegistrationViewModel
+﻿    @model Echeckdem.Models.RegistrationViewModel
 
-@{
-    ViewData["Title"] = "Edit Category";
-    ViewData["Heading"] = "Edit Registration";
-    ViewData["Heading_child"] = ".....";
-}
-
-<style>
-
-    .form-container {
-        width: 98vw;
-        margin-top: 45px;
-        padding: 15px;
-        background-color: #ffffff;
-        border-radius: .375rem;
-        margin-left: 7px;
+    @{
+        ViewData["Title"] = "Edit Category";
+        ViewData["Heading"] = "Edit Registration";
+        ViewData["Heading_child"] = ".....";
     }
 
-    .form-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-bottom: 15px;
-    }
+    <style>
 
-    .form-field {
-        flex: 1;
-        min-width: 200px;
-    }
-
-        .form-field label {
-            font-weight: bold;
-            font-size: 12px;
-            color: #333;
-            margin-bottom: 5px;
-            display: block;
+        .form-container {
+            width: 98vw;
+            margin-top: 45px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: .375rem;
+            margin-left: 7px;
         }
 
-        .form-field input,
-        .form-field select,
-        .form-field textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 12px;
-            background-color: #fff;
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
         }
 
-            .form-field input:focus,
-            .form-field select:focus,
-            .form-field textarea:focus {
-                border-color: #007bff;
-                outline: none;
+        .form-field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+            .form-field label {
+                font-weight: bold;
+                font-size: 12px;
+                color: #333;
+                margin-bottom: 5px;
+                display: block;
             }
 
-    textarea {
-        height: 150px;
-        resize: vertical;
-    }
+            .form-field input,
+            .form-field select,
+            .form-field textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 12px;
+                background-color: #fff;
+            }
 
-    .submit-button {
-        margin-top: 20px;
-    }
+                .form-field input:focus,
+                .form-field select:focus,
+                .form-field textarea:focus {
+                    border-color: #007bff;
+                    outline: none;
+                }
 
-        .submit-button button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 12px;
-            border-radius: 5px;
-            cursor: pointer;
+        textarea {
+            height: 150px;
+            resize: vertical;
         }
 
-            .submit-button button:hover {
-                background-color: #0056b3;
+        .submit-button {
+            margin-top: 20px;
+        }
+
+            .submit-button button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                font-size: 12px;
+                border-radius: 5px;
+                cursor: pointer;
             }
-</style>
 
-<form asp-action="AddOrUpdateReg" asp-controller="DetailsView" method="post" enctype="multipart/form-data" class="form-container">
-    <input type="hidden" asp-for="Oid" />
-    <input type="hidden" asp-for="Uid" />
-    <input type="hidden" asp-for="Lcode" />
+                .submit-button button:hover {
+                    background-color: #0056b3;
+                }
 
-    <div class="form-row">
-        <div class="form-field" style="flex: 1 1 100%;">
-            <label asp-for="Status">Status:</label>
-            <select asp-for="Status" asp-items="@(new SelectList(Model.StatusOptions, "Key", "Value", Model.Status))"></select>
-        </div>
-    </div>
+    .view-pdf-link {
+        color: #0066cc; /* Change to a color that contrasts with the background */
+        text-decoration: none; /* Optional: remove underline */
+        font-weight: bold; /* Optional: make the text bold */
+    }
 
-    <div class="form-row">
-        <div class="form-field">
-            <label asp-for="Rno">RNO:</label>
-            <input asp-for="Rno" type="text" />
-        </div>
-        <div class="form-field">
-            <label asp-for="Noe">NOE:</label>
-            <input asp-for="Noe" type="number" />
-        </div>
-    </div>
+        .view-pdf-link:hover {
+            color: #004d99; /* Change color on hover for better UX */
+            text-decoration: underline; /* Add underline on hover for better interactivity */
+        }
 
-    <div class="form-row">
-        <div class="form-field">
-            <label asp-for="Doi">Date of Issue (DOI):</label>
-            <input asp-for="Doi" type="date" />
-        </div>
-        <div class="form-field">
-            <label asp-for="Doe">Date of Expiry (DOE):</label>
-            <input asp-for="Doe" type="date" />
-        </div>
-    </div>
+    </style>
 
-    <div class="form-row">
-        <div class="form-field">
-            <label asp-for="Dolr">Date of Last Renewal (DOLR):</label>
-            <input asp-for="Dolr" type="date" />
-        </div>
-        <div class="form-field">
-            <label asp-for="Nmoe">NMOE:</label>
-            <input asp-for="Nmoe" type="text" />
-        </div>
-    </div>
+    <form asp-action="AddOrUpdateReg" asp-controller="DetailsView" method="post" enctype="multipart/form-data" class="form-container">
+        <input type="hidden" asp-for="Oid" />
+        <input type="hidden" asp-for="Uid" />
+        <input type="hidden" asp-for="Lcode" />
 
-    <div class="form-row">
-        <div class="form-field" style="flex: 1 1 100%;">
-            <label asp-for="Remarks">Remarks:</label>
-            <textarea asp-for="Remarks"></textarea>
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label asp-for="Status">Status:</label>
+                <select asp-for="Status" asp-items="@(new SelectList(Model.StatusOptions, "Key", "Value", Model.Status))"></select>
+            </div>
         </div>
-    </div>
 
-    <div class="form-row">
-        <div class="form-field" style="flex: 1 1 100%;">
-            <label>Upload File (PDF only):</label>
-            <input type="file" name="file" accept="application/pdf" />
+        <div class="form-row">
+            <div class="form-field">
+                <label asp-for="Rno">RNO:</label>
+                <input asp-for="Rno" type="text" />
+            </div>
+            <div class="form-field">
+                <label asp-for="Noe">NOE:</label>
+                <input asp-for="Noe" type="number" />
+            </div>
         </div>
-    </div>
 
-    <div class="submit-button">
-        <button type="submit">Save Changes</button>
-    </div>
-</form>
+        <div class="form-row">
+            <div class="form-field">
+                <label asp-for="Doi">Date of Issue (DOI):</label>
+                <input asp-for="Doi" type="date" />
+            </div>
+            <div class="form-field">
+                <label asp-for="Doe">Date of Expiry (DOE):</label>
+                <input asp-for="Doe" type="date" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <label asp-for="Dolr">Date of Last Renewal (DOLR):</label>
+                <input asp-for="Dolr" type="date" />
+            </div>
+            <div class="form-field">
+                <label asp-for="Nmoe">NMOE:</label>
+                <input asp-for="Nmoe" type="text" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label asp-for="Remarks">Remarks:</label>
+                <textarea asp-for="Remarks"></textarea>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label>Upload File (PDF only):</label>
+                <input type="file" name="file" accept="application/pdf" />
+            </div>
+        </div>
+
+    @if (!string.IsNullOrEmpty(Model.Filename))
+    {
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label>Currently Uploaded File:</label><br />
+                <a href="@Url.Action("Open_file", "DetailsView", new { tp = "REG", nm = Model.Filename, oid = Model.Oid })"
+                   target="_blank"
+                   class="view-pdf-link">
+                    View PDF in New Tab
+                </a>
+            </div>
+        </div>
+
+    }
+
+
+        <div class="submit-button">
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>

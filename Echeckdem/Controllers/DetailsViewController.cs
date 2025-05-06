@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Echeckdem.Services;
 using System.Runtime.CompilerServices;
 using Echeckdem.CustomFolder;
+using Microsoft.AspNetCore.Hosting;
+using System.Text;
 
 namespace Echeckdem.Controllers
 {
@@ -13,14 +15,15 @@ namespace Echeckdem.Controllers
         private readonly RegistrationService _regService;
         private readonly ContributionService _contService;
         private readonly ReturnsService _retService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
 
-        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService)
+        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService, IWebHostEnvironment webHostEnvironment)
         {
             _regService = regService;
             _contService = contService;
             _retService = retService;
-            
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null!, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)//(int ulev, int uno, string organizationName = null)
@@ -136,6 +139,7 @@ namespace Echeckdem.Controllers
                 Doe = ncreg.Doe,
                 Dolr = ncreg.Dolr,
                 Remarks = ncreg.Remarks,
+                Filename = ncreg.Filename,
                 // Map other properties as needed
             };
             return View("~/Views/DetailedView/EditReg.cshtml", registrationViewModel);
@@ -153,6 +157,40 @@ namespace Echeckdem.Controllers
 
             return Ok(new { Message = result });
         }
+
+        public IActionResult Open_file(string tp, string nm, string oid)
+        {
+            try
+            {
+                // Determine folder path
+                string folderName = tp switch
+                {
+                    "REG" => Path.Combine("Files", oid, "REG"),
+                    "CONTR" => Path.Combine("Files", oid, "CONTR"),  // Contributions folder
+                    "RET" => Path.Combine("Files", oid, "RET"),
+
+                    _ => throw new ArgumentException("Invalid file type.")
+                };
+
+                // Combine with wwwroot path
+                string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, folderName, nm);
+
+                if (!System.IO.File.Exists(fullPath))
+                {
+                    return NotFound("File not found.");
+                }
+
+                // Serve file with appropriate content type
+                return PhysicalFile(fullPath, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                string errorData = $"{ex.Message}\n{ex.StackTrace}";
+                var stream = new MemoryStream(Encoding.UTF8.GetBytes(errorData));
+                return File(stream, "text/plain", "error_log.txt");
+            }
+        }
+
         //----------------END----------------------------------REGISTRATION------------------------------------------------------------------------------//
 
         //----------------START----------------------------------CONTRIBUTION ------------------------------------------------------------------------------//
@@ -197,7 +235,6 @@ namespace Echeckdem.Controllers
         }
 
         //----------------END----------------------------------CONTRIBUTION ------------------------------------------------------------------------------/
-        
         //----------------START----------------------------------RETURNS ----------------------------------------------------------------------------------//
 
         public async Task<IActionResult> EditRet(int rtid, string oid, string lcode)

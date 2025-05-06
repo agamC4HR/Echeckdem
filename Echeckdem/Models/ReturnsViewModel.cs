@@ -31,8 +31,10 @@ namespace Echeckdem.Models
             public int RM {  get; set; }
             public int YROFF { get; set; }
 
-        
-            public DateTime? Period => CalculatePeriod();
+        public string? Filename { get; set; }
+
+
+        public DateTime? Period => CalculatePeriod();
             public string GetStatusDescription()
             {
                 return Status switch

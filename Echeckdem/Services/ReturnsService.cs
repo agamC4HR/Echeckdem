@@ -25,7 +25,7 @@ namespace Echeckdem.Services
             var currentYear = DateTime.Now.Year;
 
             var sqlQuery = @"
-                                SELECT a.oid, a.Depdate, a.Status, a.lastdate, a.remarks, a.rtid, a.lcode,
+                                SELECT a.oid, a.Depdate, a.Status, a.lastdate, a.remarks, a.rtid, a.lcode, a.Filename,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.rtitle, c.rform, c.RM, c.YROFF, 
                                 d.oname,

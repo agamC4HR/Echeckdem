@@ -23,7 +23,7 @@ namespace Echeckdem.Services
             //var currentYear = DateTime.Now.Year;
 
             var sqlQuery = @"
-            SELECT a.oid, a.doe, a.status, a.Dolr, a.tp, a.doi, a.lcode, a.nmoe, a.noe, a.remarks, a.rno, a.uid,  
+            SELECT a.oid, a.doe, a.status, a.Dolr, a.tp, a.doi, a.lcode, a.nmoe, a.noe, a.remarks, a.rno, a.uid, a.Filename, 
             b.lname, b.lstate, b.lcity, b.lregion,
             c.oname,
             d.statedesc as State
@@ -107,8 +107,6 @@ namespace Echeckdem.Services
 
             return result;
         }
-
-
         public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)
 
         {
@@ -198,8 +196,6 @@ namespace Echeckdem.Services
 
             return cityNames;
         }
-
-
         public async Task<Ncreg> GetByIdAsync(int uid, string oid, string lcode)
         {
             var registration = await _context.Ncregs
@@ -245,6 +241,15 @@ namespace Echeckdem.Services
                         return "Only PDF files are allowed.";
                     }
 
+                    string originalFileName = Path.GetFileName(file.FileName);
+                    string extension = Path.GetExtension(originalFileName);
+                    string nameWithoutExt = Path.GetFileNameWithoutExtension(originalFileName);
+                    if (originalFileName.Length > 50)
+                    {
+                        return "Filename too long. Must be 50 characters or fewer.";
+                    }
+
+
                     string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "REG"); 
                     Directory.CreateDirectory(folderPath);
 
@@ -257,7 +262,6 @@ namespace Echeckdem.Services
                     ncregRecord.Filename = file.FileName;
                 }
 
-                // Insert or update record
                 if (!uid.HasValue)
                 {
                     _context.Ncregs.Add(ncregRecord);
@@ -269,16 +273,11 @@ namespace Echeckdem.Services
 
                 await _context.SaveChangesAsync();
                 return "Data Saved Successfully!!!";
-
-
-
             }
-
             catch (Exception ex)
             {
                 return $"Error: {ex.Message}";
             }
         }
-
     }
 }

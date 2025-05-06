@@ -29,6 +29,9 @@
                 <td>@action.SelectedSBTP</td>
                 <td>
                     <button class="btn btn-primary" onclick="openDetails('@action.Acid', '@action.Actid')">Details</button>
+                  @*   <a class="btn btn-primary" href="@Url.Action("DetailsTracker", "Tracker", new { acid = action.Acid, actid = action.Actid })">
+                        Details
+                    </a> *@
                 </td>
             </tr>
         }

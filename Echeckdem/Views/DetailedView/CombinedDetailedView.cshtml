@@ -65,6 +65,19 @@
         color: black;
     }
 
+    .view-pdf-link {
+        color: #0066cc; /* Change to a color that contrasts with the background */
+        text-decoration: none; /* Optional: remove underline */
+        font-weight: bold; /* Optional: make the text bold */
+    }
+
+        .view-pdf-link:hover {
+            color: #004d99; /* Change color on hover for better UX */
+            text-decoration: underline; /* Add underline on hover for better interactivity */
+        }
+
+
+
     
 </style>
 <div class="table-heading-container">
@@ -98,6 +111,7 @@
                 <th>City</th>
                 <th>State</th>
                 <th>Region</th>
+                <th>DOCS</th>
                 <th>Edit</th>
                 @* <th>Form</th> *@
             </tr>
@@ -121,6 +135,21 @@
                     <td>@registration.LCity</td>
                     <td>@registration.State</td>
                     <td>@registration.LRegion</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(registration.Filename))
+                        {
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "REG", nm = registration.Filename, oid = registration.Oid })"
+                               target="_blank"
+                               class="view-pdf-link">
+                                View FILE
+                            </a>
+                        }   
+                        else
+                        {
+                            <span>No file uploaded</span>
+                        }
+                    </td>
+
                     <td><a href="@Url.Action("EditReg", "DetailsView", new {uid = registration.Uid, oid = registration.Oid, lcode = registration.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @* <td></td> <!-- Empty for Registrations --> *@
                 </tr>
