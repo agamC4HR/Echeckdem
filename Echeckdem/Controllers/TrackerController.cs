@@ -197,20 +197,6 @@ namespace Echeckdem.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult DetailsTracker(int acid, int actid)
-        {
-
-            var viewModel = new TrackerFullViewModel
-            {
-                Acid = acid,
-                Actid = actid,
-               
-            };
-
-            return View(viewModel);
-        }
-
 
     }
 }

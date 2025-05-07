@@ -33,6 +33,74 @@
         padding:15px;
         border-radius:.375rem;
     }
+
+    .DetailsSection_Child {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        left: 7px;
+        width: 98vw;
+        top: 45px;
+    }
+
+    .DetailsSection_Child_1, .DetailsSection_Child_2, .DetailsSection_Child_3 {
+        background: white;
+        padding: 15px;
+        width: 100%;
+        border-radius: .375rem;
+        border: 2px solid red;
+    }
+
+        .DetailsSection_Child_1.heading, .DetailsSection_Child_2.heading {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+    .form-row-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: .375rem;
+            font-size: 12px;
+        }
+
+    .cancelButton {
+        padding: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: #dd3432;
+        color: white;
+        border: 2px solid #dd3432;
+        border-radius: .375rem;
+        cursor: pointer;
+        width: 120px;
+        height: 30px;
+    }
+
+        .cancelButton:hover {
+            background-color: white;
+            color: #dd3432;
+        }
 </style>
 
 <div class="table-container-detailsView" id="table-container-detailsView">
@@ -64,12 +132,12 @@
                 <td></td>
                 <td></td>
                 <td>@action.SelectedSBTP</td>
-                @* <td>
-                        <button class="saveButton" onclick="openDetails('@action.Acid', '@action.Actid')">Details</button>
-                </td> *@
                 <td>
-                   <a class="saveButton" href="@Url.Action("DetailsTracker", "Tracker", new { acid = action.Acid, actid = action.Actid })">Details</a>
+                        <button class="saveButton" onclick="openDetails('@action.Acid', '@action.Actid')">Details</button>
                 </td>
+                @* <td>
+                   <a class="saveButton" href="@Url.Action("DetailsTracker", "Tracker", new { acid = action.Acid, actid = action.Actid })">Details</a>
+                </td> *@
 
             </tr>
         }
@@ -80,12 +148,189 @@
 
 </div>
 
+<div id="DetailsSection" style="display:none;">
+    <div class="DetailsSection_Child">
+        <!-- NCACTION -->
+        <div class="DetailsSection_Child_1">
+            <div style="display:flex; justify-content: space-between;">
+            <div class="heading">EDIT ITEM</div>
+                <button class="cancelButton" onclick="window.location.href='/Tracker/trackerlist'">Back to Tracker</button>
+            </div>
+            <form id="ncactionForm" method="post" asp-action="SaveNcAction" enctype="multipart/form-data" style="margin-top:10px;">
+                <input type="hidden" id="AcidNcAction" name="Acid" />
+                <input type="hidden" id="SelectedOid" name="SelectedOid" />
+                <input type="hidden" id="SelectedLCODE" name="SelectedLCODE" />
+                <input type="hidden" id="SelectedTPP" name="SelectedTPP" />
+                <input type="hidden" id="SelectedACTITLE" name="SelectedACTITLE" />
+                <input type="hidden" id="SelectedSBTP" name="SelectedSBTP" />
+                <input type="hidden" id="Oname" name="Oname" />
+                <input type="hidden" id="Lname" name="Lname" />
+                <input type="hidden" id="UploadedFileName" name="UploadedFileName" />
+
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="Title">Title:</label>
+                        <input type="text" class="form-control" id="Title" name="Title" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ExternalStatus">External Status:</label>
+                        <select class="form-control" id="ExternalStatus" name="ExternalStatus">
+                            <option value="C">Closed</option>
+                            <option value="O">Open - awaiting action</option>
+                            <option value="I">Docs received, In Process</option>
+                            <option value="D">Documents Requested</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="VisibleToClient">Visible to Client:</label>
+                        <select class="form-control" id="VisibleToClient" name="VisibleToClient">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="InternalStatus">Internal Status:</label>
+                        <select class="form-control" id="InternalStatus" name="InternalStatus">
+                            <option value="">Choose a status</option>
+                            <option value="N">Normal</option>
+                            <option value="P">Priority</option>
+                            <option value="E">Escalated</option>
+                            <option value="C">Critical</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="DetailOfIssue">Detail of Issue:</label>
+                        <textarea class="form-control" id="DetailOfIssue" name="DetailOfIssue"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="StartDate">Start Date of Issue:</label>
+                        <input type="date" class="form-control" id="StartDate" name="StartDate" />
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="DocsReceiptDate">Date of Receipt of All Docs/Inputs:</label>
+                        <input type="date" class="form-control" id="DocsReceiptDate" name="DocsReceiptDate" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="CloseDate">Close Date of Issue:</label>
+                        <input type="date" class="form-control" id="CloseDate" name="CloseDate" />
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="Remarks">Remarks:</label>
+                        <textarea class="form-control" id="Remarks" name="Remarks"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="FileUpload">Upload PDF:</label>
+                        <input type="file" id="FileUpload" name="FileUpload" class="form-control" accept=".pdf" />
+                    </div>
+                </div>
+
+                <button type="submit" class="saveButton">Save</button>
+            </form>
+        </div>
+
+        <!-- NCACTAKEN -->
+        <div class="DetailsSection_Child_2">
+            <div class="heading">Add New Update</div>
+            <form id="ncactionTakenForm" method="post" asp-action="SaveNcActTaken" style="margin-top:10px;">
+                <input type="hidden" id="AcidNcActTaken" name="Acid" />
+                <input type="hidden" id="Actid" name="Actid" />
+
+
+
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="Acdate">Date of Action:</label>
+                        <input type="date" class="form-control" id="Acdate" name="Acdate" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Actaken">Action Taken:</label>
+                        <textarea class="form-control" id="Actaken" name="Actaken" required></textarea>
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="Nacdate">Estimated Date of Next Action:</label>
+                        <input type="date" class="form-control" id="Nacdate" name="Nacdate" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Showclient">Visible to Client:</label>
+                        <select class="form-control" id="Showclient" name="Showclient">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="saveButton">Save</button>
+            </form>
+        </div>
+        <div class="DetailsSection_Child_3">
+
+                        @if (Model != null && Model.Any())
+            {
+            <div class="heading">Previous Actions (NCACTAKEN History)</div>
+                <table class="styled-table">
+            <thead>
+            <tr>
+            <th>UserName</th>
+            <th>Date of Action</th>
+            <th>Action Taken</th>
+            <th>Next Action Date</th>
+            <th>Visible to Client</th>
+            <th>Created On</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var action in Model)
+            {
+            if (action.TakenViewModel != null)
+            {
+            foreach (var taken in action.TakenViewModel)
+            {
+            <tr>
+            <td>@taken.Uname</td>
+            <td>@taken.Acdate?.ToString("yyyy-MM-dd")</td>
+            <td>@taken.Actaken</td>
+            <td>@taken.Nacdate?.ToString("yyyy-MM-dd")</td>
+            <td>@(taken.Showclient == 1 ? "Yes" : "No")</td>
+            <td>@taken.Acdate?.ToString("yyyy-MM-dd")</td>
+            </tr>
+            }
+            }
+            }
+            </tbody>
+            </table>
+            }
+
+        </div>
+    </div>
+
+    @* <button class="saveButton" onclick="cancelEdit()">Cancel</button> *@
+</div>
+
 @section Scripts {
     <script>
         function openDetails(acid, actid) {
             $('#AcidNcAction, #AcidNcActTaken').val(acid);
 
-            $('#editSection').show();
+            document.getElementById("addItemContainer").style.display = "none";
+            document.getElementById("table-container-detailsView").style.display = "none";
+            document.getElementById("DetailsSection").style.display = "block";
 
             $.get('@Url.Action("EditNcAction", "Tracker")', { acid }, function (ncActionData) {
                 $('#Title').val(ncActionData.title);
@@ -114,14 +359,15 @@
             }).fail(() => alert("Error fetching NCACTION data."));
         }
 
-        function cancelEdit() {
-            $('#editSection').hide();
-            $('#ncactionForm')[0].reset();
-            $('#ncactionTakenForm')[0].reset();
-        }
+        // function cancelEdit() {
+        //     $('#editSection').hide();
+        //     $('#ncactionForm')[0].reset();
+        //     $('#ncactionTakenForm')[0].reset();
+        // }
 
         function onAddNewItemClick() {
             document.getElementById("table-container-detailsView").style.display = "none";
+            document.getElementById("DetailsSection").style.display = "none";
             document.getElementById("addItemContainer").style.display = "block";
 
             showAddForm();
