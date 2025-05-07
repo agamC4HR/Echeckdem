@@ -437,3 +437,38 @@ a {
     .org-details-body-table tbody tr:hover {
         background-color: #e9ecef;
     }
+
+.saveButton {
+    padding: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: white;
+    color: #dd3432;
+    border: 2px solid #dd3432;
+    border-radius: .375rem;
+    cursor: pointer;
+    width: 120px;
+    height: 30px;
+}
+
+    .saveButton:hover {
+        background-color: #dd3432;
+        color: white;
+    }
+.cancelButton {
+    padding: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #dd3432;
+    color: white;
+    border: 2px solid #dd3432;
+    border-radius: .375rem;
+    cursor: pointer;
+    width: 120px;
+    height: 30px;
+}
+
+    .cancelButton:hover {
+        background-color: white;
+        color: #dd3432;
+    }

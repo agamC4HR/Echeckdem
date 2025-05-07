@@ -77,8 +77,8 @@
                         }
                         else
                         {
-                                                    
-                            <a href="/DetailedView/CombinedDetailedView">Track Compliance </a>
+
+                            <a href="/DetailsView/CombinedDetailed">Track Compliance </a>
                             <a href="/Tracker/trackerlist"> Tracker</a>
 
                         }
@@ -122,8 +122,8 @@
             <div class="heading_background">
                 <div class="heading-grandparent">
             <div class="heading_parent">
-                <h1 class="heading"> @ViewData["Heading"] </h1>
-                <p class="heading_child">@ViewData["Heading_child"] </p>
+                        <h1 class="heading"> @Html.Raw(ViewData["Heading"]) </h1>
+                        <p class="heading_child">@Html.Raw(ViewData["Heading_child"]) </p>
                 </div>
                     @if (ViewData["Title"]?.ToString() == "Detailed Report")
                     {

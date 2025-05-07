@@ -2,9 +2,9 @@
 
     @{
         ViewData["Title"] = "Edit Category";
-        ViewData["Heading"] = "Edit Registration";
-        ViewData["Heading_child"] = ".....";
-    }
+    ViewData["Heading"] = "Edit Registration - <span style='font-weight:normal;'>NAAM</span>";
+        ViewData["Heading_child"] = "<strong>Location:</strong> FPLCSPL - Pune  | <strong>City:</strong> Pune | <strong>State:</strong> Maharashtra | <strong>Description:</strong> Professional Tax | <strong>Expiry Date:</strong> 31-5-2025";
+     }
 
     <style>
 
@@ -60,33 +60,19 @@
             resize: vertical;
         }
 
-        .submit-button {
-            margin-top: 20px;
-        }
-
-            .submit-button button {
-                background-color: #007bff;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                font-size: 12px;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-
-                .submit-button button:hover {
-                    background-color: #0056b3;
-                }
 
     .view-pdf-link {
-        color: #0066cc; /* Change to a color that contrasts with the background */
-        text-decoration: none; /* Optional: remove underline */
-        font-weight: bold; /* Optional: make the text bold */
+        color: #0066cc;
+        text-decoration: none; 
+        font-weight: bold;
+        justify-content: flex-start;
+        margin-top: -10px;
+        padding:0;
     }
 
         .view-pdf-link:hover {
-            color: #004d99; /* Change color on hover for better UX */
-            text-decoration: underline; /* Add underline on hover for better interactivity */
+            color: #004d99; 
+            text-decoration: underline;
         }
 
     </style>
@@ -99,54 +85,56 @@
         <div class="form-row">
             <div class="form-field" style="flex: 1 1 100%;">
                 <label asp-for="Status">Status:</label>
-                <select asp-for="Status" asp-items="@(new SelectList(Model.StatusOptions, "Key", "Value", Model.Status))"></select>
+            <select asp-for="Status" asp-items="@(new SelectList(Model.StatusOptions, "Key", "Value", Model.Status))" required></select>
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-field">
-                <label asp-for="Rno">RNO:</label>
-                <input asp-for="Rno" type="text" />
+            <label asp-for="Rno">Registration No.:</label>
+            <input asp-for="Rno" type="text" required />
             </div>
             <div class="form-field">
-                <label asp-for="Noe">NOE:</label>
-                <input asp-for="Noe" type="number" />
+            <label asp-for="Noe">No. of Employees:</label>
+            <input asp-for="Noe" type="number" required />
             </div>
         </div>
 
+    <div class="form-row">
+        <div class="form-field">
+            <label asp-for="Nmoe">Name of Employer:</label>
+            <input asp-for="Nmoe" type="text" required />
+        </div>
+        <div class="form-field">
+            <label asp-for="Doi">Date of Issue (DOI):</label>
+            <input asp-for="Doi" type="date" required />
+        </div>
+    </div>
+
         <div class="form-row">
-            <div class="form-field">
-                <label asp-for="Doi">Date of Issue (DOI):</label>
-                <input asp-for="Doi" type="date" />
-            </div>
             <div class="form-field">
                 <label asp-for="Doe">Date of Expiry (DOE):</label>
-                <input asp-for="Doe" type="date" />
+            <input asp-for="Doe" type="date" required />
             </div>
+        <div class="form-field">
+            <label asp-for="Dolr">Date of Last Renewal (DOLR):</label>
+            <input asp-for="Dolr" type="date" required />
+        </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-field">
-                <label asp-for="Dolr">Date of Last Renewal (DOLR):</label>
-                <input asp-for="Dolr" type="date" />
-            </div>
-            <div class="form-field">
-                <label asp-for="Nmoe">NMOE:</label>
-                <input asp-for="Nmoe" type="text" />
-            </div>
-        </div>
+        
 
         <div class="form-row">
             <div class="form-field" style="flex: 1 1 100%;">
                 <label asp-for="Remarks">Remarks:</label>
-                <textarea asp-for="Remarks"></textarea>
+            <textarea asp-for="Remarks" required></textarea>
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-field" style="flex: 1 1 100%;">
                 <label>Upload File (PDF only):</label>
-                <input type="file" name="file" accept="application/pdf" />
+            <input type="file" name="file" accept="application/pdf" required />
             </div>
         </div>
 
@@ -166,7 +154,6 @@
     }
 
 
-        <div class="submit-button">
-            <button type="submit">Save Changes</button>
-        </div>
+    <button class="saveButton" type="submit">Save Changes</button>
+    <button type ="button" class="saveButton" onclick="window.location.href='/DetailsView/CombinedDetailed'">Cancel</button>
     </form>
