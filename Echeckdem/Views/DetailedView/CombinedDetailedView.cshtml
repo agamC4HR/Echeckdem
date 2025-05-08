@@ -228,7 +228,7 @@
                 <td>BOCW</td>
                 <td>@bocw.Task</td>
                 <td>N/A</td>
-                <td>@bocw.DueDate?.ToString("MMMM yyyy")</td>
+                    <td>@bocw.DueDate?.ToString("dd MMM yyyy")</td>
                 <td>@bocw.GetStatusDescription()</td>
                 
                 <td>@bocw.CreateDate?.ToString("dd MMM yyyy")</td>
@@ -236,7 +236,21 @@
                 <td>@bocw.State</td>
                 <td>@bocw.LRegion</td>
                 <td>SUSH SIR</td>
-                <td>SUSH SIR</td>
+                   @*  <td>
+                        @if (!string.IsNullOrEmpty(bocw.Filename))
+                        {
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "BOCW", nm = bocw.Filename, lcode = bocw.Lcode})"
+                               target="_blank"
+                               class="view-pdf-link">
+                                View FILE
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No file uploaded</span>
+                        }
+                    </td> *@
+                    <td><a href="@Url.Action("EditBocw", "DetailsView", new {transactionID = bocw.TransactionID, lcode = bocw.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
 
 
                 </tr>

@@ -23,6 +23,4 @@ public partial class BocwScope
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();
-
-    public virtual ICollection<TrackScope> TrackScopes { get; set; } = new List<TrackScope>();
 }

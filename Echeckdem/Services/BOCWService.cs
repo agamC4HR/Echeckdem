@@ -1,12 +1,16 @@
-﻿using Echeckdem.Models;
+﻿using DocumentFormat.OpenXml.InkML;
+using Echeckdem.CustomFolder;
+using Echeckdem.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Echeckdem.Services
 {
     public class BOCWService
     {
         private readonly DbEcheckContext _context;
+        //private readonly NEwDbEcheckContext _newdbEcheckContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public BOCWService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment)
@@ -33,7 +37,7 @@ namespace Echeckdem.Services
                                 
                                 AND a.lcode = b.lcode
                                 AND (a.status IS NULL OR a.status <> 99) ";
-           
+
             if (string.IsNullOrEmpty(organizationName) &&
                 string.IsNullOrEmpty(LocationName) &&
                 string.IsNullOrEmpty(StateName) &&
@@ -119,20 +123,87 @@ namespace Echeckdem.Services
 
             return LocationNames;
         }
-
-        public async Task<Ncbocw> GetbyIdAsync(int transactionId, string lcode)
+        public BOCWEditViewModel GetEditData(string lcode, int transactionId)
         {
-            var bocw = await _context.Ncbocws.FirstOrDefaultAsync(b=> b.TransactionId == transactionId && b.Lcode == lcode);
-            if(bocw == null)
+            var bocw = _context.Ncbocws.FirstOrDefault(x => x.Lcode == lcode && x.TransactionId == transactionId);
+            var action = _context.Ncactions.FirstOrDefault(x => x.Aclink == transactionId);
+
+            if (bocw == null || action == null) return null;
+
+            return new BOCWEditViewModel
             {
-                Console.WriteLine("No crecord found under BOCW ");
-            }
-            return bocw;           
+                LCode = lcode,
+                TransactionID = transactionId,
+                DueDate = bocw.DueDate,
+                Status = bocw.Status,
+                CompletionDate = bocw.CompletionDate,
+
+                ACID = action.Acid,
+                ACTitle = action.Actitle,
+                ACDetail = action.Acdetail,
+                ACShow = action.Acshow,
+                ACStatus = action.Acstatus,
+                ACRDate = action.Acrdate,
+                ACRemarks = action.Acremarks,
+                ACIDate = action.Acidate
+            };
+
         }
+        public void UpdateData(BOCWEditViewModel model)
+        {
+            var bocw = _context.Ncbocws.FirstOrDefault(x => x.Lcode == model.LCode && x.TransactionId == model.TransactionID);
+            var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
 
+            if (bocw != null)
+            {
+                bocw.DueDate = model.DueDate;
+                bocw.Status = model.Status;
+                bocw.CompletionDate = model.CompletionDate;
+            }
 
-       // public async Task 
+            if (action != null)
+            {
+                action.Acdetail = model.ACDetail;
+                action.Acshow = model.ACShow;
+                action.Acremarks = model.ACRemarks;
+                action.Acidate = model.ACIDate;
+            }
 
+            if (model.UploadedFile != null && action != null)
+            {
+                var file = model.UploadedFile;
 
+                if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+                {
+                    throw new InvalidOperationException("Only PDF files are allowed.");
+                }
+
+                var oid = action.Oid;
+                string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
+                Directory.CreateDirectory(folderPath);
+
+                string fileName = Path.GetFileName(file.FileName);
+                string filePath = Path.Combine(folderPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+
+                var ncFile = new Ncfile
+                {
+                    Oid = oid,
+                    Flink = action.Acid,
+                    Fname = fileName,
+                    Fupdate = DateOnly.FromDateTime(DateTime.Today)
+                };
+
+                _context.Ncfiles.Add(ncFile);
+            }
+
+            _context.SaveChanges(); // MANDATORY
+        }
     }
+  
+
 }
