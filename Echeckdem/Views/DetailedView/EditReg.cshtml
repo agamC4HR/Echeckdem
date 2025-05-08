@@ -75,6 +75,27 @@
             text-decoration: underline;
         }
 
+    .required-field {
+        font-weight: bold;
+    }
+
+    /* Error highlighting */
+    input:invalid, select:invalid, textarea:invalid {
+        border-color: #ff9999;
+    }
+
+    /* For dynamically required fields */
+    .dynamic-required::after {
+        content: ' *';
+        color: red;
+    }
+
+    .required-star {
+        color: red;
+        margin-left: 2px;
+    }
+
+
     </style>
 
     <form asp-action="AddOrUpdateReg" asp-controller="DetailsView" method="post" enctype="multipart/form-data" class="form-container">
@@ -92,33 +113,33 @@
         <div class="form-row">
             <div class="form-field">
             <label asp-for="Rno">Registration No.:</label>
-            <input asp-for="Rno" type="text" required />
+            <input asp-for="Rno" type="text" />
             </div>
             <div class="form-field">
             <label asp-for="Noe">No. of Employees:</label>
-            <input asp-for="Noe" type="number" required />
+            <input asp-for="Noe" type="number" />
             </div>
         </div>
 
     <div class="form-row">
         <div class="form-field">
             <label asp-for="Nmoe">Name of Employer:</label>
-            <input asp-for="Nmoe" type="text" required />
+            <input asp-for="Nmoe" type="text" />
         </div>
         <div class="form-field">
             <label asp-for="Doi">Date of Issue (DOI):</label>
-            <input asp-for="Doi" type="date" required />
+            <input asp-for="Doi" type="date"  />
         </div>
     </div>
 
         <div class="form-row">
             <div class="form-field">
                 <label asp-for="Doe">Date of Expiry (DOE):</label>
-            <input asp-for="Doe" type="date" required />
+            <input asp-for="Doe" type="date" />
             </div>
         <div class="form-field">
             <label asp-for="Dolr">Date of Last Renewal (DOLR):</label>
-            <input asp-for="Dolr" type="date" required />
+            <input asp-for="Dolr" type="date" />
         </div>
         </div>
 
@@ -134,7 +155,7 @@
         <div class="form-row">
             <div class="form-field" style="flex: 1 1 100%;">
                 <label>Upload File (PDF only):</label>
-            <input type="file" name="file" accept="application/pdf" required />
+            <input type="file" name="file" accept="application/pdf" />
             </div>
         </div>
 
@@ -157,3 +178,119 @@
     <button class="saveButton" type="submit">Save Changes</button>
     <button type ="button" class="saveButton" onclick="window.location.href='/DetailsView/CombinedDetailed'">Cancel</button>
     </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('.form-container form');
+            const statusSelect = document.getElementById('Status');
+            const doeInput = document.getElementById('Doe');
+            const remarksTextarea = document.getElementById('Remarks');
+            const remarksLabel = document.querySelector('label[for="Remarks"]');
+
+            // Function to check if remarks should be required
+            function checkRemarksRequired() {
+                if (!statusSelect.value || !doeInput.value) return false;
+
+                const isCompliant = statusSelect.value === 'C';
+                const expiryDate = new Date(doeInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Normalize today's date for comparison
+
+                return isCompliant && expiryDate > today;
+            }
+
+            // Update remarks field requirement
+            function updateRemarksRequirement() {
+                const isRemarksRequired = checkRemarksRequired();
+                remarksTextarea.required = isRemarksRequired;
+
+                if (isRemarksRequired) {
+                    remarksLabel.classList.add('required-field');
+                    // Check if the red star already exists to avoid duplicates
+                    if (!remarksLabel.querySelector('.required-star')) {
+                        const star = document.createElement('span');
+                        star.className = 'required-star';
+                        star.style.color = 'red';
+                        star.textContent = ' *';
+                        remarksLabel.appendChild(star);
+                    }
+                } else {
+                    remarksLabel.classList.remove('required-field');
+                    // Remove the red star if it exists
+                    const existingStar = remarksLabel.querySelector('.required-star');
+                    if (existingStar) {
+                        remarksLabel.removeChild(existingStar);
+                    }
+                }
+            }
+
+            // Initialize
+            updateRemarksRequirement();
+
+            // Event listeners
+            statusSelect.addEventListener('change', updateRemarksRequirement);
+            doeInput.addEventListener('change', updateRemarksRequirement);
+
+            // Form submission validation
+            form.addEventListener('submit', function (e) {
+                let isValid = true;
+
+                // Check all required fields
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value || field.value.trim() === "") {
+                        isValid = false;
+                        field.style.borderColor = 'red';
+                        // Ensure the red star is visible
+                        const label = document.querySelector(`label[for="${field.id}"]`);
+                        if (label && !label.querySelector('.required-star')) {
+                            const star = document.createElement('span');
+                            star.className = 'required-star';
+                            star.style.color = 'red';
+                            star.textContent = ' *';
+                            label.appendChild(star);
+                        }
+                    } else {
+                        field.style.borderColor = '#ccc';
+                    }
+                });
+
+                // Special validation for Remarks
+                if (checkRemarksRequired() && !remarksTextarea.value.trim()) {
+                    isValid = false;
+                    remarksTextarea.style.borderColor = 'red';
+                    alert('Remarks are required when Status is Compliant and Expiry Date is in the future.');
+                }
+
+                // Validate file upload (if needed)
+                const fileInput = form.querySelector('input[type="file"]');
+                if (fileInput && fileInput.required && fileInput.files.length === 0) {
+                    isValid = false;
+                    fileInput.style.borderColor = 'red';
+                    alert('Please upload the required PDF file.');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+
+            // Visual feedback for required fields
+            function highlightRequiredFields() {
+                document.querySelectorAll('[required]').forEach(field => {
+                    const label = document.querySelector(`label[for="${field.id}"]`);
+                    if (label && !label.querySelector('.required-star')) {
+                        const star = document.createElement('span');
+                        star.className = 'required-star';
+                        star.style.color = 'red';
+                        star.textContent = ' *';
+                        label.appendChild(star);
+                    }
+                });
+            }
+
+            highlightRequiredFields();
+        });
+    </script>
+}

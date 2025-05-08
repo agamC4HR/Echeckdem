@@ -117,7 +117,7 @@
         </div>
         <div class="form-field">
             <label id="lastDateLabel">Last Date:</label>
-            <input type="date" asp-for="LastDate" class="form-control" id="lastDateInput" />
+            <input type="date" asp-for="LastDate" class="form-control" id="lastDateInput" readonly />
         </div>
     </div>
     <div class="form-row">
@@ -161,16 +161,68 @@
         document.addEventListener('DOMContentLoaded', function () {
             const statusSelect = document.getElementById('statusSelect');
             const form = document.getElementById('contributionForm');
+            const depDateInput = document.getElementById('depDateInput');
+            const lastDateInput = document.getElementById('lastDateInput');
+            const remarksTextarea = document.getElementById('remarksTextarea');
+            const remarksLabel = document.getElementById('remarksLabel');
+
+            // Set date constraints for Date of Deposit
+            function setDateConstraints() {
+                const today = new Date();
+                const fiveDaysAgo = new Date();
+                fiveDaysAgo.setDate(today.getDate() - 4);
+
+                // Format dates as YYYY-MM-DD (required by date input)
+                const formatDate = (date) => {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                };
+
+                depDateInput.max = formatDate(today);
+                depDateInput.min = formatDate(fiveDaysAgo);
+
+                // If the current value is outside the range, reset it to today
+                if (depDateInput.value) {
+                    const selectedDate = new Date(depDateInput.value);
+                    if (selectedDate < fiveDaysAgo || selectedDate > today) {
+                        depDateInput.value = formatDate(today);
+                    }
+                }
+            }
+
+            // Check if remarks should be required based on dates
+            function checkRemarksRequired() {
+                if (!depDateInput.value || !lastDateInput.value) return false;
+
+                const depositDate = new Date(depDateInput.value);
+                const lastDate = new Date(lastDateInput.value);
+
+                return depositDate > lastDate;
+            }
+
+            // Update remarks field requirement
+            function updateRemarksRequirement() {
+                const isRemarksRequired = checkRemarksRequired();
+                remarksTextarea.required = isRemarksRequired;
+
+                if (isRemarksRequired) {
+                    remarksLabel.classList.add('required-field');
+                } else {
+                    remarksLabel.classList.remove('required-field');
+                }
+            }
 
             // Fields that should be required only when status is "Compliant"
             const fieldsToToggle = [
                 'amountInput', 'chqnoInput', 'chqdateInput',
-                'lastDateInput', 'depDateInput', 'remarksTextarea', 'fileInput'
+                'lastDateInput', 'depDateInput', 'fileInput'
             ];
 
             const labelsToToggle = [
                 'amountLabel', 'chqnoLabel', 'chqdateLabel',
-                'lastDateLabel', 'depDateLabel', 'remarksLabel', 'fileLabel'
+                'lastDateLabel', 'depDateLabel', 'fileLabel'
             ];
 
             // Function to toggle required fields
@@ -194,16 +246,38 @@
                         }
                     }
                 });
+
+                // Handle remarks separately based on dates
+                if (isCompliant) {
+                    updateRemarksRequirement();
+                } else {
+                    remarksTextarea.required = false;
+                    remarksLabel.classList.remove('required-field');
+                }
             }
 
+            // Initialize everything
+            setDateConstraints();
             toggleRequiredFields();
 
+            // Event listeners
             statusSelect.addEventListener('change', toggleRequiredFields);
+            depDateInput.addEventListener('change', function () {
+                if (statusSelect.value === '1') {
+                    updateRemarksRequirement();
+                }
+            });
+            lastDateInput.addEventListener('change', function () {
+                if (statusSelect.value === '1') {
+                    updateRemarksRequirement();
+                }
+            });
 
             form.addEventListener('submit', function (e) {
                 if (statusSelect.value === '1') {
                     let isValid = true;
 
+                    // Check standard required fields
                     fieldsToToggle.forEach(fieldId => {
                         const field = document.getElementById(fieldId);
                         if (!field) return;
@@ -226,9 +300,32 @@
                         }
                     });
 
+                    // Check date range for deposit date
+                    if (depDateInput.value) {
+                        const selectedDate = new Date(depDateInput.value);
+                        const today = new Date();
+                        const fiveDaysAgo = new Date();
+                        fiveDaysAgo.setDate(today.getDate() - 5);
+
+                        if (selectedDate < fiveDaysAgo || selectedDate > today) {
+                            isValid = false;
+                            depDateInput.style.borderColor = 'red';
+                            alert('Date of Deposit must be within the last 5 days including today.');
+                        }
+                    }
+
+                    // Check if remarks are required and filled
+                    if (checkRemarksRequired() && !remarksTextarea.value.trim()) {
+                        isValid = false;
+                        remarksTextarea.style.borderColor = 'red';
+                        remarksLabel.classList.add('required-field');
+                        alert('Remarks are required when Date of Deposit is after Last Date.');
+                    } else {
+                        remarksTextarea.style.borderColor = '#ccc';
+                    }
+
                     if (!isValid) {
                         e.preventDefault();
-                        alert('Please fill all required fields for Compliant status.');
                     }
                 }
             });

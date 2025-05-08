@@ -83,7 +83,7 @@
         <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
         <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
         <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
-        <button class="table-filter-btn" onclick="filterTable('BOCW')">BOCW</button>
+        <button class="table-filter-btn" onclick="filterTable('bocw')">BOCW</button>
     </div>
 </div>
 
@@ -251,7 +251,7 @@
         const registrationRows = document.querySelectorAll(".registration-row");
         const payrollRows = document.querySelectorAll(".payroll-row");
         const returnRows = document.querySelectorAll(".return-row");
-        const BocwRows = document.querySelectorAll(".bocw-row");
+        const bocwRows = document.querySelectorAll(".bocw-row");
         allRows.forEach(row => row.style.display = "none");
         // Show or hide rows based on the selected filter type
         if (type === "all") {
@@ -275,12 +275,12 @@
             returnRows.forEach(row => row.style.display = "table-row");
             bocwRows.forEach(row => row.styple.display = "none");
             updateSerialNumbers(returnRows);
-        } else if (type === "BOCW") {
+        } else if (type === "bocw") {
             registrationRows.forEach(row => row.style.display = "none");
             payrollRows.forEach(row => row.style.display = "none");
             returnRows.forEach(row => row.style.display = "none");
             bocwRows.forEach(row => row.styple.display = "table-row");
-            updateSerialNumbers(BocwRows);
+            updateSerialNumbers(bocwRows);
 
         }
 
