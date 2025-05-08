@@ -252,7 +252,7 @@
         const payrollRows = document.querySelectorAll(".payroll-row");
         const returnRows = document.querySelectorAll(".return-row");
         const bocwRows = document.querySelectorAll(".bocw-row");
-        allRows.forEach(row => row.style.display = "none");
+
         // Show or hide rows based on the selected filter type
         if (type === "all") {
             allRows.forEach(row => row.style.display = "table-row");
@@ -261,40 +261,37 @@
             registrationRows.forEach(row => row.style.display = "table-row");
             payrollRows.forEach(row => row.style.display = "none");
             returnRows.forEach(row => row.style.display = "none");
-            bocwRows.forEach(row => row.styple.display = "none");
+            bocwRows.forEach(row => row.style.display = "none");
             updateSerialNumbers(registrationRows);
         } else if (type === "payroll") {
             registrationRows.forEach(row => row.style.display = "none");
             payrollRows.forEach(row => row.style.display = "table-row");
             returnRows.forEach(row => row.style.display = "none");
-            bocwRows.forEach(row => row.styple.display = "none");
+            bocwRows.forEach(row => row.style.display = "none");
             updateSerialNumbers(payrollRows);
         } else if (type === "return") {
             registrationRows.forEach(row => row.style.display = "none");
             payrollRows.forEach(row => row.style.display = "none");
             returnRows.forEach(row => row.style.display = "table-row");
-            bocwRows.forEach(row => row.styple.display = "none");
+            bocwRows.forEach(row => row.style.display = "none");
             updateSerialNumbers(returnRows);
         } else if (type === "bocw") {
             registrationRows.forEach(row => row.style.display = "none");
             payrollRows.forEach(row => row.style.display = "none");
             returnRows.forEach(row => row.style.display = "none");
-            bocwRows.forEach(row => row.styple.display = "table-row");
+            bocwRows.forEach(row => row.style.display = "table-row");
             updateSerialNumbers(bocwRows);
-
         }
-
         // Update active button
-        // document.querySelectorAll(".table-filter-btn").forEach(btn => btn.classList.remove("active"));
-        // document.querySelector(`.table-filter-btn[onclick="filterTable('${type}')"]`).classList.add("active");
         document.querySelectorAll(".table-filter-btn").forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
+        document.querySelector(`.table-filter-btn[onclick="filterTable('${type}')"]`).classList.add("active");
     }
+
 
     function updateSerialNumbers(rows) {
         rows.forEach((row, index) => {
-            const serialCell = row.cells[0]; // Assuming the first cell is for the serial number
-            serialCell.textContent = index + 1; // Update serial number based on index
+            const serialCell = row.cells[0]; 
+            serialCell.textContent = index + 1; 
         });
     }
 
@@ -317,37 +314,66 @@
 
     function searchTable() {
         const input = document.getElementById('searchBar');
-        const filter = input.value.toLowerCase();
+        const filter = input.value.trim().toLowerCase();
         const rows = document.querySelectorAll('.styled-table tbody tr');
 
         rows.forEach(row => {
-            let textContent = row.textContent || row.innerText;
-            if (textContent.toLowerCase().includes(filter)) {
-                row.style.display = "";  // Show the row
-                highlightText(row, filter);  // Highlight the matched text
-            } else {
-                row.style.display = "none";  // Hide the row
-                removeHighlight(row);  // Remove previous highlights
-            }
-        });
-    }
-    function highlightText(row, filter) {
-        row.querySelectorAll('td').forEach(cell => {
-            const text = cell.textContent || cell.innerText;
-            if (filter && text.toLowerCase().includes(filter)) {
-                const regex = new RegExp(`(${filter})`, 'gi');
-                cell.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');
-            } else {
-                cell.innerHTML = text; // Reset if no match
+            removeHighlight(row); // Clear previous highlights
+
+            const rowText = row.textContent.toLowerCase();
+            const match = rowText.includes(filter);
+
+            row.style.display = match ? "" : "none";
+
+            if (match && filter) {
+                highlightText(row, filter);
             }
         });
     }
 
-    function removeHighlight(row) {
+    function highlightText(row, filter) {
+        const regex = new RegExp(`(${filter})`, 'gi');
+
         row.querySelectorAll('td').forEach(cell => {
-            cell.innerHTML = cell.textContent || cell.innerText; // Remove span
+            walkTextNodes(cell, node => {
+                const value = node.nodeValue;
+                if (regex.test(value)) {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = value.replace(regex, '<span class="highlight">$1</span>');
+
+                    const fragments = document.createDocumentFragment();
+                    [...tempDiv.childNodes].forEach(n => fragments.appendChild(n));
+                    node.parentNode.replaceChild(fragments, node);
+                }
+            });
         });
     }
+
+    // Utility: Traverse only text nodes in a node
+    function walkTextNodes(node, callback) {
+        const walker = document.createTreeWalker(
+            node,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+        let currentNode;
+        while ((currentNode = walker.nextNode())) {
+            callback(currentNode);
+        }
+    }
+
+
+    function removeHighlight(row) {
+        row.querySelectorAll('td').forEach(cell => {
+            // Remove highlight spans while keeping other HTML intact
+            const highlighted = cell.querySelectorAll('span.highlight');
+            highlighted.forEach(span => {
+                span.replaceWith(span.textContent);
+            });
+        });
+    }
+
 
     function downloadData() {
         const table = document.querySelector('.styled-table');
