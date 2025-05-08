@@ -22,22 +22,43 @@ namespace Echeckdem.Controllers
             return httpContext.Session.GetInt32("UNO") ?? 0;
         }
 
-    
-
         public IActionResult TrackerList()
         {
             int uno = _trackerService.GetUnoFromSession(HttpContext);
-            var actions = _trackerService.GetNcActionsForUser(uno);
-            return View(actions);
+            var fullActions = _trackerService.GetFullNcActionsForUser(uno);
+            return View(fullActions); 
         }
 
+        //public async Task<IActionResult> Index()
+        //{
+
+        //    int uno = _trackerService.GetUnoFromSession(HttpContext);
 
 
+        //    var model = new TrackerViewModel
+        //    {
+        //        Organizations = _trackerService.GetOrganizations(uno),
+        //        TPPDropdown = _trackerService.GetTPPDropdown(),
+        //        ActDropdown = _trackerService.GetActDropdown(),
+        //        SlaDropdown = _trackerService.GetSlaDropdown(),
+        //        Locations = new List<SelectListItem>()
+        //    };
+
+        //    try
+        //    {
+        //        var locations = _trackerService.GetLocations(uno, model.SelectedOid);
+        //        model.Locations = locations ?? new List<SelectListItem>(); // Ensure non-null list
+        //        return PartialView(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["ErrorMessage"] = $"An error occurred while fetching locations: {ex.Message}";
+        //        return PartialView(model);
+        //    }
+        //}
         public async Task<IActionResult> Index()
         {
-           
             int uno = _trackerService.GetUnoFromSession(HttpContext);
-
 
             var model = new TrackerViewModel
             {
@@ -45,24 +66,20 @@ namespace Echeckdem.Controllers
                 TPPDropdown = _trackerService.GetTPPDropdown(),
                 ActDropdown = _trackerService.GetActDropdown(),
                 SlaDropdown = _trackerService.GetSlaDropdown(),
-                Locations = new List<SelectListItem>() // Ensure it's initialized
+                ACTPDropdown = _trackerService.GetACTPDropdown(),
+               Locations = new List<SelectListItem>()
+                //Locations = _trackerService.GetLocations(uno, oid)
             };
 
-            try
-            {
-                var locations = _trackerService.GetLocations(uno, model.SelectedOid);
-                model.Locations = locations ?? new List<SelectListItem>(); // Ensure non-null list
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"An error occurred while fetching locations: {ex.Message}";
-                return View(model);
-            }
+            return PartialView(model); // Not PartialView, unless you're intentionally returning a fragment
         }
 
 
-        public async Task<JsonResult> GetLocations(string oid)
+
+
+        [HttpGet]
+        //public async Task<JsonResult> GetLocations(string oid)
+        public JsonResult GetLocations(string oid)
         {
          
             int uno = _trackerService.GetUnoFromSession(HttpContext);
@@ -87,19 +104,17 @@ namespace Echeckdem.Controllers
                 model.TPPDropdown = _trackerService.GetTPPDropdown();
                 model.ActDropdown = _trackerService.GetActDropdown();
                 model.SlaDropdown = _trackerService.GetSlaDropdown();
+                model.ACTPDropdown = _trackerService.GetACTPDropdown();
                 return View("Index", model); 
             }
-
-           
-
+            
             try
             {
                 _trackerService.SaveNcAction(model);
                 return RedirectToAction("TrackerList");
             }
             catch (Exception ex)
-            {
-                
+            {                
                 ModelState.AddModelError("", "An error occurred while saving data.");
                 model.Organizations = _trackerService.GetOrganizations(model.SelectedUno);
                 model.Locations = _trackerService.GetLocations(model.SelectedUno, model.SelectedOid);
@@ -111,11 +126,7 @@ namespace Echeckdem.Controllers
         public IActionResult EditNcAction(int acid)
         {
             var ncAction = _trackerService.GetNcActionById(acid);
-            if (ncAction == null)
-            {
-                return NotFound();
-            }
-            return PartialView("_EditNcAction", ncAction);
+            return ncAction == null ? NotFound() : Json(ncAction);
         }
 
 
@@ -160,16 +171,23 @@ namespace Echeckdem.Controllers
         public IActionResult EditNcActTaken(int acid)
         {
             var actionTaken = _trackerService.GetNcActTakenByAcid(acid);
-            //if (actionTaken == null)
-            //{
-            //    actionTaken = new TrackerTakenViewModel { Acid = acid };
-            //}
-            return PartialView("_EditNcActTaken", actionTaken);
+
+            return Json(actionTaken);
         }
 
         [HttpPost]
-        public IActionResult SaveNcActTaken(TrackerTakenViewModel model)
+        public IActionResult SaveNcActTaken(TrackerFullViewModel model)
         {
+            
+            var uno = HttpContext.Session.GetInt32("UNO");
+
+            
+            if (!uno.HasValue)
+            {
+                return BadRequest("UNO is missing in session.");
+            }
+
+           // modelstate uno mei dikkat hai
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -177,14 +195,30 @@ namespace Echeckdem.Controllers
 
             try
             {
-                _trackerService.SaveOrUpdateNcActTaken(model);
+                
+                var takenModel = new TrackerTakenViewModel
+                {
+                    Acid = model.Acid,        
+                    Acdate = model.Acdate,    
+                    Actaken = model.Actaken, 
+                    Nacdate = model.Nacdate, 
+                    Showclient = model.Showclient,
+                    Uno = uno.Value           
+                };
+
+                
+                _trackerService.SaveOrUpdateNcActTaken(takenModel);
+
+                
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
+                
                 return StatusCode(500, "Error: " + ex.Message);
             }
         }
+
 
     }
 }

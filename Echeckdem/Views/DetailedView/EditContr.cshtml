@@ -1,41 +1,237 @@
-﻿@model Echeckdem.Models.ContributionViewModel
+﻿@* 
+
+<div class="form-row">
+    <div class="form-field">
+        <label>Date of Deposit:</label>
+        <input type="date" asp-for="Depdate" class="form-control" id="Depdate" required />
+    </div>
+</div> *@
+
+@model Echeckdem.Models.ContributionViewModel
 
 @{
     ViewData["Title"] = "Edit Category";
-    ViewData["Heading"] = "Edit Contribution";
-    ViewData["Heading_child"] = ".....";
+    ViewData["Heading"] = "Edit Payroll - <span style='font-weight:normal;'>NAAM</span>";
+    ViewData["Heading_child"] = "<strong>Location:</strong> FPLCSPL - Pune  | <strong>City:</strong> Pune | <strong>State:</strong> Maharashtra | <strong>Description:</strong> Professional Tax | <strong>Last Date:</strong> 31-5-2025";
 }
+<style>
+    .form-container {
+        width: 98vw;
+        margin-top: 45px;
+        padding: 15px;
+        background-color: #ffffff;
+        border-radius: .375rem;
+        margin-left: 7px;
+    }
 
-<form asp-action="AddOrUpdateContr" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .form-field {
+        flex: 1;
+        min-width: 200px;
+    }
+
+        .form-field label {
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 12px;
+            background-color: #fff;
+        }
+
+            .form-field input:focus,
+            .form-field select:focus,
+            .form-field textarea:focus {
+                border-color: #007bff;
+                outline: none;
+            }
+
+    textarea {
+        height: 150px;
+        resize: vertical;
+    }
+
+    .view-pdf-link {
+        color: #0066cc;
+        text-decoration: none;
+        font-weight: bold;
+        justify-content: flex-start;
+        margin-top: -10px;
+        padding: 0;
+    }
+
+        .view-pdf-link:hover {
+            color: #004d99;
+            text-decoration: underline;
+        }
+
+    .required-field::after {
+        content: " *";
+        color: red;
+    }
+</style>
+
+<form asp-action="AddOrUpdateContr" asp-controller="DetailsView" method="post" enctype="multipart/form-data" class="form-container" id="contributionForm">
     <input type="hidden" asp-for="oid" />
     <input type="hidden" asp-for="Contid" />
     <input type="hidden" asp-for="Lcode" />
 
-    <label>Status:</label>
-    <select asp-for="Status" class="form-control" asp-items="Model.StatusOptions">
-        <option value="">-- Select Status --</option>
-    </select>
+    <div class="form-row">
+        <div class="form-field" style="flex: 1 1 100%;">
+            <label class="required-field">Status:</label>
+            <select asp-for="Status" class="form-control" asp-items="Model.StatusOptions" id="statusSelect" required>
+                <option value="">-- Select Status --</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-field">
+            <label id="amountLabel">Amount:</label>
+            <input type="text" asp-for="Amount" class="form-control" id="amountInput" />
+        </div>
+        <div class="form-field">
+            <label id="chqnoLabel">CHQNO:</label>
+            <input type="text" asp-for="Chqno" class="form-control" id="chqnoInput" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-field">
+            <label id="chqdateLabel">CHQ DATE:</label>
+            <input type="date" asp-for="chqdate" class="form-control" id="chqdateInput" />
+        </div>
+        <div class="form-field">
+            <label id="lastDateLabel">Last Date:</label>
+            <input type="date" asp-for="LastDate" class="form-control" id="lastDateInput" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-field">
+            <label id="depDateLabel">Date of Deposit:</label>
+            <input type="date" asp-for="Depdate" class="form-control" id="depDateInput" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-field" style="flex: 1 1 100%;">
+            <label id="remarksLabel">Remarks:</label>
+            <textarea asp-for="Remarks" class="form-control" id="remarksTextarea"></textarea>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-field">
+            <label id="fileLabel">Upload File (PDF only):</label>
+            <input type="file" name="file" class="form-control" accept="application/pdf" id="fileInput" />
+        </div>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.Filename))
+    {
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label>Currently Uploaded File:</label><br />
+                <a href="@Url.Action("Open_file", "DetailsView", new { tp = "CONTR", nm = Model.Filename, oid = Model.oid })"
+                   target="_blank"
+                   class="view-pdf-link">
+                    View PDF in New Tab
+                </a>
+            </div>
+        </div>
+    }
 
-    <labael> Amount: </labael>
-    <input type="text" asp-for="Amount" class="form-control" />
-
-    <labael> CHQNO: </labael>
-    <input type="text" asp-for="Chqno" class="form-control" />
-
-    <label>CHQ DATE:</label>
-    <input type="date" asp-for="chqdate" class="form-control" />
-
-    <label>Last Date:</label>
-    <input type="date" asp-for="LastDate" class="form-control" />
-
-    <label>Date of Deposit:</label>
-    <input type="date" asp-for="Depdate" class="form-control" />
-    
-    <label>Remarks:</label>
-    <textarea asp-for="Remarks" class="form-control"></textarea>
-
-    <label>Upload File (PDF only):</label>
-    <input type="file" name="file" class="form-control" accept="application/pdf" />
-
-    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <button type="submit" class="saveButton">Save Changes</button>
+    <button type="button" class="saveButton" onclick="window.location.href='/DetailsView/CombinedDetailed'">Cancel</button>
 </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const statusSelect = document.getElementById('statusSelect');
+            const form = document.getElementById('contributionForm');
+
+            // Fields that should be required only when status is "Compliant"
+            const fieldsToToggle = [
+                'amountInput', 'chqnoInput', 'chqdateInput',
+                'lastDateInput', 'depDateInput', 'remarksTextarea', 'fileInput'
+            ];
+
+            const labelsToToggle = [
+                'amountLabel', 'chqnoLabel', 'chqdateLabel',
+                'lastDateLabel', 'depDateLabel', 'remarksLabel', 'fileLabel'
+            ];
+
+            // Function to toggle required fields
+            function toggleRequiredFields() {
+                const isCompliant = statusSelect.value === '1';
+
+                fieldsToToggle.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.required = isCompliant;
+                    }
+                });
+
+                labelsToToggle.forEach(labelId => {
+                    const label = document.getElementById(labelId);
+                    if (label) {
+                        if (isCompliant) {
+                            label.classList.add('required-field');
+                        } else {
+                            label.classList.remove('required-field');
+                        }
+                    }
+                });
+            }
+
+            toggleRequiredFields();
+
+            statusSelect.addEventListener('change', toggleRequiredFields);
+
+            form.addEventListener('submit', function (e) {
+                if (statusSelect.value === '1') {
+                    let isValid = true;
+
+                    fieldsToToggle.forEach(fieldId => {
+                        const field = document.getElementById(fieldId);
+                        if (!field) return;
+
+                        // Handle file input specifically
+                        if (field.type === "file") {
+                            if (field.files.length === 0) {
+                                isValid = false;
+                                field.style.borderColor = 'red';
+                            } else {
+                                field.style.borderColor = '#ccc';
+                            }
+                        } else {
+                            if (!field.value || field.value.trim() === "") {
+                                isValid = false;
+                                field.style.borderColor = 'red';
+                            } else {
+                                field.style.borderColor = '#ccc';
+                            }
+                        }
+                    });
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        alert('Please fill all required fields for Compliant status.');
+                    }
+                }
+            });
+        });
+    </script>
+}

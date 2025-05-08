@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Echeckdem.Services;
 using System.Runtime.CompilerServices;
 using Echeckdem.CustomFolder;
+using Microsoft.AspNetCore.Hosting;
+using System.Text;
 
 namespace Echeckdem.Controllers
 {
@@ -13,14 +15,17 @@ namespace Echeckdem.Controllers
         private readonly RegistrationService _regService;
         private readonly ContributionService _contService;
         private readonly ReturnsService _retService;
+        private readonly BOCWService _bocwService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
 
-        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService)
+        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService, IWebHostEnvironment webHostEnvironment, BOCWService bocwService)
         {
             _regService = regService;
             _contService = contService;
             _retService = retService;
-            
+            _bocwService = bocwService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null!, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)//(int ulev, int uno, string organizationName = null)
@@ -42,12 +47,14 @@ namespace Echeckdem.Controllers
             var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
             var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
             var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+            var bocw = await _bocwService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
 
             var detailedViewModel = new CombinedDetailedViewModel
             {
                 Registrations = registrations,
                 Contributions = contributions,
                 Returns = returns,
+                BOCW = bocw,
                 OrganizationName = organizationName,
                 SiteName = LocationName,
                 StateName = StateName,
@@ -72,9 +79,7 @@ namespace Echeckdem.Controllers
             var CityNames = await _regService.GetCityNamesAsync(uno);
             ViewBag.CityNames = CityNames;
 
-            //var ReturnData = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
-
-
+            
             return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);     
         }
         
@@ -112,7 +117,6 @@ namespace Echeckdem.Controllers
             return Json(await _contService.GetFilteredLocationNamesAsync(uno, organizationName));
         }
 
-
         //----------------START----------------------------------REGISTRATION--------  ----------------------------------------------------------------------//
 
         public async Task<IActionResult> EditReg(int uid, string oid, string lcode)
@@ -136,6 +140,7 @@ namespace Echeckdem.Controllers
                 Doe = ncreg.Doe,
                 Dolr = ncreg.Dolr,
                 Remarks = ncreg.Remarks,
+                Filename = ncreg.Filename,
                 // Map other properties as needed
             };
             return View("~/Views/DetailedView/EditReg.cshtml", registrationViewModel);
@@ -153,6 +158,40 @@ namespace Echeckdem.Controllers
 
             return Ok(new { Message = result });
         }
+
+        public IActionResult Open_file(string tp, string nm, string oid)
+        {
+            try
+            {
+                // Determine folder path
+                string folderName = tp switch
+                {
+                    "REG" => Path.Combine("Files", oid, "REG"),
+                    "CONTR" => Path.Combine("Files", oid, "CONTR"),  // Contributions folder
+                    "RET" => Path.Combine("Files", oid, "RET"),
+
+                    _ => throw new ArgumentException("Invalid file type.")
+                };
+
+                // Combine with wwwroot path
+                string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, folderName, nm);
+
+                if (!System.IO.File.Exists(fullPath))
+                {
+                    return NotFound("File not found.");
+                }
+
+                // Serve file with appropriate content type
+                return PhysicalFile(fullPath, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                string errorData = $"{ex.Message}\n{ex.StackTrace}";
+                var stream = new MemoryStream(Encoding.UTF8.GetBytes(errorData));
+                return File(stream, "text/plain", "error_log.txt");
+            }
+        }
+
         //----------------END----------------------------------REGISTRATION------------------------------------------------------------------------------//
 
         //----------------START----------------------------------CONTRIBUTION ------------------------------------------------------------------------------//
@@ -197,7 +236,6 @@ namespace Echeckdem.Controllers
         }
 
         //----------------END----------------------------------CONTRIBUTION ------------------------------------------------------------------------------/
-        
         //----------------START----------------------------------RETURNS ----------------------------------------------------------------------------------//
 
         public async Task<IActionResult> EditRet(int rtid, string oid, string lcode)

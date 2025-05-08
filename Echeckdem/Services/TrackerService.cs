@@ -18,12 +18,13 @@ namespace Echeckdem.Services
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
         }
-
+        //----------------------------START-------------------FETCHING UNO from session------------------------------------------------------------------------
         public int GetUnoFromSession(HttpContext httpContext)
         {
-            return httpContext.Session.GetInt32("UNO") ?? 0;
+            return httpContext.Session.GetInt32("UNO") ?? 0; 
         }
-
+        //----------------------------END-------------------FETCHING UNO from session------------------------------------------------------------------------
+        //----------------------------START-------------------Get Mapped Orgs and locations for user from NCUMAP------------------------------------------------------------------------
         public List<SelectListItem> GetOrganizations(int uno)
         {
             return _dbEcheckContext.Ncumaps
@@ -53,11 +54,13 @@ namespace Echeckdem.Services
             
           if (!locations.Any())
 {
-    _logger.LogWarning($"No locations found for UNO: {uno}, OID: {oid}");
+                 _logger.LogWarning($"No locations found for UNO: {uno}, OID: {oid}");
 }
 
             return locations;
         }
+
+        //----------------------------END-------------------Get Mapped Orgs for user from NCUMAP------------------------------------------------------------------------
 
         public List<SelectListItem> GetTPPDropdown()
         {
@@ -99,10 +102,22 @@ namespace Echeckdem.Services
                 new SelectListItem { Value = "INPFESI", Text = "Inspection/Notice[PF/ESI]" }
             };
         }
+
+        public List<SelectListItem> GetACTPDropdown()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "A", Text = "REG./AMMEND." },
+                new SelectListItem { Value = "O", Text = "OTHER" },
+                new SelectListItem { Value = "P", Text = "PF TRACKER" },
+                new SelectListItem { Value = "I", Text = "INSPECTIONS" }
+            };
+        }
+
+        //----------------------------START-------------------Fetching Actions from NCACTION table for a user------------------------------------------------------------------------
         public List<TrackerViewModel> GetNcActionsForUser(int uno)
         {
-            // Step 1: Fetch OID and LCODE mappings for the user
-            var userMappings = _dbEcheckContext.Ncumaps
+                 var userMappings = _dbEcheckContext.Ncumaps
                 .Where(x => x.Uno == uno && !string.IsNullOrEmpty(x.Oid) && !string.IsNullOrEmpty(x.Lcode))
                 .Select(x => new { x.Oid, x.Lcode })
                 .ToList();
@@ -113,20 +128,17 @@ namespace Echeckdem.Services
                 return new List<TrackerViewModel>();
             }
 
-            // Step 2: Fetch all Ncactions first (before filtering)
-            var allNcActions = _dbEcheckContext.Ncactions
-                .ToList(); // Convert to List before filtering
+           
+            var allNcActions = _dbEcheckContext.Ncactions.ToList();
 
-            // Step 3: Filter in-memory
+           
             var filteredActions = allNcActions
-                .Where(x => userMappings.Any(m => m.Oid == x.Oid && m.Lcode == x.Lcode))
-                .ToList();
+                .Where(x => userMappings.Any(m => m.Oid == x.Oid && m.Lcode == x.Lcode)).ToList();
 
-            // Step 4: Fetch organization names
+           
             var orgs = _dbEcheckContext.Ncmorgs.ToList(); // Fetch all orgs
-            var locs = _dbEcheckContext.Ncmlocs.ToList(); // Fetch all locations
+            var locs = _dbEcheckContext.Ncmlocs.ToList(); // Fetch all lcodes
 
-            // Step 5: Map to ViewModel with Full Names
             var ncActions = filteredActions
                 .Select(action => new TrackerViewModel
                 {
@@ -135,14 +147,15 @@ namespace Echeckdem.Services
                     Lname = locs.FirstOrDefault(l => l.Lcode == action.Lcode)?.Lname ?? "Unknown Location",
                     SelectedTPP = action.Tpp,
                     SelectedACTITLE = action.Actitle,
-                    SelectedSBTP = action.Sbtp
+                    SelectedSBTP = action.Sbtp,
+                    SelectedACTP = action.Actp
                 })
                 .ToList();
 
             return ncActions;
         }
-
-
+        //----------------------------END-------------------Fetching Actions from NCACTION table for a user------------------------------------------------------------------------
+        //----------------------------START-------------------ADDING new record in NCACTION  and file upload------------------------------------------------------------------------
 
         public void SaveNcAction(TrackerViewModel model)
         {
@@ -153,7 +166,8 @@ namespace Echeckdem.Services
                 Lcode = model.SelectedLCODE,
                 Tpp = model.SelectedTPP,
                 Actitle = model.SelectedACTITLE,
-                Sbtp = model.SelectedSBTP
+                Sbtp = model.SelectedSBTP,
+                Actp = model.SelectedACTP
             };
 
             _dbEcheckContext.Ncactions.Add(newRecord);
@@ -195,7 +209,8 @@ namespace Echeckdem.Services
             _dbEcheckContext.SaveChanges();
         }
 
-
+        //----------------------------END-------------------ADDING new record in NCACTION and file upload------------------------------------------------------------------------
+        //----------------------------START-------------------EDiting NCACTION---------------------------------------------------------------------------------------------------
         public TrackerViewModel GetNcActionById(int acid)
         {
             var action = _dbEcheckContext.Ncactions.FirstOrDefault(a => a.Acid == acid);
@@ -253,7 +268,8 @@ namespace Echeckdem.Services
             _dbEcheckContext.SaveChanges();
         }
 
-
+        //----------------------------END-------------------EDiting NCACTION---------------------------------------------------------------------------------------------------
+        //----------------------------START-------------------ADDing / EDiting in NCACTTAKEN table---------------------------------------------------------------------------------------------------
         public TrackerTakenViewModel GetNcActTakenByAcid(int acid)
         {
             var actionTaken = _dbEcheckContext.Ncactakens.FirstOrDefault(a => a.Acid == acid);
@@ -285,7 +301,7 @@ namespace Echeckdem.Services
 
         public void SaveOrUpdateNcActTaken(TrackerTakenViewModel model)
         {
-            var existingActionTaken = _dbEcheckContext.Ncactakens.FirstOrDefault(a => a.Actid == model.Actid);
+            var existingActionTaken = _dbEcheckContext.Ncactakens   .FirstOrDefault(a => a.Acid == model.Acid);
 
             if (existingActionTaken != null)
             {
@@ -293,6 +309,7 @@ namespace Echeckdem.Services
                 existingActionTaken.Actaken = model.Actaken;
                 existingActionTaken.Nacdate = model.Nacdate;
                 existingActionTaken.Showclient = model.Showclient;
+                existingActionTaken.Uno = model.Uno;
             }
             else
             {
@@ -302,13 +319,56 @@ namespace Echeckdem.Services
                     Acdate = model.Acdate,
                     Actaken = model.Actaken,
                     Nacdate = model.Nacdate,
-                    Showclient = model.Showclient
+                    Showclient = model.Showclient,
+                    Uno = model.Uno
                 };
                 _dbEcheckContext.Ncactakens.Add(newActionTaken);
             }
 
             _dbEcheckContext.SaveChanges();
         }
+
+        //----------------------------END-------------------ADDing / EDiting in NCACTTAKEN table---------------------------------------------------------------------------------------------------
+        //----------------------------START-------------------fetching all data for a user NCACTTAKEN table--------------------------------------------------------------------------------------------------
+        public List<TrackerFullViewModel> GetFullNcActionsForUser(int uno)
+        {
+            var ncActions = GetNcActionsForUser(uno);
+
+            var fullList = ncActions.Select(action =>
+            {
+                var taken = _dbEcheckContext.Ncactakens
+                    .Where(t => t.Acid == action.Acid)
+                    .ToList(); 
+
+                return new TrackerFullViewModel
+                {
+                    Acid = action.Acid,
+                    SelectedACTITLE = action.SelectedACTITLE,
+                    SelectedSBTP = action.SelectedSBTP,
+                    SelectedTPP = action.SelectedTPP,
+                    SelectedACTP = action.SelectedACTP,
+                    Oname = action.Oname,
+                    Lname = action.Lname,
+                    Actid = taken.FirstOrDefault()?.Actid ?? 0,
+                    TakenViewModel = taken.Select(t => new TrackerTakenViewModel
+                    {
+                        Actid = t.Actid,
+                        Acid = t.Acid,
+                        Acdate = t.Acdate,
+                        Actaken = t.Actaken,
+                        Nacdate = t.Nacdate,
+                        Showclient = t.Showclient ?? 0,
+                        Uno = t.Uno,
+                        Uname = _dbEcheckContext.Ncusers.Where(u => u.Uno == t.Uno).Select(u => u.Uname).FirstOrDefault()
+                    }),
+                    ActionViewModel = new List<TrackerViewModel> { action }
+                };
+            }).ToList();
+
+            return fullList;
+        }
+
+        //----------------------------END-------------------fetching all data for a user NCACTTAKEN table--------------------------------------------------------------------------------------------------
 
 
 

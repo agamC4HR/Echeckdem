@@ -15,6 +15,8 @@ namespace Echeckdem.Models
         public string? State { get; set; }
         public string? LCity { get; set; }  
         public string? LRegion { get; set; }
+
+        public string? Ltype { get; set; }
         public string? OName { get; set; }
 
         public string? Rno { get; set; }
@@ -28,6 +30,8 @@ namespace Echeckdem.Models
         public DateOnly? Dolr { get; set; }
 
         public string? Remarks { get; set; }
+
+        public string? Filename { get; set; }
 
 
         public string GetStatusDescription()

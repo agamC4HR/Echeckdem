@@ -3,21 +3,13 @@
 @{
     ViewData["Title"] = "Detailed Report";
     ViewData["Heading"] = "Detailed Report";
-    ViewData["Heading_child"] = "Comprehensive labor compliance insights and actions.";
+    ViewData["Heading_child"] = "Comprehensive Labor Compliance Insights and Actions.";
 }
 
 
 <partial name="_FilterForm" model="Model" />
 
 <style>
-  /*   .styled-table {
-        margin: 0;
-    }
-
-        .styled-table thead {
-            top: 0;
-        }
- */
             .styled-table th:nth-child(1) { /* S.No. */
                 width: 4%;
             }
@@ -65,6 +57,19 @@
         color: black;
     }
 
+    .view-pdf-link {
+        color: #0066cc; 
+        text-decoration: none; 
+        font-weight: bold; 
+    }
+
+        .view-pdf-link:hover {
+            color: #004d99;
+            text-decoration: underline; 
+        }
+
+
+
     
 </style>
 <div class="table-heading-container">
@@ -78,6 +83,7 @@
         <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
         <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
         <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
+        <button class="table-filter-btn" onclick="filterTable('BOCW')">BOCW</button>
     </div>
 </div>
 
@@ -94,10 +100,11 @@
                 <th>Period</th>
                 <th>Due Date</th>
                 <th>Status</th>
-                <th>Date of Deposit/Renewal</th>
+                <th>Completion Date</th>
                 <th>City</th>
                 <th>State</th>
                 <th>Region</th>
+                <th>FILE</th>
                 <th>Edit</th>
                 @* <th>Form</th> *@
             </tr>
@@ -121,6 +128,21 @@
                     <td>@registration.LCity</td>
                     <td>@registration.State</td>
                     <td>@registration.LRegion</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(registration.Filename))
+                        {
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "REG", nm = registration.Filename, oid = registration.Oid })"
+                               target="_blank"
+                               class="view-pdf-link">
+                                View FILE
+                            </a>
+                        }   
+                        else
+                        {
+                            <span>No file uploaded</span>
+                        }
+                    </td>
+
                     <td><a href="@Url.Action("EditReg", "DetailsView", new {uid = registration.Uid, oid = registration.Oid, lcode = registration.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @* <td></td> <!-- Empty for Registrations --> *@
                 </tr>
@@ -142,6 +164,20 @@
                     <td>@contribution.State</td>
                     <td>@contribution.LRegion</td>
                     @* <td></td> <!-- Empty for Contributions --> *@
+                    <td>
+                        @if (!string.IsNullOrEmpty(contribution.Filename))
+                        {
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "CONTR", nm = contribution.Filename, oid = contribution.oid})"
+                               target="_blank"
+                               class="view-pdf-link">
+                                View FILE
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No file uploaded</span>
+                        }
+                    </td>
                     <td><a href="@Url.Action("EditContr", "DetailsView", new {contid = contribution.Contid, oid = contribution.oid, lcode = contribution.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @* <td></td> <!-- Empty for Registrations --> *@
                 </tr>
@@ -163,11 +199,47 @@
                     <td>@returnData.LCity</td>
                     <td>@returnData.State</td>
                     <td>@returnData.LRegion</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(returnData.Filename))
+                        {
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "RET", nm = returnData.Filename, oid = returnData.oid})"
+                               target="_blank"
+                               class="view-pdf-link">
+                                View FILE
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No file uploaded</span>
+                        }
+                    </td>
                     <td><a href="@Url.Action("EditRet", "DetailsView", new {rtid = returnData.Rtid, oid = returnData.oid, lcode = returnData.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
                     @*  <td>@returnData.RForm</td>  *@
 
                 </tr>
                 sno++;
+            }
+            @foreach (var bocw in Model.BOCW)
+            {
+                <tr class="bocw-row">
+                <td>@sno</td>
+                <td>@bocw.OName</td>
+                <td>@bocw.Lname</td>
+                <td>BOCW</td>
+                <td>@bocw.Task</td>
+                <td>N/A</td>
+                <td>@bocw.DueDate?.ToString("MMMM yyyy")</td>
+                <td>@bocw.GetStatusDescription()</td>
+                
+                <td>@bocw.CreateDate?.ToString("dd MMM yyyy")</td>
+                <td>@bocw.LCity</td>
+                <td>@bocw.State</td>
+                <td>@bocw.LRegion</td>
+                <td>SUSH SIR</td>
+                <td>SUSH SIR</td>
+
+
+                </tr>
             }
         </tbody>
     </table>
@@ -179,7 +251,8 @@
         const registrationRows = document.querySelectorAll(".registration-row");
         const payrollRows = document.querySelectorAll(".payroll-row");
         const returnRows = document.querySelectorAll(".return-row");
-
+        const BocwRows = document.querySelectorAll(".bocw-row");
+        allRows.forEach(row => row.style.display = "none");
         // Show or hide rows based on the selected filter type
         if (type === "all") {
             allRows.forEach(row => row.style.display = "table-row");
@@ -188,22 +261,34 @@
             registrationRows.forEach(row => row.style.display = "table-row");
             payrollRows.forEach(row => row.style.display = "none");
             returnRows.forEach(row => row.style.display = "none");
+            bocwRows.forEach(row => row.styple.display = "none");
             updateSerialNumbers(registrationRows);
         } else if (type === "payroll") {
             registrationRows.forEach(row => row.style.display = "none");
             payrollRows.forEach(row => row.style.display = "table-row");
             returnRows.forEach(row => row.style.display = "none");
+            bocwRows.forEach(row => row.styple.display = "none");
             updateSerialNumbers(payrollRows);
         } else if (type === "return") {
             registrationRows.forEach(row => row.style.display = "none");
             payrollRows.forEach(row => row.style.display = "none");
             returnRows.forEach(row => row.style.display = "table-row");
+            bocwRows.forEach(row => row.styple.display = "none");
             updateSerialNumbers(returnRows);
+        } else if (type === "BOCW") {
+            registrationRows.forEach(row => row.style.display = "none");
+            payrollRows.forEach(row => row.style.display = "none");
+            returnRows.forEach(row => row.style.display = "none");
+            bocwRows.forEach(row => row.styple.display = "table-row");
+            updateSerialNumbers(BocwRows);
+
         }
 
         // Update active button
+        // document.querySelectorAll(".table-filter-btn").forEach(btn => btn.classList.remove("active"));
+        // document.querySelector(`.table-filter-btn[onclick="filterTable('${type}')"]`).classList.add("active");
         document.querySelectorAll(".table-filter-btn").forEach(btn => btn.classList.remove("active"));
-        document.querySelector(`.table-filter-btn[onclick="filterTable('${type}')"]`).classList.add("active");
+        button.classList.add("active");
     }
 
     function updateSerialNumbers(rows) {

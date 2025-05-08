@@ -1,3 +1,5 @@
+using Echeckdem.CustomFolder.Dashboard.Registration;
+using Echeckdem.CustomFolder.Dashboard;
 using Echeckdem.Models;
 using Echeckdem.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,52 +12,141 @@ namespace Echeckdem.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserService _loginService;
-
-        public HomeController(ILogger<HomeController> logger, IUserService loginservice)
+        private readonly ContributionService _contributionService;
+        private readonly RegistrationService _registrationService;
+        public HomeController(ILogger<HomeController> logger, IUserService loginservice, ContributionService contributionService, RegistrationService registrationService)
         {
             _logger = logger;
             _loginService = loginservice;
+            _contributionService = contributionService;
+            _registrationService = registrationService;    //var model = new CombinedDetailedViewModel();
         }
-               
-        public  async Task<IActionResult> Index()
-        {
-            var model = new CombinedDetailedViewModel();
-            
 
+        public async Task<IActionResult> Index(int? selectedYear = null)
+        {
+            // Retrieve user UNO from session
             var uno = HttpContext.Session.GetInt32("UNO");
 
-            if (uno.HasValue)
+            // If UNO is not found, redirect to login
+            if (!uno.HasValue)
             {
-                var locationTypes = await _loginService.GetUserLocationTypesAsync(uno.Value);
-                //bool showSpecialView = locationTypes.All(l => l == "S" || l == "F");
+                return RedirectToAction("Login", "Index");
+            }
 
-                //ViewBag.ShowSpecialView = showSpecialView;
+            // Get the location types for the user
+            var locationTypes = await _loginService.GetUserLocationTypesAsync(uno.Value);
+            var typesSet = locationTypes.Select(l => l.ToUpper()).ToHashSet();
 
-                var typesSet = locationTypes.Select(l => l.ToUpper()).ToHashSet();
+            // Determine the view type based on location types
+            string viewType = "Default"; // Default fallback
+            if (typesSet.All(l => l == "S" || l == "F"))
+            {
+                viewType = "OnlySF"; // Show view when no site is under BOCW
+            }
+            else if (typesSet.All(l => l == "BO"))
+            {
+                viewType = "OnlyBO"; // Show view when all sites are under BOCW
+            }
+            else if (typesSet.Contains("BO"))
+            {
+                viewType = "Mixed"; // Show view when some sites are under BOCW
+            }
 
-                if (typesSet.All(l => l == "S" || l == "F"))
-                {
-                    ViewBag.ViewType = "OnlySF";                                    // Show view under < !-- if no site is under BOCW --
-                }
+            // Determine the year to fetch (use selected year or current year)
+            int yearToFetch = selectedYear ?? DateTime.Now.Year;
 
-                else if (typesSet.All(l=> l == "BO"))
-                {
-                    ViewBag.ViewType = "OnlyBO";                                     // Show view under <!-- if all sites are under BOCW -->
-                }
+            // Fetch the compliant registrations from the service
+            List<CompliantRegistrationViewModel> registrations = new List<CompliantRegistrationViewModel>();
+            try
+            {
+                registrations = await _registrationService.GetCompliantRegistrationsAsync(uno.Value, yearToFetch);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching compliant registrations.");
+            }
 
-                else if (typesSet.Contains("BO"))
-                {
-                    ViewBag.ViewType = "Mixed";   // Show view under <!-- if any site is under BOCW -->
-                }
-                else
-                {
-                    ViewBag.ViewType = "Default"; // Fallback if needed
-                }
-            }   
+            // Prepare the view model
+            var model = new DashboardViewModel
+            {
+                ViewType = viewType,
+                Registrations = registrations
+            };
 
+            // Pass the model to the view
             return View(model);
-
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //public async Task<IActionResult> Index(int? selectedYear = null)
+        //{
+        //    var uno = HttpContext.Session.GetInt32("UNO");
+
+
+
+
+        //    if (uno.HasValue)
+        //    {
+        //        var locationTypes = await _loginService.GetUserLocationTypesAsync(uno.Value);
+        //        var typesSet = locationTypes.Select(l => l.ToUpper()).ToHashSet();
+
+        //        if (typesSet.All(l => l == "S" || l == "F"))
+        //        {
+        //            ViewBag.ViewType = "OnlySF";                                    // Show view under < !-- if no site is under BOCW --
+        //        }
+
+        //        else if (typesSet.All(l=> l == "BO"))
+        //        {
+        //            ViewBag.ViewType = "OnlyBO";                                     // Show view under <!-- if all sites are under BOCW -->
+        //        }
+
+        //        else if (typesSet.Contains("BO"))
+        //        {
+        //            ViewBag.ViewType = "Mixed";                                     // Show view under <!-- if any site is under BOCW -->
+        //        }
+        //        else
+        //        {
+        //            ViewBag.ViewType = "Default"; // Fallback if needed
+        //        }
+
+        //        int yearToFetch = selectedYear ?? DateTime.Now.Year;
+        //        var registrations = await _registrationService.GetCompliantRegistrationsAsync(uno.Value, yearToFetch);
+        //        ViewBag.Registrations = registrations;
+
+
+        //    }
+
+        //    return View(); 
+
+        //}
+
+
+
 
         public IActionResult Privacy()
         {

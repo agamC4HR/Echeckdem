@@ -1,16 +1,67 @@
 ﻿@model Echeckdem.CustomFolder.TrackerViewModel
+<style>
+    .form-row-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
 
-@{
-    ViewData["Title"] = "Tracker";
-}
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
 
-<h2>@ViewData["Title"]</h2>
+        .form-group label {
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
 
-<form asp-action="Create" method="post">
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: .375rem;
+            font-size: 12px;
+        }
+
+    .saveButton {
+        padding: 5px;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: white;
+        color: #dd3432;
+        border: 2px solid #dd3432;
+        border-radius: .375rem;
+        cursor: pointer;
+        width: 70px;
+        height: 30px;
+    }
+
+        .saveButton:hover {
+            background-color: #dd3432;
+            color: white;
+        }
+
+</style>
+
+<div class="heading">Add Item</div>
+<form asp-action="Create" method="post" style="margin-top:10px;">
     <input type="hidden" asp-for="SelectedUno" id="SelectedUno" />
     <input type="hidden" name="Acid" value="@Model.Acid" />
+    <div class="form-row-2col">
 
-    <div class="form-group">
+        <div class="form-group">
+            <label for="SelectedACTP">Tracker For:</label>
+            <select asp-for="SelectedACTP" class="form-control" asp-items="Model.ACTPDropdown" id="SelectedACTP" name="SelectedACTP">
+                <option value="">-- Select Tracker Type --</option>
+
+            </select>
+            <span asp-validation-for="SelectedACTP" class="text-danger"></span>
+        </div>
+        
+        <div class="form-group">
         <label for="SelectedOid">Select Organization</label>
         <select asp-for="SelectedOid" class="form-control" asp-items="Model.Organizations" id="SelectedOid" name="SelectedOid">
             <option value="">-- Select Organization --</option>
@@ -27,7 +78,8 @@
         </select>
         <span asp-validation-for="SelectedLCODE" class="text-danger"></span>
     </div>
-
+    </div>
+    <div class="form-row-2col">
     <div class="form-group">
         <label for="SelectedTPP">Inspection/Notice For:</label>
         <select asp-for="SelectedTPP" class="form-control" asp-items="Model.TPPDropdown" id="SelectedTPP" name="SelectedTPP">
@@ -45,7 +97,8 @@
         </select>
         <span asp-validation-for="SelectedACTITLE" class="text-danger"></span>
     </div>
-
+    </div>
+    <div class="form-row-2col">
     <div class="form-group">
         <label for="SelectedSBTP">SLA:</label>
         <select asp-for="SelectedSBTP" class="form-control" asp-items="Model.SlaDropdown" id="SelectedSBTP" name="SelectedSBTP">
@@ -54,31 +107,76 @@
         </select>
         <span asp-validation-for="SelectedSBTP" class="text-danger"></span>
     </div>
+    </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="saveButton">Submit</button>
+    <button type="button" class="saveButton" onclick="window.location.href='/Tracker/trackerlist'">
+        Cancel
+    </button>
 </form>
 
-@section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+
+    <script type="text/javascript">
         $(document).ready(function () {
+        alert("hi");
             $('#SelectedOid').change(function () {
+            alert("hi 3");
                 var oid = $(this).val();
                 if (oid) {
-                    $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
-                        .done(function (data) {
-                            $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+                $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
+                    .done(function (data) {
+                        console.log("Raw data:", data); 
+                        var $locationDropdown = $('#SelectedLCODE');
+                        $locationDropdown.empty().append('<option value="">-- Select Location --</option>');
+
+                        if (data && data.length > 0) {
+                            console.log("First item:", data[0]);
                             $.each(data, function (i, location) {
-                                $('#SelectedLCODE').append('<option value="' + location.value + '">' + location.text + '</option>');
+                                console.log("Adding:", location.value, location.text); 
+                                $locationDropdown.append(
+                                    $('<option></option>')
+                                        .val(location.value)
+                                        .text(location.text)
+                                );
                             });
-                        })
-                        .fail(function () {
-                            alert("Failed to fetch locations. Please try again.");
-                        });
+                        }
+                    })
+                    .fail(function (xhr, status, error) {
+                        console.error("AJAX error:", status, error);
+                    });
                 } else {
                     $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
                 }
             });
         });
+
+    // $("#SelectedOid").change(function () {
+    //     alert("hi");
+    //     var oid = $(this).val();
+    //     if (oid) {
+    //         $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
+    //             .done(function (data) {
+    //                 console.log("Raw data:", data); // Log the full response
+    //                 var $locationDropdown = $('#SelectedLCODE');
+    //                 $locationDropdown.empty().append('<option value="">-- Select Location --</option>');
+
+    //                 if (data && data.length > 0) {
+    //                     console.log("First item:", data[0]); // Log the first location
+    //                     $.each(data, function (i, location) {
+    //                         console.log("Adding:", location.value, location.text); // Log each option
+    //                         $locationDropdown.append(
+    //                             $('<option></option>')
+    //                                 .val(location.value)
+    //                                 .text(location.text)
+    //                         );
+    //                     });
+    //                 }
+    //             })
+    //             .fail(function (xhr, status, error) {
+    //                 console.error("AJAX error:", status, error);
+    //             });
+    //     } else {
+    //         $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+    //     }
+    // });
     </script>
-}

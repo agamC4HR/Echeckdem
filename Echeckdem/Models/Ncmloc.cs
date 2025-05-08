@@ -41,8 +41,6 @@ public partial class Ncmloc
 
     public DateOnly? Enddate { get; set; }
 
-    public DateOnly? ContractExpiryDate { get; set; }
-
     public int? Lactive { get; set; }
 
     public int? Lsetup { get; set; }
@@ -68,4 +66,5 @@ public partial class Ncmloc
     public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();
 
     public virtual ICollection<Ncmlocbo> Ncmlocbos { get; set; } = new List<Ncmlocbo>();
+
 }

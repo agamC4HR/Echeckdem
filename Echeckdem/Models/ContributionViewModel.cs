@@ -5,8 +5,6 @@ namespace Echeckdem.Models
 {
     public class ContributionViewModel
     {
-        // public int SerialNumber { get; set; }
-
         [Key]
         public int Contid { get; set; }
         [Key]
@@ -40,8 +38,7 @@ namespace Echeckdem.Models
 
         public string? Chqno { get; set; }
 
-     
-
+        public string? Filename { get; set; }
         public string FormattedPeriod
         {
             get

@@ -1,4 +1,5 @@
 ﻿using Echeckdem.Models;
+using Echeckdem.CustomFolder.Dashboard;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,12 @@ namespace Echeckdem.Services
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev,int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
+        public async Task<List<ContributionViewModel>> GetDataAsync(int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
         {
 
             var currentYear = DateTime.Now.Year;
             var sqlQuery = @"
-                                SELECT a.oid, a.tp, a.Status, a.depdate, a.Period, a.Cyear, a.lastdate, a.contid, a.lcode, a.amount, a.chqdate, a.chqno, a.remarks,
+                                SELECT a.oid, a.tp, a.Status, a.depdate, a.Period, a.Cyear, a.lastdate, a.contid, a.lcode, a.amount, a.chqdate, a.chqno, a.remarks, a.Filename,
                                 b.lname, b.lstate, b.lcity, b.lregion, 
                                 c.oname,
                                 d.statedesc as State
@@ -89,12 +90,12 @@ namespace Echeckdem.Services
             }
 
             sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
-            
+
             // Execute the SQL query 
             var result = await _context.ContributionViewModel
                  .FromSqlRaw(sqlQuery,
                              new SqlParameter("@currentYear", currentYear),
-                             new SqlParameter("@uno", uno), 
+                             new SqlParameter("@uno", uno),
                              new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
                              new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
                              new SqlParameter("@StateName", (object)StateName ?? DBNull.Value),
@@ -106,7 +107,8 @@ namespace Echeckdem.Services
                 .ToListAsync();
             return result;
         }
-        public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)
+
+       public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)
 
         {
             var sqlQuery = @" SELECT DISTINCT c.OName

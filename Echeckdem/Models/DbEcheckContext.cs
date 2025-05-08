@@ -143,6 +143,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
+    public virtual DbSet<BocwViewModel> BocwViewModel { get; set; }
+
 //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
 //        => optionsBuilder.UseSqlServer("server=AGAM\\SQLEXPRESS01;database=DB_echeck;Trusted_Connection=True; TrustServerCertificate=True;");
@@ -159,6 +161,10 @@ public partial class DbEcheckContext : DbContext
        .ToView(null);
 
         modelBuilder.Entity<RegistrationViewModel>()
+      .HasNoKey()
+      .ToView(null);
+
+        modelBuilder.Entity<BocwViewModel>()
       .HasNoKey()
       .ToView(null);
 
@@ -1750,7 +1756,7 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Doi).HasColumnName("DOI");
             entity.Property(e => e.Dolr).HasColumnName("DOLR");
             entity.Property(e => e.Filename)
-                .HasMaxLength(50)
+                .HasMaxLength(50)   
                 .IsUnicode(false)
                 .HasColumnName("FILENAME");
             entity.Property(e => e.Nmoe)
