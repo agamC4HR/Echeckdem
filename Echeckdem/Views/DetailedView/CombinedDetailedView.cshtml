@@ -100,12 +100,11 @@
                 <th>Period</th>
                 <th>Due Date</th>
                 <th>Status</th>
-                <th>File</th>
                 <th>Completion Date</th>
                 <th>City</th>
                 <th>State</th>
                 <th>Region</th>
-                <th>DOCS</th>
+                <th>FILE</th>
                 <th>Edit</th>
                 @* <th>Form</th> *@
             </tr>
@@ -231,7 +230,7 @@
                 <td>N/A</td>
                 <td>@bocw.DueDate?.ToString("MMMM yyyy")</td>
                 <td>@bocw.GetStatusDescription()</td>
-                <td> </td>
+                
                 <td>@bocw.CreateDate?.ToString("dd MMM yyyy")</td>
                 <td>@bocw.LCity</td>
                 <td>@bocw.State</td>
