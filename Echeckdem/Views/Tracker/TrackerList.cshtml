@@ -353,18 +353,10 @@
                 })
                 .then(html => {
                     document.getElementById("addItemContainer").innerHTML = html;
-
-                })
-                .catch(error => {
-                    console.error("Error loading the form:", error);
-                    document.getElementById("addItemContainer").innerHTML = "<p>Error loading the form. Please try again.</p>";
-                });
-        }
-        //End of Add Form------------------------------
-        $('#SelectedOid').change(function () {
+                                $('#SelectedOid').change(function () {
             alert("hi 3");
-            var oid = $(this).val();
-            if (oid) {
+                var oid = $(this).val();
+                if (oid) {
                 $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
                     .done(function (data) {
                         console.log("Raw data:", data);
@@ -386,9 +378,19 @@
                     .fail(function (xhr, status, error) {
                         console.error("AJAX error:", status, error);
                     });
-            } else {
-                $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
-            }
-        });
+                } else {
+                    $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+                }
+            });
+
+                    alert("Viewloaded");
+                })
+                .catch(error => {
+                    console.error("Error loading the form:", error);
+                    document.getElementById("addItemContainer").innerHTML = "<p>Error loading the form. Please try again.</p>";
+                });
+        }
+        //End of Add Form------------------------------
+        
     </script>
 }
