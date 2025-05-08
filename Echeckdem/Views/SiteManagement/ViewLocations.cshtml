@@ -3,14 +3,19 @@
     ViewBag.Title = "Locations for Organization";
 }
 
-<h2>Locations</h2>
+@* <h2>Locations</h2>
 <p><strong>OID:</strong> @ViewBag.OID</p>
 <p><strong>Oname:</strong> @ViewBag.Oname</p>
-
-
-
-<table class="table table-bordered">
-    <thead>
+ *@
+ <style>
+    .styled-table button  {
+        border:none;
+        background:none;
+    }
+ </style>
+<div class="table-container-detailsView">
+<table class="styled-table">
+        <thead style="top:75px;">
         <tr>
             <th>S.No</th>
             <th>Location Code</th>
@@ -28,10 +33,27 @@
             <th>Email</th>
             <th>Client Email</th>
             <th>Internal Email</th> *@
-            <th>Returns</th>
-            <th>Contributions</th>
-            <th>Registations</th>
+            <th colspan="2">Returns</th>
+            <th colspan="2">Contributions</th>
+            <th colspan="2">Registations</th>
         </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th style="width:0;">Setup</th>
+                <th style="width:0;">View</th>
+                <th style="width:0;">Setup</th>
+                <th style="width:0;">View</th>
+                <th style="width:0;">Setup</th>
+                <th style="width:0;">View</th>
+            </tr>
     </thead>
     <tbody>
         @for (int i = 0; i < Model.Count; i++)
@@ -59,30 +81,50 @@
                     <form asp-action="ReturnSetup" method="post">
                         <input type="hidden" name="oid" value="@Model[i].Oid" />
                         <input type="hidden" name="lcode" value="@Model[i].Lcode" />
-                        <button type="submit" class="btn btn-primary btn-sm">Return Setup</button>
+                        <button type="submit">
+                                <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </button>
                     </form>
-                    <button class="btn btn-info btn-sm mt-1" onclick="loadReturns('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                </td>
+                <td>
+                        <button class="" onclick="loadReturns('@Model[i].Oid', '@Model[i].Lcode')">
+                            <i class="fas fa-eye edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </button>
                 </td>
                 <td>
                     <form asp-action="ContributionSetup" method="post">
                         <input type="hidden" name="oid" value="@Model[i].Oid" />
                         <input type="hidden" name="lcode" value="@Model[i].Lcode" />
-                        <button type="submit" class="btn btn-primary btn-sm">Contribution Setup</button>
+                        <button type="submit" class="">
+                                <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </button>
                     </form>
-                    <button class="btn btn-info btn-sm mt-1" onclick="loadContributions('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                   
+                </td>
+                <td>
+                        <button onclick="loadContributions('@Model[i].Oid', '@Model[i].Lcode')">
+                            <i class="fas fa-eye edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </button>
                 </td>
                 <td>
                     <form asp-action="RegistrationSetup" method="post">
                         <input type="hidden" name="oid" value="@Model[i].Oid" />
                         <input type="hidden" name="lcode" value="@Model[i].Lcode" />
-                        <button type="submit" class="btn btn-primary btn-sm">Registration Setup</button>
+                        <button type="submit">
+                                <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </button>
                     </form>
-                    <button class="btn btn-info btn-sm mt-1" onclick="loadRegistrations('@Model[i].Oid', '@Model[i].Lcode')">View Submitted</button>
+                </td>
+                <td>
+                        <button onclick="loadRegistrations('@Model[i].Oid', '@Model[i].Lcode')">
+                            <i class="fas fa-eye edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+</div>
 <div id="submittedReturnsContainer"></div>
 <div id="submittedContributionsContainer"></div>
 <div id="submittedRegistrationsContainer"></div>

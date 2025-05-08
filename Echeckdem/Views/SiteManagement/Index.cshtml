@@ -1,12 +1,30 @@
 ﻿@model List<Echeckdem.CustomFolder.OrganisationsListViewModel>
 
-<h2>Active Organizations</h2>
+@{
+    ViewData["Title"] = "Manage Sites";
+    ViewData["Heading"] = "Manage Sites";
+    ViewData["Heading_child"] = "...";
+}
 
-<table class="table">
-    <thead>
+<style>
+    .styled-table a {
+        color: #000000;
+        justify-content: flex-start;
+        font-weight: normal;
+        padding:0;
+    }
+
+    .styled-table a:hover {
+       text-decoration:underline;
+    }
+</style>
+
+<div class="table-container-detailsView">
+<table class="styled-table">
+        <thead style="top:75px;">
         <tr>
             <th>S.No</th>
-            <th>Organization Name</th>
+            <th>Organization Name</th>  
         </tr>
     </thead>
     <tbody>
@@ -23,3 +41,4 @@
         }
     </tbody>
 </table>
+</div>

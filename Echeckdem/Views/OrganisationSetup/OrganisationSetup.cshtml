@@ -277,8 +277,10 @@
                 <button type="button" class="editButton" id="editButton" onclick="showEditForm()">Edit</button>
             </p>
         </div>
+        
         <!-- Form for editing organisation info -->
-        <div id="editForm">
+        <div id="editForm" style="display:none">
+           
             <form asp-action="EditOrganisationInfo" method="post" enctype="multipart/form-data" class="Edit-OrganisationInfo-Form">
                 <label>Oid</label>
                 <input type="text" name="oid" value="@Model.SelectedOrganisation?.oid" readonly />
@@ -305,6 +307,10 @@
                 </select>
 
                 <label>Contract Copy (optional)</label>
+                @if (!string.IsNullOrEmpty(Model.SelectedOrganisation?.FileName))
+                {
+                    <a class="view-doc-button" target="_blank" href="@Url.Content($"~/Files/{Model.SelectedOrganisation?.oid}/Copies/{Model.SelectedOrganisation?.FileName}")">View Document</a>
+                }
                 <input type="file" name="PdfFile" accept=".pdf" />
 
                 <button type="submit">Save Changes</button>
@@ -324,7 +330,7 @@
     @if (TempData["SuccessMessage"] != null)
     {
         <text>
-            alert('@TempData["SuccessMessage"]');
+                alert('@TempData["SuccessMessage"]');
         </text>
     }
 
@@ -518,12 +524,12 @@
                     const newHeader = doc.getElementById("orgDetailsHeader");
                     const newLinksContainer = doc.getElementById("org-details-links-container");
                     const newBody = doc.getElementById("orgDetailsBody");
-
+                    const newForm = doc.getElementById("editForm");
                     // Update page elements
                     if (newHeader) orgDetailsHeader.innerHTML = newHeader.innerHTML;
                     if (newLinksContainer) orgDetailsLinksContainer.innerHTML = newLinksContainer.innerHTML;
                     if (newBody) orgDetailsBody.innerHTML = newBody.innerHTML;
-
+                    if (newForm) document.getElementById("editForm").innerHTML = newForm.innerHTML;
                     orgDetailsHeader.innerText = document.querySelector('#organisationDropdown option:checked').textContent;    // Update header
 
                     //containers -> visible

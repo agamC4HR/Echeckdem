@@ -9,6 +9,8 @@ namespace Echeckdem.CustomFolder
         public string? SelectedOid { get; set; }
         public int SelectedUno { get; set; }
         public string? SelectedLCODE { get; set; }
+
+        
         public string? SelectedTPP { get; set; }
         public string? SelectedACTITLE { get; set; }
         public string? SelectedSBTP { get; set; }
