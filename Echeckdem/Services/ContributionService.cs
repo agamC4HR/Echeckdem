@@ -1,5 +1,5 @@
 ﻿using Echeckdem.Models;
-using Echeckdem.CustomFolder.DetailViewDashboard;
+using Echeckdem.CustomFolder.Dashboard;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -108,50 +108,7 @@ namespace Echeckdem.Services
             return result;
         }
 
-        public async Task<DashboardViewModel> GetDashboardDataAsync (int uno)
-        {
-            var currentYear = DateTime.Now.Year;
-
-            var allowedLcodes = await _context.Ncumaps
-           .Where(m => m.Uno == uno)
-           .Select(m => m.Lcode)
-           .ToListAsync();
-
-            var onTimeContributions = await _context.Nccontrs
-                .Where(c => allowedLcodes.Contains(c.Lcode) &&
-                        c.Cyear == currentYear &&
-                        c.Status == 1 &&
-                        c.Depdate <= c.Lastdate)
-                .Join(_context.Ncmlocs, contr => contr.Lcode, loc => loc.Lcode, (contr, loc) => new ContributionViewModel
-                {
-                    Lcode = contr.Lcode,
-                    Depdate = contr.Depdate,
-                    LastDate = contr.Lastdate,
-                    Lname = loc.Lname,
-                    Status = contr.Status,
-                    Cyear = contr.Cyear,
-                    Period = contr.Period,
-                    Remarks = contr.Remarks,
-                    Amount = contr.Amount,
-                    Chqno = contr.Chqno
-                })
-                .ToListAsync();
-
-            return new DashboardViewModel
-            {
-                OnTimeContributions = onTimeContributions,
-                OnTimeCount = onTimeContributions.Count
-            };
-        }
-
-
-
-
-
-
-
-
-        public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)
+       public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)
 
         {
             var sqlQuery = @" SELECT DISTINCT c.OName

@@ -29,11 +29,36 @@ namespace Echeckdem.Controllers
             return View(fullActions); 
         }
 
+        //public async Task<IActionResult> Index()
+        //{
+
+        //    int uno = _trackerService.GetUnoFromSession(HttpContext);
+
+
+        //    var model = new TrackerViewModel
+        //    {
+        //        Organizations = _trackerService.GetOrganizations(uno),
+        //        TPPDropdown = _trackerService.GetTPPDropdown(),
+        //        ActDropdown = _trackerService.GetActDropdown(),
+        //        SlaDropdown = _trackerService.GetSlaDropdown(),
+        //        Locations = new List<SelectListItem>()
+        //    };
+
+        //    try
+        //    {
+        //        var locations = _trackerService.GetLocations(uno, model.SelectedOid);
+        //        model.Locations = locations ?? new List<SelectListItem>(); // Ensure non-null list
+        //        return PartialView(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["ErrorMessage"] = $"An error occurred while fetching locations: {ex.Message}";
+        //        return PartialView(model);
+        //    }
+        //}
         public async Task<IActionResult> Index()
         {
-           
             int uno = _trackerService.GetUnoFromSession(HttpContext);
-
 
             var model = new TrackerViewModel
             {
@@ -41,21 +66,16 @@ namespace Echeckdem.Controllers
                 TPPDropdown = _trackerService.GetTPPDropdown(),
                 ActDropdown = _trackerService.GetActDropdown(),
                 SlaDropdown = _trackerService.GetSlaDropdown(),
-                Locations = new List<SelectListItem>() 
+                ACTPDropdown = _trackerService.GetACTPDropdown(),
+               Locations = new List<SelectListItem>()
+                //Locations = _trackerService.GetLocations(uno, oid)
             };
 
-            try
-            {
-                var locations = _trackerService.GetLocations(uno, model.SelectedOid);
-                model.Locations = locations ?? new List<SelectListItem>(); // Ensure non-null list
-                return PartialView(model);
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"An error occurred while fetching locations: {ex.Message}";
-                return PartialView(model);
-            }
+            return PartialView(model); // Not PartialView, unless you're intentionally returning a fragment
         }
+
+
+
 
 
         public async Task<JsonResult> GetLocations(string oid)
@@ -83,6 +103,7 @@ namespace Echeckdem.Controllers
                 model.TPPDropdown = _trackerService.GetTPPDropdown();
                 model.ActDropdown = _trackerService.GetActDropdown();
                 model.SlaDropdown = _trackerService.GetSlaDropdown();
+                model.ACTPDropdown = _trackerService.GetACTPDropdown();
                 return View("Index", model); 
             }
             

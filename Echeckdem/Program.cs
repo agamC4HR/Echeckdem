@@ -36,6 +36,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<OrganisationSetupService>();
+builder.Services.AddScoped<BOCWService>();
 builder.Services.AddScoped<ReturnsService>();
 builder.Services.AddScoped<ContributionService>();
 builder.Services.AddScoped<RegistrationService>();

@@ -15,14 +15,16 @@ namespace Echeckdem.Controllers
         private readonly RegistrationService _regService;
         private readonly ContributionService _contService;
         private readonly ReturnsService _retService;
+        private readonly BOCWService _bocwService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
 
-        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService, IWebHostEnvironment webHostEnvironment)
+        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService, IWebHostEnvironment webHostEnvironment, BOCWService bocwService)
         {
             _regService = regService;
             _contService = contService;
             _retService = retService;
+            _bocwService = bocwService;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -45,12 +47,14 @@ namespace Echeckdem.Controllers
             var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
             var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
             var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+            var bocw = await _bocwService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
 
             var detailedViewModel = new CombinedDetailedViewModel
             {
                 Registrations = registrations,
                 Contributions = contributions,
                 Returns = returns,
+                BOCW = bocw,
                 OrganizationName = organizationName,
                 SiteName = LocationName,
                 StateName = StateName,
@@ -75,9 +79,7 @@ namespace Echeckdem.Controllers
             var CityNames = await _regService.GetCityNamesAsync(uno);
             ViewBag.CityNames = CityNames;
 
-            //var ReturnData = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName);
-
-
+            
             return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);     
         }
         
@@ -114,7 +116,6 @@ namespace Echeckdem.Controllers
 
             return Json(await _contService.GetFilteredLocationNamesAsync(uno, organizationName));
         }
-
 
         //----------------START----------------------------------REGISTRATION--------  ----------------------------------------------------------------------//
 

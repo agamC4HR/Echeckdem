@@ -11,6 +11,8 @@ namespace Echeckdem.CustomFolder
         public string? SelectedSBTP { get; set; }
         public string? SelectedTPP { get; set; }
 
+        public string? SelectedACTP { get; set; }
+
         [BindNever]
         public string? Oname { get; set; }
         [BindNever]

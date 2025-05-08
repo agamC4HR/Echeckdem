@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using ZstdSharp.Unsafe;
-
+using Echeckdem.CustomFolder.Dashboard.Registration;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using System.Security.Cryptography;
 namespace Echeckdem.Services
 {
     public class RegistrationService
@@ -24,7 +26,7 @@ namespace Echeckdem.Services
 
             var sqlQuery = @"
             SELECT a.oid, a.doe, a.status, a.Dolr, a.tp, a.doi, a.lcode, a.nmoe, a.noe, a.remarks, a.rno, a.uid, a.Filename, 
-            b.lname, b.lstate, b.lcity, b.lregion,
+            b.lname, b.lstate, b.lcity, b.lregion, b.ltype,
             c.oname,
             d.statedesc as State
 
@@ -107,6 +109,38 @@ namespace Echeckdem.Services
 
             return result;
         }
+
+        public Task<List<CompliantRegistrationViewModel>> GetCompliantRegistrationsAsync(int uno, int selectedYear)
+        {
+            // LINQ query to get the compliant registrations
+            var registrations = (from reg in _context.Ncregs
+                                 join loc in _context.Ncmlocs on reg.Lcode equals loc.Lcode
+                                 where reg.Status == "C"
+                                       && reg.Doe.HasValue
+                                       && reg.Doe.Value.Year == selectedYear
+                                       && _context.Ncumaps.Any(m => m.Uno == uno && m.Oid == reg.Oid && m.Lcode == reg.Lcode)
+                                 select new
+                                 {
+                                     reg.Lcode,
+                                     reg.Doe,
+                                     loc.Lname,
+                                     loc.Ltype
+                                 })
+                                 .AsEnumerable() // Force client-side evaluation
+                                 .Where(x => (x.Doe.Value.ToDateTime(new TimeOnly(0, 0)) - DateTime.Now).Days > 60)
+                                 .Select(x => new CompliantRegistrationViewModel
+                                 {
+                                     Lcode = x.Lcode,
+                                     Lname = x.Lname,
+                                     Ltype = x.Ltype,
+                                     Doe = x.Doe
+                                 })
+                                 .ToList(); // No need for await as this is now synchronous
+
+            return Task.FromResult(registrations); // Return the result as a Task
+        }
+
+
         public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)
 
         {

@@ -103,6 +103,17 @@ namespace Echeckdem.Services
             };
         }
 
+        public List<SelectListItem> GetACTPDropdown()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "A", Text = "REG./AMMEND." },
+                new SelectListItem { Value = "O", Text = "OTHER" },
+                new SelectListItem { Value = "P", Text = "PF TRACKER" },
+                new SelectListItem { Value = "I", Text = "INSPECTIONS" }
+            };
+        }
+
         //----------------------------START-------------------Fetching Actions from NCACTION table for a user------------------------------------------------------------------------
         public List<TrackerViewModel> GetNcActionsForUser(int uno)
         {
@@ -136,7 +147,8 @@ namespace Echeckdem.Services
                     Lname = locs.FirstOrDefault(l => l.Lcode == action.Lcode)?.Lname ?? "Unknown Location",
                     SelectedTPP = action.Tpp,
                     SelectedACTITLE = action.Actitle,
-                    SelectedSBTP = action.Sbtp
+                    SelectedSBTP = action.Sbtp,
+                    SelectedACTP = action.Actp
                 })
                 .ToList();
 
@@ -154,7 +166,8 @@ namespace Echeckdem.Services
                 Lcode = model.SelectedLCODE,
                 Tpp = model.SelectedTPP,
                 Actitle = model.SelectedACTITLE,
-                Sbtp = model.SelectedSBTP
+                Sbtp = model.SelectedSBTP,
+                Actp = model.SelectedACTP
             };
 
             _dbEcheckContext.Ncactions.Add(newRecord);
@@ -333,6 +346,7 @@ namespace Echeckdem.Services
                     SelectedACTITLE = action.SelectedACTITLE,
                     SelectedSBTP = action.SelectedSBTP,
                     SelectedTPP = action.SelectedTPP,
+                    SelectedACTP = action.SelectedACTP,
                     Oname = action.Oname,
                     Lname = action.Lname,
                     Actid = taken.FirstOrDefault()?.Actid ?? 0,

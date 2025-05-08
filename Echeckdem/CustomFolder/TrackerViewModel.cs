@@ -13,12 +13,16 @@ namespace Echeckdem.CustomFolder
         public string? SelectedACTITLE { get; set; }
         public string? SelectedSBTP { get; set; }
 
+        public string? SelectedACTP { get; set; }
         // Dropdowns
         public List<SelectListItem>? Organizations { get; set; }
         public List<SelectListItem>? Locations { get; set; }
         public List<SelectListItem>? TPPDropdown { get; set; }
         public List<SelectListItem>? ActDropdown { get; set; }
         public List<SelectListItem>? SlaDropdown { get; set; }
+        public List<SelectListItem>? ACTPDropdown {  get; set; }
+
+
 
         // Display values
         [BindNever]
