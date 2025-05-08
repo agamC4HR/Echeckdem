@@ -120,19 +120,32 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
+        alert("hi");
             $('#SelectedOid').change(function () {
+            alert("hi 3");
                 var oid = $(this).val();
                 if (oid) {
-                    $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
-                        .done(function (data) {
-                            $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+                $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
+                    .done(function (data) {
+                        console.log("Raw data:", data); 
+                        var $locationDropdown = $('#SelectedLCODE');
+                        $locationDropdown.empty().append('<option value="">-- Select Location --</option>');
+
+                        if (data && data.length > 0) {
+                            console.log("First item:", data[0]);
                             $.each(data, function (i, location) {
-                                $('#SelectedLCODE').append('<option value="' + location.value + '">' + location.text + '</option>');
+                                console.log("Adding:", location.value, location.text); 
+                                $locationDropdown.append(
+                                    $('<option></option>')
+                                        .val(location.value)
+                                        .text(location.text)
+                                );
                             });
-                        })
-                        .fail(function () {
-                            alert("Failed to fetch locations. Please try again.");
-                        });
+                        }
+                    })
+                    .fail(function (xhr, status, error) {
+                        console.error("AJAX error:", status, error);
+                    });
                 } else {
 
                     
@@ -141,5 +154,35 @@
                 }
             });
         });
+
+    // $("#SelectedOid").change(function () {
+    //     alert("hi");
+    //     var oid = $(this).val();
+    //     if (oid) {
+    //         $.get('@Url.Action("GetLocations", "Tracker")', { oid: oid })
+    //             .done(function (data) {
+    //                 console.log("Raw data:", data); // Log the full response
+    //                 var $locationDropdown = $('#SelectedLCODE');
+    //                 $locationDropdown.empty().append('<option value="">-- Select Location --</option>');
+
+    //                 if (data && data.length > 0) {
+    //                     console.log("First item:", data[0]); // Log the first location
+    //                     $.each(data, function (i, location) {
+    //                         console.log("Adding:", location.value, location.text); // Log each option
+    //                         $locationDropdown.append(
+    //                             $('<option></option>')
+    //                                 .val(location.value)
+    //                                 .text(location.text)
+    //                         );
+    //                     });
+    //                 }
+    //             })
+    //             .fail(function (xhr, status, error) {
+    //                 console.error("AJAX error:", status, error);
+    //             });
+    //     } else {
+    //         $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+    //     }
+    // });
     </script>
 }

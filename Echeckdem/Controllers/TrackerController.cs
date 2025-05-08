@@ -77,8 +77,9 @@ namespace Echeckdem.Controllers
 
 
 
-
-        public async Task<JsonResult> GetLocations(string oid)
+        [HttpGet]
+        //public async Task<JsonResult> GetLocations(string oid)
+        public JsonResult GetLocations(string oid)
         {
          
             int uno = _trackerService.GetUnoFromSession(HttpContext);

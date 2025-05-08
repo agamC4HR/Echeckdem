@@ -1,7 +1,9 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.Vml.Office;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Echeckdem.CustomFolder;
 using Echeckdem.Models;
@@ -448,13 +450,15 @@ namespace Echeckdem.Services
         {
 
 
-            var query = @" 
-                        SELECT* FROM Ncmlocbo
-                       WHERE Lcode IN(
-                       SELECT Lcode
-                       FROM Ncmloc
-                       WHERE Oid = @oid AND Ltype = 'bo'
-                       )";
+            var query = @"
+             SELECT * FROM Ncmlocbo
+            WHERE Lcode IN(
+            SELECT Lcode
+            FROM Ncmloc
+            WHERE Oid = @oid AND Ltype = 'bo'
+            )";
+            //select bo.*,Isnull(bocw.bocwcount, 0) as counts from ncmlocbo as bo inner join(select lcode from ncmloc where oid = @oid and ltype = 'bo')as loc on bo.lcode = loc.lcode
+            //            left join(select lcode, count(*)as bocwcount from ncbocw group by lcode)as bocw on bo.lcode = bocw.lcode
 
 
 
@@ -466,6 +470,9 @@ namespace Echeckdem.Services
 
             foreach (var bo in bocwDetails)
             {
+                bo.counts=_EcheckContext.Ncbocws
+                    .Where(b => b.Lcode == bo.Lcode)
+                    .Count();   
                 var activeScopes = await GetActiveScopesByLcodeAsync(bo.Lcode);
                 bo.ActiveScopes = string.Join(",", activeScopes);
             }
@@ -582,10 +589,10 @@ namespace Echeckdem.Services
         // --------------------------------------PROJECT SETUP AFTER SCOPE SETUP --------------------------------------------//
 
 
-        public async Task<string> ProjectSetupAsync(string lcode, string projectCode)
+        public async Task<string> ProjectSetupAsync(string lcode, string projectCode,HttpContext httpContext)
         {
             // fetching lname from ncmlocbo
-            var lname = await _EcheckContext.Ncmlocs.Where(n => n.Lcode == lcode && n.Lactive == 1).Select(n => n.Lname).FirstOrDefaultAsync();
+            var lname = await _EcheckContext.Ncmlocs.Where(n => n.Lcode == lcode && n.Lactive == 1).Select(n =>  new{   n.Lname,n.Oid }).FirstOrDefaultAsync();
             string retstring = string.Empty;
             if (lname == null)
                 throw new InvalidOperationException("No Active Site/Project found for the specified Lcode.");
@@ -598,7 +605,7 @@ namespace Echeckdem.Services
             if (scopeofproject == null) { throw new InvalidOperationException($"Scope not found for the {lname} and {projectCode}."); }
             else
             {
-                ProjectCalendarGenerator projectCalendarGenerator = new ProjectCalendarGenerator(scopeofproject.ProjectStartDateEst.Value.ToDateTime(TimeOnly.MinValue), scopeofproject.ProjectEndDateEst.Value.ToDateTime(TimeOnly.MinValue), scopeofproject.ProjectCode, scopeofproject.Lcode, scopeofproject.lname, _configuration, _EcheckContext);
+                ProjectCalendarGenerator projectCalendarGenerator = new ProjectCalendarGenerator(scopeofproject.ProjectStartDateEst.Value.ToDateTime(TimeOnly.MinValue), scopeofproject.ProjectEndDateEst.Value.ToDateTime(TimeOnly.MinValue), scopeofproject.ProjectCode, scopeofproject.Lcode, lname.Lname, _configuration, _EcheckContext,lname.Oid,httpContext);
                 bool anyExecuted = false;   
                 foreach (var k in scopeofproject.BoScopeMaps)
                 {

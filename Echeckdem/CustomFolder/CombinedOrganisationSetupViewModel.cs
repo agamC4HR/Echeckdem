@@ -43,7 +43,7 @@ namespace Echeckdem.CustomFolder
         public string? Ltype { get; set; }
 
         public int? Lsetup { get; set; }
-
+        
         public string LtypeDescription
         {
             get

@@ -631,7 +631,8 @@ namespace Echeckdem.Controllers
         {
             try
             {
-                var transactionId = await _organisationsetupservice.ProjectSetupAsync(lcode, projectCode);
+                
+                var transactionId = await _organisationsetupservice.ProjectSetupAsync(lcode, projectCode,HttpContext);
                      return Json(new { success = true, transactionId });
             }
             catch (Exception ex)
