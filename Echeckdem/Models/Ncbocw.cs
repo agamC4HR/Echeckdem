@@ -42,4 +42,6 @@ public partial class Ncbocw
     public virtual BoScopeMap ScopeMap { get; set; } = null!;
 
     public virtual TrackScope Work { get; set; } = null!;
+
+    public DateOnly? CompletionDate { get; set; }
 }
