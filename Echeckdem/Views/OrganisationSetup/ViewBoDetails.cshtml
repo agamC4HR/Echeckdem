@@ -1,44 +1,44 @@
 ﻿@model List<Ncmlocbo>
 <style>
     .modal-content {
-        position: absolute;
-        top: 286px;
-        width: 98vw;
-        left: 7px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        border-bottom-left-radius: .375rem;
-        border-bottom-right-radius: .375rem;
-        border: solid 2px red;
-        padding: 10px
+    position: absolute;
+    top: 286px;
+    width: 98vw;
+    left: 7px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: .375rem;
+    border-bottom-right-radius: .375rem;
+    border: solid 2px red;
+    padding: 10px
     }
     .custom-popup, .custom-popup2 {
-        display: none; /* Initially hidden */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
     }
 
     .popup-content, .popup-content2 {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #fff;
-        padding: 20px;
-        width: 60%;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    width: 60%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .close-popup, .close-popup2 {
-        float: right;
-        font-size: 20px;
-        cursor: pointer;
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
     }
 
 </style>
@@ -94,7 +94,7 @@
         @foreach (var bo in Model)
         {
             <tr>
-@*                 <td>@bo.Lcode</td>
+                @*                 <td>@bo.Lcode</td>
  *@                <td>@bo.Lname</td>
                 <td>@bo.OvalId</td>
                 <td>@bo.ClientName</td>
@@ -108,9 +108,12 @@
                     @if (bo.ActiveScopes != null)
                     {
                         <ul style="padding-left: 16px; margin: 0;">
-                            @foreach (var scope in bo.ActiveScopes.Split(','))
+                            @if(!string.IsNullOrEmpty(bo.ActiveScopes))
                             {
-                                <li>@scope.Trim()</li>
+                                foreach (var scope in bo.ActiveScopes.Split(','))
+                                {
+                                    <li>@scope.Trim()</li>
+                                }
                             }
                         </ul>
                     }
@@ -120,18 +123,32 @@
                         <i class="fas fa-pen edit-icon" style="color: #dd1; font-size: 14px; cursor: pointer;"></i>
                     </a>
                 </td>
-               
+
                 <td>
                     <a href="#" class="add-scope" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
                         <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                     </a>
                 </td>
-                <td> 
-@*                     <button class="complete-setup" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode" >Complete Setup</button>
- *@                    <a href="#" class="complete-setup" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
+                 
+                    @*                     <button class="complete-setup" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode" >Complete Setup</button>
+ *@
+                    @if (bo.counts==0) 
+                    {
+                    <td>
+                       
+                    <a href="#" class="complete-setup" data-lcode="@bo.Lcode" data-project-code="@bo.ProjectCode">
                         <i class="fas fa-pen edit-icon" style="color: #3AC47D; font-size: 14px; cursor: pointer;"></i>
-                    </a>
-                </td>
+                        </a>
+                    </td>
+                    }
+                    else
+                    {
+                        <td>
+                            Setup Done
+                    </td>
+                    }
+                    
+                
              </tr>
           
         }

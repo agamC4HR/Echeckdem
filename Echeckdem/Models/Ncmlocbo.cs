@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -36,8 +37,11 @@ public partial class Ncmlocbo
 
     public string? Lname { get; set; }
     [NotMapped]
+    [BindNever]
     public string? ActiveScopes { get; set; }
-
+    [NotMapped]
+    [BindNever]
+    public int counts { get; set; }
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual Ncmloc? LcodeNavigation { get; set; }

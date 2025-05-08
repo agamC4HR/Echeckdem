@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -23,11 +24,14 @@ namespace Echeckdem.Services
         public DateTime ProjectEndDate { get; set; }
         public string ProjectCode { get; set; }
 
+        public string Oid { get; set; }
         public string lcode { get; set; }
         public string lname { get; set; }
 
+        public HttpContext HttpContext { get; set; }
 
-        public ProjectCalendarGenerator(DateTime projectStartDate, DateTime projectEndDate, string projectCode, string Lcode, string Lname, IConfiguration configuration, DbEcheckContext context)
+
+        public ProjectCalendarGenerator(DateTime projectStartDate, DateTime projectEndDate, string projectCode, string Lcode, string Lname, IConfiguration configuration, DbEcheckContext context, string oid,HttpContext httpContext)
         {
             ProjectStartDate = projectStartDate;
             ProjectEndDate = projectEndDate;
@@ -37,19 +41,60 @@ namespace Echeckdem.Services
             _configuration = configuration;
             sqlConnection = new SqlConnection(_configuration.GetConnectionString("DefaultConnectionStrings"));
             _context = context;
+            Oid = oid;
+            HttpContext = httpContext;
         }
         public async Task<string> insertquery(string scopeid, DateTime duedate, int status, string task)
         {
 
-            string query = $"INSERT INTO dbo.Ncbocw (ScopeId, ProjectCode, Lcode, Lname, DueDate, Status, Task,CreateDate) " +
-                $"VALUES ('{scopeid}', '{ProjectCode}', '{lcode}', '{lname}', '{duedate.ToString("yyyy-MM-dd")}', {status}, '{task}',GetDate())";
-
-            //transaction log
-            string logquery = "insert into ncaction(acid, oid, aclink, lcode, actp, actitle, acshow, acstatus, acidate, acruser, acrdate)"+$"values ()";
-
-            sqlConnection.Open();
+            string query = @"INSERT INTO Ncbocw (ScopeId, ProjectCode, Lcode, Lname, DueDate, Status, Task, CreateDate) OUTPUT INSERTED.TransactionID VALUES (@ScopeId, @ProjectCode, @Lcode, @Lname, @DueDate, @Status, @Task, GETDATE())";
+           // string query = $"INSERT INTO dbo.Ncbocw (ScopeId, ProjectCode, Lcode, Lname, DueDate, Status, Task,CreateDate) OUTPUT INSERTED.TransactionID " +$"VALUES ('{scopeid}', '{ProjectCode}', '{lcode}', '{lname}', '{duedate.ToString("yyyy-MM-dd")}', {status}, '{task}',GetDate())";
+                    
+           
             SqlCommand comm = new SqlCommand(query, sqlConnection);
-            await comm.ExecuteNonQueryAsync();
+            comm.Parameters.AddWithValue("@ScopeId", scopeid);
+            comm.Parameters.AddWithValue("@ProjectCode", ProjectCode);
+            comm.Parameters.AddWithValue("@Lcode", lcode);
+            comm.Parameters.AddWithValue("@Lname", lname);
+            comm.Parameters.AddWithValue("@DueDate", duedate.Date);
+            comm.Parameters.AddWithValue("@Status", status);
+            comm.Parameters.AddWithValue("@Task", task);
+            sqlConnection.Open();
+            var transactionid=await comm.ExecuteScalarAsync();
+            sqlConnection.Close();
+            
+            //transaction log
+            int uno = HttpContext.Session.GetInt32("UNO").GetValueOrDefault(); 
+            string logquery = @"insert into ncaction(oid, aclink, lcode, actp, actitle, acshow, acstatus, acidate, acruser, acrdate)" + $"values (@oid,@aclink,@lcode, @actp, @actitle, @acshow, @acstatus, @acidate, @acruser,GETDATE())";
+            
+            SqlCommand logcomm = new SqlCommand(logquery, sqlConnection);
+            logcomm.Parameters.AddWithValue("@oid", Oid);
+            logcomm.Parameters.AddWithValue("@aclink", transactionid);
+            logcomm.Parameters.AddWithValue("@lcode", lcode);
+            logcomm.Parameters.AddWithValue("@actp", "Ops");
+            logcomm.Parameters.AddWithValue("@actitle", task);
+            logcomm.Parameters.AddWithValue("@acshow", 1);
+            //logcomm.Parameters.AddWithValue("@acstatus", status);
+            DateTime acitdate;
+            string astatus=string.Empty;
+            if (status == 0)
+            {
+                acitdate = DateTime.Now;
+                astatus = "O";
+            }
+            else 
+            {
+                acitdate = duedate.AddDays(-30);
+                astatus= acitdate <= DateTime.Now ? "O" : string.Empty;
+
+            }
+                
+            logcomm.Parameters.AddWithValue("@acstatus", astatus);
+            logcomm.Parameters.AddWithValue("@acidate", acitdate);
+            logcomm.Parameters.AddWithValue("@acruser", uno);
+            sqlConnection.Open();
+            await logcomm.ExecuteNonQueryAsync();
+
             sqlConnection.Close();
             return $"{task} added";
         }

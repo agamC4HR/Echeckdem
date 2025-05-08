@@ -9,7 +9,7 @@ public partial class Ncaction
 
     public string Oid { get; set; } = null!;
 
-    public int? Aclink { get; set; }
+    public string? Aclink { get; set; }
 
     public string? Lcode { get; set; }
 
