@@ -110,7 +110,8 @@ namespace Echeckdem.Services
                 new SelectListItem { Value = "A", Text = "REG./AMMEND." },
                 new SelectListItem { Value = "O", Text = "OTHER" },
                 new SelectListItem { Value = "P", Text = "PF TRACKER" },
-                new SelectListItem { Value = "I", Text = "INSPECTIONS" }
+                new SelectListItem { Value = "I", Text = "INSPECTIONS" },
+                new SelectListItem { Value = "", Text = "SITE AUDIT"}
             };
         }
 

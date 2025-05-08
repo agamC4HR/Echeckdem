@@ -116,7 +116,8 @@
 </form>
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#SelectedOid').change(function () {
@@ -133,8 +134,12 @@
                             alert("Failed to fetch locations. Please try again.");
                         });
                 } else {
+
+                    
                     $('#SelectedLCODE').empty().append('<option value="">-- Select Location --</option>');
+                    $('#SelectedLCODE').empty().append('<option value="">-- value ni aari --</option>');
                 }
             });
         });
     </script>
+}
