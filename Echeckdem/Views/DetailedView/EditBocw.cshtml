@@ -1,0 +1,168 @@
+﻿@* @model Echeckdem.CustomFolder.BOCWEditViewModel
+
+<h2>Edit BOCW Record</h2>
+
+<form asp-action="AddorUpdateBocw" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
+
+    @Html.HiddenFor(m => m.TransactionID)
+    @Html.HiddenFor(m => m.LCode)
+    @Html.HiddenFor(m => m.ACID)
+
+    <div class="mb-3">
+        <label>Title</label>
+        <input class="form-control" value="@Model?.ACTitle" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Status in NCBOCW</label>
+        @Html.DropDownListFor(m => m.Status, Model.AvailableStatuses, "Select Status", new { @class = "form-control" })
+    </div>
+
+    <div class="mb-3">
+        <label>Detail of Issue</label>
+        @Html.TextAreaFor(m => m.ACDetail, new { @class = "form-control" })
+    </div>
+
+
+    <div class="mb-3">
+        <label>Start Date of Issue:</label>
+        <input class="form-control" value="@Model?.ACIDate" readonly />
+     </div>
+
+   
+    <div class="mb-3">
+        <label>Due Date</label>
+        <input class="form-control" value="@Model?.DueDate" readonly />
+
+    </div>
+    <div class="mb-3">
+        <label>Remarks</label>
+        @Html.TextAreaFor(m => m.ACRemarks, new { @class = "form-control" })
+    </div>
+    <div class="mb-3">
+        <label>Completion Date</label>
+        @Html.TextBoxFor(m => m.CompletionDate, new { @class = "form-control", type = "date" })
+    </div>
+
+    <div class="mb-3">
+        <label>Visible to Client</label>
+        @Html.DropDownListFor(m => m.ACShow, new SelectList(new[] {
+        new { Text = "No", Value = 0 },
+        new { Text = "Yes", Value = 1 }
+        }, "Value", "Text", Model?.ACShow), new { @class = "form-control" })
+    </div>
+    
+
+    <div class="mb-3">
+        <label>Upload File</label>
+        <input type="file" name="UploadedFile" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+ *@
+
+@model Echeckdem.CustomFolder.BOCWEditViewModel
+
+<h2>Edit BOCW Record</h2>
+
+<form asp-action="AddorUpdateBocw" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
+
+    @Html.HiddenFor(m => m.TransactionID)
+    @Html.HiddenFor(m => m.LCode)
+    @Html.HiddenFor(m => m.ACID)
+
+    <!-- NCBOCW Section -->
+    <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">NCBOCW Information</legend>
+
+        <div class="mb-3">
+            <label>Title</label>
+            <input class="form-control" value="@Model?.ACTitle" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label>Status</label>
+            @Html.DropDownListFor(m => m.Status, Model.AvailableStatuses, "Select Status", new { @class = "form-control" })
+        </div>
+
+        <div class="mb-3">
+            <label>Due Date</label>
+            <input class="form-control" value="@Model?.DueDate.ToString("yyyy-MM-dd")" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label>Completion Date</label>
+            @Html.TextBoxFor(m => m.CompletionDate, new { @class = "form-control", type = "date" })
+        </div>
+
+        <button type="submit" name="submitType" value="SaveNCBOCW" class="btn btn-success">Save NCBOCW Info</button>
+    </fieldset>
+
+    <!-- NCACTION Section -->
+    <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">NCACTION Details</legend>
+
+        <div class="mb-3">
+            <label>Detail of Issue</label>
+            @Html.TextAreaFor(m => m.ACDetail, new { @class = "form-control" })
+        </div>
+
+        <div class="mb-3">
+            <label>Start Date of Issue</label>
+            <input class="form-control" value="@Model?.ACIDate?.ToString("yyyy-MM-dd")" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label>Visible to Client</label>
+            @Html.DropDownListFor(m => m.ACShow, new SelectList(new[] {
+            new { Text = "No", Value = 0 },
+            new { Text = "Yes", Value = 1 }
+            }, "Value", "Text", Model?.ACShow), new { @class = "form-control" })
+        </div>
+
+        <div class="mb-3">
+            <label>Remarks</label>
+            @Html.TextAreaFor(m => m.ACRemarks, new { @class = "form-control" })
+        </div>
+
+        <div class="mb-3">
+            <label>Upload File</label>
+            <input type="file" name="UploadedFile" class="form-control" />
+        </div>
+
+        <button type="submit" name="submitType" value="SaveNCACTION" class="btn btn-primary">Save NCACTION Info</button>
+    </fieldset>
+
+    <!-- NCACTAKEN Section -->
+    <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">NCACTAKEN - Action Taken</legend>
+
+        <div class="mb-3">
+            <label>Details of Action Taken</label>
+            @Html.TextAreaFor(m => m.ActionTaken, new { @class = "form-control" })
+        </div>
+
+        <div class="mb-3">
+            <label>Date of Action Taken</label>
+            @Html.TextBoxFor(m => m.ActionDate, new { @class = "form-control", type = "date" })
+        </div>
+
+        <div class="mb-3">
+            <label>Date of Action Closed</label>
+            @Html.TextBoxFor(m => m.ActionClosedDate, new { @class = "form-control", type = "date" })
+        </div>
+
+        <div class="mb-3">
+            <label>Visible to Client</label>
+            @Html.DropDownListFor(m => m.ShowClient, new SelectList(new[] {
+            new { Text = "No", Value = 0 },
+            new { Text = "Yes", Value = 1 }
+            }, "Value", "Text", Model?.ShowClient), new { @class = "form-control" })
+        </div>
+
+        <button type="submit" name="submitType" value="SaveNCACTION" class="btn btn-warning">Save Action Taken</button>
+    </fieldset>
+
+
+</form>

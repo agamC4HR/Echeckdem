@@ -14,15 +14,17 @@ public partial class BocwScope
 
     public string? Category { get; set; }
 
-    [NotMapped]
-    public bool IsSelected { get; set; }
-
     public string? Frequency { get; set; }
 
     public string? FunctionName { get; set; }
+
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
     public virtual ICollection<Ncbocw> Ncbocws { get; set; } = new List<Ncbocw>();
 
-    public virtual ICollection<TrackScope> TrackScopes { get; set; } = new List<TrackScope>();
+    public virtual ICollection<Statusmaster> Statusmasters { get; set; } = new List<Statusmaster>();
+
+    [NotMapped]
+    public bool IsSelected { get; set; }
+
 }

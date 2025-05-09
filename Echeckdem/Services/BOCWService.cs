@@ -1,18 +1,24 @@
-﻿using Echeckdem.Models;
+﻿using DocumentFormat.OpenXml.InkML;
+using Echeckdem.CustomFolder;
+using Echeckdem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Echeckdem.Services
 {
     public class BOCWService
     {
         private readonly DbEcheckContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public BOCWService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment)
+        public BOCWService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<BocwViewModel>> GetDataAsync(int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
@@ -33,7 +39,7 @@ namespace Echeckdem.Services
                                 
                                 AND a.lcode = b.lcode
                                 AND (a.status IS NULL OR a.status <> 99) ";
-           
+
             if (string.IsNullOrEmpty(organizationName) &&
                 string.IsNullOrEmpty(LocationName) &&
                 string.IsNullOrEmpty(StateName) &&
@@ -119,20 +125,316 @@ namespace Echeckdem.Services
 
             return LocationNames;
         }
-
-        public async Task<Ncbocw> GetbyIdAsync(int transactionId, string lcode)
+        public BOCWEditViewModel GetEditData(string lcode, int transactionId)
         {
-            var bocw = await _context.Ncbocws.FirstOrDefaultAsync(b=> b.TransactionId == transactionId && b.Lcode == lcode);
-            if(bocw == null)
+            var bocw = _context.Ncbocws.FirstOrDefault(x => x.Lcode == lcode && x.TransactionId == transactionId);
+            var action = _context.Ncactions.FirstOrDefault(x => x.Aclink == transactionId);
+           
+
+            if (bocw == null || action == null) return null;
+
+            var scopeId = bocw.ScopeId;
+
+            var statusOptions = _context.Statusmasters.Where(s => s.ScopeId == scopeId && s.Active == 1)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Status.ToString(),
+                    Text = s.Value
+                })
+                .ToList();
+
+            var model = new BOCWEditViewModel //return new BOCWEditViewModel
             {
-                Console.WriteLine("No crecord found under BOCW ");
+                LCode = lcode,
+                TransactionID = transactionId,
+                DueDate = bocw.DueDate,
+                Status = bocw.Status,
+                CompletionDate = bocw.CompletionDate,
+
+                ACID = action.Acid,
+                ACTitle = action.Actitle,
+                ACDetail = action.Acdetail,
+                ACIDate = action.Acidate,
+                ACShow = action.Acshow,
+                ACStatus = action.Acstatus,
+                ACRDate = action.Acrdate,
+                ACRemarks = action.Acremarks,
+                
+                AvailableStatuses = statusOptions
+            };
+
+            var ncactaken = _context.Ncactakens.FirstOrDefault(x=>x.Acid == action.Acid);
+            if (ncactaken != null)
+            {
+                
+                model.ActionTaken = ncactaken.Actaken;
+                model.ActionDate = ncactaken.Acdate;
+                model.ActionClosedDate = ncactaken.Nacdate;
+                model.ShowClient = ncactaken.Showclient;
             }
-            return bocw;           
+
+            return model;
         }
 
+        public void UpdateOnlyNCBOCW(BOCWEditViewModel model)
+        {
+            var bocw = _context.Ncbocws.FirstOrDefault(x => x.Lcode == model.LCode && x.TransactionId == model.TransactionID);
+            if (bocw != null)
+            {
+                bocw.Status = model.Status;
+                bocw.CompletionDate = model.CompletionDate;
+            }
+            _context.SaveChanges();
+        }
 
-       // public async Task 
+        public void UpdateOnlyNCACTION(BOCWEditViewModel model)
+        {
+            var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
+            if (action != null)
+            {
+                action.Acdetail = model.ACDetail;
+                action.Acshow = model.ACShow;
+                action.Acremarks = model.ACRemarks;
+                action.Acidate = model.ACIDate;
+            }
 
+            var ncactaken = _context.Ncactakens.FirstOrDefault(x => x.Acid == model.ACID);
+            var httpContext = _httpContextAccessor.HttpContext;
+            var uno = httpContext?.Session.GetInt32("UNO");
 
+            if (uno == null)
+            {
+                throw new InvalidOperationException("UNO not found in session.");
+            }
+
+            if (ncactaken == null)
+            {
+                // Insert new
+                ncactaken = new Ncactaken
+                {
+                    Acid = model.ACID,
+                    Actaken = model.ActionTaken,
+                    Acdate = model.ActionDate,
+                    Nacdate = model.ActionClosedDate,
+                    Uno = uno.Value,
+                    Showclient = model.ShowClient
+                };
+                _context.Ncactakens.Add(ncactaken);
+            }
+            else
+            {
+                // Update existing
+                ncactaken.Actaken = model.ActionTaken;
+                ncactaken.Acdate = model.ActionDate;
+                ncactaken.Nacdate = model.ActionClosedDate;
+                ncactaken.Showclient = model.ShowClient;
+            }
+
+            if (model.UploadedFile != null)
+            {
+                var file = model.UploadedFile;
+
+                if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+                {
+                    throw new InvalidOperationException("Only PDF files are allowed.");
+                }
+
+                var oid = action?.Oid;
+                string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
+                Directory.CreateDirectory(folderPath);
+
+                string fileName = Path.GetFileName(file.FileName);
+                string filePath = Path.Combine(folderPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+
+                var ncFile = new Ncfile
+                {
+                    Oid = oid,
+                    Flink = action.Acid,
+                    Fname = fileName,
+                    Fupdate = DateOnly.FromDateTime(DateTime.Today)
+                };
+
+                _context.Ncfiles.Add(ncFile);
+            }
+
+            _context.SaveChanges();
+        }
+
+        //public void UpdateOnlyNCACTION(BOCWEditViewModel model)  
+        //{
+        //    var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
+        //    if (action != null)
+        //    {
+        //        action.Acdetail = model.ACDetail;
+        //        action.Acshow = model.ACShow;
+        //        action.Acremarks = model.ACRemarks;
+        //        action.Acidate = model.ACIDate;
+
+        //        // Insert into NCACTAKEN if not exists
+        //        var alreadyExists = _context.Ncactakens.Any(x => x.Acid == model.ACID);
+        //        if (!alreadyExists)
+        //        {
+        //            // Get UNO from session
+        //            var httpContext = _httpContextAccessor.HttpContext;
+        //            var uno = httpContext?.Session.GetInt32("UNO");
+
+        //            if (uno == null)
+        //            {
+        //                throw new InvalidOperationException("UNO not found in session.");
+        //            }
+
+        //            var actionTaken = new Ncactaken
+        //            {
+        //                Acid = model.ACID,
+        //                Uno = uno,
+        //                Showclient = model.ACShow
+        //            };
+
+        //            _context.Ncactakens.Add(actionTaken);
+        //        }
+        //    }
+
+        //    if (model.UploadedFile != null)
+        //    {
+        //        var file = model.UploadedFile;
+
+        //        if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+        //        {
+        //            throw new InvalidOperationException("Only PDF files are allowed.");
+        //        }
+
+        //        var oid = action?.Oid;
+        //        string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
+        //        Directory.CreateDirectory(folderPath);
+
+        //        string fileName = Path.GetFileName(file.FileName);
+        //        string filePath = Path.Combine(folderPath, fileName);
+
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            file.CopyTo(stream);
+        //        }
+
+        //        var ncFile = new Ncfile
+        //        {
+        //            Oid = oid,
+        //            Flink = action.Acid,
+        //            Fname = fileName,
+        //            Fupdate = DateOnly.FromDateTime(DateTime.Today)
+        //        };
+
+        //        _context.Ncfiles.Add(ncFile);
+        //    }
+
+        //    _context.SaveChanges();
+        //}
+
+        //public void UpdateOnlyNCACTION(BOCWEditViewModel model)                  // good h yeh wala
+        //{
+        //    var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
+        //    if (action != null)
+        //    {
+        //        action.Acdetail = model.ACDetail;
+        //        action.Acshow = model.ACShow;
+        //        action.Acremarks = model.ACRemarks;
+        //        action.Acidate = model.ACIDate;
+        //    }
+
+        //    if (model.UploadedFile != null)
+        //    {
+        //        var file = model.UploadedFile;
+
+        //        if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+        //        {
+        //            throw new InvalidOperationException("Only PDF files are allowed.");
+        //        }
+
+        //        var oid = action?.Oid;
+        //        string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
+        //        Directory.CreateDirectory(folderPath);
+
+        //        string fileName = Path.GetFileName(file.FileName);
+        //        string filePath = Path.Combine(folderPath, fileName);
+
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            file.CopyTo(stream);
+        //        }
+
+        //        var ncFile = new Ncfile
+        //        {
+        //            Oid = oid,
+        //            Flink = action.Acid,
+        //            Fname = fileName,
+        //            Fupdate = DateOnly.FromDateTime(DateTime.Today)
+        //        };
+
+        //        _context.Ncfiles.Add(ncFile);
+        //    }
+
+        //    _context.SaveChanges();
+        //}
+
+        //public void UpdateData(BOCWEditViewModel model)
+        //{
+        //    var bocw = _context.Ncbocws.FirstOrDefault(x => x.Lcode == model.LCode && x.TransactionId == model.TransactionID);
+        //    var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
+
+        //    if (bocw != null)
+        //    {
+        //        bocw.DueDate = model.DueDate;
+        //        bocw.Status = model.Status;
+        //        bocw.CompletionDate = model.CompletionDate;
+        //    }
+
+        //    if (action != null)
+        //    {
+        //        action.Acdetail = model.ACDetail;
+        //        action.Acshow = model.ACShow;
+        //        action.Acremarks = model.ACRemarks;
+        //        action.Acidate = model.ACIDate;
+        //    }
+
+        //    if (model.UploadedFile != null && action != null)
+        //    {
+        //        var file = model.UploadedFile;
+
+        //        if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+        //        {
+        //            throw new InvalidOperationException("Only PDF files are allowed.");
+        //        }
+
+        //        var oid = action.Oid;
+        //        string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
+        //        Directory.CreateDirectory(folderPath);
+
+        //        string fileName = Path.GetFileName(file.FileName);
+        //        string filePath = Path.Combine(folderPath, fileName);
+
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            file.CopyTo(stream);
+        //        }
+
+        //        var ncFile = new Ncfile
+        //        {
+        //            Oid = oid,
+        //            Flink = action.Acid,
+        //            Fname = fileName,
+        //            Fupdate = DateOnly.FromDateTime(DateTime.Today)
+        //        };
+
+        //        _context.Ncfiles.Add(ncFile);
+        //    }
+
+        //    _context.SaveChanges(); // MANDATORY
+        //}
     }
+
+
 }

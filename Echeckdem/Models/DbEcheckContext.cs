@@ -127,6 +127,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<ServcMap> ServcMaps { get; set; }
 
+    public virtual DbSet<Statusmaster> Statusmasters { get; set; }
+
     public virtual DbSet<TrackScope> TrackScopes { get; set; }
 
     public virtual DbSet<Trig> Trigs { get; set; }
@@ -144,6 +146,8 @@ public partial class DbEcheckContext : DbContext
     public virtual DbSet<ReturnsViewModel> ReturnsViewModel { get; set; }
 
     public virtual DbSet<BocwViewModel> BocwViewModel { get; set; }
+
+
 
 //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -167,6 +171,7 @@ public partial class DbEcheckContext : DbContext
         modelBuilder.Entity<BocwViewModel>()
       .HasNoKey()
       .ToView(null);
+
 
         modelBuilder.Entity<Act>(entity =>
         {
@@ -377,6 +382,7 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.FunctionName).IsUnicode(false);
             entity.Property(e => e.ScopeName)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -1384,14 +1390,9 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("ScopeID");
-            entity.Property(e => e.ScopeMapId)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("ScopeMapID");
             entity.Property(e => e.Task)
                 .HasMaxLength(200)
                 .IsUnicode(false);
-            entity.Property(e => e.WorkId).HasColumnName("WorkID");
 
             entity.HasOne(d => d.LcodeNavigation).WithMany(p => p.Ncbocws)
                 .HasForeignKey(d => d.Lcode)
@@ -1407,16 +1408,6 @@ public partial class DbEcheckContext : DbContext
                 .HasForeignKey(d => d.ScopeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_NCBOCW_BOCW_SCOPE");
-
-            entity.HasOne(d => d.ScopeMap).WithMany(p => p.Ncbocws)
-                .HasForeignKey(d => d.ScopeMapId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_NCBOCW_BO_SCOPE_MAP");
-
-            entity.HasOne(d => d.Work).WithMany(p => p.Ncbocws)
-                .HasForeignKey(d => d.WorkId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_NCBOCW_Track_Scope");
         });
 
         modelBuilder.Entity<Nccontr>(entity =>
@@ -1756,7 +1747,7 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Doi).HasColumnName("DOI");
             entity.Property(e => e.Dolr).HasColumnName("DOLR");
             entity.Property(e => e.Filename)
-                .HasMaxLength(50)   
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("FILENAME");
             entity.Property(e => e.Nmoe)
@@ -2355,6 +2346,27 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Vuno).HasColumnName("vuno");
         });
 
+        modelBuilder.Entity<Statusmaster>(entity =>
+        {
+            entity.HasKey(e => e.Smid);
+
+            entity.ToTable("STATUSMASTER");
+
+            entity.Property(e => e.Smid).HasColumnName("SMID");
+            entity.Property(e => e.ScopeId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ScopeID");
+            entity.Property(e => e.Value)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Scope).WithMany(p => p.Statusmasters)
+                .HasForeignKey(d => d.ScopeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_STATUSMASTER_BOCW_SCOPE");
+        });
+
         modelBuilder.Entity<TrackScope>(entity =>
         {
             entity.HasKey(e => e.WorkId).HasName("PK_TrackScope");
@@ -2369,11 +2381,6 @@ public partial class DbEcheckContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("ScopeID");
-
-            entity.HasOne(d => d.Scope).WithMany(p => p.TrackScopes)
-                .HasForeignKey(d => d.ScopeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Track_Scope_BOCW_SCOPE");
         });
 
         modelBuilder.Entity<Trig>(entity =>

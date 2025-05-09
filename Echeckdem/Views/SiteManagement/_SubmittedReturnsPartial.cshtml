@@ -6,14 +6,14 @@
 
     @foreach (var yearGroup in Model)
     {
-        <div class="year-group">
-            <button class="btn btn-secondary btn-sm mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#returns-year-@yearGroup.Key" aria-expanded="false" aria-controls="returns-year-@yearGroup.Key">
+        <div class="year-group" style="margin-bottom:10px;">
+            <button class="saveButton" type="button" data-bs-toggle="collapse" data-bs-target="#returns-year-@yearGroup.Key" aria-expanded="false" aria-controls="returns-year-@yearGroup.Key">
                 @yearGroup.Key
             </button>
 
             <div class="collapse" id="returns-year-@yearGroup.Key">
-                <table class="table table-bordered">
-                    <thead>
+                <table class="styled-table">
+                    <thead style="top:75px;">   
                         <tr>
                             <th>Return Title</th>
                             <th>Form</th>

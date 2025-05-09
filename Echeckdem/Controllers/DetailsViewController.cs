@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using Echeckdem.CustomFolder;
 using Microsoft.AspNetCore.Hosting;
 using System.Text;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Security.Cryptography;
 
 namespace Echeckdem.Controllers
 {
@@ -274,5 +276,74 @@ namespace Echeckdem.Controllers
         }
 
         //----------------END----------------------------------RETURNS------------------------------------------------------------------------------------//
+        //----------------START----------------------------------BOCW------------------------------------------------------------------------------------//
+        [HttpGet]
+        public IActionResult EditBocw(int transactionId, string lcode)
+        {
+            var model = _bocwService.GetEditData(lcode, transactionId);
+            if (model == null) return NotFound();
+
+            return View("~/Views/DetailedView/EditBocw.cshtml",model);
+
+            
+        }
+
+        [HttpPost]
+        public IActionResult AddorUpdateBocw(BOCWEditViewModel model, string submitType)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/DetailedView/EditBocw.cshtml", model);
+            }
+
+            try
+            {
+                if (submitType == "SaveNCBOCW")
+                {
+                    _bocwService.UpdateOnlyNCBOCW(model);
+                }
+                else if (submitType == "SaveNCACTION")
+                {
+                    _bocwService.UpdateOnlyNCACTION(model);
+                }
+                //else if (submitType == "SaveNCACTAKEN")
+                //{
+                //    // Add/Update NCACTAKEN details
+                //    _bocwService.AddOrUpdateNCACTAKEN(model);
+                //}
+
+                TempData["SuccessMessage"] = "Record updated successfully.";
+                return RedirectToAction("EditBocw", new { transactionId = model.TransactionID, lcode = model.LCode });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while saving: " + ex.Message);
+                return View("~/Views/DetailedView/EditBocw.cshtml", model);
+            }
+        }
+
+
+        //[HttpPost]
+        //public IActionResult AddorUpdateBocw(BOCWEditViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View("~/Views/DetailedView/EditBocw.cshtml", model);
+        //    }
+
+        //    try
+        //    {
+        //        _bocwService.UpdateData(model);
+        //        TempData["SuccessMessage"] = "Record updated successfully.";
+        //        return RedirectToAction("EditBocw", new { transactionId = model.TransactionID, lcode = model.LCode });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ModelState.AddModelError("", "An error occurred while saving: " + ex.Message);
+        //        return View("~/Views/DetailedView/EditBocw.cshtml", model);
+        //    }
+        //}
+
+        //----------------END----------------------------------BOCW------------------------------------------------------------------------------------//
     }
 }

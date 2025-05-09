@@ -1,7 +1,10 @@
 ﻿@model Echeckdem.CustomFolder.RegistrationSelectionViewModel
 
-
-<h3>Select Registrations to Setup</h3>
+@{
+    ViewData["Title"] = "Manage Sites";
+    ViewData["Heading"] = "Select Registrations to Setup";
+    ViewData["Heading_child"] = "...";
+}
 
 <form asp-action="FetchApplicableRegistrations" method="post">
     @Html.HiddenFor(m => m.Oid)
@@ -12,12 +15,12 @@
     @Html.HiddenFor(m => m.ispf)
 @*     @Html.HiddenFor(m => m.ApplicableRegistrations) *@
 
-    <table class="table table-bordered table-striped">
-        <thead>
+    <div class="table-container-detailsView">
+    <table class="styled-table">
+            <thead style="top:75px;">
             <tr>
                 <th>Select</th>
                 <th>Registration Title</th>
-                <th>RTYPE</th>
                 <th>Description</th>
             </tr>
         </thead>
@@ -31,7 +34,7 @@
                         <input type="hidden" name="ApplicableRegistrations[@i].Selected" value="false" />
                     </td>
                     <td>@item.Rdesc</td>
-                    <td>@item.Rtype</td>
+                    <td hidden>@item.Rtype</td>
                     <td>@item.Category</td>
 
                     <!-- Preserve all required hidden fields -->
@@ -44,5 +47,9 @@
         </tbody>
     </table>
 
-    <button type="submit" class="btn btn-success">Proceed</button>
+    <button type="submit" class="saveButton">Proceed</button>
+        <button type="button" class="saveButton" onclick="window.location.href='ViewLocations?oid=@Model.Oid'">
+            Cancel
+        </button>
+    </div>
 </form>

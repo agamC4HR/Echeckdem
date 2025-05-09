@@ -12,8 +12,4 @@ public partial class TrackScope
     public int? Offset { get; set; }
 
     public string? Reference { get; set; }
-
-    public virtual ICollection<Ncbocw>? Ncbocws { get; set; } = new List<Ncbocw>();
-
-    public virtual BocwScope? Scope { get; set; } = null!;
 }
