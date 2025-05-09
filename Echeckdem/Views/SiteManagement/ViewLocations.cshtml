@@ -1,6 +1,8 @@
 ﻿@model List<Echeckdem.CustomFolder.LocationViewModel>
 @{
-    ViewBag.Title = "Locations for Organization";
+    ViewData["Title"] = "Manage Sites";
+    ViewData["Heading"] = "Locations";
+    ViewData["Heading_child"] = "...";
 }
 
 @* <h2>Locations</h2>
@@ -13,19 +15,16 @@
         background:none;
     }
  </style>
-<div class="table-container-detailsView">
+<div class="table-container-detailsView" id="viewLocationsContainer">
 <table class="styled-table">
         <thead style="top:75px;">
         <tr>
             <th>S.No</th>
-            <th>Location Code</th>
-            <th>Location Name</th>
+@*             <th>Location Code</th>
+ *@            <th>Site Name</th>
             <th>State</th>
-            <th>Type</th>
-            <th>Central</th>
-            <th>CLRA</th>
-            <th>PF</th>
-            <th>ESI</th>
+            <th>Establishment Type</th>
+                <th colspan="4" style="text-align:center;">Covered under</th>
             @* <th>Region</th>
             <th>Address</th>
             <th>Branch Contact</th>
@@ -33,20 +32,19 @@
             <th>Email</th>
             <th>Client Email</th>
             <th>Internal Email</th> *@
-            <th colspan="2">Returns</th>
-            <th colspan="2">Contributions</th>
-            <th colspan="2">Registations</th>
+                <th colspan="2" style="text-align:center;">Returns</th>
+                <th colspan="2" style="text-align:center;">Contributions</th>
+                <th colspan="2" style="text-align:center;">Registations</th>
         </tr>
             <tr>
                 <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th>Central</th>
+                <th>CLRA</th>
+                <th>PF</th>
+                <th>ESI</th>
                 <th style="width:0;">Setup</th>
                 <th style="width:0;">View</th>
                 <th style="width:0;">Setup</th>
@@ -60,7 +58,7 @@
         {
             <tr>
                 <td>@(i + 1)</td>
-                <td>@Model[i].Lcode</td>
+                <td hidden>@Model[i].Lcode</td>
                 <td>@Model[i].Lname</td>
                 <td>@Model[i].Lstate</td>
                 <td>@Model[i].Ltype</td>
@@ -125,11 +123,16 @@
     </tbody>
 </table>
 </div>
-<div id="submittedReturnsContainer"></div>
-<div id="submittedContributionsContainer"></div>
-<div id="submittedRegistrationsContainer"></div>
+<div class="table-container-detailsView" id="submittedReturnsContainer" style="display:none; top:45px; padding:15px;"></div>
+<div class="table-container-detailsView" id="submittedContributionsContainer" style="display:none; top:45px; padding:15px;"></div>
+<div class="table-container-detailsView" id="submittedRegistrationsContainer" style="display:none; top:45px; padding:15px;"></div>
 <script>
     function loadReturns(oid, lcode) {
+        document.getElementById("viewLocationsContainer").style.display = "none";
+        document.getElementById("submittedContributionsContainer").style.display = "none";
+        document.getElementById("submittedRegistrationsContainer").style.display = "none";
+        document.getElementById("submittedReturnsContainer").style.display = "block";
+
         fetch(`/SiteManagement/SubmittedReturns?oid=${oid}&lcode=${lcode}`)
             .then(res => res.text())
             .then(html => {
@@ -137,10 +140,12 @@
             });
     }
 
-</script>
-
-<script>
     function loadContributions(oid, lcode) {
+        document.getElementById("submittedReturnsContainer").style.display = "none";  
+        document.getElementById("viewLocationsContainer").style.display = "none";  
+        document.getElementById("submittedRegistrationsContainer").style.display = "none";
+        document.getElementById("submittedContributionsContainer").style.display = "block";
+
         fetch(`/SiteManagement/SubmittedContributions?oid=${oid}&lcode=${lcode}`)
             .then(res => res.text())
             .then(html => {
@@ -148,11 +153,12 @@
             });
     }
 
-</script>
-
-
-<script>
     function loadRegistrations(oid, lcode) {
+        document.getElementById("submittedReturnsContainer").style.display = "none";
+        document.getElementById("submittedContributionsContainer").style.display = "none";
+        document.getElementById("viewLocationsContainer").style.display = "none";
+        document.getElementById("submittedRegistrationsContainer").style.display = "block";
+
         fetch(`/SiteManagement/SubmittedRegistrations?oid=${oid}&lcode=${lcode}`)
             .then(res => res.text())
             .then(html => {
