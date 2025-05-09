@@ -1,14 +1,46 @@
 ﻿@model Echeckdem.CustomFolder.ContributionPeriodSelectionViewModel
 
+@{
+    ViewData["Title"] = "Manage Sites";
+    ViewData["Heading"] = "Select Contribution Period";
+    ViewData["Heading_child"] = "...";
+}
+<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
 
-<h3>Select Contribution Period</h3>
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 12px;
+        }
 
-<form asp-action="FetchApplicableContributions" method="post">
+    .form-control {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: .375rem;
+        outline: none;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+</style>
+
+<div class="table-container-detailsView" style="top:45px;">
+<form asp-action="FetchApplicableContributions" method="post" style="padding:15px;">
     @Html.HiddenFor(m => m.Oid)
     @Html.HiddenFor(m => m.Lcode)
     @Html.HiddenFor(m => m.Lstate)
   
-    <div class="form-group mb-3">
+    <div class="form-group">   
         <label for="SelectedTP">Contribution Type:</label>
         <select asp-for="SelectedTP" class="form-control" required>
             <option value="">-- Select Contribution Type --</option>
@@ -22,13 +54,40 @@
 
 
 
-    <div class="form-group mb-2">
+    <div class="form-group">
         <label for="Month">Return Month:</label>
-        <input type="number" name="Month" class="form-control" min="1" max="12" required />
+            <select name="Month" class="form-control" required>
+                <option value="">-- Select Month --</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
     </div>
-    <div class="form-group mb-3">
-        <label for="Year">Return Year:</label>
-        <input type="number" name="Year" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-primary">Fetch Contributions</button>
+        <div class="form-group">
+            <label for="Year">Return Year:</label>
+            <select name="Year" class="form-control" required>
+                <option value="">-- Select Year --</option>
+                @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 4; y--)
+                {
+                    <option value="@y">@y</option>
+                }
+            </select>
+        </div>
+
+        
+    <button type="submit" class="saveButton" style="width:200px;">Fetch Contributions</button>
+        <button type="button" class="saveButton" onclick="window.location.href='ViewLocations?oid=@Model.Oid'">
+            Cancel
+        </button>
 </form>
+</div>
+

@@ -1,12 +1,17 @@
 ﻿@model List< Echeckdem.CustomFolder.RegistrationTemplateViewModel>
 
+@{
+    ViewData["Title"] = "Manage Sites";
+    ViewData["Heading"] = "Submitted Registrations";
+    ViewData["Heading_child"] = "...";
+}
 
 @if (Model != null && Model.Any())
 {
     <h5>Submitted Registrations</h5>
 
-    <table class="table table-bordered table-striped">
-        <thead>
+    <table class="styled-table">
+        <thead style="top:75px;">
             <tr>
                 <th>Registration Title</th>
                 <th>RType</th>
@@ -29,3 +34,7 @@ else
 {
     <p class="text-muted">No registrations submitted for this location.</p>
 }
+
+@* <button type="button" class="saveButton" onclick="window.location.href='ViewLocations?oid=@oid'">
+    Back
+</button> *@

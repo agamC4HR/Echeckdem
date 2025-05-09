@@ -1,6 +1,12 @@
 ﻿@model Echeckdem.CustomFolder.ContributionPeriodSelectionViewModel
-<h3>Select Contributions to Setup</h3>
 
+@{
+    ViewData["Title"] = "Manage Sites";
+    ViewData["Heading"] = "Select Contributions to Setup";
+    ViewData["Heading_child"] = "...";
+}
+
+<div class="table-container-detailsView">
 <form asp-action="SaveSelectedContributions" method="post">
     @Html.HiddenFor(m => m.Oid)
     @Html.HiddenFor(m => m.Lcode)
@@ -12,14 +18,16 @@
     @Html.HiddenFor(m => m.Year)
 
 
-    <table class="table table-bordered table-striped">
-        <thead>
+   
+        <table class="styled-table">
+            <thead style="top:75px;">
             <tr>
                 <th>Select</th>
                 <th>Title</th>
-                <th>Freq</th>
+                <th>Frequency</th>
               @*   <th>Description</th> *@
                 <th>Due Date</th>
+                <th>Period</th>
             </tr>
         </thead>
         <tbody>
@@ -64,7 +72,7 @@
                         }
 
                     </td>
-
+                    <td></td>
 
                     <!-- Preserve all required hidden fields -->
                     <input type="hidden" name="ApplicableContributions[@i].Cid" value="@item.Cid" />
@@ -82,6 +90,10 @@
         </tbody>
 
     </table>
-
-    <button type="submit" class="btn btn-success">Proceed</button>
+    
+    <button type="submit" class="saveButton">Proceed</button>
+        <button type="button" class="saveButton" onclick="window.location.href='ViewLocations?oid=@Model.Oid'">
+            Cancel
+        </button>
 </form>
+</div>
