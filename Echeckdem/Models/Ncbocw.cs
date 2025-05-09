@@ -13,10 +13,6 @@ public partial class Ncbocw
 
     public string ScopeId { get; set; } = null!;
 
-    public string ScopeMapId { get; set; } = null!;
-
-    public int WorkId { get; set; }
-
     public DateOnly DueDate { get; set; }
 
     public int Status { get; set; }
@@ -33,15 +29,11 @@ public partial class Ncbocw
 
     public int TransactionId { get; set; }
 
+    public DateOnly? CompletionDate { get; set; }
+
     public virtual Ncmloc LcodeNavigation { get; set; } = null!;
 
     public virtual Ncmlocbo ProjectCodeNavigation { get; set; } = null!;
 
     public virtual BocwScope Scope { get; set; } = null!;
-
-    public virtual BoScopeMap ScopeMap { get; set; } = null!;
-
-    public virtual TrackScope Work { get; set; } = null!;
-
-    public DateOnly? CompletionDate { get; set; }
 }

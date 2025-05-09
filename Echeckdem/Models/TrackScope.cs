@@ -13,7 +13,7 @@ public partial class TrackScope
 
     public string? Reference { get; set; }
 
-    public virtual ICollection<Ncbocw>? Ncbocws { get; set; } = new List<Ncbocw>();
+    //public virtual ICollection<Ncbocw>? Ncbocws { get; set; } = new List<Ncbocw>();
 
-    public virtual BocwScope? Scope { get; set; } = null!;
+    //public virtual BocwScope? Scope { get; set; } = null!;
 }
