@@ -289,7 +289,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddorUpdateBocw(BOCWEditViewModel model)
+        public IActionResult AddorUpdateBocw(BOCWEditViewModel model, string submitType)
         {
             if (!ModelState.IsValid)
             {
@@ -298,7 +298,20 @@ namespace Echeckdem.Controllers
 
             try
             {
-                _bocwService.UpdateData(model);
+                if (submitType == "SaveNCBOCW")
+                {
+                    _bocwService.UpdateOnlyNCBOCW(model);
+                }
+                else if (submitType == "SaveNCACTION")
+                {
+                    _bocwService.UpdateOnlyNCACTION(model);
+                }
+                //else if (submitType == "SaveNCACTAKEN")
+                //{
+                //    // Add/Update NCACTAKEN details
+                //    _bocwService.AddOrUpdateNCACTAKEN(model);
+                //}
+
                 TempData["SuccessMessage"] = "Record updated successfully.";
                 return RedirectToAction("EditBocw", new { transactionId = model.TransactionID, lcode = model.LCode });
             }
@@ -309,6 +322,28 @@ namespace Echeckdem.Controllers
             }
         }
 
-            //----------------END----------------------------------BOCW------------------------------------------------------------------------------------//
-        }
+
+        //[HttpPost]
+        //public IActionResult AddorUpdateBocw(BOCWEditViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View("~/Views/DetailedView/EditBocw.cshtml", model);
+        //    }
+
+        //    try
+        //    {
+        //        _bocwService.UpdateData(model);
+        //        TempData["SuccessMessage"] = "Record updated successfully.";
+        //        return RedirectToAction("EditBocw", new { transactionId = model.TransactionID, lcode = model.LCode });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ModelState.AddModelError("", "An error occurred while saving: " + ex.Message);
+        //        return View("~/Views/DetailedView/EditBocw.cshtml", model);
+        //    }
+        //}
+
+        //----------------END----------------------------------BOCW------------------------------------------------------------------------------------//
+    }
 }

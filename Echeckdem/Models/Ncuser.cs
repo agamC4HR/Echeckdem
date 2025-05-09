@@ -25,7 +25,8 @@ public partial class Ncuser
     public string? Emailid { get; set; }
 
     [NotMapped]
-    public string? OName { get; set; } // Organization name (For Display)
+    public string? OName { get; set; }
     [NotMapped]
     public string? UserLevelName { get; set; }
+
 }

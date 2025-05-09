@@ -1,4 +1,6 @@
-﻿namespace Echeckdem.CustomFolder
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Echeckdem.CustomFolder
 {
     public class BOCWEditViewModel
     {
@@ -21,5 +23,18 @@
 
         // File Upload
         public IFormFile? UploadedFile { get; set; }
+
+        //STATUSMASTER
+        public List<SelectListItem> AvailableStatuses { get; set; } = new();
+
+        //NCACTAKEN
+
+        public int? ACTID { get; set; }  // nullable, because it may not exist yet
+        public string? ActionTaken { get; set; }
+        public DateOnly? ActionDate { get; set; }
+        public DateOnly? ActionClosedDate { get; set; }
+        public int? ShowClient { get; set; }  // 0 = No, 1 = Yes
+        public bool IsActTakenAvailable => ACTID.HasValue; // convenience property
+
     }
 }

@@ -127,6 +127,8 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<ServcMap> ServcMaps { get; set; }
 
+    public virtual DbSet<Statusmaster> Statusmasters { get; set; }
+
     public virtual DbSet<TrackScope> TrackScopes { get; set; }
 
     public virtual DbSet<Trig> Trigs { get; set; }
@@ -145,12 +147,15 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<BocwViewModel> BocwViewModel { get; set; }
 
-    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-    //        => optionsBuilder.UseSqlServer("server=AGAM\\SQLEXPRESS01;database=DB_echeck;Trusted_Connection=True; TrustServerCertificate=True;");
+
+
+//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+//        => optionsBuilder.UseSqlServer("server=AGAM\\SQLEXPRESS01;database=DB_echeck;Trusted_Connection=True; TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         modelBuilder.Entity<ReturnsViewModel>()
 .HasNoKey()
 .ToView(null);
@@ -166,6 +171,7 @@ public partial class DbEcheckContext : DbContext
         modelBuilder.Entity<BocwViewModel>()
       .HasNoKey()
       .ToView(null);
+
 
         modelBuilder.Entity<Act>(entity =>
         {
@@ -2338,6 +2344,27 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Vcoid).HasColumnName("vcoid");
             entity.Property(e => e.Vproid).HasColumnName("vproid");
             entity.Property(e => e.Vuno).HasColumnName("vuno");
+        });
+
+        modelBuilder.Entity<Statusmaster>(entity =>
+        {
+            entity.HasKey(e => e.Smid);
+
+            entity.ToTable("STATUSMASTER");
+
+            entity.Property(e => e.Smid).HasColumnName("SMID");
+            entity.Property(e => e.ScopeId)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("ScopeID");
+            entity.Property(e => e.Value)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Scope).WithMany(p => p.Statusmasters)
+                .HasForeignKey(d => d.ScopeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_STATUSMASTER_BOCW_SCOPE");
         });
 
         modelBuilder.Entity<TrackScope>(entity =>
