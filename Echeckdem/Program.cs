@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Echeckdem.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,9 @@ builder.Services.AddSingleton<MailService>();
 builder.Services.AddScoped<TrackerService>();
 builder.Services.AddScoped<ISiteManagementService, SiteManagementService>();
 builder.Services.AddScoped<IStateTemplateService, StateTemplateService>();
+builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddScoped<IAudtrail, AudtrailUpdate>();
 
 // Configuring the Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStrings");              //ECHECK

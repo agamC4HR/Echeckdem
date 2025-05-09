@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Bibliography;
 using Echeckdem.CustomFolder;
 using Echeckdem.CustomFolder.UserManagement;
+using Microsoft.AspNetCore.Identity;
 
 namespace Echeckdem.Services
 {
@@ -34,7 +35,7 @@ namespace Echeckdem.Services
     {
         private readonly DbEcheckContext _EcheckContext;
         private readonly ILogger<UserManagementService> _logger;
-
+        private readonly PasswordHasher<UserCreateViewModel> _passwordHasher=new();
         public UserManagementService(DbEcheckContext echeckContext, ILogger<UserManagementService> logger)
         {
             _EcheckContext = echeckContext;
@@ -67,7 +68,8 @@ namespace Echeckdem.Services
                                    user.Uname,
                                    user.Emailid,
                                    user.Userlevel,
-                                   OrganisationName = org != null ? org.Oname : "No Organisation"
+                                   OrganisationName = org != null ? org.Oname : "No Organisation",
+                                   user.Uactive
                                }).ToListAsync();
 
             
@@ -79,7 +81,8 @@ namespace Echeckdem.Services
                 UNAME = user.Uname,
                 EmailID = user.Emailid,
                 UserLevel = GetUserLevelName(user.Userlevel.GetValueOrDefault()), // Handle user level here
-                OrganisationName = user.OrganisationName
+                OrganisationName = user.OrganisationName,
+                Uactive = user.Uactive== 1 ? "Yes" : "No"   
             }).ToList();
 
             return userViewModels;
@@ -93,7 +96,7 @@ namespace Echeckdem.Services
             {
                 Userid = model.UserID,
                 Uname = model.UNAME,
-                Password = model.Password,
+               // Password = model.Password,
                 Oid = model.OID,
                 Userlevel = model.UserLevel,
                 Uactive = 1, // Assume active by default
@@ -101,6 +104,13 @@ namespace Echeckdem.Services
             };
 
             _EcheckContext.Ncusers.Add(newUser);
+           
+            _EcheckContext.SaveChanges();
+
+            
+            var Password=$"{newUser.Uno}@fqp!";
+            newUser.HashPassword = _passwordHasher.HashPassword(model, Password);
+
             await _EcheckContext.SaveChangesAsync();
         }
 

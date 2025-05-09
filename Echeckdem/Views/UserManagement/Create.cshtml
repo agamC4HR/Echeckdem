@@ -6,23 +6,27 @@
 <form method="post">
     <div class="form-group">
         <label for="UserID">UserID</label>
-        <input type="text" class="form-control" id="UserID" name="UserID" required />
+        <input type="text" class="form-control" id="UserID" name="UserID" onblur="checkUserId()" required />
+        <span id="userid-msg" style="color: red;"></span>
     </div>
     <div class="form-group">
         <label for="UNAME">Full Name</label>
-        <input type="text" class="form-control" id="UNAME" name="UNAME" required />
+        <input type="text" class="form-control" id="UNAME" name="UNAME"  required />
+        
     </div>
-    <div class="form-group">
+   @*  <div class="form-group">
         <label for="Password">Password</label>
         <input type="password" class="form-control" id="Password" name="Password" required />
-    </div>
+    </div> *@
     <div class="form-group">
         <label for="EmailID">Email</label>
-        <input type="email" class="form-control" id="EmailID" name="EmailID" required />
+        <input type="email" class="form-control" id="EmailID" name="EmailID" onblur="checkEmail()"  required />
+        <span id="email-msg" style="color: red;"></span>
     </div>
     <div class="form-group">
         <label for="UserLevel">User Level</label>
-        <select class="form-control" id="UserLevel" name="UserLevel">
+        <select class="form-control" id="UserLevel" name="UserLevel" required>
+            <option value="">Select User Level</option>
             <option value="1">Admin</option>
             <option value="2">SPOC</option>
             <option value="3">Reports</option>
@@ -31,13 +35,72 @@
         </select>
     </div>
     <div class="form-group">
-        <label for="OID">Organisation</label>
-        <select class="form-control" id="OID" name="OID">
+        <label for="OID">Assign a Client</label>
+        
+        <select class="form-control" id="OID" name="OID" required>
+            <option value="">Select Client</option>
             @foreach (var org in ViewBag.Organisations as SelectList)
             {
                 <option value="@org.Value">@org.Text</option>
             }
         </select>
     </div>
-    <button type="submit" class="btn btn-primary">Create User</button>
+    <button type="submit" class="btn btn-primary" id="createuser" name="createuser" disabled="false">Create User</button>
 </form>
+<script type="text/javascript">
+    let isUserIdValid = false;
+    let isEmailValid = false;
+        function checkUserId() {
+        var userid = $('#UserID').val().trim();
+        if (userid) {
+            $.ajax({
+                url: '/UserManagement/GetUserAvailable',
+                type: 'GET',
+                data: { userid: userid },
+                success: function (response) {
+                    if (response === 'true') {
+                        $('#userid-msg').text('Available');
+                        $('#userid-msg').css('color', 'green');
+                        isUserIdValid = true;
+                    } else {
+                        $('#userid-msg').text('User ID already exists');
+                        $('#userid-msg').css('color', 'red');
+                        isUserIdValid = false;
+                    }
+                     toggleCreateButton();
+                }
+            });
+        }
+    }
+
+    function checkEmail() {
+        var email = $('#EmailID').val().trim();
+        if (email) {
+            $.ajax({
+                url: '/UserManagement/GetEmailAvailable',
+                type: 'GET',
+                data: { email: email },
+                success: function (response) {
+                    if (response === 'true') {
+                        $('#email-msg').text('Available');
+                        $('#email-msg').css('color', 'green');
+                         isEmailValid = true;   
+                    } else {
+                        $('#email-msg').text('Email already exists');
+                        $('#email-msg').css('color', 'red');
+                    }
+                     toggleCreateButton();
+                }
+            });
+        }
+    }
+
+    function toggleCreateButton() {
+        if (isUserIdValid && isEmailValid) {
+            $('#createuser').prop('disabled', false);
+        } else {
+            $('#createuser').prop('disabled', true);
+        }
+    }
+
+</script>

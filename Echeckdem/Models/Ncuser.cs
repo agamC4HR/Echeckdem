@@ -16,6 +16,8 @@ public partial class Ncuser
 
     public string? Password { get; set; }
 
+    public string? HashPassword { get; set; }
+
     public int? Userlevel { get; set; }
 
     public int? Uactive { get; set; }

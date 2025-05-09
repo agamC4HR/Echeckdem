@@ -286,7 +286,7 @@ public partial class DbEcheckContext : DbContext
             entity.ToTable("AUDTRAIL");
 
             entity.Property(e => e.Tindex)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("TINDEX");
             entity.Property(e => e.Activity)
                 .HasMaxLength(50)

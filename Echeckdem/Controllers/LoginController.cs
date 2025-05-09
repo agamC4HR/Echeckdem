@@ -4,6 +4,7 @@ using Echeckdem.Models;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Echeckdem.CustomFolder;
+using Echeckdem.Handlers;
 
 namespace Echeckdem.Controllers
 {
@@ -11,15 +12,19 @@ namespace Echeckdem.Controllers
     {
         private readonly IUserService _loginService;
         private readonly IJwtService _jwtService;
-        public LoginController(IUserService loginService, IJwtService jwtService)
+        private readonly IAudtrail _audtrailService;
+        public LoginController(IUserService loginService, IJwtService jwtService, IAudtrail audtrail)
         {
             _loginService = loginService;
             _jwtService = jwtService;
+            _audtrailService = audtrail;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            await _audtrailService.AddAuditTrailAsync("Anonymous","Login","Login page viewed.");
+
             return View();
         }
 
@@ -29,8 +34,8 @@ namespace Echeckdem.Controllers
             if (ModelState.IsValid)
             {
                 var isValidUser = _loginService.IsValidUser(model.userID, model.password);
-
-                if (isValidUser)
+                var isValidUserhash= _loginService.IsValidUserhash(model.userID, model.password);
+                if (isValidUserhash)
                 {
                     // Retrieve user level and UNO
                     var userLevel = await _loginService.GetUserLevelAsync(model.userID);
@@ -42,22 +47,12 @@ namespace Echeckdem.Controllers
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
 
-                    //var locationTypes = await _loginService.GetUserLocationTypesAsync(uno);
-
-                    //bool allSitesAreSOrF = locationTypes.All(l => l == "S" || l == "F");
-
-                    //if (allSitesAreSOrF)
-                    //{
-                    //    return RedirectToAction("Index", "Home"); // Shows Home.cshtml
-                    //}
-                    //else
-                    //{
-                    //    return RedirectToAction("OtherView", "OtherController"); // Redirect elsewhere
-                    //}
-
+                    
                     if (userLevel == 2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
 
                     ViewBag.UserLevel = userLevel;
+
+                    await _audtrailService.AddAuditTrailAsync(model.userID,"Login","User logged in successfully.");
 
                     return RedirectToAction("Index", "Home");
 
@@ -65,6 +60,7 @@ namespace Echeckdem.Controllers
                 else
                 {
                     ViewBag.Message = "Incorrect login ID or password.";
+                    await _audtrailService.AddAuditTrailAsync(model.userID, "Login", "Failed login attempts with incorrect credentials.");
                     return View(model);
                 }
             }

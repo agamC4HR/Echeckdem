@@ -64,6 +64,18 @@ using Microsoft.EntityFrameworkCore;
             ViewBag.Organisations = new SelectList(organisations, "OID", "Oname");
             return View(model);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetUserAvailable(string userid)
+        {
+            var useravailable = await _EcheckContext.Ncusers.Where(u=>u.Userid.Trim()==userid.Trim()).FirstOrDefaultAsync();
+            return Content(useravailable == null ? "true" : "false");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetEmailAvailable(string email)
+        {
+            var emailavailable = await _EcheckContext.Ncusers.Where(u => u.Emailid.Trim() == email.Trim()).FirstOrDefaultAsync();
+            return Content(emailavailable == null ? "true" : "false");
+        }
 
         // ----------------EnD-------------------------------Adding Users/ Populating NCMLOC USERS---------------------------------------------------------------------------------------
         //------------------------START--------------------------Editing the data for user/ Editing NCMLOC------------------------------------------------------------------------------------------------

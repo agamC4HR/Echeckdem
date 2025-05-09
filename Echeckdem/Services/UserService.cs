@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using Microsoft.EntityFrameworkCore;
 using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Identity;
+using Echeckdem.CustomFolder;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Echeckdem.CustomFolder.UserManagement;
 
 namespace Echeckdem.Services
 {
@@ -11,6 +15,7 @@ namespace Echeckdem.Services
     {
 
         private readonly DbEcheckContext _dbEcheckContext;
+        private readonly PasswordHasher<Ncuser> _passwordHasher = new();
 
         public UserService(DbEcheckContext dbEcheckContext)
         {
@@ -23,7 +28,18 @@ namespace Echeckdem.Services
 
             return user != null;
         }
+        public bool IsValidUserhash(string Userid, string Password)
+        {
+            //var admin = _dbEcheckContext.Ncusers.FirstOrDefault(u => u.Userid == "admin");
+            //admin.HashPassword=_passwordHasher.HashPassword(admin, "123");
+            //_dbEcheckContext.SaveChanges();
+            var user = _dbEcheckContext.Ncusers.FirstOrDefault(u => u.Userid == Userid);
+            if (user == null) return false;
+            if(user.HashPassword==null) return false;
 
+            var result = _passwordHasher.VerifyHashedPassword(user, user.HashPassword, Password);
+            return result == PasswordVerificationResult.Success;
+        }
         public async Task<int> GetUserLevelAsync(string userId)
         {
             var user = await _dbEcheckContext.Ncusers

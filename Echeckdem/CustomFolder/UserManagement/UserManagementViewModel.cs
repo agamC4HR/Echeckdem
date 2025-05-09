@@ -8,6 +8,8 @@ namespace Echeckdem.CustomFolder.UserManagement
         public string UNAME { get; set; }
         public string EmailID { get; set; }
         public string UserLevel { get; set; }
+
+        public string Uactive { get; set; }
         public string OrganisationName { get; set; }
     }
 }
