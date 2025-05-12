@@ -15,7 +15,7 @@ namespace Echeckdem.CustomFolder
         public int ACID { get; set; }
         public string? ACTitle { get; set; }         // Read-only
         public string? ACDetail { get; set; }
-        public int? ACShow { get; set; }             // 0 = No, 1 = Yes
+        public int? ACShow { get; set; }             
         public string? ACStatus { get; set; }        // Read-only
         public DateOnly? ACRDate { get; set; }       // Read-only
         public string? ACRemarks { get; set; }
@@ -29,12 +29,12 @@ namespace Echeckdem.CustomFolder
 
         //NCACTAKEN
 
-        public int? ACTID { get; set; }  // nullable, because it may not exist yet
+        public int? ACTID { get; set; }  
         public string? ActionTaken { get; set; }
         public DateOnly? ActionDate { get; set; }
         public DateOnly? ActionClosedDate { get; set; }
-        public int? ShowClient { get; set; }  // 0 = No, 1 = Yes
-        public bool IsActTakenAvailable => ACTID.HasValue; // convenience property
+        public int? ShowClient { get; set; }
+        public bool IsActTakenAvailable => ACTID.HasValue; 
 
     }
 }

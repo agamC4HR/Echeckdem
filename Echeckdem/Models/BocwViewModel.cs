@@ -7,7 +7,7 @@ namespace Echeckdem.Models
     {
         public int TransactionID { get; set; }
         public string? Lcode { get; set; }
-        //public string? oid { get; set; }
+        public string? oid { get; set; }
         public string? Lname { get; set; }
 
 
@@ -25,6 +25,10 @@ namespace Echeckdem.Models
         public string? ScopeId { get; set; }
 
         //public string? ScopeName { get; set; }
+
+       // public IFormFile? UploadedFile { get; set; }
+
+        public string? Filename { get; set; }
 
         public string? Task {  get; set; }
 

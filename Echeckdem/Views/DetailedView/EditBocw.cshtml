@@ -131,6 +131,21 @@
             <input type="file" name="UploadedFile" class="form-control" />
         </div>
 
+      @*   @if (!string.IsNullOrEmpty(Model.Filename))
+        {
+            <div class="form-row">
+                <div class="form-field" style="flex: 1 1 100%;">
+                    <label>Currently Uploaded File:</label><br />
+                    <a href="@Url.Action("Open_file", "DetailsView", new { tp = "CONTR", nm = Model.Filename, oid = Model.oid })"
+                       target="_blank"
+                       class="view-pdf-link">
+                        View PDF in New Tab
+                    </a>
+                </div>
+            </div>
+        } *@
+
+
         <button type="submit" name="submitType" value="SaveNCACTION" class="btn btn-primary">Save NCACTION Info</button>
     </fieldset>
 

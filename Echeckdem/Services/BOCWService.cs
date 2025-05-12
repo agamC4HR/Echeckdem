@@ -1,9 +1,11 @@
 ﻿using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Echeckdem.CustomFolder;
 using Echeckdem.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
 
 
 namespace Echeckdem.Services
@@ -26,19 +28,43 @@ namespace Echeckdem.Services
 
             var currentYear = DateTime.Now.Year;
             var sqlQuery = @"
-                                SELECT a.lcode, a.lname, a.ProjectCode, a.ScopeID, a.DueDate, a.Status, a.Task, a.CreateDate, a.TransactionID,
-                                b.lstate, b.lcity, b.lregion,
-                                c.oname,                
-                                d.statedesc as State
+                            SELECT a.lcode, a.lname, a.ProjectCode, a.ScopeID, a.DueDate, a.Status, a.Task, a.CreateDate, a.TransactionID,
+                             b.lstate, b.lcity, b.lregion, b.oid,
+                            c.oname,
+                           d.statedesc AS State,
+                            f.FName AS Filename
 
-                                FROM ncbocw a
-                                JOIN ncmloc b ON a.lcode = b.lcode
-                                JOIN ncmorg c ON c.oid = b.oid
-                                JOIN MASTSTATES d ON b.lstate = d.stateid
-                                WHERE c.oactive = 1 
-                                
-                                AND a.lcode = b.lcode
-                                AND (a.status IS NULL OR a.status <> 99) ";
+                            FROM ncbocw a
+                            JOIN ncmloc b ON a.lcode = b.lcode
+                            JOIN ncmorg c ON c.oid = b.oid
+                            JOIN MASTSTATES d ON b.lstate = d.stateid
+                            LEFT JOIN ncaction ac ON ac.aclink = a.TransactionID
+                            LEFT JOIN (
+                            SELECT Oid, Flink, FName,
+                            ROW_NUMBER() OVER (PARTITION BY Flink ORDER BY Fupdate DESC) AS rn
+                            FROM NCFILES
+                            WHERE FName IS NOT NULL
+                            ) f ON f.Flink = ac.Acid AND f.Oid = b.oid AND f.rn = 1
+
+                            WHERE c.oactive = 1 
+                            AND (a.status IS NULL OR a.status <> 99)
+
+                                ";
+
+            //SELECT a.lcode, a.lname, a.ProjectCode, a.ScopeID, a.DueDate, a.Status, a.Task, a.CreateDate, a.TransactionID,
+            //                    b.lstate, b.lcity, b.lregion,
+            //                    c.oname,                
+            //                    d.statedesc as State
+
+            //                    FROM ncbocw a
+            //                    JOIN ncmloc b ON a.lcode = b.lcode
+            //                    JOIN ncmorg c ON c.oid = b.oid
+            //                    JOIN MASTSTATES d ON b.lstate = d.stateid
+            //                    WHERE c.oactive = 1
+
+
+            //                    AND a.lcode = b.lcode
+            //                    AND(a.status IS NULL OR a.status<> 99)
 
             if (string.IsNullOrEmpty(organizationName) &&
                 string.IsNullOrEmpty(LocationName) &&

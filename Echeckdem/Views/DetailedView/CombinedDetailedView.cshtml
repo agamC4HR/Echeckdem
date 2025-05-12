@@ -235,11 +235,11 @@
                 <td>@bocw.LCity</td>
                 <td>@bocw.State</td>
                 <td>@bocw.LRegion</td>
-                <td>SUSH SIR</td>
-                   @*  <td>
+                
+                    <td>
                         @if (!string.IsNullOrEmpty(bocw.Filename))
                         {
-                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "BOCW", nm = bocw.Filename, lcode = bocw.Lcode})"
+                            <a href="@Url.Action("Open_file", "DetailsView", new { tp = "BOCW", nm = bocw.Filename, oid = bocw.oid})"
                                target="_blank"
                                class="view-pdf-link">
                                 View FILE
@@ -249,7 +249,7 @@
                         {
                             <span>No file uploaded</span>
                         }
-                    </td> *@
+                    </td>
                     <td><a href="@Url.Action("EditBocw", "DetailsView", new {transactionID = bocw.TransactionID, lcode = bocw.Lcode })" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a></td>
 
 

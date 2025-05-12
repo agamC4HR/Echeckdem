@@ -171,6 +171,7 @@ namespace Echeckdem.Controllers
                     "REG" => Path.Combine("Files", oid, "REG"),
                     "CONTR" => Path.Combine("Files", oid, "CONTR"),  // Contributions folder
                     "RET" => Path.Combine("Files", oid, "RET"),
+                    "BOCW" => Path.Combine("Files", oid, "BOCW"),
 
                     _ => throw new ArgumentException("Invalid file type.")
                 };
@@ -219,6 +220,7 @@ namespace Echeckdem.Controllers
                 chqdate = nccontr.Chqdate,
                 Depdate = nccontr.Depdate,
                 Remarks = nccontr.Remarks,
+                Filename = nccontr.Filename,
                 // Map other properties as needed
             };
             return View("~/Views/DetailedView/EditContr.cshtml", contributionviewmodel);
@@ -257,6 +259,7 @@ namespace Echeckdem.Controllers
                Depdate = ncret.Depdate,
                LastDate = ncret.Lastdate,
                Remarks = ncret.Remarks,
+               Filename = ncret.Filename,
                  
             };
             return View("~/Views/DetailedView/EditRet.cshtml", returnviewmodel);
@@ -306,11 +309,7 @@ namespace Echeckdem.Controllers
                 {
                     _bocwService.UpdateOnlyNCACTION(model);
                 }
-                //else if (submitType == "SaveNCACTAKEN")
-                //{
-                //    // Add/Update NCACTAKEN details
-                //    _bocwService.AddOrUpdateNCACTAKEN(model);
-                //}
+              
 
                 TempData["SuccessMessage"] = "Record updated successfully.";
                 return RedirectToAction("EditBocw", new { transactionId = model.TransactionID, lcode = model.LCode });
