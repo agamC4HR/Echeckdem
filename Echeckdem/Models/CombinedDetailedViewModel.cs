@@ -1,4 +1,5 @@
-﻿using Echeckdem.CustomFolder.Dashboard.Registration;
+﻿using Echeckdem.CustomFolder;
+using Echeckdem.CustomFolder.Dashboard.Registration;
 
 namespace Echeckdem.Models
 {
@@ -7,8 +8,9 @@ namespace Echeckdem.Models
         public IEnumerable<RegistrationViewModel>? Registrations { get; set; }
         public IEnumerable<ContributionViewModel>? Contributions { get; set; }
         public IEnumerable<ReturnsViewModel>? Returns{ get; set; }
-
         public IEnumerable<BocwViewModel>? BOCW { get; set; }
+
+        
 
         //Filter Properties
 

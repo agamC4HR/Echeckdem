@@ -243,7 +243,16 @@ namespace Echeckdem.Services
                         return "Only PDF files are allowed.";
                     }
 
-                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "CONTR");
+                    string originalFileName = Path.GetFileName(file.FileName);
+                    string extension = Path.GetExtension(originalFileName);
+                    string nameWithoutExt = Path.GetFileNameWithoutExtension(originalFileName);
+                    if (originalFileName.Length > 50)
+                    {
+                        return "Filename too long. Must be 50 characters or fewer.";
+                    }
+
+
+                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "RET");
                     Directory.CreateDirectory(folderPath);
 
                     string filePath = Path.Combine(folderPath, file.FileName);

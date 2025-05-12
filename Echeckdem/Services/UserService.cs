@@ -30,8 +30,8 @@ namespace Echeckdem.Services
         }
         public bool IsValidUserhash(string Userid, string Password)
         {
-            //var admin = _dbEcheckContext.Ncusers.FirstOrDefault(u => u.Userid == "admin");
-            //admin.HashPassword=_passwordHasher.HashPassword(admin, "123");
+            //var admin = _dbEcheckContext.Ncusers.FirstOrDefault(u => u.Userid == "Agam");
+            //admin.HashPassword = _passwordHasher.HashPassword(admin, "123");
             //_dbEcheckContext.SaveChanges();
             var user = _dbEcheckContext.Ncusers.FirstOrDefault(u => u.Userid == Userid);
             if (user == null) return false;
