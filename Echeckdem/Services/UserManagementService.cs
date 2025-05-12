@@ -55,7 +55,7 @@ namespace Echeckdem.Services
         }
 
 
-        //------------------------START--------------------------Fetching Users list from NCMLOC---------------------------------------------------------------------------
+        //------------------------START--------------------------Fetching Users list from NCUSERS and their mapped oid---------------------------------------------------------------------------
         public async Task<List<UserManagementViewModel>> GetAllUsersAsync()
         {
             
@@ -88,8 +88,8 @@ namespace Echeckdem.Services
             return userViewModels;
         }
 
-        //------------------------END--------------------------Fetching Users list from NCMLOC---------------------------------------------------------------------------
-        //------------------------START--------------------------ADding Users/ Populating NCMLOC---------------------------------------------------------------------------
+        //------------------------END--------------------------Fetching Users list from NCUSERS and their mapped oid---------------------------------------------------------------------------
+        //------------------------START--------------------------ADding Users/ Populating NCUSER---------------------------------------------------------------------------
         public async Task AddUserAsync(UserCreateViewModel model)
         {
             var newUser = new Ncuser
@@ -114,7 +114,7 @@ namespace Echeckdem.Services
             await _EcheckContext.SaveChangesAsync();
         }
 
-        //------------------------END--------------------------Adding Users/ Populating NCMLOC-----------------------------------------------------------------------------
+        //------------------------END--------------------------Adding Users/ Populating NCUSER-----------------------------------------------------------------------------
         //------------------------START--------------------------USerlevel Names for NCUSER ------------------------------------------------------------------------------------------------
 
         private string GetUserLevelName(int level)
@@ -130,7 +130,7 @@ namespace Echeckdem.Services
             };
         }
         //------------------------END--------------------------USerlevel Names for NCUSER------------------------------------------------------------------------------------------------
-        //------------------------START--------------------------Editing the data for user/ Editing NCMLOC------------------------------------------------------------------------------------------------
+        //------------------------START--------------------------Editing the data for user/ Editing NCUSER------------------------------------------------------------------------------------------------
         public async Task<UserCreateViewModel> GetUserByIdAsync(string userId)
         {
             var user = await _EcheckContext.Ncusers.FindAsync(userId);
@@ -167,8 +167,8 @@ namespace Echeckdem.Services
                 await _EcheckContext.SaveChangesAsync();
             }
         }
-        //------------------------END--------------------------Editing the data for user/ Editing NCMLOC------------------------------------------------------------------------------------------------
-
+        //------------------------END--------------------------Editing the data for user/ Editing NCUSER------------------------------------------------------------------------------------------------
+        //---------------------START------------------------------Getting Organaistion LISt and location list from NCMORG and NCMLOC ------------------------
         public async Task<List<OrganisationViewModel>> GetAllOrganisationsAsync()
         {
             return await _EcheckContext.Ncmorgs
@@ -194,7 +194,8 @@ namespace Echeckdem.Services
 
             return locations;
         }
-
+        //---------------------END------------------------------Getting Organaistion LISt and location list from NCMORG and NCMLOC ------------------------
+        //_____________________START----------------------------userlevel all----------------------------------------------------------------------------------
         private string GetMappingUserLevelName(int level)
         {
             return level switch
@@ -211,8 +212,9 @@ namespace Echeckdem.Services
                 _ => "Unknown"
             };
         }
-
-        public async Task<List<UserMappingViewModel>> GetUserMappingAsync(string userId)
+        //_____________________END----------------------------userlevel all----------------------------------------------------------------------------------
+        //--------------------START------------------------------Get all Mappings for a userid--------------------------------------------------------------
+        public async Task<List<UserMappingViewModel>> GetUserMappingAsync(string userId)  //yeh ho
         {
             _logger.LogInformation("Starting GetUserMappingAsync for userId: {UserId}", userId);
             var user = await _EcheckContext.Ncusers.Where(u => u.Userid == userId).FirstOrDefaultAsync();
@@ -264,12 +266,13 @@ namespace Echeckdem.Services
 
 
             return mappings;
-
-
-
+            
         }
+        //--------------------END------------------------------Get all Mappings for a userid-------------------------------------------------------------
+        //--------------------START------------------------------Add mapping and storing in NCUMAP-------------------------------------------------------------
 
-        public async Task<UserMappingCreationDataViewModel> GetUserMappingCreationDataAsync(string userId)
+
+        public async Task<UserMappingCreationDataViewModel> GetUserMappingCreationDataAsync(string userId)  // yo h
         {
             var user = await _EcheckContext.Ncusers.Where(u => u.Userid == userId).FirstOrDefaultAsync();
 
@@ -302,6 +305,9 @@ namespace Echeckdem.Services
             _EcheckContext.Ncumaps.Add(newUserMap);
             await _EcheckContext.SaveChangesAsync();
         }
+
+        //--------------------END------------------------------Add mapping and storing in NCUMAP-------------------------------------------------------------
+
     }
 
 }

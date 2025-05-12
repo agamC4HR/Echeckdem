@@ -9,6 +9,7 @@
             <th>Organisation</th>
             <th>Location</th>
             <th>User Level</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody> 
@@ -17,7 +18,18 @@
             <tr>
                 <td>@mapping.OrganisationName</td>
                 <td>@mapping.LocationName</td>
-                <td>@mapping.UserLevel</td>
+                @* <td>@mapping.UserLevel</td> *@
+                <td>
+                    <form asp-action="EditUserMapping" asp-route-organisationName="@mapping.OrganisationName" asp-route-locationName="@mapping.LocationName" method="post">
+                        @Html.DropDownList("NewUserLevel", (List<SelectListItem>)ViewBag.UserLevelOptions, mapping.UserLevel, new { @class = "form-control" })
+                        <button type="submit" class="btn btn-sm btn-primary mt-2">Save</button>
+                    </form>
+                </td>
+                <td>
+                    <form asp-action="DeleteUserMapping" asp-route-organisationName="@mapping.OrganisationName" asp-route-locationName="@mapping.LocationName" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>
