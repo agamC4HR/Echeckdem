@@ -281,7 +281,8 @@
         <!-- Form for editing organisation info -->
         <div id="editForm" style="display:none">
            
-            <form asp-action="EditOrganisationInfo" method="post" enctype="multipart/form-data" class="Edit-OrganisationInfo-Form">
+            <form asp-action="EditOrganisationInfo" method="post" enctype="multipart/form-data" >
+                <div class="Edit-OrganisationInfo-Form">
                 <label>Oid</label>
                 <input type="text" name="oid" value="@Model.SelectedOrganisation?.oid" readonly />
 
@@ -306,16 +307,19 @@
                     <option value=0>No</option>
                 </select>
 
+                <label>Upload File</label>
+                <input type="file" name="PdfFile" accept=".pdf" />
+
                 <label>Contract Copy (optional)</label>
                 @if (!string.IsNullOrEmpty(Model.SelectedOrganisation?.FileName))
                 {
                     <a class="view-doc-button" target="_blank" href="@Url.Content($"~/Files/{Model.SelectedOrganisation?.oid}/Copies/{Model.SelectedOrganisation?.FileName}")">View Document</a>
                 }
-                <input type="file" name="PdfFile" accept=".pdf" />
-
-                <button type="submit">Save Changes</button>
-                <button type="button" onclick="cancelEdit()">Close</button>
-
+                </div>
+                <div style=" margin-left: 15px; margin-bottom: 10px;">
+                <button type="submit" class="saveButton">Save Changes</button>
+                <button type="button" class="saveButton" onclick="cancelEdit()">Close</button>
+                </div>
             </form>
         </div>
     </div>
@@ -360,6 +364,7 @@
 
     //Start of Working Of General INFO-------------------------
     function loadGeneralInfo() {
+        document.getElementById("editForm").style.display = "none";
         const oid = document.getElementById('organisationDropdown').value;
         if (!oid) {
             alert("Please select an organisation.");
@@ -405,6 +410,7 @@
 
     //Start of Working Of Add Location-------------------------
         function showUploadForm() {
+        document.getElementById("editForm").style.display = "none";
         const oid = document.getElementById("organisationDropdown").value;
         if (!oid) {
             alert("Organisation ID is not available. Please select a valid organisation.");
@@ -414,7 +420,10 @@
         const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
         document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
 
-            $("#orgDetailsBody").load(`/OrganisationSetup/upload?oid=${oid}`);
+        const orgDetailsBody = document.getElementById("orgDetailsBody");
+        orgDetailsBody.style.display = "grid";
+
+        $("#orgDetailsBody").load(`/OrganisationSetup/upload?oid=${oid}`);
                
         }
 
@@ -452,6 +461,7 @@
 
     //Start of Location data Form------------------------------
     function LocationDataForm() {
+        document.getElementById("editForm").style.display = "none";
         const oid = document.getElementById("organisationDropdown").value;
         console.log(oid + "oid in Location Data")
         if (!oid) {
@@ -473,6 +483,7 @@
         
     //Start of Working Of Add Location for BOCW sites-------------------------
     function showBOCWUploadForm() {
+        document.getElementById("editForm").style.display = "none";
         const oid = document.getElementById("organisationDropdown").value;
         if (!oid) {
             alert("Organisation ID is not available. Please select a valid organisation.");
@@ -482,12 +493,16 @@
         const selectedOrgName = document.querySelector('#organisationDropdown option:checked').textContent;
         document.getElementById("orgDetailsHeader").innerText = selectedOrgName;
 
+        const orgDetailsBody = document.getElementById("orgDetailsBody");
+        orgDetailsBody.style.display = "grid";
+
         $("#orgDetailsBody").load(`/OrganisationSetup/BOCWSiteSetup?oid=${oid}`);
     }
     // End of  Add Location for BOCW sites-----------------------------
 
      // Start of viewing BOCW DATA----------------------------------------------------
     function viewBOCWData() {
+        document.getElementById("editForm").style.display = "none";
         const oid = document.getElementById("organisationDropdown").value;
         if (!oid) {
             
