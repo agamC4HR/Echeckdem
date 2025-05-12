@@ -7,7 +7,16 @@
 }
 
 <style>
-    .modal-content{
+    .editLocationModal {
+        display: none;
+        position: relative;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 96vw;
+    }
+
+/*     .modal-content{
         position:absolute;
         top:278px;
         width:98vw;
@@ -19,7 +28,7 @@
         border: solid 2px red;
         border-top: 0;
         padding:10px
-    }
+    } */
     /* Form */
     .locationDataForm {
         display: grid;
@@ -137,7 +146,7 @@
 
 
 <!-- Edit Location Modal -->
-<div class="modal" id="editLocationModal" style="display:none; ">
+<div class="editLocationModal" id="editLocationModal" style="display:none; ">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
