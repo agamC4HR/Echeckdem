@@ -39,12 +39,14 @@ namespace Echeckdem.Models
             return Status switch
             {
 
-                0 => "Future",
-                1 => "Compliant",
-                2 => "Non Compliant",
-                3 => "Not IN Scope",
-                4 => "Not Applicable",
-                5 => "Under Process",
+                0 => "Docs/Info Awaited",
+                1 => "Under Processing",
+                2 => "A/F",
+                3 => "Received",
+                4 => "Done",
+                5 => "Not-Done",
+                -1 => "Action Awaited",
+                -2 => "Future",
                 _ => "Unknown"
             };
 
