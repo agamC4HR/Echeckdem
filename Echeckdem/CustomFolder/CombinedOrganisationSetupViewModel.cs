@@ -1,5 +1,6 @@
 ﻿using Echeckdem.Controllers;
 using Echeckdem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Echeckdem.CustomFolder
 {
@@ -9,6 +10,7 @@ namespace Echeckdem.CustomFolder
         public OrganisationGeneralInfoViewModel? SelectedOrganisation { get; set; }
 
         public List<AddLocationViewModel> AddLocation { get; set; } = new List<AddLocationViewModel>();
+        public List<SelectListItem>? SpocList { get; set; }
         //OrganisationsListViewModel
         public string oid { get; set; }
         public string Oname { get; set; }
@@ -17,7 +19,7 @@ namespace Echeckdem.CustomFolder
         public string Spoc { get; set; }
         public int TotalCount { get; set; }
 
-        //public string? FileName { get; set; } //////////////gefgrfesffedfgrfew///////////////////////
+       
         public int? styear { get; set; }
         public string? Contname { get; set; }
         public string? Contemail { get; set; }

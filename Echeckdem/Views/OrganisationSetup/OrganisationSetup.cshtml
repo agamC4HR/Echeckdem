@@ -253,9 +253,9 @@
 
         <div id="orgDetailsBody" class="org-details-body" style="display:none;">
             <p><strong>OID:</strong> @Model.SelectedOrganisation?.oid</p>
-            <p><strong>Name:</strong> @Model.SelectedOrganisation?.Oname</p>
-            <p><strong>SPOC:</strong> @Model.SelectedOrganisation?.Spoc</p>
-            <p><strong>SPOC Email:</strong> @Model.SelectedOrganisation?.spoc_eml</p>
+            <p><strong>Org Name:</strong> @Model.SelectedOrganisation?.Oname</p>
+            <p><strong>C4HR SPOC:</strong> @Model.SelectedOrganisation?.Spoc</p>
+            <p><strong>C4HR SPOC Email:</strong> @Model.SelectedOrganisation?.spoc_eml</p>
             <p><strong>Start Year:</strong> @Model.SelectedOrganisation?.styear</p>
             <p><strong>Contact Name:</strong> @Model.SelectedOrganisation?.Contname</p>
             <p><strong>Contact Email:</strong> @Model.SelectedOrganisation?.Contemail</p>
@@ -286,11 +286,20 @@
                 <label>Oid</label>
                 <input type="text" name="oid" value="@Model.SelectedOrganisation?.oid" readonly />
 
-                <label>Organization Name</label>
+                <label>Org Name</label>
                 <input type="text" name="Oname" value="@Model.SelectedOrganisation?.Oname" />
 
-                <label>SPOC</label>
-                <input type="text" name="Spoc" value="@Model.SelectedOrganisation?.Spoc" />
+                @* <label>C4HR SPOC</label>
+                <input type="text" name="Spoc" value="@Model.SelectedOrganisation?.Spoc" /> *@
+                    <label for="Spoc">C4HR SPOC:</label>
+                    <select id="Spoc" name="Spoc" style="font-size: 12px;border-color: #bbbbbb;border-radius: .375rem;">
+                        <option value="">-- Select SPOC --</option>
+                        @foreach (var item in Model.SpocList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+
 
                 <label>Start Year</label>
                 <input type="number" name="styear" value="@Model.SelectedOrganisation?.styear" />
