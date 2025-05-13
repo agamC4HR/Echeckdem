@@ -29,6 +29,7 @@ public partial class Ncbocw
 
     public int TransactionId { get; set; }
 
+    
     public DateOnly? CompletionDate { get; set; }
 
     public virtual Ncmloc LcodeNavigation { get; set; } = null!;
