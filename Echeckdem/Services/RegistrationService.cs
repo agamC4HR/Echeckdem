@@ -148,7 +148,7 @@ namespace Echeckdem.Services
             SELECT DISTINCT c.OName
             FROM NCUMAP m
             JOIN NCMORG c ON m.Oid = c.Oid
-            WHERE m.Uno = {0} AND c.OActive = 1";
+            WHERE m.Uno = {0} AND c.OActive = 1 "; 
 
             var organizationNames = await _context.Ncmorgs
            .FromSqlRaw(sqlQuery, uno)

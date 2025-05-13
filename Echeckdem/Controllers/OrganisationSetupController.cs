@@ -406,7 +406,7 @@ namespace Echeckdem.Controllers
                 // Add headers to the worksheet
 
                 string[] headers = {
-                "LocationName", "OvalId", "ClientName", "GeneralContractor(GC)", "ProjectAddress",
+                "SiteName", "OvalId", "ClientName", "GeneralContractor(GC)", "ProjectAddress",
                 "NatureofWork", "ProjectArea(in sq.ft)", "ProjectCost(est)", "ProjectStartDate(est)",
                 "ProjectEndDate(est)", "VendorCount", "WorkerHeadcount", "ProjectLead"
                 };

@@ -30,6 +30,8 @@ namespace Echeckdem.Models
 
         public string? Filename { get; set; }
 
+        public DateOnly? CompletionDate { get; set; }
+
         public string? Task {  get; set; }
 
                public string GetStatusDescription()
