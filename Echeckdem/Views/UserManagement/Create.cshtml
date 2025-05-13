@@ -1,13 +1,51 @@
 ﻿@model Echeckdem.CustomFolder.UserManagement.UserCreateViewModel
 
+@{
+    ViewData["Title"] = "Create New User";
+    ViewData["Heading"] = "Create New User";
+    ViewData["Heading_child"] = "...";
+}
 
-<h2>Create New User</h2>
+<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
 
-<form method="post">
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 12px;
+        }
+
+    .form-control {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: .375rem;
+        outline: none;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+    .exist-msg{
+        color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="table-container-detailsView" style="top:45px;">
+    <form method="post" style="padding:15px;">
     <div class="form-group">
         <label for="UserID">UserID</label>
         <input type="text" class="form-control" id="UserID" name="UserID" onblur="checkUserId()" required />
-        <span id="userid-msg" style="color: red;"></span>
+        <span id="userid-msg" class="exist-msg"></span>
     </div>
     <div class="form-group">
         <label for="UNAME">Full Name</label>
@@ -21,7 +59,7 @@
     <div class="form-group">
         <label for="EmailID">Email</label>
         <input type="email" class="form-control" id="EmailID" name="EmailID" onblur="checkEmail()"  required />
-        <span id="email-msg" style="color: red;"></span>
+            <span id="email-msg" class="exist-msg"></span>
     </div>
     <div class="form-group">
         <label for="UserLevel">User Level</label>
@@ -45,54 +83,65 @@
             }
         </select>
     </div>
-    <button type="submit" class="btn btn-primary" id="createuser" name="createuser" disabled="false">Create User</button>
+    <button type="submit" class="saveButton" id="createuser" name="createuser" disabled="false">Create User</button>
 </form>
+</div>
 <script type="text/javascript">
     let isUserIdValid = false;
     let isEmailValid = false;
-        function checkUserId() {
+
+    function checkUserId() {
         var userid = $('#UserID').val().trim();
-        if (userid) {
-            $.ajax({
-                url: '/UserManagement/GetUserAvailable',
-                type: 'GET',
-                data: { userid: userid },
-                success: function (response) {
-                    if (response === 'true') {
-                        $('#userid-msg').text('Available');
-                        $('#userid-msg').css('color', 'green');
-                        isUserIdValid = true;
-                    } else {
-                        $('#userid-msg').text('User ID already exists');
-                        $('#userid-msg').css('color', 'red');
-                        isUserIdValid = false;
-                    }
-                     toggleCreateButton();
-                }
-            });
+
+        if (!userid) {
+            $('#userid-msg').text('');
+            isUserIdValid = false;
+            toggleCreateButton();
+            return;
         }
+
+        $.ajax({
+            url: '/UserManagement/GetUserAvailable',
+            type: 'GET',
+            data: { userid: userid },
+            success: function (response) {
+                if (response === 'true') {
+                    $('#userid-msg').text('Available').css('color', 'green');
+                    isUserIdValid = true;
+                } else {
+                    $('#userid-msg').text('User ID already exists').css('color', 'red');
+                    isUserIdValid = false;
+                }
+                toggleCreateButton();
+            }
+        });
     }
 
     function checkEmail() {
         var email = $('#EmailID').val().trim();
-        if (email) {
-            $.ajax({
-                url: '/UserManagement/GetEmailAvailable',
-                type: 'GET',
-                data: { email: email },
-                success: function (response) {
-                    if (response === 'true') {
-                        $('#email-msg').text('Available');
-                        $('#email-msg').css('color', 'green');
-                         isEmailValid = true;   
-                    } else {
-                        $('#email-msg').text('Email already exists');
-                        $('#email-msg').css('color', 'red');
-                    }
-                     toggleCreateButton();
-                }
-            });
+
+        if (!email) {
+            $('#email-msg').text('');
+            isEmailValid = false;
+            toggleCreateButton();
+            return;
         }
+
+        $.ajax({
+            url: '/UserManagement/GetEmailAvailable',
+            type: 'GET',
+            data: { email: email },
+            success: function (response) {
+                if (response === 'true') {
+                    $('#email-msg').text('Available').css('color', 'green');
+                    isEmailValid = true;
+                } else {
+                    $('#email-msg').text('Email already exists').css('color', 'red');
+                    isEmailValid = false;
+                }
+                toggleCreateButton();
+            }
+        });
     }
 
     function toggleCreateButton() {
@@ -102,5 +151,4 @@
             $('#createuser').prop('disabled', true);
         }
     }
-
 </script>

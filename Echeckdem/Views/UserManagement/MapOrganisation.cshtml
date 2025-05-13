@@ -1,11 +1,15 @@
 ﻿@model IEnumerable<Echeckdem.CustomFolder.UserManagement.UserMappingViewModel>
 
+@{
+    ViewData["Title"] = "Mapped Organisations";
+    ViewData["Heading"] = $"Mapped Organisations for User: {ViewBag.UserId}";
+    ViewData["Heading_child"] = "...";
+}
 
-<h2>Mapped Organisations for User: @ViewBag.UserId</h2>
-
-<table class="table">
-    <thead>
-        <tr>
+<div class="table-container-detailsView">
+    <table class="styled-table">
+        <thead style="top:75px;">
+            <tr>
             <th>Organisation</th>
             <th>Location</th>
             <th>User Level</th>
@@ -34,5 +38,7 @@
         }
     </tbody>
 </table>
+    <a href="@Url.Action("Index")" class="saveButton" style="width:150px; margin-bottom:10px;">Back to User List</a>
+</div>
 
-<a href="@Url.Action("Index")" class="btn btn-secondary">Back to User List</a>
+

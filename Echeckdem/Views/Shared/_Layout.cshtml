@@ -156,6 +156,12 @@
                             Back to Tracker
                         </button>
                     }
+                 @*    @if (ViewData["Title"]?.ToString() == "User List")
+                    {
+                        <button type="button" class="table-add-btn" onclick="location.href='@Url.Action("Create")'">
+                            Add New User
+                        </button>
+                    } *@
 
                 </div>
                 </div>
@@ -163,7 +169,7 @@
         <div class="main_child">
             @if (
                @*  ViewData["Title"]?.ToString() == "Organisation List" ||  *@
-            ViewData["Title"]?.ToString() == "BOCW Scope Setup" || ViewData["Title"]?.ToString() == "Track Scope Setup")
+            ViewData["Title"]?.ToString() == "BOCW Scope Setup" || ViewData["Title"]?.ToString() == "Track Scope Setup" || ViewData["Title"]?.ToString() == "User List")
             {
                 <div class="table-heading-container">
                     @RenderSection("TableHeadingContent", required: false)
