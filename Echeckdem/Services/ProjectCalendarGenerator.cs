@@ -77,7 +77,7 @@ namespace Echeckdem.Services
             //logcomm.Parameters.AddWithValue("@acstatus", status);
             DateTime acitdate;
             string astatus=string.Empty;
-            if (status == 0)
+            if (status == -1)
             {
                 acitdate = DateTime.Now;
                 astatus = "O";
@@ -104,7 +104,7 @@ namespace Echeckdem.Services
                 ? ProjectStartDate.AddDays(offset)
                 : ProjectEndDate.AddDays(offset);
             var scopename = _context.BocwScopes.Where(x => x.ScopeId == scopeid).Select(x => x.ScopeName).FirstOrDefault();
-            int status = duedate <= DateTime.Now ? 0 : 2;
+            int status = duedate <= DateTime.Now ? -1 : -2;
             if (scopename != null)
                 return await insertquery(scopeid, duedate, status, scopename);
             else return $"Scope Name not found for {scopeid}";
@@ -121,7 +121,7 @@ namespace Echeckdem.Services
                 while (auditMonth <= endMonth)
                 {
                     DateTime duedate = new DateTime(auditMonth.Year, auditMonth.Month, 1).AddMonths(2).AddDays(9);
-                    int status = duedate <= DateTime.Now ? 0 : 2;
+                    int status = duedate <= DateTime.Now ? -1 : -2;
                     string inserting = await insertquery(scopeid, duedate, status, $"Vendor Audit for {auditMonth.ToString("MMMM")},{auditMonth.Year.ToString()}");
                    // Console.WriteLine(inserting);
                     retstring = retstring + "\n" + inserting;
@@ -146,7 +146,7 @@ namespace Echeckdem.Services
             if (startyear == endyear)
             {
                 DateTime duedate=GetCappedFinalDueDate(ProjectEndDate);
-                int status = duedate <= DateTime.Now ? 0 : 2;
+                int status = duedate <= DateTime.Now ? -1 : -2;
                 var scopename = _context.BocwScopes.Where(x => x.ScopeId == scopeid).Select(x => x.ScopeName).FirstOrDefault();
                 retstring=await insertquery(scopeid, duedate, status, $"{scopename} For Project Ending {startyear}");
                 return retstring;
@@ -155,7 +155,7 @@ namespace Echeckdem.Services
             if (startyear < endyear+1 && (monthdiff>=12 || monthdiff<12))
             { 
                 DateTime firstduedate = new DateTime(endyear, 1, 31);
-                int status = firstduedate <= DateTime.Now ? 2 : 0;
+                int status = firstduedate <= DateTime.Now ? -1 : -2;
                 var scopename = _context.BocwScopes.Where(x => x.ScopeId == scopeid).Select(x => x.ScopeName).FirstOrDefault();
                 retstring = await insertquery(scopeid, firstduedate, status, $"{scopename} For CY Ending {startyear}");
                 DateTime finalduedate = GetCappedFinalDueDate(ProjectEndDate);
@@ -171,12 +171,12 @@ namespace Echeckdem.Services
                     DateTime duedate = new DateTime(year + 1, 1, 31);
                     if (duedate > ProjectStartDate && duedate < ProjectEndDate)
                     {
-                        int status = duedate <= DateTime.Now ? 2 : 0;
+                        int status = duedate <= DateTime.Now ? -1 : -2;
                         retstring = retstring + "\n" + await insertquery(scopeid, duedate, status, $"{scopename} For CY Ending {year}");
                     }
                 }
                 DateTime finalduedate = ProjectEndDate.AddMonths(1);
-                int statuss = finalduedate <= DateTime.Now ? 2 : 0;
+                int statuss = finalduedate <= DateTime.Now ? -1 : -2;
                 retstring = retstring + "\n" + await insertquery(scopeid, finalduedate, statuss, $"{scopename} For Project Ending {ProjectEndDate.ToShortDateString()}");
                 return retstring;
             }
@@ -218,7 +218,7 @@ namespace Echeckdem.Services
 
                 if (duedate > ProjectStartDate && duedate < ProjectEndDate)
                 {
-                    status = duedate <= DateTime.Now ? 0 : 2;
+                    status = duedate <= DateTime.Now ? -1 : -2;
                     retstring = retstring + "\n" + await insertquery(scopeid, duedate, status, task);
                 }
 
@@ -226,7 +226,7 @@ namespace Echeckdem.Services
             }
 
             DateTime finalduedate = ProjectEndDate.AddMonths(1);
-            status = finalduedate <= DateTime.Now ? 0 : 2;
+            status = finalduedate <= DateTime.Now ? -1 : -2;
             retstring = retstring + "\n" + await insertquery(scopeid, finalduedate, status, $"CLRA License return for Project Ending on {ProjectEndDate.ToShortDateString()}");
 
 
