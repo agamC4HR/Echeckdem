@@ -4,5 +4,84 @@
 @{
     ViewData["Title"] = "Project Detail";
     ViewData["Heading"] = "Project Detail";
-    ViewData["Heading_child"] = "<b>Site Name:</b";
+    
+   
 }
+<div class="table-heading-container">
+
+    <!-- Search bar -->
+    <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
+
+    <!-- Outer-Filter button -->
+    <div class="table-filter-buttons">
+       <select>
+           <option value="">
+               Select a Client</option>
+      </select>
+       <select>
+           
+           <option value="">
+               Select a Site</option>
+      </select>
+    </div>
+</div>
+<div class="table-container-detailsView">
+    <table class="styled-table">
+        <thead>
+            <tr><th colspan="11" class="table-header">Select a Client and Project</th>
+                </tr>
+        </thead>
+        <thead>
+            <tr>
+                <th>Site Name:</th><td></td>
+                <th>State:</th><td></td>
+                <th>City:</th><td></td>
+                <th>Project Client</th><td></td>
+                <th colspan="2">Project General Contractor</th><td></td>
+            </tr>
+            <tr>
+                <th colspan="2">Construction Start Date:</th><td></td>
+                <th>Construction End Date:</th><td></td>
+                <th>Project Area:</th><td></td>
+                <th>Project Cost:</th><td></td>
+                <th>Project Manager</th><td></td>
+            </tr>
+            </thead>
+        </table>
+    <table class="styled-table">
+        <thead>
+            <tr><th class="text-center" colspan="11" class="table-header">Compliance Activity</th></tr>
+            <tr>
+                <th>S.No.</th>
+                
+                
+                <th>Service Type</th>
+                <th>Service</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Completion Date</th>
+                
+                <th colspan="2">File</th>
+                <th>Edit</th>
+                @* <th>Form</th> *@
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <thead style="top:75px;">
+            <tr><th class="text-center" colspan="11" class="table-header">On-Going Activites</th></tr>
+        <tr>
+           <th>Tracker For</th>
+            
+            
+            <th>Inspection Notice</th>
+            <th>Title</th>
+            <th>Detail of Issue</th>
+            <th>Status</th>
+            <th>Start Date</th>
+            <th>Close Date</th>
+            <th>SLA</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+     </table>
+</div>
