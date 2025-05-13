@@ -72,7 +72,7 @@ namespace Echeckdem.Controllers
                 ViewType = viewType,
                 Registrations = registrations
             };
-
+            ViewBag.ViewType = viewType;
             // Pass the model to the view
             return View(model);
         }

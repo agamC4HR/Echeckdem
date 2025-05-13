@@ -1,4 +1,5 @@
-﻿@*
+﻿@model Echeckdem.CustomFolder.ProjectBocw.ProjectBocwViewModel
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -14,15 +15,20 @@
 
     <!-- Outer-Filter button -->
     <div class="table-filter-buttons">
-       <select>
+      @*  <select>
            <option value="">
                Select a Client</option>
-      </select>
-       <select>
-           
-           <option value="">
-               Select a Site</option>
-      </select>
+      </select> *@
+        <select id="clientDropdown" onchange="populateSites()">
+            <option value="">Select a Client</option>
+            @foreach (var client in Model.Clients)
+            {
+                <option value="@client">@client</option>
+            }
+        </select>
+        <select id="siteDropdown">
+            <option value="">Select a Site</option>
+        </select>
     </div>
 </div>
 <div class="table-container-detailsView">
@@ -33,19 +39,30 @@
         </thead>
         <thead>
             <tr>
-                <th>Site Name:</th><td></td>
-                <th>State:</th><td></td>
-                <th>City:</th><td></td>
-                <th>Project Client</th><td></td>
-                <th colspan="2">Project General Contractor</th><td></td>
+                <th>Site Name:</th>
+                <td data-id="SiteName"></td>
+                <th>State:</th>
+                <td data-id="State"></td>
+                <th>City:</th>
+                <td data-id="City"></td>
+                <th>Project Client</th>
+                <td data-id="ClientName"></td>
+                <th colspan="2">Project General Contractor</th>
+                <td data-id="GeneralContractor"></td>
             </tr>
             <tr>
-                <th colspan="2">Construction Start Date:</th><td></td>
-                <th>Construction End Date:</th><td></td>
-                <th>Project Area:</th><td></td>
-                <th>Project Cost:</th><td></td>
-                <th>Project Manager</th><td></td>
+                <th colspan="2">Construction Start Date:</th>
+                <td data-id="ProjectStartDate"></td>
+                <th>Construction End Date:</th>
+                <td data-id="ProjectEndDate"></td>
+                <th>Project Area:</th>
+                <td data-id="ProjectArea"></td>
+                <th>Project Cost:</th>
+                <td data-id="ProjectCost"></td>
+                <th>Project Manager</th>
+                <td data-id="ProjectLead"></td>
             </tr>
+
             </thead>
         </table>
     <table class="styled-table">
@@ -63,7 +80,7 @@
                 
                 <th colspan="2">File</th>
                 <th>Edit</th>
-                @* <th>Form</th> *@
+                
             </tr>
         </thead>
         <tbody></tbody>
@@ -85,3 +102,48 @@
     </thead>
      </table>
 </div>
+
+@section Scripts {
+    <script>
+        const clientSiteMap = @Html.Raw(Json.Serialize(Model.ClientSiteMap));
+
+        function populateSites() {
+            const client = document.getElementById('clientDropdown').value;
+            const siteDropdown = document.getElementById('siteDropdown');
+            siteDropdown.innerHTML = '<option value="">Select a Site</option>';
+
+            if (clientSiteMap[client]) {
+                clientSiteMap[client].forEach(site => {
+                    siteDropdown.innerHTML += `<option value="${site}">${site}</option>`;
+                });
+            }
+        }
+
+        document.getElementById('siteDropdown').addEventListener('change', function () {
+            const client = document.getElementById('clientDropdown').value;
+            const site = this.value;
+
+            if (client && site) {
+                fetch(`/Project/GetProjectDetails?client=${encodeURIComponent(client)}&site=${encodeURIComponent(site)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data) return;
+
+                        const rows = document.querySelectorAll('.styled-table tbody tr');
+
+                        document.querySelector('td[data-id="SiteName"]').innerText = data.siteName || '';
+                        document.querySelector('td[data-id="State"]').innerText = data.state || '';
+                        document.querySelector('td[data-id="City"]').innerText = data.city || '';
+                        document.querySelector('td[data-id="ClientName"]').innerText = data.clientName || '';
+                        document.querySelector('td[data-id="GeneralContractor"]').innerText = data.generalContractor || '';
+                        document.querySelector('td[data-id="ProjectStartDate"]').innerText = data.projectStartDate || '';
+                        document.querySelector('td[data-id="ProjectEndDate"]').innerText = data.projectEndDate || '';
+                        document.querySelector('td[data-id="ProjectArea"]').innerText = data.projectArea || '';
+                        document.querySelector('td[data-id="ProjectCost"]').innerText = data.projectCost || '';
+                        document.querySelector('td[data-id="ProjectLead"]').innerText = data.projectLead || '';
+                    });
+            }
+        });
+    </script>
+
+}
