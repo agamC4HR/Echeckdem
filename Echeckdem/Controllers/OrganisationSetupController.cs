@@ -135,7 +135,7 @@ namespace Echeckdem.Controllers
             var boolValues = new List<string> { "Yes", "No" };
 
             // Create a new Excel package
-            using (var package = new ExcelPackage())
+            using (var package = new ExcelPackage()) //
             {
                 // Add a worksheet
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
@@ -406,7 +406,7 @@ namespace Echeckdem.Controllers
                 // Add headers to the worksheet
 
                 string[] headers = {
-                "LocationName", "OvalId", "ClientName", "GeneralContractor(GC)", "ProjectAddress",
+                "SiteName", "OvalId", "ClientName", "GeneralContractor(GC)", "ProjectAddress",
                 "NatureofWork", "ProjectArea(in sq.ft)", "ProjectCost(est)", "ProjectStartDate(est)",
                 "ProjectEndDate(est)", "VendorCount", "WorkerHeadcount", "ProjectLead"
                 };

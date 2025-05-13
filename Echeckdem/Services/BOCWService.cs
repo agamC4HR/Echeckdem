@@ -28,7 +28,7 @@ namespace Echeckdem.Services
 
             var currentYear = DateTime.Now.Year;
             var sqlQuery = @"
-                            SELECT a.lcode, a.lname, a.ProjectCode, a.ScopeID, a.DueDate, a.Status, a.Task, a.CreateDate, a.TransactionID,
+                            SELECT a.lcode, a.lname, a.ProjectCode, a.ScopeID, a.DueDate, a.Status, a.Task, a.CreateDate, a.TransactionID, a.CompletionDate,
                              b.lstate, b.lcity, b.lregion, b.oid,
                             c.oname,
                            d.statedesc AS State,
@@ -51,20 +51,7 @@ namespace Echeckdem.Services
 
                                 ";
 
-            //SELECT a.lcode, a.lname, a.ProjectCode, a.ScopeID, a.DueDate, a.Status, a.Task, a.CreateDate, a.TransactionID,
-            //                    b.lstate, b.lcity, b.lregion,
-            //                    c.oname,                
-            //                    d.statedesc as State
-
-            //                    FROM ncbocw a
-            //                    JOIN ncmloc b ON a.lcode = b.lcode
-            //                    JOIN ncmorg c ON c.oid = b.oid
-            //                    JOIN MASTSTATES d ON b.lstate = d.stateid
-            //                    WHERE c.oactive = 1
-
-
-            //                    AND a.lcode = b.lcode
-            //                    AND(a.status IS NULL OR a.status<> 99)
+           
 
             if (string.IsNullOrEmpty(organizationName) &&
                 string.IsNullOrEmpty(LocationName) &&
@@ -291,175 +278,7 @@ namespace Echeckdem.Services
             _context.SaveChanges();
         }
 
-        //public void UpdateOnlyNCACTION(BOCWEditViewModel model)  
-        //{
-        //    var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
-        //    if (action != null)
-        //    {
-        //        action.Acdetail = model.ACDetail;
-        //        action.Acshow = model.ACShow;
-        //        action.Acremarks = model.ACRemarks;
-        //        action.Acidate = model.ACIDate;
-
-        //        // Insert into NCACTAKEN if not exists
-        //        var alreadyExists = _context.Ncactakens.Any(x => x.Acid == model.ACID);
-        //        if (!alreadyExists)
-        //        {
-        //            // Get UNO from session
-        //            var httpContext = _httpContextAccessor.HttpContext;
-        //            var uno = httpContext?.Session.GetInt32("UNO");
-
-        //            if (uno == null)
-        //            {
-        //                throw new InvalidOperationException("UNO not found in session.");
-        //            }
-
-        //            var actionTaken = new Ncactaken
-        //            {
-        //                Acid = model.ACID,
-        //                Uno = uno,
-        //                Showclient = model.ACShow
-        //            };
-
-        //            _context.Ncactakens.Add(actionTaken);
-        //        }
-        //    }
-
-        //    if (model.UploadedFile != null)
-        //    {
-        //        var file = model.UploadedFile;
-
-        //        if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
-        //        {
-        //            throw new InvalidOperationException("Only PDF files are allowed.");
-        //        }
-
-        //        var oid = action?.Oid;
-        //        string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
-        //        Directory.CreateDirectory(folderPath);
-
-        //        string fileName = Path.GetFileName(file.FileName);
-        //        string filePath = Path.Combine(folderPath, fileName);
-
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            file.CopyTo(stream);
-        //        }
-
-        //        var ncFile = new Ncfile
-        //        {
-        //            Oid = oid,
-        //            Flink = action.Acid,
-        //            Fname = fileName,
-        //            Fupdate = DateOnly.FromDateTime(DateTime.Today)
-        //        };
-
-        //        _context.Ncfiles.Add(ncFile);
-        //    }
-
-        //    _context.SaveChanges();
-        //}
-
-        //public void UpdateOnlyNCACTION(BOCWEditViewModel model)                  // good h yeh wala
-        //{
-        //    var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
-        //    if (action != null)
-        //    {
-        //        action.Acdetail = model.ACDetail;
-        //        action.Acshow = model.ACShow;
-        //        action.Acremarks = model.ACRemarks;
-        //        action.Acidate = model.ACIDate;
-        //    }
-
-        //    if (model.UploadedFile != null)
-        //    {
-        //        var file = model.UploadedFile;
-
-        //        if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
-        //        {
-        //            throw new InvalidOperationException("Only PDF files are allowed.");
-        //        }
-
-        //        var oid = action?.Oid;
-        //        string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
-        //        Directory.CreateDirectory(folderPath);
-
-        //        string fileName = Path.GetFileName(file.FileName);
-        //        string filePath = Path.Combine(folderPath, fileName);
-
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            file.CopyTo(stream);
-        //        }
-
-        //        var ncFile = new Ncfile
-        //        {
-        //            Oid = oid,
-        //            Flink = action.Acid,
-        //            Fname = fileName,
-        //            Fupdate = DateOnly.FromDateTime(DateTime.Today)
-        //        };
-
-        //        _context.Ncfiles.Add(ncFile);
-        //    }
-
-        //    _context.SaveChanges();
-        //}
-
-        //public void UpdateData(BOCWEditViewModel model)
-        //{
-        //    var bocw = _context.Ncbocws.FirstOrDefault(x => x.Lcode == model.LCode && x.TransactionId == model.TransactionID);
-        //    var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);
-
-        //    if (bocw != null)
-        //    {
-        //        bocw.DueDate = model.DueDate;
-        //        bocw.Status = model.Status;
-        //        bocw.CompletionDate = model.CompletionDate;
-        //    }
-
-        //    if (action != null)
-        //    {
-        //        action.Acdetail = model.ACDetail;
-        //        action.Acshow = model.ACShow;
-        //        action.Acremarks = model.ACRemarks;
-        //        action.Acidate = model.ACIDate;
-        //    }
-
-        //    if (model.UploadedFile != null && action != null)
-        //    {
-        //        var file = model.UploadedFile;
-
-        //        if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
-        //        {
-        //            throw new InvalidOperationException("Only PDF files are allowed.");
-        //        }
-
-        //        var oid = action.Oid;
-        //        string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid.ToString(), "Bocw");
-        //        Directory.CreateDirectory(folderPath);
-
-        //        string fileName = Path.GetFileName(file.FileName);
-        //        string filePath = Path.Combine(folderPath, fileName);
-
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            file.CopyTo(stream);
-        //        }
-
-        //        var ncFile = new Ncfile
-        //        {
-        //            Oid = oid,
-        //            Flink = action.Acid,
-        //            Fname = fileName,
-        //            Fupdate = DateOnly.FromDateTime(DateTime.Today)
-        //        };
-
-        //        _context.Ncfiles.Add(ncFile);
-        //    }
-
-        //    _context.SaveChanges(); // MANDATORY
-        //}
+       
     }
 
 

@@ -162,7 +162,8 @@ namespace Echeckdem.Services
             return new CombinedOrganisationSetupViewModel
             {
                 OrganisationsList = organisationsList,
-                SelectedOrganisation = selectedOrganisation
+                SelectedOrganisation = selectedOrganisation,
+                SpocList = await GetC4HRSPOCListAsync()
             };
         }
         public async Task<bool> UpdateOrganisationInfoAsync(OrganisationGeneralInfoViewModel updatedInfo)                           // update the details in general info 
@@ -175,9 +176,15 @@ namespace Echeckdem.Services
                 return false;
             }
 
+            var spocEmail = await _EcheckContext.Ncusers
+            .Where(u => u.Oid == "C4HR" && u.Uname == updatedInfo.Spoc)
+            .Select(u => u.Emailid)
+            .FirstOrDefaultAsync();
+
             // Update the fields, allowing null values
             organisation.Oname = updatedInfo.Oname;
             organisation.Spoc = updatedInfo.Spoc;
+            organisation.SpocEml = spocEmail;
             organisation.Styear = updatedInfo.styear;
             organisation.Contname = updatedInfo.Contname;
             organisation.Contemail = updatedInfo.Contemail;
@@ -188,7 +195,7 @@ namespace Echeckdem.Services
 
             if (updatedInfo.PdfFile != null && updatedInfo.PdfFile.Length > 0)
             {
-                string copiesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", updatedInfo.oid, "Copies");
+                string copiesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", updatedInfo.oid, "Copies"); 
 
                 if (!Directory.Exists(copiesFolder))
                 {
