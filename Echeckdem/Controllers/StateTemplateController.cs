@@ -1,4 +1,5 @@
 ﻿using Echeckdem.CustomFolder;
+using Echeckdem.Models;
 using Echeckdem.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +8,11 @@ namespace Echeckdem.Controllers
     public class StateTemplateController : Controller
     {
         private readonly IStateTemplateService _templateService;
-
-        public StateTemplateController(IStateTemplateService templateService)
+        private readonly DbEcheckContext _dbEcheckContext;
+        public StateTemplateController(IStateTemplateService templateService,DbEcheckContext dbEcheckContext)
         {
             _templateService = templateService;
+            _dbEcheckContext = dbEcheckContext;
         }
 
         public async Task<IActionResult> Index()
@@ -25,6 +27,12 @@ namespace Echeckdem.Controllers
         {
             var templates = await _templateService.GetTemplatesByStateAsync(id);
             ViewBag.StateId = id;
+ 
+            var stateName = (from k in _dbEcheckContext.Maststates
+                             where k.Stateid.Trim() == id.Trim()
+                             select k.Statedesc).FirstOrDefault();
+
+            ViewBag.StateName = stateName;
             return View(templates);
         }
 
@@ -32,10 +40,15 @@ namespace Echeckdem.Controllers
         {
             if (id == null)
             {
-                return View(new StateTemplateViewModel { CState = stateId });
+             
+              var StateName = (from k in _dbEcheckContext.Maststates where k.Stateid.Trim() == stateId.Trim() select k.Statedesc).FirstOrDefault();
+                return View(new StateTemplateViewModel { CState = stateId, StateName=StateName, Cid=0 });
             }
 
             var template = await _templateService.GetTemplateByIdAsync(id.Value);
+
+         
+
             return View(template);
         }
 
@@ -63,20 +76,28 @@ namespace Echeckdem.Controllers
         {
             var templates = await _templateService.GetTemplateRetByStateAsync(id);
             ViewBag.StateId = id;
+
+            var stateName = (from k in _dbEcheckContext.Maststates
+                             where k.Stateid.Trim() == id.Trim()
+                             select k.Statedesc).FirstOrDefault();
+
+            ViewBag.StateName = stateName;
             return View(templates);
         }
 
         public async Task<IActionResult> EditRet(int? id, string stateId)
-        {
+            {
             if (id == null)
             {
-                return PartialView("_EditRetPartial", new StateTemplateRetViewModel { Rstate = stateId });
+                var StateName = (from k in _dbEcheckContext.Maststates where k.Stateid.Trim() == stateId.Trim() select k.Statedesc).FirstOrDefault();
+
+                return View(new StateTemplateRetViewModel { Rstate = stateId, StateName = StateName, Rcode = 0 });
             }
 
             var template = await _templateService.GetTemplateRetByIdAsync(id.Value);
 
-            return PartialView("_EditRetPartial", template); // return View(template);
-        }           
+            return View(template); 
+        }
 
         [HttpPost]
         public async Task<IActionResult> EditRet(StateTemplateRetViewModel entry)
@@ -84,11 +105,11 @@ namespace Echeckdem.Controllers
             if (ModelState.IsValid)
             {
                 await _templateService.AddOrUpdateTemplateRetAsync(entry);
-                return Ok();
-               // return RedirectToAction("DetailsRet", new { id = entry.Rstate });
+                //return Ok();
+               return RedirectToAction("DetailsRet", new { id = entry.Rstate });
             }
 
-            return PartialView("_EditRetPartial", entry);
+            return View(entry);
         }
 
         public async Task<IActionResult> DeleteRet(int id, string stateId)

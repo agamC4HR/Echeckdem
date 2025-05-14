@@ -162,20 +162,26 @@
                             Back to Tracker
                         </button>
                     }
-                 @*    @if (ViewData["Title"]?.ToString() == "User List")
+                    @if (ViewData["Title"]?.ToString() == "Templates for State")
                     {
-                        <button type="button" class="table-add-btn" onclick="location.href='@Url.Action("Create")'">
-                            Add New User
+                        <button type="button" class="table-add-btn" id="addTemplateBtn">
+                            Add New Template
                         </button>
-                    } *@
+                    }
 
+                    @if (ViewData["Title"]?.ToString() == "Returns Templates for State")
+                    {
+                        <button type="button" class="table-add-btn" id="addTemplateBtn">
+                            Add New Template
+                        </button>
+                    }
                 </div>
                 </div>
         </div>
         <div class="main_child">
             @if (
                @*  ViewData["Title"]?.ToString() == "Organisation List" ||  *@
-            ViewData["Title"]?.ToString() == "BOCW Scope Setup" || ViewData["Title"]?.ToString() == "Track Scope Setup" || ViewData["Title"]?.ToString() == "User List")
+            ViewData["Title"]?.ToString() == "BOCW Scope Setup" || ViewData["Title"]?.ToString() == "Track Scope Setup" || ViewData["Title"]?.ToString() == "User List" || ViewData["Title"]?.ToString() == "State Template")
             {
                 <div class="table-heading-container">
                     @RenderSection("TableHeadingContent", required: false)

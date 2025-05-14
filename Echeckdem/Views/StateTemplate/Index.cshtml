@@ -1,20 +1,28 @@
 ﻿@model List<Echeckdem.Models.Maststate>
+
 @{
     ViewData["Title"] = "State Template";
+    ViewData["Heading"] = "State Template";
+    ViewData["Heading_child"] = "...";
     var counts = ViewBag.ContributionCounts as Dictionary<string, int>;
     var countsRet = ViewBag.ReturnCounts as Dictionary<string, int>;
 }
 
-<h2 class="mb-4">State Template</h2>
-<table class="table table-striped">
-    
-    <thead class="thead-dark">
+@section TableHeadingContent {
+    <!-- Search bar -->
+    <input type="text" id="searchBar" placeholder="Search State..." class="table-search-input" onkeyup="searchTable()">
+
+}
+
+<div class="table-container-detailsView">
+    <table class="styled-table">
+        <thead>
         <tr>
             <th>State Name</th>
             <th>Status</th>
-            <th>Cont</th>
-            <th>Ret</th>
-            <th>Action</th>
+            <th>Payroll Count</th>
+            <th>Return Count</th>
+            <th style="width: 275px;text-align: center;">Action</th>
 
 
         </tr>
@@ -26,14 +34,81 @@
                 <td>@state.Statedesc</td>
                 <td>@(state.Stactive == "1" ? "Active" : "Inactive")</td>
                 <td>
-                    @(counts != null && counts.ContainsKey(state.Stateid) ? counts[state.Stateid] : 0)
-                    @(countsRet != null && countsRet.ContainsKey(state.Stateid) ? countsRet[state.Stateid] : 0)
+                    @(counts != null && counts.ContainsKey(state.Stateid) ? counts[state.Stateid] : 0)                   
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@state.Stateid" class="btn btn-primary btn-sm">Contributions</a>
-                    <a asp-action="DetailsRet" asp-route-id="@state.Stateid" class="btn btn-primary btn-sm">Returns</a>
+                        @(countsRet != null && countsRet.ContainsKey(state.Stateid) ? countsRet[state.Stateid] : 0)
+                </td>
+                <td style="display:flex; gap:10px;"> 
+                    <a asp-action="Details" asp-route-id="@state.Stateid" class="saveButton">Contributions</a>
+                    <a asp-action="DetailsRet" asp-route-id="@state.Stateid" class="saveButton">Returns</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+</div>
+<script>
+    function searchTable() {
+        const input = document.getElementById("searchBar");
+        const filter = input.value.toLowerCase();
+        const table = document.querySelector(".styled-table tbody");
+        const rows = table.getElementsByTagName("tr");
+
+        for (let i = 0; i < rows.length; i++) {
+            const stateNameCell = rows[i].cells[0]; // State Name column
+
+            // Remove previous highlights
+            removeHighlight(stateNameCell);
+
+            const stateNameText = stateNameCell.textContent || stateNameCell.innerText;
+
+            const matchStateName = stateNameText.toLowerCase().includes(filter);
+
+            if (filter === "" || matchStateName) {
+                rows[i].style.display = "";
+
+                // Highlight match
+                if (matchStateName) highlightText(stateNameCell, filter);
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+
+    function highlightText(cell, term) {
+        if (!term) return;
+        const innerHTML = cell.innerHTML;
+        const regex = new RegExp(`(${term})`, 'ig');
+
+        // Only highlight text nodes, not HTML inside (like <a>)
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = innerHTML;
+
+        const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+        const nodes = [];
+
+        while (walker.nextNode()) {
+            nodes.push(walker.currentNode);
+        }
+
+        for (let node of nodes) {
+            if (node.parentNode && node.textContent.toLowerCase().includes(term)) {
+                const span = document.createElement("span");
+                span.innerHTML = node.textContent.replace(regex, `<mark>$1</mark>`);
+                node.replaceWith(...span.childNodes);
+            }
+        }
+
+        cell.innerHTML = tempDiv.innerHTML;
+    }
+
+    function removeHighlight(cell) {
+        const marked = cell.querySelectorAll('mark');
+        for (let mark of marked) {
+            const parent = mark.parentNode;
+            parent.replaceChild(document.createTextNode(mark.textContent), mark);
+            parent.normalize();
+        }
+    }
+</script>
