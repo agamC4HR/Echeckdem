@@ -1,24 +1,16 @@
 ﻿@model Echeckdem.CustomFolder.ProjectBocw.ProjectBocwViewModel
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
     ViewData["Title"] = "Project Detail";
     ViewData["Heading"] = "Project Detail";
-    
-   
 }
-<div class="table-heading-container">
 
+<div class="table-heading-container">
     <!-- Search bar -->
     <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
 
     <!-- Outer-Filter button -->
     <div class="table-filter-buttons">
-      @*  <select>
-           <option value="">
-               Select a Client</option>
-      </select> *@
         <select id="clientDropdown" onchange="populateSites()">
             <option value="">Select a Client</option>
             @foreach (var client in Model.Clients)
@@ -31,11 +23,11 @@
         </select>
     </div>
 </div>
+
 <div class="table-container-detailsView">
     <table class="styled-table">
         <thead>
-            <tr><th colspan="11" class="table-header">Select a Client and Project</th>
-                </tr>
+            <tr><th colspan="11" class="table-header">Select a Client and Project</th></tr>
         </thead>
         <thead>
             <tr>
@@ -62,46 +54,70 @@
                 <th>Project Manager</th>
                 <td data-id="ProjectLead"></td>
             </tr>
+        </thead>
+    </table>
 
-            </thead>
-        </table>
     <table class="styled-table">
         <thead>
-            <tr><th class="text-center" colspan="11" class="table-header">Compliance Activity</th></tr>
+            <tr><th class="text-center" colspan="11" class="table-header">BOCW Services</th></tr>
             <tr>
                 <th>S.No.</th>
-                
-                
-                <th>Service Type BOCWSCOPE</th> 
-                <th>Service TASK NCBOCW</th>
-                <th>Category category BOCWSCOPE</th>
+                <th>Service Type</th>
+                <th>Service</th>
+                <th>Category</th>
                 <th>Due Date</th>
                 <th>Status</th>
                 <th>Completion Date</th>
-                
                 <th colspan="2">File</th>
                 <th>Edit</th>
-                
             </tr>
         </thead>
-        <tbody id ="complianceActivities"></tbody>
+        <tbody id="complianceActivities"></tbody>
+   @*  </table>
+</div> *@
         <thead style="top:75px;">
+
             <tr><th class="text-center" colspan="11" class="table-header">On-Going Activites</th></tr>
-        <tr>
-           <th>Tracker For</th>
-            
-            
-            <th>Inspection Notice</th>
-            <th>Title</th>
-            <th>Detail of Issue</th>
-            <th>Status</th>
-            <th>Start Date</th>
-            <th>Close Date</th>
-            <th>SLA</th>
-            <th>Details</th>
-        </tr>
-    </thead>
-     </table>
+
+            <tr>
+
+                <th>Tracker For</th>
+                <th>Inspection Notice</th>
+                <th>Title</th>
+                <th>Detail of Issue</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>Close Date</th>
+                <th>Details</th>
+
+            </tr>
+
+        </thead>
+        <tbody>
+            @if (Model.TrackerActions != null && Model.TrackerActions.Any())
+            {
+                foreach (var tracker in Model.TrackerActions)
+                {
+                    <tr>
+                        <td>@tracker.SelectedACTP</td>
+                        <td>@tracker.SelectedTPP</td>
+                        <td>@tracker.SelectedACTITLE</td>
+                        <td>@tracker.DetailOfIssue</td>
+                        <td>@tracker.InternalStatus</td>
+                        <td>@(tracker.StartDate.HasValue ? tracker.StartDate.Value.ToString("dd-MMM-yyyy") : "")</td>
+                        <td>@(tracker.CloseDate.HasValue ? tracker.CloseDate.Value.ToString("dd-MMM-yyyy") : "")</td>
+                        <td><a href="/DetailsView/ViewAction?acid=@tracker.Acid">Details</a></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="8" class="text-center">No ongoing activities found.</td></tr>
+            }
+        </tbody>
+
+    </table>
+
 </div>
 
 @section Scripts {
@@ -130,7 +146,7 @@
                     .then(data => {
                         if (!data) return;
 
-                        // Populate project details
+                        // Populate static project details
                         document.querySelector('td[data-id="SiteName"]').innerText = data.siteName || '';
                         document.querySelector('td[data-id="State"]').innerText = data.state || '';
                         document.querySelector('td[data-id="City"]').innerText = data.city || '';
@@ -141,30 +157,31 @@
                         document.querySelector('td[data-id="ProjectArea"]').innerText = data.projectArea || '';
                         document.querySelector('td[data-id="ProjectCost"]').innerText = data.projectCost || '';
                         document.querySelector('td[data-id="ProjectLead"]').innerText = data.projectLead || '';
-                    });
 
-                // Fetch compliance activities for the selected client and site
-                fetch(`/Project/GetComplianceActivities?client=${encodeURIComponent(client)}&site=${encodeURIComponent(site)}`)
-                    .then(res => res.json())
-                    .then(activities => {
+                        // Populate BOCW services
                         const tbody = document.getElementById('complianceActivities');
-                        tbody.innerHTML = ''; // Clear existing rows
+                        tbody.innerHTML = '';
+                        if (data.bocwServices && data.bocwServices.length > 0) {
+                            data.bocwServices.forEach((item, index) => {
+                                const row = `
+                                            <tr>
+                                                <td>${index + 1}</td>
+                                                <td>BOCW</td>
+                                                <td>${item.service}</td>
+                                                <td>${item.category}</td>
+                                                <td>${item.dueDate || ''}</td>
+                                                <td>${item.status}</td>
+                                                <td>${item.completionDate || ''}</td>
+                                                <td colspan="2">${item.file ? `<a href="/uploads/${item.file}" target="_blank">${item.file}</a>` : 'N/A'}</td>
+                                                        <td><a href="/DetailsView/EditBocw?transactionID=${item.transactionID}&lcode=${item.lcode}" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>>Edit</a></td>
 
-                        activities.forEach((activity, index) => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                        <td>${activity.SNo}</td>
-                                        <td>${activity.ServiceType}</td>
-                                        <td>${activity.Service}</td>
-                                        <td>${activity.DueDate}</td>
-                                        <td>${activity.Status}</td>
-                                        <td>${activity.CompletionDate || ''}</td>
-                                        <td><a href="${activity.FileUrl}" target="_blank">${activity.FileName || 'No File'}</a></td>
-                                        <td><a href="/EditActivity/${activity.TransactionId}">Edit</a></td>
-                                    `;
-                            tbody.appendChild(row);
-                        });
-                    });
+                                                
+                                            </tr>`;
+                                tbody.innerHTML += row;
+                            });
+                        }
+                    })
+                    .catch(err => console.error('Error fetching project details:', err));
             }
         });
     </script>

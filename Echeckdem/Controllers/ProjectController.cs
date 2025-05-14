@@ -9,10 +9,12 @@ namespace Echeckdem.Controllers
     public class ProjectController : Controller
     {
         private readonly ProjectBocwService _projectbocwService;
+        private readonly TrackerService _trackerService;
 
-        public ProjectController(ProjectBocwService projectBocwService)
+        public ProjectController(ProjectBocwService projectBocwService, TrackerService trackerService)
         {
             _projectbocwService = projectBocwService;
+            _trackerService = trackerService;
         }
         public async Task<IActionResult> Index()
         {
@@ -23,7 +25,8 @@ namespace Echeckdem.Controllers
             var model = new ProjectBocwViewModel
             {
                 Clients = clientSiteMap.Keys.ToList(),
-                ClientSiteMap = clientSiteMap
+                ClientSiteMap = clientSiteMap,
+                TrackerActions = _trackerService.GetNcActionsForUser(uno.Value)
             };
 
             return View(model);
@@ -46,25 +49,11 @@ namespace Echeckdem.Controllers
             return Json(details);
         }
 
-        //[HttpGet("compliance-activities")]
-        [HttpGet]
-        public async Task<IActionResult> GetComplianceActivities(string client, string site)
-        {
-            var uno = HttpContext.Session.GetInt32("UNO");
-            if (!uno.HasValue || string.IsNullOrEmpty(client) || string.IsNullOrEmpty(site))
-            {
-                return BadRequest("Client and Site are required.");
-            }
 
-            var activities = await _projectbocwService.GetComplianceActivitiesAsync(client, site);
-            if (activities == null || activities.Count == 0)
-            {
-                return NotFound("No compliance activities found.");
-            }
 
-            return Json(activities); // Return the list of activities in JSON format
-        }
+
 
 
     }
-}
+    }
+

@@ -80,7 +80,14 @@
 
                             <a href="/DetailsView/CombinedDetailed">Track Compliance </a>
                             <a href="/Tracker/Trackerlist">Tracker</a>
-                          //  <a href="/Project/Index">Project Tracker</a>
+                            //  <a href="/Project/Index">Project Tracker</a>
+                           @*  if(Context.Session.GetString("BO") == "yes")
+                            
+                            {
+                                <a href="/Project/Index">Project Tracker</a>
+
+                            }
+                            Console.Write("======"+Context.Session.GetString("BO")); *@
                             @if ((ViewBag.ViewType as string)?.ToUpper() == "ONLYBO" || (ViewBag.ViewType as string)?.ToUpper() == "MIXED")
                             {
                                 <a href="/Project/Index">Project Tracker</a>

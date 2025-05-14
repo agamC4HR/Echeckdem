@@ -13,6 +13,6 @@
         public string ProjectCost { get; set; }
         public string ProjectLead { get; set; }
 
-
+        public List<BocwServiceDto> BocwServices { get; set; } = new List<BocwServiceDto>();
     }
 }

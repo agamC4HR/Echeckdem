@@ -149,7 +149,11 @@ namespace Echeckdem.Services
                     SelectedTPP = action.Tpp,
                     SelectedACTITLE = action.Actitle,
                     SelectedSBTP = action.Sbtp,
-                    SelectedACTP = action.Actp
+                    SelectedACTP = action.Actp,
+                    InternalStatus = action.Acistatus,
+                    DetailOfIssue = action.Acdetail,
+                    StartDate = action.Acidate,
+                    CloseDate = action.Accldate
                 })
                 .ToList();
 

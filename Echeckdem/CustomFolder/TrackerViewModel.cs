@@ -49,5 +49,21 @@ namespace Echeckdem.CustomFolder
 
         [BindNever]
         public string? UploadedFileName { get; set; }
+
+        public string? InternalStatusLabel
+        {
+            get
+            {
+                return InternalStatus switch
+                {
+                    "N" => "Normal",
+                    "P" => "Priority",
+                    "E" => "Escalated",
+                    "C" => "Critical",
+                    _ => InternalStatus
+                };
+            }
+        }
+
     }
 }
