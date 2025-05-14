@@ -1,22 +1,69 @@
 ﻿@model Echeckdem.CustomFolder.StateTemplateViewModel
 @{
-    ViewBag.Title = Model.Cid == 0 ? "Add Template" : "Edit Template";
+    var StateName = Model.StateName as string ?? "Unknown State";
+   ViewBag.Title = Model.Cid == 0 ? "Add Template" : "Edit Template";
+    ViewData["Heading"] = $"{ViewBag.Title}";
+   ViewData["Heading_child"] = $"Templates for {StateName}";
+
 }
 
-<h2>@ViewBag.Title</h2>
 
-<form asp-action="Edit" method="post">
+<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 12px;
+        }
+
+    .form-control {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: .375rem;
+        outline: none;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+</style>
+
+<div class="table-container-detailsView" style="top:45px;">
+<form asp-action="Edit" method="post" style="padding:15px;">
     <input type="hidden" asp-for="Cid" />
     <input type="hidden" asp-for="CState" />
+        <input type="hidden" asp-for="StateName" />
 
     <div class="form-group">
         <label asp-for="Tp">Type</label>
-        <select asp-for="Tp" class="form-control">
+            
+            <select asp-for="Tp" class="form-control">
             <option value="">Choose</option>
-            <option value="PT" selected="@("PT" == Model.Tp)">Prof. Tax</option>
-            <option value="LWF" selected="@("LWF" == Model.Tp)">LWF</option>
-            <option value="PF" selected="@("PF" == Model.Tp)">PF</option>
-            <option value="ESI" selected="@("ESI" == Model.Tp)">ESI</option>
+                @if (Model.Tp == null)
+                {
+                    <option value="PT" >Prof. Tax</option>
+                    <option value="LWF" >LWF</option>
+                    <option value="PF" >PF</option>
+                    <option value="ESI">ESI</option>
+                }
+                else
+                {
+                    <option value="PT" selected="@("PT" == Model.Tp.Trim())">Prof. Tax</option>
+                    <option value="LWF" selected="@("LWF" == Model.Tp.Trim())">LWF</option>
+                    <option value="PF" selected="@("PF" == Model.Tp.Trim())">PF</option>
+                    <option value="ESI" selected="@("ESI" == Model.Tp.Trim())">ESI</option>
+
+                }
+
         </select>
     </div>
 
@@ -71,6 +118,9 @@
         </select>
     </div>
 
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Details" asp-route-id="@Model.CState" class="btn btn-secondary">Back</a>
+        <div style="display:flex; gap:10px;">
+    <button type="submit" class="saveButton">Save</button>
+            <a asp-action="Details" asp-route-id="@Model.CState" class="saveButton" style="text-transform:none;">Back</a>
+    </div>
 </form>
+</div>

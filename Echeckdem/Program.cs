@@ -52,6 +52,7 @@ builder.Services.AddScoped<IStateTemplateService, StateTemplateService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ProjectBocwService>();
 builder.Services.AddScoped<IAudtrail, AudtrailUpdate>();
+builder.Services.AddScoped<IDashboardSummary, DashboardSummary>();
 
 builder.Services.AddControllersWithViews();
 // Configuring the Database

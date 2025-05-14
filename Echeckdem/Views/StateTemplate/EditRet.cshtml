@@ -1,0 +1,142 @@
+﻿@model Echeckdem.CustomFolder.StateTemplateRetViewModel
+
+@{
+    var StateName = Model.StateName as string ?? "Unknown State";
+    ViewBag.Title = Model.Rcode == 0 ? "Add Template" : "Edit Template";
+    ViewData["Heading"] = $"{ViewBag.Title}";
+    ViewData["Heading_child"] = $"Templates for {StateName}";
+
+}
+
+
+<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 12px;
+        }
+
+    .form-control {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: .375rem;
+        outline: none;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+</style>
+
+@* <form asp-action="EditRet" method="post"> *@
+<div class="table-container-detailsView" style="top:45px;">
+<form id="editRetForm" method="post" style="padding:15px;">
+
+    <input type="hidden" asp-for="Rcode" />
+    <input type="hidden" asp-for="Rstate" />
+        <input type="hidden" asp-for="StateName" />
+
+    <div class="form-group">
+        <label asp-for="Rtype">Type</label>
+        <select asp-for="Rtype" class="form-control">
+            <option value="">Choose</option>
+                @if (Model.Rtype == null)
+                {
+                    <option value="C">Common</option>
+                    <option value="D">State</option>
+                    <option value="S">S&amp;E</option>
+                    <option value="F">Factory</option>
+                    <option value="P">CLRA PE</option>
+                    <option value="I">ID Act</option>
+                    <option value="E">EE Act</option>
+                }
+                else
+                {
+                    <option value="C" selected="@("C" == Model.Rtype.Trim())">Common</option>
+                    <option value="D" selected="@("D" == Model.Rtype.Trim())">State</option>
+                    <option value="S" selected="@("S" == Model.Rtype.Trim())">S&amp;E</option>
+                    <option value="F" selected="@("F" == Model.Rtype.Trim())">Factory</option>
+                    <option value="P" selected="@("P" == Model.Rtype.Trim())">CLRA PE</option>
+                    <option value="I" selected="@("I" == Model.Rtype.Trim())">ID Act</option>
+                    <option value="E" selected="@("E" == Model.Rtype.Trim())">EE Act</option>
+                }
+            
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Rtitle">Title</label>
+        <input asp-for="Rtitle" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Rform">Form</label>
+        <input asp-for="Rform" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Rd">Last Date (Day)</label>
+        <select asp-for="Rd" class="form-control">
+            <option value="">Choose</option>
+            @for (int i = 1; i <= 31; i++)
+            {
+                <option value="@i" selected="@(Model.Rd == i)">@i</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Rm">Month</label>
+        <select asp-for="Rm" class="form-control">
+            <option value="">Choose</option>
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" selected="@(Model.Rm == i)">
+                    @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Yroff">In Next Year</label>
+        <select asp-for="Yroff" class="form-control">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Roblig">Oblig</label>
+        <input asp-for="Roblig" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Ract">Act</label>
+        <input asp-for="Ract" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Ractive">Active</label>
+        <select asp-for="Ractive" class="form-control">
+            <option value="1">Active</option>
+            <option value="0">Inactive</option>
+        </select>
+    </div>
+
+        <div style="display:flex; gap:10px;">
+            <button type="submit" class="saveButton">Save</button>  
+            <a asp-action="DetailsRet" asp-route-id="@Model.Rstate" class="saveButton" style="text-transform:none;">Back</a>
+        </div>
+</form>
+</div>
