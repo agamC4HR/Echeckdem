@@ -52,7 +52,7 @@ builder.Services.AddScoped<IStateTemplateService, StateTemplateService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ProjectBocwService>();
 builder.Services.AddScoped<IAudtrail, AudtrailUpdate>();
-
+builder.Services.AddScoped<IDashboardSummary, DashboardSummary>();
 // Configuring the Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStrings");              //ECHECK
 builder.Services.AddDbContext<DbEcheckContext>(options =>

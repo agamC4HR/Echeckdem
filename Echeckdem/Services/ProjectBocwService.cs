@@ -93,7 +93,7 @@ namespace Echeckdem.Services
 
             var bocwEntries = _dbEcheckContext.Ncbocws
 
-     //.Where(b => b.Lcode == "14860f99")
+   
 .Where(b => b.Lcode == map.Lcode)
      .Select(b => b.TransactionId)
 
@@ -105,10 +105,9 @@ namespace Echeckdem.Services
             {
                 var actionGroups = _dbEcheckContext.Ncactions
 
- .Where(a => a.Aclink.HasValue && bocwEntries.Contains(a.Aclink.Value))
+              .Where(a => a.Aclink.HasValue).ToList().Where(a => bocwEntries.Contains(a.Aclink.Value))
 
- .ToList();
-
+              .ToList();
                 acidMap = actionGroups
                             .GroupBy(a => a.Aclink.Value)
                             .ToDictionary(g => g.Key, g => g.First().Acid);
