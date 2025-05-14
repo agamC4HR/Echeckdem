@@ -1,15 +1,22 @@
 ﻿@model List<Echeckdem.CustomFolder.StateTemplateViewModel>
 @{
-    ViewBag.Title = "Templates for State";
     var stateId = ViewBag.StateId as string;
+    var StateName = ViewBag.StateName as string ?? "Unknown State";
+    ViewBag.Title = "Templates for State";
+    ViewData["Heading"] = $"Templates for {StateName}";
+    ViewData["Heading_child"] = "...";
+    
 }
 
-<h2>Templates for @stateId</h2>
+@* <a asp-action="Edit" asp-route-stateId="@stateId" class="btn btn-primary">Add New Template</a> *@
 
-<a asp-action="Edit" asp-route-stateId="@stateId" class="btn btn-primary">Add New Template</a>
+@* <button id="addTemplateBtn" class="btn btn-primary">Add New Template</button> *@
 
-<table class="table table-bordered mt-3">
-    <thead>
+
+
+<div class="table-container-detailsView">
+    <table class="styled-table">
+        <thead style="top:75px;">
         <tr>
             <th>Type</th>
             <th>Frequency</th>
@@ -17,7 +24,8 @@
             <th>Last Date</th>
             <th>Month Offset</th>
             <th>Active</th>
-            <th>Actions</th>
+            <th style="width: 75px;text-align: center;">Edit</th>
+            <th style="width: 75px;text-align: center;">Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -31,10 +39,24 @@
                 <td>@item.MoffsetDisplay</td>
                 <td>@item.ActiveDisplay</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Cid" asp-route-stateId="@item.CState" class="btn btn-sm btn-info">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Cid" asp-route-stateId="@item.CState" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this entry?');">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Cid" asp-route-stateId="@item.CState">
+                            <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                    </a>
+                </td>
+                <td>
+                        <a asp-action="Delete" asp-route-id="@item.Cid" asp-route-stateId="@item.CState" onclick="return confirm('Are you sure you want to delete this entry?');">
+                            <i class="fas fa-trash edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+</div>
+<script>
+    document.getElementById("addTemplateBtn").addEventListener("click", function () {
+        const stateId = "@stateId";
+        const url = `/StateTemplate/Edit?stateId=${encodeURIComponent(stateId)}`;
+        window.location.href = url;
+    });
+</script>

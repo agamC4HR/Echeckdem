@@ -5,6 +5,7 @@
         public int Rcode { get; set; }
 
         public string Rstate { get; set; }
+        public string StateName { get; set; }
 
         public string Rtype { get; set; }
 

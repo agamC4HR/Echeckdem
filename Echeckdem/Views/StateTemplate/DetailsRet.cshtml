@@ -1,17 +1,16 @@
 ﻿@model List<Echeckdem.CustomFolder.StateTemplateRetViewModel>
 @{
-    ViewBag.Title = "Returns Templates for State";
     var stateId = ViewBag.StateId as string;
+    var StateName = ViewBag.StateName as string ?? "Unknown State";
+    ViewBag.Title = "Returns Templates for State";
+    ViewData["Heading"] = $"Templates for {StateName}";
+    ViewData["Heading_child"] = "...";
 }
 
-<h2>Returns Templates for @stateId</h2>
 
-<!-- Button to trigger modal for adding a new return template -->
-@* <button class="btn btn-primary mb-3" onclick="openEditRetModal(0, '@stateId')">Add New Return Template</button> *@
-<a asp-action="EditRet" asp-route-stateId="@stateId" class="btn btn-primary">Add New Template</a>
-
-<table class="table table-striped mt-3">
-    <thead>
+<div class="table-container-detailsView">
+    <table class="styled-table">
+        <thead style="top:75px;">
         <tr>
             <th>Type</th>   
             <th>Title</th>
@@ -22,7 +21,8 @@
             <th>Oblig</th>
             <th>Act</th>
             <th>Active</th>
-            <th>Actions</th>
+                <th style="width: 75px;text-align: center;">Edit</th>
+                <th style="width: 75px;text-align: center;">Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -38,54 +38,30 @@
                 <td>@item.Roblig</td>
                 <td>@item.Ract</td>
                 <td>@(item.Ractive == 1 ? "Active" : "Inactive")</td>
+
+                    <td>
+                        <a asp-action="EditRet" asp-route-id="@item.Rcode" asp-route-stateId="@item.Rstate" >   
+                            <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </a>
+                    </td>
                 <td>
-                    <button class="btn btn-sm btn-info" onclick="loadEditRet(@item.Rcode, '@item.Rstate')">Edit</button>
-                    <a asp-action="DeleteRet" asp-route-id="@item.Rcode" asp-route-stateId="@item.Rstate" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                        <a asp-action="DeleteRet" asp-route-id="@item.Rcode" asp-route-stateId="@item.Rstate" onclick="return confirm('Are you sure?')">
+                            <i class="fas fa-trash edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-<!-- Modal -->
-<div class="modal fade" id="editRetModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content p-3">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Return Template</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="editRetModalBody">
-                <!-- Partial view content goes here -->
-            </div>
-        </div>
-    </div>
 </div>
+
 
 @section Scripts {
     <script>
-        function loadEditRet(id, stateId) {
-            $.get('@Url.Action("EditRet")', { id: id, stateId: stateId }, function (data) {
-                $('#editRetModalBody').html(data);
-                $('#editRetModal').modal('show');
-
-                // Bind the form submission AFTER loading the form
-                $('#editRetForm').off('submit').on('submit', function (e) {
-                    e.preventDefault();
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Action("EditRet")',
-                        data: $(this).serialize(),
-                        success: function () {
-                            $('#editRetModal').modal('hide');
-                            location.reload(); // force reload to reflect updated list
-                        },
-                        error: function (xhr) {
-                            alert("Something went wrong. Try again.");
-                        }
-                    });
-                });
-            });
-        }
+        document.getElementById("addTemplateBtn").addEventListener("click", function () {
+            const stateId = "@stateId";
+            const url = `/StateTemplate/EditRet?stateId=${encodeURIComponent(stateId)}`;
+            window.location.href = url;
+        });
     </script>
 }

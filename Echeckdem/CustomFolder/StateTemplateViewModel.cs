@@ -1,9 +1,16 @@
-﻿namespace Echeckdem.CustomFolder
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
+namespace Echeckdem.CustomFolder
 {
     public class StateTemplateViewModel
     {
         public int Cid { get; set; }
         public string CState { get; set; }
+
+        
+        public string StateName { get; set; }
+        
+        
 
         public string Tp { get; set; }
         public string Freq { get; set; }

@@ -47,6 +47,7 @@ namespace Echeckdem.Services
                 {
                     Cid = t.Cid,
                     CState = t.Cstate,
+                    StateName = (from k in _dbEcheckContext.Maststates where k.Stateid.Trim()==t.Cstate.Trim() select k.Statedesc).FirstOrDefault(),
                     Tp = t.Tp,
                     Freq = t.Freq,
                     Period = t.Period,
@@ -68,6 +69,7 @@ namespace Echeckdem.Services
             {
                 Cid = entity.Cid,
                 CState = entity.Cstate,
+                StateName=(from k in _dbEcheckContext.Maststates where k.Stateid.Trim()==entity.Cstate.Trim() select k.Statedesc).FirstOrDefault(),
                 Tp = entity.Tp,
                 Freq = entity.Freq,
                 Period = entity.Period,
@@ -151,7 +153,8 @@ namespace Echeckdem.Services
             {
                Rcode = entity.Rcode,
                Rstate = entity.Rstate,
-               Rtype = entity.Rtype,
+                StateName = (from k in _dbEcheckContext.Maststates where k.Stateid.Trim() == entity.Rstate.Trim() select k.Statedesc).FirstOrDefault(),
+                Rtype = entity.Rtype,
                Rtitle = entity.Rtitle,
                Rform = entity.Rform,
                Rd = entity.Rd,
