@@ -72,8 +72,9 @@
                 <th>S.No.</th>
                 
                 
-                <th>Service Type</th>
-                <th>Service</th>
+                <th>Service Type BOCWSCOPE</th> 
+                <th>Service TASK NCBOCW</th>
+                <th>Category category BOCWSCOPE</th>
                 <th>Due Date</th>
                 <th>Status</th>
                 <th>Completion Date</th>
@@ -83,7 +84,7 @@
                 
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id ="complianceActivities"></tbody>
         <thead style="top:75px;">
             <tr><th class="text-center" colspan="11" class="table-header">On-Going Activites</th></tr>
         <tr>
@@ -129,8 +130,7 @@
                     .then(data => {
                         if (!data) return;
 
-                        const rows = document.querySelectorAll('.styled-table tbody tr');
-
+                        // Populate project details
                         document.querySelector('td[data-id="SiteName"]').innerText = data.siteName || '';
                         document.querySelector('td[data-id="State"]').innerText = data.state || '';
                         document.querySelector('td[data-id="City"]').innerText = data.city || '';
@@ -142,8 +142,30 @@
                         document.querySelector('td[data-id="ProjectCost"]').innerText = data.projectCost || '';
                         document.querySelector('td[data-id="ProjectLead"]').innerText = data.projectLead || '';
                     });
+
+                // Fetch compliance activities for the selected client and site
+                fetch(`/Project/GetComplianceActivities?client=${encodeURIComponent(client)}&site=${encodeURIComponent(site)}`)
+                    .then(res => res.json())
+                    .then(activities => {
+                        const tbody = document.getElementById('complianceActivities');
+                        tbody.innerHTML = ''; // Clear existing rows
+
+                        activities.forEach((activity, index) => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                        <td>${activity.SNo}</td>
+                                        <td>${activity.ServiceType}</td>
+                                        <td>${activity.Service}</td>
+                                        <td>${activity.DueDate}</td>
+                                        <td>${activity.Status}</td>
+                                        <td>${activity.CompletionDate || ''}</td>
+                                        <td><a href="${activity.FileUrl}" target="_blank">${activity.FileName || 'No File'}</a></td>
+                                        <td><a href="/EditActivity/${activity.TransactionId}">Edit</a></td>
+                                    `;
+                            tbody.appendChild(row);
+                        });
+                    });
             }
         });
     </script>
-
 }
