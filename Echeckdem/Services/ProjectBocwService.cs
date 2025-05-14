@@ -8,10 +8,22 @@ namespace Echeckdem.Services
     public class ProjectBocwService
     {
         private readonly DbEcheckContext _dbEcheckContext;
+        private static readonly Dictionary<int, string> StatusMap = new()
+        {
+            [0] = "Docs/Info Awaited",
+            [1] = "Under Processing",
+            [2] = "A/F",
+            [3] = "Received",
+            [4] = "Done",
+            [5] = "Not-Done",
+            [-1] = "Action Awaited",
+            [-2] = "Future"
+        };
         public ProjectBocwService(DbEcheckContext dbEcheckContext)
         {
             _dbEcheckContext = dbEcheckContext;
         }
+
         public async Task<Dictionary<string, List<string>>> GetUserOrgSiteMapAsync(int uno)
         {
             var mappings = await (from map in _dbEcheckContext.Ncumaps
@@ -68,7 +80,136 @@ namespace Echeckdem.Services
                 ProjectLead = locb?.ProjectLead
             };
         }
+        public async Task<List<ComplianceActivityDto>> GetComplianceActivitiesAsync(string clientName, string siteName)
+        {
+            var map = await (from m in _dbEcheckContext.Ncmorgs
+                             join l in _dbEcheckContext.Ncmlocs on m.Oid equals l.Oid
+                             where m.Oname == clientName && l.Lname == siteName && l.Ltype == "BO"
+                             select new { l.Lcode, m.Oid }).FirstOrDefaultAsync();
 
+            if (map == null)
+                return new List<ComplianceActivityDto>();
+
+
+            var bocwEntries = _dbEcheckContext.Ncbocws
+
+     //.Where(b => b.Lcode == "14860f99")
+.Where(b => b.Lcode == map.Lcode)
+     .Select(b => b.TransactionId)
+
+     .ToList();
+            Console.Write(bocwEntries);
+
+            Dictionary<int, int> acidMap = new();
+            try
+            {
+                var actionGroups = _dbEcheckContext.Ncactions
+
+ .Where(a => a.Aclink.HasValue && bocwEntries.Contains(a.Aclink.Value))
+
+ .ToList();
+
+                acidMap = actionGroups
+                            .GroupBy(a => a.Aclink.Value)
+                            .ToDictionary(g => g.Key, g => g.First().Acid);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error while building acidMap: " + ex.Message);
+                throw;
+            }
+
+
+
+            //Console.Write(actionGroups);
+
+            //var bocwEntries = await _dbEcheckContext.Ncbocws
+            //    .Where(b => b.Lcode == map.Lcode)
+            //    .OrderBy(b => b.TransactionId)
+            //    .ToListAsync();
+
+            // var transactionIds = bocwEntries.Select(b => b.TransactionId).ToList();
+
+
+
+            //        Dictionary<int, int> acidMap = new();
+            //        try
+            //        {
+            //            //var materializedTransactionIds = transactionIds.ToList();
+            //            var actionGroups = await _dbEcheckContext.Ncactions
+            //.Where(a => a.Aclink.HasValue && transactionIds.Any(tid => tid == a.Aclink.Value))
+            ////.Where(a => a.Aclink.HasValue && materializedTransactionIds.Contains(a.Aclink.Value))
+            //.ToListAsync();
+
+            //            acidMap = actionGroups
+            //                .GroupBy(a => a.Aclink.Value)
+            //                .ToDictionary(g => g.Key, g => g.First().Acid);
+
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            Console.WriteLine("Error while building acidMap: " + ex.Message);
+            //            throw;
+            //        }
+
+
+
+
+            var fileMap = new Dictionary<int, string>();
+
+            var acidList = acidMap.Values.OfType<int>().ToList();
+
+
+            if (acidList.Any())
+            {
+                fileMap = await _dbEcheckContext.Ncfiles
+                    .Where(f => acidList.Contains(f.Flink ?? -1))
+                    .ToDictionaryAsync(f => f.Flink ?? -1, f => f.Fname);
+            }
+
+            //var activities = bocwEntries.Select((entry, index) =>
+            //{
+            //    string fileName = null;
+            //    bool FileExists = false;
+            //    if (acidMap.TryGetValue( out int acid))// && acid.HasValue)
+            //    {
+            //        // Now acid.Value is guaranteed to be a non-nullable integer
+            //        FileExists =  fileMap.TryGetValue(acid, out fileName);
+            //    }
+
+            //    //string fileUrl = string.IsNullOrEmpty(fileName)
+            //    //    ? null
+            //    //    : $"/Files/{map.Oid}/Bocw/{fileName}";
+
+            //    string fileUrl = null;
+            //    if (!string.IsNullOrEmpty(fileName))
+            //    {
+            //        fileUrl = "/Files/" + map.Oid + "/Bocw/" + fileName;
+            //    }
+
+
+            //    return new ComplianceActivityDto
+            //    {
+            //        SNo = index + 1,
+            //        ServiceType = "BOCW",
+            //        Service = entry.Task,
+            //        DueDate = entry.DueDate.ToString("dd-MMM-yyyy"),
+            //        Status = StatusMap.TryGetValue(entry.Status, out var statusText) ? statusText : "Unknown",
+
+
+            //        CompletionDate = entry.CompletionDate.HasValue? entry.CompletionDate.Value.ToString("dd-MMM-yyyy") : null,
+            //        FileName = fileName,
+            //        FileUrl = fileUrl,
+            //        TransactionId = entry.TransactionId,
+            //        FileExists = FileExists
+            //    };
+            //}).ToList();
+
+            //return activities;
+            List<ComplianceActivityDto> comp = new List<ComplianceActivityDto>();
+            return comp;
+        }
 
     }
 }
