@@ -1,7 +1,39 @@
 ﻿@model Echeckdem.CustomFolder.UserManagement.UserMappingCreationModel
 
-<h2>Add New User Mapping</h2>
+@{
+    ViewData["Title"] = "Add New User Mapping";
+    ViewData["Heading"] = "Add New User Mapping";
+    ViewData["Heading_child"] = "...";
+}
+<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
 
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 12px;
+        }
+
+    .form-control {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: .375rem;
+        outline: none;
+        transition: border-color 0.2s ease-in-out;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+</style>
+@* 
 @if (ViewBag.UserId != null)
 {
     <p><strong>User ID:</strong> @ViewBag.UserId</p>
@@ -9,9 +41,10 @@
 @if (ViewBag.Uno != null)
 {
     <p><strong>User Uno:</strong> @ViewBag.Uno</p>
-}
+} *@
 
-<form method="post" asp-action="AddUserMapping" asp-controller="UserManagement">
+<div class="table-container-detailsView" style="top:45px;">
+    <form method="post" asp-action="AddUserMapping" asp-controller="UserManagement" style="padding:15px;">
     <input type="hidden" asp-for="Uno" value="@ViewBag.Uno" />
 
     <div class="form-group">
@@ -38,9 +71,12 @@
         <span asp-validation-for="SelectedUserLevel" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Add Mapping</button>
-    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+        <div style="display:flex; gap:10px;">
+    <button type="submit" class="saveButton">Add Mapping</button>
+    <a href="@Url.Action("Index")" class="saveButton">Cancel</a>
+    </div>
 </form>
+</div>
 
 @section Scripts {
     <script>

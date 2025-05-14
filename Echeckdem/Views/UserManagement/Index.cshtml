@@ -1,21 +1,34 @@
 ﻿@model IEnumerable<Echeckdem.CustomFolder.UserManagement.UserManagementViewModel>
 
+@{
+    ViewData["Title"] = "User List";
+    ViewData["Heading"] = "User List";
+    ViewData["Heading_child"] = "...";
+}
 
-<h2>User List</h2>
-<table class="table">
-    <thead>
-        <a href="@Url.Action("Create")" class="btn btn-primary">Add New User</a>
-        <tr>
+@section TableHeadingContent {
+    <!-- Search bar -->
+        <input type="text" id="searchBar" placeholder="Search User..." class="table-search-input" onkeyup="searchTable()">
+
+    <!-- Add button -->
+    <button type="button" class="table-add-btn" onclick="location.href='@Url.Action("Create")'" style="top:0; height:30px;">
+        Add New User
+    </button>
+}
+
+<div class="table-container-detailsView">
+    <table class="styled-table">
+            <thead style="top:75px;">      
+                <tr>
             <th>UserID</th>
             <th>Full Name</th>
             <th>Email</th>
-            <th>User Level</th>
             <th>Organisation</th>
-            <th>User Level</th>
+            <th style="width:100px;">User Level</th>
             <th>Active</th>
             <th>Edit</th>
-            <th>Actions</th>
-            <th>Map Org</th>
+            <th>Authorisation</th>
+            <th style="width:75px;">Map Org</th>
             
         </tr>
     </thead>
@@ -26,105 +39,103 @@
                 <td>@user.UserID</td>
                 <td>@user.UNAME</td>
                 <td>@user.EmailID</td>
-                <td>@user.UserLevel</td>
                 <td>@user.OrganisationName</td>
                 <td>@user.UserLevel</td>
                 <td>@user.Uactive</td>
-                <td>
-                    <a href="@Url.Action("Edit", "UserManagement", new { id = user.UserID })" class="btn btn-sm btn-primary">
-                        Edit User
+                <td style="text-align:center">
+                    <a href="@Url.Action("Edit", "UserManagement", new { id = user.UserID })">
+                            <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
                     </a>
                 </td>
-                <td>
+                    <td style="text-align:center">
                    
                     <form method="post" action="@Url.Action("MapOrganisation", "UserManagement")">
                         <input type="hidden" name="userId" value="@user.UserID" />
-                        <button type="submit">Authorised Organisations</button>
+                            <button type="submit" style="border:none; background:none;">
+                                <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                        </button>
                     </form>
 
                 </td>
-                <td>
+                    <td style="text-align:center">
                     <form method="post" asp-action="InitiateAddMapping" asp-controller="UserManagement">
                         <input type="hidden" name="userId" value="@user.UserID" />
-                        <button type="submit" class="btn btn-sm btn-outline-primary">Add Mapping</button>
+                            <button type="submit" style="border:none; background:none;"><i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></button>
                     </form>
                 </td>
-            </tr>
-        }
-    </tbody>
-</table>    
-<a href="@Url.Action("Create")" class="btn btn-primary">Add New User</a>
-
-
-@* @model List<Ncuser>
-<h2>Users List</h2>
-<a href="@Url.Action("Create", "UserManagement")" class="btn btn-primary">Add User</a>
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>UserID</th>
-            <th>Username</th>
-            <th>Organization</th>
-            <th>User Level</th>
-            <th>Active</th>
-            <th>Edit</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model.OrderByDescending(u=>u.Uactive))
-        {
-            <tr>
-                <td>@user.Userid</td>
-                <td>@user.Uname</td>
-                <td>@user.OName</td>
-                <td>@user.UserLevelName</td>
-                <td>@(user.Uactive == 1 ? "Active" : "Inactive")</td>
-                <td>
-                    <button class="btn btn-warning btn-sm edit-btn" data-userid="@user.Userid">
-                        Edit
-                    </button>
-                </td>
-                <td>
-                    <a href="@Url.Action("MapUser", "UserManagement", new { userId = user.Userid })" class="btn btn-info">
-                        Map Organization
-                    </a>
-                </td>
-
             </tr>
         }
     </tbody>
 </table>
-
-<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit User</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="editUserContent">
-                    <!-- Partial view will load here -->
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        $(".edit-btn").click(function () {
-            var userId = $(this).data("userid");
+    function searchTable() {
+        const input = document.getElementById("searchBar");
+        const filter = input.value.toLowerCase();
+        const table = document.querySelector(".styled-table tbody");
+        const rows = table.getElementsByTagName("tr");
 
-            $.get("/UserManagement/EditPartial", { userId: userId }, function (data) {
-                $("#editUserContent").html(data);
-                $("#editUserModal").modal("show");
-            });
-        });
-    });
+        for (let i = 0; i < rows.length; i++) {
+            const userIdCell = rows[i].cells[0]; // UserID column
+            const nameCell = rows[i].cells[1];   // Full Name column
+
+            // Remove previous highlights
+            removeHighlight(userIdCell);
+            removeHighlight(nameCell);
+
+            const userIdText = userIdCell.textContent || userIdCell.innerText;
+            const nameText = nameCell.textContent || nameCell.innerText;
+
+            const matchUserId = userIdText.toLowerCase().includes(filter);
+            const matchName = nameText.toLowerCase().includes(filter);
+
+            if (filter === "" || matchUserId || matchName) {
+                rows[i].style.display = "";
+
+                // Highlight match
+                if (matchUserId) highlightText(userIdCell, filter);
+                if (matchName) highlightText(nameCell, filter);
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+
+    function highlightText(cell, term) {
+        if (!term) return;
+        const innerHTML = cell.innerHTML;
+        const regex = new RegExp(`(${term})`, 'ig');
+
+        // Only highlight text nodes, not HTML inside (like <a>)
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = innerHTML;
+
+        const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+        const nodes = [];
+
+        while (walker.nextNode()) {
+            nodes.push(walker.currentNode);
+        }
+
+        for (let node of nodes) {
+            if (node.parentNode && node.textContent.toLowerCase().includes(term)) {
+                const span = document.createElement("span");
+                span.innerHTML = node.textContent.replace(regex, `<mark>$1</mark>`);
+                node.replaceWith(...span.childNodes);
+            }
+        }
+
+        cell.innerHTML = tempDiv.innerHTML;
+    }
+
+    function removeHighlight(cell) {
+        const marked = cell.querySelectorAll('mark');
+        for (let mark of marked) {
+            const parent = mark.parentNode;
+            parent.replaceChild(document.createTextNode(mark.textContent), mark);
+            parent.normalize();
+        }
+    }
 </script>
- *@
+
