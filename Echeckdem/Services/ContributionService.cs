@@ -42,7 +42,11 @@ namespace Echeckdem.Services
             if (string.IsNullOrEmpty(organizationName) &&
                 string.IsNullOrEmpty(LocationName) &&
                 string.IsNullOrEmpty(StateName) &&
-                string.IsNullOrEmpty(CityName))
+                string.IsNullOrEmpty(CityName) &&
+                 !StartDueDate.HasValue &&
+                 !EndDueDate.HasValue &&
+                    !StartPeriod.HasValue &&
+                    !EndPeriod.HasValue)
             {
                 sqlQuery += "AND YEAR(a.lastdate) = @currentYear ";
             }

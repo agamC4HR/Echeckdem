@@ -79,8 +79,13 @@
                         {
 
                             <a href="/DetailsView/CombinedDetailed">Track Compliance </a>
-                            <a href="/Tracker/Trackerlist"> Tracker</a>
-                            <a href="/Project/Index"> Tracker</a>
+                            <a href="/Tracker/Trackerlist">Tracker</a>
+                          //  <a href="/Project/Index">Project Tracker</a>
+                            @if ((ViewBag.ViewType as string)?.ToUpper() == "ONLYBO" || (ViewBag.ViewType as string)?.ToUpper() == "MIXED")
+                            {
+                                <a href="/Project/Index">Project Tracker</a>
+                            }
+
 
                         }
                     </div>

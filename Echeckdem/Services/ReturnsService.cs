@@ -31,7 +31,6 @@ namespace Echeckdem.Services
                                 d.oname,
                                 e.statedesc as State
                                 
-
                                 FROM ncret a
                                 JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
                                 JOIN nctempret c ON a.rcode = c.rcode
@@ -44,7 +43,11 @@ namespace Echeckdem.Services
             if (string.IsNullOrEmpty(organizationName) &&
                string.IsNullOrEmpty(LocationName) &&
                string.IsNullOrEmpty(StateName) &&
-               string.IsNullOrEmpty(CityName))
+               string.IsNullOrEmpty(CityName) &&
+                !StartDueDate.HasValue &&
+                !EndDueDate.HasValue &&
+                !StartPeriod.HasValue &&
+                !EndPeriod.HasValue)
             {
                 sqlQuery += "AND YEAR(a.lastdate) = @currentYear ";
             }

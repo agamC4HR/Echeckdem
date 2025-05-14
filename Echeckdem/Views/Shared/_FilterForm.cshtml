@@ -1,6 +1,4 @@
-﻿
-
-<style>
+﻿<style>
 
     .table-filter-container-parent {
         position: fixed;
@@ -20,7 +18,7 @@
 
     .table-filter-container {
         display: none;
-       /*  background-color: white; */
+        /*  background-color: white; */
         margin-top: 20px;
         padding: 10px;
         border-radius: .375rem;
@@ -36,7 +34,7 @@
 
         .table-filter-container.show {
             display: flex;
-            flex-direction:column;
+            flex-direction: column;
         }
 
     .close-btn-table-filter-container {
@@ -47,11 +45,11 @@
     }
 
     .table-filter-container-header {
-        display:flex;
-        flex-direction:row-reverse;
-        justify-content:space-between;
-        padding:5px;
-        align-items:center;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        padding: 5px;
+        align-items: center;
     }
 
     form {
@@ -92,7 +90,7 @@
         transition: border-color 0.3s ease;
         background-color: #fff;
         color: #333;
-        font-size:12px;
+        font-size: 12px;
     }
 
         .form-control:focus {
@@ -130,7 +128,6 @@
             <button type="button" class="close-btn-table-filter-container" onclick="toggleFilterForm()">✕</button>
             <h3 style=" text-align: center; font-weight: bold; color: #333;">Filter Options</h3>
         </div>
-        
         <form method="get" asp-action="CombinedDetailed">
             <div class="form-row">
                 <div class="form-group col-md-3">
@@ -159,11 +156,10 @@
                                 <option value="@loc">@loc</option>
                             }
                         }
-                       </select>
+                    </select>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="StateFilter">State</label>
-                    @* <input type="text" name="state" class="form-control" value="@Model.State" /> *@
                     <select id="StateFilter" name="Statename" class="form-control">
                         <option value="">Select a State</option>
                         @if (ViewBag.StateNames != null)
@@ -173,15 +169,6 @@
                                 <option value="@sta">@sta</option>
                             }
                         }
-                      @*   <option value="Gujarat">Gujarat</option>
-                        <option value="Haryana">Haryana</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="New Delhi">New Delhi</option>
-                        <option value="Tamil Nadu">Tamil Nadu</option>
-                        <option value="Telangana">Telangana</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="West Bengal">West Bengal</option> *@
                     </select>
                 </div>
                 <div class="form-group col-md-3">
@@ -195,35 +182,18 @@
                                 <option value="@city">@city</option>
                             }
                         }
-                       @*  <option value="Ahmedabad">Ahmedabad</option>
-                        <option value="Bangalore">Bangalore</option>
-                        <option value="Banglaore">Banglaore</option>
-                        <option value="Chennai">Chennai</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Gautam Budh Nagar">Gautam Budh Nagar</option>
-                        <option value="Gurgaon">Gurgaon</option>
-                        <option value="Gurugram">Gurugram</option>
-                        <option value="Hyderabad">Hyderabad</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <option value="Kolkata">Kolkata</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Nehru Place">Nehru Place</option>
-                        <option value="New Delhi">New Delhi</option>
-                        <option value="Noida">Noida</option>
-                        <option value="Pune">Pune</option> *@
                     </select>
                 </div>
 
 
-                           
+
                 <div class="form-group col-md-3">
                     <label for="StartDueDate">Start Due Date</label>
                     <input type="date" name="startDueDate" class="form-control" value="@Model.StartDueDate?.ToString("yyyy-MM-dd")" />
                 </div>
                 <div class="form-group col-md-3">
                     <label for="EndDueDate">End Due Date</label>
-                    <input type="date" name="endDueDate" class="form-control" value="@Model.StartDueDate?.ToString("yyyy-MM-dd")" />
+                    <input type="date" name="endDueDate" class="form-control" value="@Model.EndDueDate?.ToString("yyyy-MM-dd")" />
                 </div>
                 <div class="form-group col-md-3">
                     <label for="StartPeriod">Start Period</label>
@@ -236,22 +206,16 @@
 
 
 
-
-
             </div>
             <div class="form-row">
-                @*                <div class="form-group col-md-3">
-                <label for="Category">Category</label>
-                <select name="category" class="form-control">
-                <option value="">All</option>
-                <option value="Registration" selected="@(Model.Category == "Registration")">Registration</option>
-                <option value="Contribution" selected="@(Model.Category == "Contribution")">Contribution</option>
-                <option value="Returns" selected="@(Model.Category == "Returns")">Returns</option>
-                </select>
-                </div> *@
+
 
                 <div class="form-group col-md-3 align-self-end">
                     <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+
+                <div class="form-group col-md-3 align-self-end">
+                    <button type="reset" class="btn btn-secondary" onclick="clearFilters()">Clear</button>
                 </div>
             </div>
         </form>
@@ -289,6 +253,9 @@
                 case 'return':
                     endpoint = '/DetailsView/GetReturnLocations';
                     break;
+                case 'bocw':
+                    endpoint = '/DetailView/GetBOCWLocations';
+                    break;
                 default:
                     endpoint = '/DetailsView/GetLocations';
             }
@@ -305,20 +272,11 @@
         });
     });
 
-    // $(document).ready(function () {
-    //     $('#organizationFilter').on('change', function () {
-    //         var organizationName = $(this).val();
+    function clearFilters() {
+        $("select, input").val("");
+        $("input[type='date']").val("");
+    }
 
-    //         $.get('/DetailsView/GetLocations', { organizationName: organizationName }, function (data) {
-    //             var locationDropdown = $('#locationFilter');
-    //             locationDropdown.empty();
+   
 
-    //             locationDropdown.append('<option value="All"></option>');
-
-    //             $.each(data, function (index, location) {
-    //                 locationDropdown.append('<option value="' + location + '">' + location + '</option>');
-    //             });
-    //         });
-    //     });
-    // });
 </script>

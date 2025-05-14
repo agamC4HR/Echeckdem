@@ -50,7 +50,7 @@ builder.Services.AddScoped<TrackerService>();
 builder.Services.AddScoped<ISiteManagementService, SiteManagementService>();
 builder.Services.AddScoped<IStateTemplateService, StateTemplateService>();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddScoped<ProjectBocwService>();
 builder.Services.AddScoped<IAudtrail, AudtrailUpdate>();
 
 // Configuring the Database

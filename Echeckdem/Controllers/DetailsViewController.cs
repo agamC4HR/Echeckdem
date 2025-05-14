@@ -29,27 +29,51 @@ namespace Echeckdem.Controllers
             _bocwService = bocwService;
             _webHostEnvironment = webHostEnvironment;
         }
-
-        public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null!, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)//(int ulev, int uno, string organizationName = null)
+        public async Task<IActionResult> CombinedDetailed(
+    string organizationName = null,
+    string LocationName = null,
+    string StateName = null,
+    string CityName = null,
+    DateOnly? StartDueDate = null,
+    DateOnly? EndDueDate = null,
+    DateOnly? StartPeriod = null,
+    DateOnly? EndPeriod = null)
         {
-
             int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
             int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
 
-
-            if (ulev == 0)// || uno == 0)
+            if (ulev == 0)
             {
-                // If session values are missing, redirect to login or show error 
                 TempData["ErrorMessage"] = "Session has expired. Please log in again.";
                 return RedirectToAction("Index", "Login");
             }
 
+            // Always fetch all registrations (no date filtering)
+            var registrations = await _regService.GetDataAsync(
+                ulev, uno, organizationName, LocationName, StateName, CityName, null, null, StartPeriod, EndPeriod);
 
+            // Determine if user applied any filter (org, loc, state, city) but NOT due dates
+            bool isFiltered = !string.IsNullOrEmpty(organizationName) || !string.IsNullOrEmpty(LocationName)
+                              || !string.IsNullOrEmpty(StateName) || !string.IsNullOrEmpty(CityName);
 
-            var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
-            var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
-            var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
-            var bocw = await _bocwService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+            bool isDueDateSpecified = StartDueDate.HasValue || EndDueDate.HasValue;
+
+            // If user filtered but didn't specify due dates => restrict to current year
+            var currentYear = DateTime.Now.Year;
+            var currentYearStart = new DateOnly(currentYear, 1, 1);
+            var currentYearEnd = new DateOnly(currentYear, 12, 31);
+
+            var finalStartDueDate = isDueDateSpecified ? StartDueDate : (isFiltered ? currentYearStart : null);
+            var finalEndDueDate = isDueDateSpecified ? EndDueDate : (isFiltered ? currentYearEnd : null);
+
+            var contributions = await _contService.GetDataAsync(
+                ulev, uno, organizationName, LocationName, StateName, CityName, finalStartDueDate, finalEndDueDate, StartPeriod, EndPeriod);
+
+            var returns = await _retService.GetDataAsync(
+                ulev, uno, organizationName, LocationName, StateName, CityName, finalStartDueDate, finalEndDueDate, StartPeriod, EndPeriod);
+
+            var bocw = await _bocwService.GetDataAsync(
+                ulev, uno, organizationName, LocationName, StateName, CityName, finalStartDueDate, finalEndDueDate, StartPeriod, EndPeriod);
 
             var detailedViewModel = new CombinedDetailedViewModel
             {
@@ -67,25 +91,75 @@ namespace Echeckdem.Controllers
                 EndPeriod = EndPeriod
             };
 
-            var organizationNames = await _regService.GetOrganizationNamesAsync(uno);
-            ViewBag.OrganizationNames = organizationNames;
+            ViewBag.OrganizationNames = await _regService.GetOrganizationNamesAsync(uno);
 
-            var locationNames = string.IsNullOrEmpty(organizationName)
-               ? await _regService.GetLocationNamesAsync(uno)
-               : await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
-            ViewBag.LocationNames = locationNames;
+            ViewBag.LocationNames = string.IsNullOrEmpty(organizationName)
+                ? await _regService.GetLocationNamesAsync(uno)
+                : await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
 
-            var StateNames = await _regService.GetStateNamesAsync(uno);
-            ViewBag.StateNames = StateNames;
+            ViewBag.StateNames = await _regService.GetStateNamesAsync(uno);
+            ViewBag.CityNames = await _regService.GetCityNamesAsync(uno);
 
-            var CityNames = await _regService.GetCityNamesAsync(uno);
-            ViewBag.CityNames = CityNames;
-
-            
-            return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);     
+            return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);
         }
-        
-        [HttpGet]
+
+        //public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null!, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)//(int ulev, int uno, string organizationName = null)
+        //{
+
+        //    int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
+        //    int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
+
+
+        //    if (ulev == 0)// || uno == 0)
+        //    {
+        //        // If session values are missing, redirect to login or show error 
+        //        TempData["ErrorMessage"] = "Session has expired. Please log in again.";
+        //        return RedirectToAction("Index", "Login");
+        //    }
+
+
+
+        //    var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+        //    var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+        //    var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+        //    var bocw = await _bocwService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
+
+        //    var detailedViewModel = new CombinedDetailedViewModel
+        //    {
+        //        Registrations = registrations,
+        //        Contributions = contributions,
+        //        Returns = returns,
+        //        BOCW = bocw,
+        //        OrganizationName = organizationName,
+        //        SiteName = LocationName,
+        //        StateName = StateName,
+        //        CityName = CityName,
+        //        StartDueDate = StartDueDate,
+        //        EndDueDate = EndDueDate,
+        //        StartPeriod = StartPeriod,
+        //        EndPeriod = EndPeriod
+        //    };
+
+        //    var organizationNames = await _regService.GetOrganizationNamesAsync(uno);
+        //    ViewBag.OrganizationNames = organizationNames;
+
+
+        //    var locationNames = string.IsNullOrEmpty(organizationName)
+        //       ? await _regService.GetLocationNamesAsync(uno)
+        //       : await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
+        //    ViewBag.LocationNames = locationNames;
+
+        //    var StateNames = await _regService.GetStateNamesAsync(uno);
+        //    ViewBag.StateNames = StateNames;
+
+        //    var CityNames = await _regService.GetCityNamesAsync(uno);
+        //    ViewBag.CityNames = CityNames;
+
+
+        //    return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);     
+        //}
+
+        [HttpGet]          
         public async Task<IActionResult> GetLocations(string organizationName)  
         {
             int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
@@ -119,6 +193,15 @@ namespace Echeckdem.Controllers
             return Json(await _contService.GetFilteredLocationNamesAsync(uno, organizationName));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetBOCWLocations(string organizationName)
+        {
+            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
+            if (string.IsNullOrEmpty(organizationName))
+                return Json(await _bocwService.GetLocationNamesAsync(uno));
+
+            return Json(await _bocwService.GetFilteredLocationNamesAsync(uno, organizationName));
+        }
         //----------------START----------------------------------REGISTRATION--------  ----------------------------------------------------------------------//
 
         public async Task<IActionResult> EditReg(int uid, string oid, string lcode)

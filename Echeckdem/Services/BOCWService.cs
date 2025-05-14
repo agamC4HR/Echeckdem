@@ -56,10 +56,14 @@ namespace Echeckdem.Services
             if (string.IsNullOrEmpty(organizationName) &&
                 string.IsNullOrEmpty(LocationName) &&
                 string.IsNullOrEmpty(StateName) &&
-                string.IsNullOrEmpty(CityName))
-            {
-                sqlQuery += "AND YEAR(a.DueDate) = @currentYear ";
-            }
+                string.IsNullOrEmpty(CityName) &&
+                !StartDueDate.HasValue &&
+                !EndDueDate.HasValue &&
+                !StartPeriod.HasValue &&
+                !EndPeriod.HasValue)
+                        {
+                            sqlQuery += "AND YEAR(a.DueDate) = @currentYear ";
+                        }
             // Add extra filtering if ulev > 1 
             if (ulev >= 1)
             {
@@ -96,11 +100,11 @@ namespace Echeckdem.Services
             }
             if (StartPeriod.HasValue)
             {
-                sqlQuery += " AND a.Period >= @StartPeriod";
+                //sqlQuery += " AND a.Period >= @StartPeriod";
             }
             if (EndPeriod.HasValue)
             {
-                sqlQuery += " AND a.Period <= @EndPeriod";
+               //sqlQuery += " AND a.Period <= @EndPeriod";
             }
 
             sqlQuery += " ORDER BY a.DueDate DESC, a.lname";
@@ -111,7 +115,7 @@ namespace Echeckdem.Services
                              new SqlParameter("@currentYear", currentYear),
                              new SqlParameter("@uno", uno),
                              new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
-                             new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
+                             new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value), 
                              new SqlParameter("@StateName", (object)StateName ?? DBNull.Value),
                              new SqlParameter("@CityName", (object)CityName ?? DBNull.Value),
                              new SqlParameter("@StartDueDate", (object)StartDueDate ?? DBNull.Value),
@@ -137,6 +141,28 @@ namespace Echeckdem.Services
             .ToListAsync();
 
             return LocationNames;
+        }
+        public async Task<List<string>> GetFilteredLocationNamesAsync(int uno, string organizationName)
+        {
+            var sqlQuery = @"
+                SELECT DISTINCT b.Lname
+                FROM NCUMAP m
+                JOIN NCMLOC b ON m.Lcode = b.Lcode
+                JOIN NCMORG c ON m.Oid = c.Oid
+                WHERE m.Uno = @uno 
+                AND b.Lactive = 1
+                AND c.OActive = 1
+                AND c.OName = @organizationName";
+
+            var locationNames = await _context.Ncmlocs
+                .FromSqlRaw(sqlQuery,
+                    new SqlParameter("@uno", uno),
+                    new SqlParameter("@organizationName", organizationName))
+                .Select(l => l.Lname ?? string.Empty)
+                .Where(l => !string.IsNullOrEmpty(l))
+                .ToListAsync();
+
+            return locationNames;
         }
         public BOCWEditViewModel GetEditData(string lcode, int transactionId)
         {
