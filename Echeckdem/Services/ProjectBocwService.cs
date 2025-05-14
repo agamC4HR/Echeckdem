@@ -81,8 +81,8 @@ namespace Echeckdem.Services
             var bocwDtos = bocwRecords.Select(b => new BocwServiceDto
             {
                 Service = b.Task,
-                
-                Category = _dbEcheckContext.BocwScopes.Where(a => a.ScopeId == b.ScopeId).Select(a=>a.Category).FirstOrDefault(),
+
+                Category = _dbEcheckContext.BocwScopes.Where(a => a.ScopeId == b.ScopeId).Select(a => a.Category).FirstOrDefault(),
                 DueDate = b.DueDate,
                 Status = StatusMap.ContainsKey(b.Status) ? StatusMap[b.Status] : "Unknown",
                 CompletionDate = b.CompletionDate,
@@ -106,107 +106,20 @@ namespace Echeckdem.Services
                 BocwServices = bocwDtos
             };
         }
-        public async Task<List<ComplianceActivityDto>> GetComplianceActivitiesAsync(string clientName, string siteName)
-        {
-            var map = await (from m in _dbEcheckContext.Ncmorgs
-                             join l in _dbEcheckContext.Ncmlocs on m.Oid equals l.Oid
-                             where m.Oname == clientName && l.Lname == siteName && l.Ltype == "BO"
-                             select new { l.Lcode, m.Oid }).FirstOrDefaultAsync();
-
-            if (map == null)
-                return new List<ComplianceActivityDto>();
-
-
-            var bocwEntries = _dbEcheckContext.Ncbocws
-
-     //.Where(b => b.Lcode == "14860f99")
-.Where(b => b.Lcode == map.Lcode)
-     .Select(b => b.TransactionId)
-
-     .ToList();
-            Console.Write(bocwEntries);
-
-            Dictionary<int, int> acidMap = new();
-            try
-            {
-                var actionGroups = _dbEcheckContext.Ncactions
-
- .Where(a => a.Aclink.HasValue && bocwEntries.Contains(a.Aclink.Value))
-
- .ToList();
-
-                acidMap = actionGroups
-                            .GroupBy(a => a.Aclink.Value)
-                            .ToDictionary(g => g.Key, g => g.First().Acid);
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error while building acidMap: " + ex.Message);
-                throw;
-            }
-
-
-
-            //Console.Write(actionGroups);
-
-            //var bocwEntries = await _dbEcheckContext.Ncbocws
-            //    .Where(b => b.Lcode == map.Lcode)
-            //    .OrderBy(b => b.TransactionId)
-            //    .ToListAsync();
-
-            // var transactionIds = bocwEntries.Select(b => b.TransactionId).ToList();
-
-
-
-            //        Dictionary<int, int> acidMap = new();
-            //        try
-            //        {
-            //            //var materializedTransactionIds = transactionIds.ToList();
-            //            var actionGroups = await _dbEcheckContext.Ncactions
-            //.Where(a => a.Aclink.HasValue && transactionIds.Any(tid => tid == a.Aclink.Value))
-            ////.Where(a => a.Aclink.HasValue && materializedTransactionIds.Contains(a.Aclink.Value))
-            //.ToListAsync();
-
-            //            acidMap = actionGroups
-            //                .GroupBy(a => a.Aclink.Value)
-            //                .ToDictionary(g => g.Key, g => g.First().Acid);
-
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            Console.WriteLine("Error while building acidMap: " + ex.Message);
-            //            throw;
-            //        }
-
-
-
-
-            var fileMap = new Dictionary<int, string>();
-
-            var acidList = acidMap.Values.OfType<int>().ToList();
-
-
-            if (acidList.Any())
-            {
-                fileMap = await _dbEcheckContext.Ncfiles
-                    .Where(f => acidList.Contains(f.Flink ?? -1))
-                    .ToDictionaryAsync(f => f.Flink ?? -1, f => f.Fname);
-            }
-
-            //var activities = bocwEntries.Select((entry, index) =>
-            //{
-            //    string fileName = null;
-            //    bool FileExists = false;
-            //    if (acidMap.TryGetValue( out int acid))// && acid.HasValue)
-            //    {
-            //        // Now acid.Value is guaranteed to be a non-nullable integer
-            //        FileExists =  fileMap.TryGetValue(acid, out fileName);
-            //    }
-
-            //    //string fileUrl = string.IsNullOrEmpty(fileName)
-            //    //    ? null
-            //    //    : $"/Files/{map.Oid}/Bocw/{fileName}";
+        //public async Task<ProjectDetailsDto> GetProjectDetailsAsync(int uno, string clientName, string siteName)
+        //{
+        //    var map = await _dbEcheckContext.Ncumaps
+        //        .Where(m => m.Uno == uno)
+        //        .Join(_dbEcheckContext.Ncmorgs,
+        //            m => m.Oid,
+        //            o => o.Oid,
+        //            (m, o) => new { m.Lcode, m.Oid, OrgName = o.Oname })
+        //        .Join(_dbEcheckContext.Ncmlocs,
+        //            mo => new { mo.Lcode, mo.Oid },
+        //            l => new { l.Lcode, l.Oid },
+        //            (mo, l) => new { mo.Lcode, mo.Oid, mo.OrgName, SiteName = l.Lname, l.Lstate, l.Lcity })
+        //        .Where(x => x.OrgName == clientName && x.SiteName == siteName)
+        //        .FirstOrDefaultAsync();
 
         //    if (map == null)
         //        return null;
