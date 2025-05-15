@@ -25,7 +25,7 @@ namespace Echeckdem.Services
                 {
                     ProjectId = g.Key.Lcode,
                     ProjectName = g.Key.Lname,
-
+                    Oid=g.FirstOrDefault().project.Oid,
                     StartupTotal = g.Count(x => x.scope.Category == "Startup"),
                     StartupPending = g.Count(x => x.scope.Category == "Startup" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
                     StartupInProgress = g.Count(x => x.scope.Category == "Startup" && (x.task.Status==1 || x.task.Status == 2)),
@@ -46,7 +46,19 @@ namespace Echeckdem.Services
                     ProjectEndInProgress = g.Count(x => x.scope.Category == "Project End" && (x.task.Status == 1 || x.task.Status == 2)),
                     ProjectEndCompleted = g.Count(x => x.scope.Category == "Project End" && x.task.Status == 3)
                 }).ToList();
-
+            foreach (var k in result)
+            {
+                int total = k.StartupTotal + k.OngoingTotal + k.TrainingTotal + k.ProjectEndTotal;
+                int completed = k.StartupCompleted + k.OngoingCompleted + k.TrainingCompleted + k.ProjectEndCompleted;
+                int inProgress = k.StartupInProgress + k.OngoingInProgress + k.TrainingInProgress + k.ProjectEndInProgress;
+                int pending = k.StartupPending + k.OngoingPending + k.TrainingPending + k.ProjectEndPending;
+                if (total==completed)
+                { k.OverallStatus = "Completed"; }
+                if (total>completed && completed!=0)
+                { k.OverallStatus = "In Progress"; }
+                if (total > completed && completed == 0)
+                { k.OverallStatus = "Action Awaited"; }
+            }
             return result;
         }
 

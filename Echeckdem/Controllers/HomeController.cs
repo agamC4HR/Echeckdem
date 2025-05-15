@@ -43,6 +43,7 @@ namespace Echeckdem.Controllers
 
             // Determine the view type based on location types
             string viewType = "Default"; // Default fallback
+            List<ProjectDashboardStatus> projectDashboardStatus = new List<ProjectDashboardStatus>();
             if (typesSet.All(l => l == "S" || l == "F"))
             {
                 viewType = "OnlySF"; // Show view when no site is under BOCW
@@ -50,7 +51,7 @@ namespace Echeckdem.Controllers
             else if (typesSet.All(l => l == "BO"))
             {
                 viewType = "OnlyBO"; // Show view when all sites are under BOCW
-                List<ProjectDashboardStatus> projectDashboardStatus = new List<ProjectDashboardStatus>();
+               
                 projectDashboardStatus = _dashboardSummary.GetDashboardSummary(); 
 
             }
@@ -77,7 +78,9 @@ namespace Echeckdem.Controllers
             var model = new DashboardViewModel
             {
                 ViewType = viewType,
-                Registrations = registrations
+                Registrations = registrations,
+                ProjectDashboardStatus=projectDashboardStatus
+                
             };
             ViewBag.ViewType = viewType;
             // Pass the model to the view

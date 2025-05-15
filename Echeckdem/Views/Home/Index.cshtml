@@ -1082,29 +1082,49 @@
         {
             <label>kuch nahi aya</label>
         }
-        else { <label>kuch to aya</label>}
-        <table class="styled-table">
-    <thead style="top:75px;">
-        <tr>
-           <th>S.no.</th>
-            <th>Project Name</th>
-            <th>Construction Start Date</th>
-                    <th>Construction End Date </th>
-            <th>Start up</th>
-            <th>Training</th>
-            <th>Ongoing</th>
-            <th>Project End</th>
-            <th>Overall Status</th>
-            <th>Last Updated</th>
-            
-            <th>View Details</th>
-        </tr>
-    </thead>
-    <tbody>
+        else
+        {
+            int count = 1;
+            <table class="styled-table">
+                <thead style="top:75px;">
+                    <tr>
+                        <th>S.no.</th>
+                        <th>Project Name</th>
+                        <th>Construction Start Date</th>
+                        <th>Construction End Date </th>
+                        <th>Start up</th>
+                        <th>Training</th>
+                        <th>Ongoing</th>
+                        <th>Project End</th>
+                        <th>Overall Status</th>
+                        @* <th>Last Updated</th> *@
 
-        </tbody>
-        </table>
-    
+                        <th>View Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var k in Model.ProjectDashboardStatus)
+                    {<tr>
+                        <td>@count</td>
+                                     <td>@k.ProjectName</td>
+                                    <td>Construction Start Date</td>
+                                    <td>Construction End Date </td>
+                                    <td>@k.StartupCompleted/@k.StartupTotal</td>
+                                    <td>@k.TrainingCompleted/@k.TrainingTotal</td>
+                                    <td>@k.OngoingCompleted/@k.OngoingTotal</td>
+                                    <td>@k.ProjectEndCompleted/@k.ProjectEndTotal</td>
+                                    <td>@k.OverallStatus</td>
+                                    @* <td>Last Updated</td> *@
+
+                                    <td><a href="Project\Index?oid=@k.Oid&lcode=@k.ProjectId">EYE ICON</a></td>
+                        </tr>
+                        count++;
+                    }
+                </tbody>
+                </table>
+
+        }
+
 }
 
 
