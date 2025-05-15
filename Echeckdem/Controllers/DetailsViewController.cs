@@ -375,7 +375,7 @@ namespace Echeckdem.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddorUpdateBocw(BOCWEditViewModel model, string submitType)
+        public IActionResult AddorUpdateBocw(BOCWEditViewModel model, string submitType) //IFormFile file)
         {
             if (!ModelState.IsValid)
             {
@@ -386,7 +386,7 @@ namespace Echeckdem.Controllers
             {
                 if (submitType == "SaveNCBOCW")
                 {
-                    _bocwService.UpdateOnlyNCBOCW(model);
+                    _bocwService.UpdateOnlyNCBOCW(model, model.UploadedFile);
                 }
                 else if (submitType == "SaveNCACTION")
                 {

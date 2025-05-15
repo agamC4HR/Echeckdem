@@ -53,6 +53,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ProjectBocwService>();
 builder.Services.AddScoped<IAudtrail, AudtrailUpdate>();
 builder.Services.AddScoped<IDashboardSummary, DashboardSummary>();
+    
+builder.Services.AddControllersWithViews();
 // Configuring the Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStrings");              //ECHECK
 builder.Services.AddDbContext<DbEcheckContext>(options =>

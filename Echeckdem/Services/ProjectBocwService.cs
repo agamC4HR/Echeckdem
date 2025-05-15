@@ -1,6 +1,9 @@
 ﻿using Echeckdem.Models;
 using Microsoft.EntityFrameworkCore;
 using Echeckdem.CustomFolder.ProjectBocw;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
+
 
 
 namespace Echeckdem.Services
@@ -8,6 +11,7 @@ namespace Echeckdem.Services
     public class ProjectBocwService
     {
         private readonly DbEcheckContext _dbEcheckContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private static readonly Dictionary<int, string> StatusMap = new()
         {
             [0] = "Docs/Info Awaited",
@@ -19,9 +23,10 @@ namespace Echeckdem.Services
             [-1] = "Action Awaited",
             [-2] = "Future"
         };
-        public ProjectBocwService(DbEcheckContext dbEcheckContext)
+        public ProjectBocwService(DbEcheckContext dbEcheckContext, IHttpContextAccessor httpContextAccessor)
         {
             _dbEcheckContext = dbEcheckContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Dictionary<string, List<string>>> GetUserOrgSiteMapAsync(int uno)
@@ -43,7 +48,6 @@ namespace Echeckdem.Services
                     g => g.Select(x => x.SiteName).Distinct().ToList()
                 );
         }
-
         public async Task<ProjectDetailsDto> GetProjectDetailsAsync(int uno, string clientName, string siteName)
         {
             var map = await _dbEcheckContext.Ncumaps
@@ -66,6 +70,27 @@ namespace Echeckdem.Services
                 .Where(b => b.Lcode == map.Lcode)
                 .FirstOrDefaultAsync();
 
+            // Fetch BOCW data
+            var bocwRecords = await _dbEcheckContext.Ncbocws
+                .Where(b => b.Lcode == map.Lcode)
+                .ToListAsync();
+
+            var scopeIds = bocwRecords.Select(b => b.ScopeId).Distinct().ToList();
+
+
+            var bocwDtos = bocwRecords.Select(b => new BocwServiceDto
+            {
+                Service = b.Task,
+
+                Category = _dbEcheckContext.BocwScopes.Where(a => a.ScopeId == b.ScopeId).Select(a => a.Category).FirstOrDefault(),
+                DueDate = b.DueDate,
+                Status = StatusMap.ContainsKey(b.Status) ? StatusMap[b.Status] : "Unknown",
+                CompletionDate = b.CompletionDate,
+                File = b.FileName,
+                transactionID = b.TransactionId,
+                lcode = b.Lcode
+            }).ToList();
+
             return new ProjectDetailsDto
             {
                 SiteName = map.SiteName,
@@ -77,138 +102,48 @@ namespace Echeckdem.Services
                 ProjectEndDate = locb?.ProjectEndDateEst?.ToString("dd-MMM-yyyy"),
                 ProjectArea = locb?.ProjectArea,
                 ProjectCost = locb?.ProjectCostEst?.ToString("N2"),
-                ProjectLead = locb?.ProjectLead
+                ProjectLead = locb?.ProjectLead,
+                BocwServices = bocwDtos
             };
         }
-        public async Task<List<ComplianceActivityDto>> GetComplianceActivitiesAsync(string clientName, string siteName)
-        {
-            var map = await (from m in _dbEcheckContext.Ncmorgs
-                             join l in _dbEcheckContext.Ncmlocs on m.Oid equals l.Oid
-                             where m.Oname == clientName && l.Lname == siteName && l.Ltype == "BO"
-                             select new { l.Lcode, m.Oid }).FirstOrDefaultAsync();
+        //public async Task<ProjectDetailsDto> GetProjectDetailsAsync(int uno, string clientName, string siteName)
+        //{
+        //    var map = await _dbEcheckContext.Ncumaps
+        //        .Where(m => m.Uno == uno)
+        //        .Join(_dbEcheckContext.Ncmorgs,
+        //            m => m.Oid,
+        //            o => o.Oid,
+        //            (m, o) => new { m.Lcode, m.Oid, OrgName = o.Oname })
+        //        .Join(_dbEcheckContext.Ncmlocs,
+        //            mo => new { mo.Lcode, mo.Oid },
+        //            l => new { l.Lcode, l.Oid },
+        //            (mo, l) => new { mo.Lcode, mo.Oid, mo.OrgName, SiteName = l.Lname, l.Lstate, l.Lcity })
+        //        .Where(x => x.OrgName == clientName && x.SiteName == siteName)
+        //        .FirstOrDefaultAsync();
 
-            if (map == null)
-                return new List<ComplianceActivityDto>();
+        //    if (map == null)
+        //        return null;
 
+        //    var locb = await _dbEcheckContext.Ncmlocbos
+        //        .Where(b => b.Lcode == map.Lcode)
+        //        .FirstOrDefaultAsync();
 
-            var bocwEntries = _dbEcheckContext.Ncbocws
-
-   
-.Where(b => b.Lcode == map.Lcode)
-     .Select(b => b.TransactionId)
-
-     .ToList();
-            Console.Write(bocwEntries);
-
-            Dictionary<int, int> acidMap = new();
-            try
-            {
-                var actionGroups = _dbEcheckContext.Ncactions
-
-              .Where(a => a.Aclink.HasValue).ToList().Where(a => bocwEntries.Contains(a.Aclink.Value))
-
-              .ToList();
-                acidMap = actionGroups
-                            .GroupBy(a => a.Aclink.Value)
-                            .ToDictionary(g => g.Key, g => g.First().Acid);
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error while building acidMap: " + ex.Message);
-                throw;
-            }
+        //    return new ProjectDetailsDto
+        //    {
+        //        SiteName = map.SiteName,
+        //        State = map.Lstate,
+        //        City = map.Lcity,
+        //        ClientName = locb?.ClientName,
+        //        GeneralContractor = locb?.GeneralContractor,
+        //        ProjectStartDate = locb?.ProjectStartDateEst?.ToString("dd-MMM-yyyy"),
+        //        ProjectEndDate = locb?.ProjectEndDateEst?.ToString("dd-MMM-yyyy"),
+        //        ProjectArea = locb?.ProjectArea,
+        //        ProjectCost = locb?.ProjectCostEst?.ToString("N2"),
+        //        ProjectLead = locb?.ProjectLead
+        //    };
+        //}
 
 
-
-            //Console.Write(actionGroups);
-
-            //var bocwEntries = await _dbEcheckContext.Ncbocws
-            //    .Where(b => b.Lcode == map.Lcode)
-            //    .OrderBy(b => b.TransactionId)
-            //    .ToListAsync();
-
-            // var transactionIds = bocwEntries.Select(b => b.TransactionId).ToList();
-
-
-
-            //        Dictionary<int, int> acidMap = new();
-            //        try
-            //        {
-            //            //var materializedTransactionIds = transactionIds.ToList();
-            //            var actionGroups = await _dbEcheckContext.Ncactions
-            //.Where(a => a.Aclink.HasValue && transactionIds.Any(tid => tid == a.Aclink.Value))
-            ////.Where(a => a.Aclink.HasValue && materializedTransactionIds.Contains(a.Aclink.Value))
-            //.ToListAsync();
-
-            //            acidMap = actionGroups
-            //                .GroupBy(a => a.Aclink.Value)
-            //                .ToDictionary(g => g.Key, g => g.First().Acid);
-
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            Console.WriteLine("Error while building acidMap: " + ex.Message);
-            //            throw;
-            //        }
-
-
-
-
-            var fileMap = new Dictionary<int, string>();
-
-            var acidList = acidMap.Values.OfType<int>().ToList();
-
-
-            if (acidList.Any())
-            {
-                fileMap = await _dbEcheckContext.Ncfiles
-                    .Where(f => acidList.Contains(f.Flink ?? -1))
-                    .ToDictionaryAsync(f => f.Flink ?? -1, f => f.Fname);
-            }
-
-            //var activities = bocwEntries.Select((entry, index) =>
-            //{
-            //    string fileName = null;
-            //    bool FileExists = false;
-            //    if (acidMap.TryGetValue( out int acid))// && acid.HasValue)
-            //    {
-            //        // Now acid.Value is guaranteed to be a non-nullable integer
-            //        FileExists =  fileMap.TryGetValue(acid, out fileName);
-            //    }
-
-            //    //string fileUrl = string.IsNullOrEmpty(fileName)
-            //    //    ? null
-            //    //    : $"/Files/{map.Oid}/Bocw/{fileName}";
-
-            //    string fileUrl = null;
-            //    if (!string.IsNullOrEmpty(fileName))
-            //    {
-            //        fileUrl = "/Files/" + map.Oid + "/Bocw/" + fileName;
-            //    }
-
-
-            //    return new ComplianceActivityDto
-            //    {
-            //        SNo = index + 1,
-            //        ServiceType = "BOCW",
-            //        Service = entry.Task,
-            //        DueDate = entry.DueDate.ToString("dd-MMM-yyyy"),
-            //        Status = StatusMap.TryGetValue(entry.Status, out var statusText) ? statusText : "Unknown",
-
-
-            //        CompletionDate = entry.CompletionDate.HasValue? entry.CompletionDate.Value.ToString("dd-MMM-yyyy") : null,
-            //        FileName = fileName,
-            //        FileUrl = fileUrl,
-            //        TransactionId = entry.TransactionId,
-            //        FileExists = FileExists
-            //    };
-            //}).ToList();
-
-            //return activities;
-            List<ComplianceActivityDto> comp = new List<ComplianceActivityDto>();
-            return comp;
-        }
 
     }
 }

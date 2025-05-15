@@ -91,23 +91,22 @@
     <tbody>
         @foreach (var action in Model)
         {
+                var act = action.ActionViewModel.FirstOrDefault();
             <tr>
                 <td>@action.SelectedACTP</td>
                 <td>@action.Oname</td>
                 <td>@action.Lname</td>
                 <td>@action.SelectedTPP</td>
                 <td>@action.SelectedACTITLE</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>@act?.DetailOfIssue</td>
+                    <td>@act?.InternalStatusLabel</td>
+                    <td>@(act?.StartDate.HasValue == true ? act.StartDate.Value.ToString("dd-MMM-yyyy") : "")</td>
+                    <td>@(act?.CloseDate.HasValue == true ? act.CloseDate.Value.ToString("dd-MMM-yyyy") : "")</td>
                 <td>@action.SelectedSBTP</td>
                 <td>
                         <button class="saveButton" onclick="openDetails('@action.Acid', '@action.Actid')">Details</button>
                 </td>
-                @* <td>
-                   <a class="saveButton" href="@Url.Action("DetailsTracker", "Tracker", new { acid = action.Acid, actid = action.Actid })">Details</a>
-                </td> *@
+              
 
             </tr>
         }

@@ -5,9 +5,9 @@
         public List<string> Clients { get; set; } = new List<string>();
         public Dictionary<string, List<string>> ClientSiteMap { get; set; } = new Dictionary<string, List<string>>();
 
-        
+        public List<TrackerViewModel> TrackerActions { get; set; }
 
-        
+
 
     }
 }

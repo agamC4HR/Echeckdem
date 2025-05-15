@@ -112,6 +112,24 @@
         </div>
         </div>
 
+                <div class="form-row-2col">
+                    <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                        <label>Upload File (.pdf, .jpg)</label>
+                        <input type="file" name="UploadedFile" class="form-control" accept=".pdf,.jpg,.jpeg" />
+                    </div>
+                </div>
+
+                <!-- Displaying the current file name if it exists -->
+                @if (!string.IsNullOrEmpty(Model?.FileName))
+                {
+                    <div class="form-row-2col">
+                        <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                            <label>Current File</label>
+                            <span>@Model.FileName</span>
+                        </div>
+                    </div>
+                }
+
         <button type="submit" name="submitType" value="SaveNCBOCW" class="saveButton">Save NCBOCW Info</button>
     </fieldset>
 

@@ -41,12 +41,14 @@ namespace Echeckdem.Controllers
                     var userLevel = await _loginService.GetUserLevelAsync(model.userID);
                     var uno = await _loginService.GetUserUnoAsync(model.userID);                                   
                     var token = _jwtService.GenerateJwtToken(model);
+                    var locationTypes = await _loginService.GetUserLocationTypesAsync(uno);
+                    var bo = locationTypes.All(a => a == "BO") ? "yes" : "no";
 
                     HttpContext.Session.SetString("JWTToken", token);
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
-
+                    HttpContext.Session.SetString("BO", bo);//locationTypes.ToString());
                     
                     if (userLevel == 2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
 

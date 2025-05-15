@@ -189,6 +189,7 @@ namespace Echeckdem.Services
                 DueDate = bocw.DueDate,
                 Status = bocw.Status,
                 CompletionDate = bocw.CompletionDate,
+                
 
                 ACID = action.Acid,
                 ACTitle = action.Actitle,
@@ -198,6 +199,7 @@ namespace Echeckdem.Services
                 ACStatus = action.Acstatus,
                 ACRDate = action.Acrdate,
                 ACRemarks = action.Acremarks,
+                
                 
                 AvailableStatuses = statusOptions
             };
@@ -215,17 +217,60 @@ namespace Echeckdem.Services
             return model;
         }
 
-        public void UpdateOnlyNCBOCW(BOCWEditViewModel model)
+        public void UpdateOnlyNCBOCW(BOCWEditViewModel model, IFormFile file)
         {
             var bocw = _context.Ncbocws.FirstOrDefault(x => x.Lcode == model.LCode && x.TransactionId == model.TransactionID);
             if (bocw != null)
             {
                 bocw.Status = model.Status;
                 bocw.CompletionDate = model.CompletionDate;
-            }
-            _context.SaveChanges();
-        }
+                if(model.UploadedFile != null) 
+               // if (file != null && file.Length > 0)
+                {
+                    var files = model.UploadedFile;
+                    var allowedExtensions = new[] { ".pdf", ".jpg" };
+                    var fileExtension = Path.GetExtension(files.FileName).ToLower();
 
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new Exception("Invalid file type. Only .pdf and .jpg files are allowed.");
+                    }
+                    
+                    var map = _context.Ncmlocs.FirstOrDefault(l => l.Lcode == model.LCode);
+
+                    if (map != null)
+                    {
+                        var oid = map.Oid;  // OID from Ncmloc table
+
+                        // Define the folder path to save the file
+                        string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "files", oid.ToString(), "bocw");
+
+                        // Ensure the folder exists
+                        if (!Directory.Exists(folderPath))
+                        {
+                            Directory.CreateDirectory(folderPath);
+                        }
+
+                        // Define the file path and name
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(files.FileName);
+                        string filePath = Path.Combine(folderPath, fileName);
+
+                        // Save the file to disk
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            file.CopyTo(stream);
+                        }
+
+                        
+
+                        
+                        bocw.FileName = fileName; 
+                        bocw.FupDate = DateOnly.FromDateTime(DateTime.Now);  
+                    }
+                }
+                _context.SaveChanges();
+            }
+        }
         public void UpdateOnlyNCACTION(BOCWEditViewModel model)
         {
             var action = _context.Ncactions.FirstOrDefault(x => x.Acid == model.ACID);

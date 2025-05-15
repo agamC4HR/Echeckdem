@@ -1377,6 +1377,7 @@ public partial class DbEcheckContext : DbContext
             entity.ToTable("NCBOCW");
 
             entity.Property(e => e.TransactionId).HasColumnName("TransactionID");
+            entity.Property(e => e.FileName).IsUnicode(false);
             entity.Property(e => e.Lcode)
                 .HasMaxLength(15)
                 .IsUnicode(false)
