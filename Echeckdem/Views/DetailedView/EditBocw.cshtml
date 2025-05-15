@@ -225,6 +225,38 @@
 
         <button type="submit" name="submitType" value="SaveNCACTION" class="saveButton">Save Action Taken</button>
     </fieldset>
+
+        @if (Model.TakenViewModels != null && Model.TakenViewModels.Any())
+        {
+            <fieldset class="NCACTAKEN_Action">
+                <div class="heading">Previous Action Taken History</div>
+
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Action Date</th>
+                            <th>Action Taken</th>
+                            <th>Next Action Date</th>
+                            <th>Visible to Client</th>
+                            <th>By User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TakenViewModels)
+                        {
+                            <tr>
+                                <td>@item.Acdate?.ToString("dd-MMM-yyyy")</td>
+                                <td>@item.Actaken</td>
+                                <td>@item.Nacdate?.ToString("dd-MMM-yyyy")</td>
+                                <td>@(item.Showclient == 1 ? "Yes" : "No")</td>
+                                <td>@item.Uname</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </fieldset>
+        }
+
     </div>
 
 </form>

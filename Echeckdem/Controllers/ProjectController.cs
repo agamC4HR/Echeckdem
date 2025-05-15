@@ -69,6 +69,16 @@ namespace Echeckdem.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> GetNcActionIds(string lcode, int oid, int transactionId)
+        {
+            var result = await _projectbocwService.GetNcActionIdsAsync(lcode, oid, transactionId);
+
+            if (result == null || result.Acid == null)
+                return NotFound("No NC Action found for given transaction ID");
+
+            return Json(result);
+        }
 
 
 

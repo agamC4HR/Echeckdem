@@ -14,5 +14,7 @@
 
         public string? lcode { get; set; }
 
+        public string oid { get; set; }
+
     }
 }
