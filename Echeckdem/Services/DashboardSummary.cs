@@ -13,7 +13,7 @@ namespace Echeckdem.Services
         {
             _context = context;
         }
-        public  List<ProjectDashboardStatus> GetDashboardSummary()
+        public  List<ProjectDashboardStatus> GetProjectDashboardSummary()
         {
             var result =  (
                 from task in _context.Ncbocws
@@ -23,9 +23,12 @@ namespace Echeckdem.Services
                 group new { task, scope, project } by new { task.Lcode, project.Lname } into g
                 select new ProjectDashboardStatus
                 {
+
                     ProjectId = g.Key.Lcode,
                     ProjectName = g.Key.Lname,
-                    Oid=g.FirstOrDefault().project.Oid,
+                    Startdate=(from k in _context.Ncmlocbos where k.Lcode==g.Key.Lcode select k.ProjectStartDateEst).FirstOrDefault(),
+                    Enddate = (from k in _context.Ncmlocbos where k.Lcode == g.Key.Lcode select k.ProjectEndDateEst).FirstOrDefault(),
+                    Oid =g.FirstOrDefault().project.Oid,
                     StartupTotal = g.Count(x => x.scope.Category == "Startup"),
                     StartupPending = g.Count(x => x.scope.Category == "Startup" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
                     StartupInProgress = g.Count(x => x.scope.Category == "Startup" && (x.task.Status==1 || x.task.Status == 2)),

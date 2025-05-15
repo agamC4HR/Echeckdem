@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Echeckdem.CustomFolder;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Echeckdem.CustomFolder.UserManagement;
+using Echeckdem.Handlers;
 
 namespace Echeckdem.Services
 {
@@ -76,7 +77,11 @@ namespace Echeckdem.Services
             return locationTypes;
         }
 
-
+        public async Task<List<Ncumap>> GetUserLocationsAsync(int uno)
+        { 
+            return await _dbEcheckContext.Ncumaps.Where(m=>m.Uno==uno).ToListAsync();
+        
+        }
 
     }
 }

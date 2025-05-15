@@ -1,6 +1,6 @@
 ﻿using Echeckdem.CustomFolder;
 
-namespace Echeckdem.Services
+namespace Echeckdem.Handlers
 {
     public interface ISiteManagementService
     {

@@ -1,9 +1,9 @@
 ﻿@model Echeckdem.CustomFolder.BOCWEditViewModel
 
 @{
-    ViewData["Title"] = "BOCW Recordt";
-    ViewData["Heading"] = "Edit BOCW Record";
-    ViewData["Heading_child"] = "...";
+    ViewData["Title"] = "BOCW Record";
+    ViewData["Heading"] = "Site Name";
+    ViewData["Heading_child"] = "";
 }
 
 <style>
@@ -83,7 +83,7 @@
         <div class="Child_Container">
     <!-- NCBOCW Section -->
             <fieldset class="NCBOCW_Information">
-        <div class="heading">NCBOCW Information</div>
+        <div class="heading">Task Summary</div>
 
                 <div class="form-row-2col">
                     <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
@@ -130,12 +130,12 @@
                     </div>
                 }
 
-        <button type="submit" name="submitType" value="SaveNCBOCW" class="saveButton">Save NCBOCW Info</button>
+        <button type="submit" name="submitType" value="SaveNCBOCW" class="saveButton">Save Task</button>
     </fieldset>
 
     <!-- NCACTION Section -->
             <fieldset class="NCACTION_Details">
-                <div class="heading">NCACTION Details</div>
+                <div class="heading">Task Details</div>
 
                 <div class="form-row-2col">
                     <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
@@ -192,7 +192,7 @@
         </div>
     <!-- NCACTAKEN Section -->
         <fieldset class="NCACTAKEN_Action">
-            <div class="heading">NCACTAKEN - Action Taken</div>
+            <div class="heading">Task Update</div>
 
             <div class="form-row-2col">
                 <div class="form-group" style="grid-column: 1 / -1; width: 100%;">

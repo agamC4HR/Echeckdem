@@ -1,8 +1,8 @@
-﻿using Echeckdem.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Echeckdem.Models;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using Echeckdem.CustomFolder;
 using Echeckdem.Handlers;
 
@@ -42,14 +42,17 @@ namespace Echeckdem.Controllers
                     var uno = await _loginService.GetUserUnoAsync(model.userID);                                   
                     var token = _jwtService.GenerateJwtToken(model);
                     var locationTypes = await _loginService.GetUserLocationTypesAsync(uno);
-                    var bo = locationTypes.All(a => a == "BO") ? "yes" : "no";
+                    var userlocations=await _loginService.GetUserLocationsAsync(uno);
+                    string userlocation=JsonSerializer.Serialize(userlocations);
 
                     HttpContext.Session.SetString("JWTToken", token);
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
-                    HttpContext.Session.SetString("BO", bo);//locationTypes.ToString());
-                    
+                    var bo = locationTypes.All(a => a == "BO") ? "yes" : "no";
+                    HttpContext.Session.SetString("BO", bo);
+                    HttpContext.Session.SetString("Userlocation", userlocation);
+
                     if (userLevel == 2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
 
                     ViewBag.UserLevel = userLevel;

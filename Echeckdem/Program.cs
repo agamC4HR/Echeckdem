@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Echeckdem.Handlers;
+using Echeckdem.Filter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,10 @@ builder.Services.AddHttpContextAccessor();
 //builder.Host.UseEnvironment("Development");
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<RequiredSession>();
+});
 
 builder.Services.AddSession();
 

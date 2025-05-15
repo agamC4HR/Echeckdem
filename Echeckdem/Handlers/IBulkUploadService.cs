@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace Echeckdem.Services
+namespace Echeckdem.Handlers
 {
     public interface IBulkUploadService
     {

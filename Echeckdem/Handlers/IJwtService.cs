@@ -1,7 +1,7 @@
 ﻿using Echeckdem.Models;
 using Echeckdem.CustomFolder;
 
-namespace Echeckdem.Services
+namespace Echeckdem.Handlers
 {
     public interface IJwtService
     {

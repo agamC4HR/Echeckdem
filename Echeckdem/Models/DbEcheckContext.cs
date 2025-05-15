@@ -1394,7 +1394,7 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Task)
                 .HasMaxLength(200)
                 .IsUnicode(false);
-
+            entity.Property(e => e.FileName).IsUnicode(false);
             entity.HasOne(d => d.LcodeNavigation).WithMany(p => p.Ncbocws)
                 .HasForeignKey(d => d.Lcode)
                 .OnDelete(DeleteBehavior.ClientSetNull)

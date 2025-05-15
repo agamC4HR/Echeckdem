@@ -5,7 +5,12 @@
         public string Oid { get; set; }
         public string ProjectId { get; set; }
         public string ProjectName { get; set; }
+        
+        public DateOnly? Startdate { get; set; }
+
+        public DateOnly? Enddate { get; set; }
         public int StartupTotal { get; set; }
+
         
         public int StartupPending { get; set; }
         public int StartupInProgress { get; set; }

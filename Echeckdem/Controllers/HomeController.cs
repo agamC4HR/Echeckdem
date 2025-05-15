@@ -52,7 +52,7 @@ namespace Echeckdem.Controllers
             {
                 viewType = "OnlyBO"; // Show view when all sites are under BOCW
                
-                projectDashboardStatus = _dashboardSummary.GetDashboardSummary(); 
+                projectDashboardStatus = _dashboardSummary.GetProjectDashboardSummary(); 
 
             }
             else if (typesSet.Contains("BO"))

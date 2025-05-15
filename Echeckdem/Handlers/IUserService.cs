@@ -1,6 +1,6 @@
 ﻿using Echeckdem.Models;
 
-namespace Echeckdem.Services
+namespace Echeckdem.Handlers
 {
     public interface IUserService
     {
@@ -11,6 +11,6 @@ namespace Echeckdem.Services
 
         Task<List<string>> GetUserLocationTypesAsync(int uno);
 
-
+        Task<List<Ncumap>> GetUserLocationsAsync(int uno);
     }
 }

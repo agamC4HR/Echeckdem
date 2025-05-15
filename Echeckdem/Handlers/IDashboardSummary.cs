@@ -3,6 +3,6 @@
 namespace Echeckdem.Handlers
 {
     public interface IDashboardSummary    {
-        List<ProjectDashboardStatus> GetDashboardSummary();
+        List<ProjectDashboardStatus> GetProjectDashboardSummary();
     }
 }

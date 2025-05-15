@@ -1,9 +1,9 @@
 ﻿@model CombinedDetailedViewModel
 
 @{
-    ViewData["Title"] = "Detailed Report";
-    ViewData["Heading"] = "Detailed Report";
-    ViewData["Heading_child"] = "Comprehensive Labor Compliance Insights and Actions.";
+    ViewData["Title"] = "Compliance Tracker";
+    ViewData["Heading"] = "Compliance Tracker";
+    ViewData["Heading_child"] = "Comprehensive Labor Compliance Calendar.";
 }
 
 
@@ -83,7 +83,7 @@
         <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
         <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
         <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
-        <button class="table-filter-btn" onclick="filterTable('bocw')">BOCW</button>
+        <button class="table-filter-btn" onclick="filterTable('bocw')">Construction</button>
     </div>
 </div>
 
@@ -93,7 +93,7 @@
         <thead>
             <tr>
                 <th>S.No.</th>
-                <th>Organization Name</th>
+                <th>Client</th>
                 <th>Site Name</th>
                 <th>Service Category</th>
                 <th>Services</th>

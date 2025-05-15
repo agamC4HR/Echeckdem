@@ -2,9 +2,9 @@
 
 
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Dashboard";
     ViewData["Heading"] = "Compliance Dashboard";
-    ViewData["Heading_child"] = "Scope of Service and Status of Labour Compliance";
+    ViewData["Heading_child"] = "Status of Labour Compliance";
 }
 
 <div class="table-container-detailsView" id="table-container-detailsView">
@@ -1107,8 +1107,8 @@
                     {<tr>
                         <td>@count</td>
                                      <td>@k.ProjectName</td>
-                                    <td>Construction Start Date</td>
-                                    <td>Construction End Date </td>
+                                    <td>@k.Startdate</td>
+                                    <td>@k.Enddate </td>
                                     <td>@k.StartupCompleted/@k.StartupTotal</td>
                                     <td>@k.TrainingCompleted/@k.TrainingTotal</td>
                                     <td>@k.OngoingCompleted/@k.OngoingTotal</td>
@@ -1116,7 +1116,9 @@
                                     <td>@k.OverallStatus</td>
                                     @* <td>Last Updated</td> *@
 
-                                    <td><a href="Project\Index?oid=@k.Oid&lcode=@k.ProjectId">EYE ICON</a></td>
+                                    <td><a href="Project\Index?oid=@k.Oid&lcode=@k.ProjectId" style="color:black">
+                                        EYE ICON
+                                        </a></td>
                         </tr>
                         count++;
                     }

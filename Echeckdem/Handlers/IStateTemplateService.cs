@@ -2,7 +2,7 @@
 using Echeckdem.Models;
 using Mono.TextTemplating;
 
-namespace Echeckdem.Services
+namespace Echeckdem.Handlers
 {
     public interface IStateTemplateService
     {
