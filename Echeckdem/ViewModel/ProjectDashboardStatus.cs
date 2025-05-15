@@ -2,6 +2,7 @@
 {
     public class ProjectDashboardStatus
     {
+        public string Oid { get; set; }
         public string ProjectId { get; set; }
         public string ProjectName { get; set; }
         public int StartupTotal { get; set; }
