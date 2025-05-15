@@ -200,18 +200,52 @@ namespace Echeckdem.Services
                 ACRDate = action.Acrdate,
                 ACRemarks = action.Acremarks,
                 
-                
-                AvailableStatuses = statusOptions
+
+
+
+                AvailableStatuses = statusOptions,
+                TakenViewModels = new List<TrackerTakenViewModel>()   // added abhiiii
             };
 
-            var ncactaken = _context.Ncactakens.FirstOrDefault(x=>x.Acid == action.Acid);
-            if (ncactaken != null)
+            //var ncactaken = _context.Ncactakens.FirstOrDefault(x=>x.Acid == action.Acid);
+            //if (ncactaken != null)
+            //{
+
+            //    model.ActionTaken = ncactaken.Actaken;
+            //    model.ActionDate = ncactaken.Acdate;
+            //    model.ActionClosedDate = ncactaken.Nacdate;
+            //    model.ShowClient = ncactaken.Showclient;
+            //}
+
+            //return model;
+
+            var ncactakenList = _context.Ncactakens
+       .Where(x => x.Acid == action.Acid)
+       .ToList();
+
+            model.TakenViewModels = ncactakenList.Select(x => new TrackerTakenViewModel
             {
-                
-                model.ActionTaken = ncactaken.Actaken;
-                model.ActionDate = ncactaken.Acdate;
-                model.ActionClosedDate = ncactaken.Nacdate;
-                model.ShowClient = ncactaken.Showclient;
+                Actid = x.Actid,
+                Acid = x.Acid,
+                Acdate = x.Acdate,
+                Actaken = x.Actaken,
+                Nacdate = x.Nacdate,
+                Showclient = x.Showclient ?? 0,
+                Uno = x.Uno,
+                Uname = _context.Ncusers
+                    .Where(u => u.Uno == x.Uno)
+                    .Select(u => u.Uname)
+                    .FirstOrDefault() ?? "Unknown"
+            }).ToList();
+
+            // Optionally assign the first one for editable display
+            var latestTaken = ncactakenList.FirstOrDefault();
+            if (latestTaken != null)
+            {
+                model.ActionTaken = latestTaken.Actaken;
+                model.ActionDate = latestTaken.Acdate;
+                model.ActionClosedDate = latestTaken.Nacdate;
+                model.ShowClient = latestTaken.Showclient;
             }
 
             return model;
@@ -346,7 +380,7 @@ namespace Echeckdem.Services
                 _context.Ncfiles.Add(ncFile);
             }
 
-            _context.SaveChanges();
+            _context.SaveChanges(); // save changes 
         }
 
        

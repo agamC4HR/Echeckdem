@@ -398,7 +398,7 @@ namespace Echeckdem.Services
             var locs = _dbEcheckContext.Ncmlocs.ToList();
 
             return allNcActions
-                .Where(a=>a.Actp!="Ops")
+                //.Where(a=>a.Actp!="Ops")
                 .Select(action => new TrackerViewModel
                 {
                     Acid = action.Acid,

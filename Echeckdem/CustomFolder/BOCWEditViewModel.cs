@@ -41,7 +41,9 @@
             public DateOnly? ActionDate { get; set; }
             public DateOnly? ActionClosedDate { get; set; }
             public int? ShowClient { get; set; }
-            public bool IsActTakenAvailable => ACTID.HasValue; 
+            public bool IsActTakenAvailable => ACTID.HasValue;
 
-        }
+        public List<TrackerTakenViewModel> TakenViewModels { get; set; } = new();
+
+    }
     }

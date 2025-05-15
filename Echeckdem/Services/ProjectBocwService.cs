@@ -89,7 +89,8 @@ namespace Echeckdem.Services
                 CompletionDate = b.CompletionDate,
                 File = b.FileName,
                 transactionID = b.TransactionId,
-                lcode = b.Lcode
+                lcode = b.Lcode,
+                oid = map.Oid
             }).ToList();
 
             return new ProjectDetailsDto
@@ -108,7 +109,32 @@ namespace Echeckdem.Services
             };
         }
 
-        
+        public async Task<NcActionIdentifiersDto> GetNcActionIdsAsync(string lcode, int oid, int transactionId)
+        {
+            
+            var action = await _dbEcheckContext.Ncactions
+                .Where(a => a.Aclink == transactionId)
+                .FirstOrDefaultAsync();
+
+            if (action == null)
+                return new NcActionIdentifiersDto(); 
+
+            var acid = action.Acid;
+
+            
+            var actTaken = await _dbEcheckContext.Ncactakens
+                .Where(t => t.Acid == acid)
+                .FirstOrDefaultAsync();
+
+            var actid = actTaken?.Actid;
+
+            return new NcActionIdentifiersDto
+            {
+                Acid = acid,
+                Actid = actid
+            };
+        }
+
 
 
 

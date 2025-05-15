@@ -289,7 +289,7 @@
         </div>
     </div>
 
-    @* <button class="saveButton" onclick="cancelEdit()">Cancel</button> *@
+   
 </div>
 
 @section Scripts {
@@ -328,12 +328,7 @@
             }).fail(() => alert("Error fetching NCACTION data."));
         }
 
-        // function cancelEdit() {
-        //     $('#editSection').hide();
-        //     $('#ncactionForm')[0].reset();
-        //     $('#ncactionTakenForm')[0].reset();
-        // }
-
+     
         function onAddNewItemClick() {
             document.getElementById("table-container-detailsView").style.display = "none";
             document.getElementById("DetailsSection").style.display = "none";
