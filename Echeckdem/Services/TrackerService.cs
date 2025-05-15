@@ -376,6 +376,45 @@ namespace Echeckdem.Services
         //----------------------------END-------------------fetching all data for a user NCACTTAKEN table--------------------------------------------------------------------------------------------------
 
 
+        public List<TrackerViewModel> GetNcActionsForUserByOrgAndSite(int uno, string oid, string lcode)
+        {
+            var userMappings = _dbEcheckContext.Ncumaps
+                .Where(x => x.Uno == uno && x.Oid == oid && x.Lcode == lcode)
+                .Select(x => new { x.Oid, x.Lcode })
+                .ToList();
+
+            if (!userMappings.Any()) return new List<TrackerViewModel>();
+
+            var allNcActions = _dbEcheckContext.Ncactions
+    .AsEnumerable() // Bring Ncactions into memory
+    .Join(userMappings,
+          n => new { n.Oid, n.Lcode },
+          m => new { m.Oid, m.Lcode },
+          (n, m) => n)
+    .ToList();
+
+
+            var orgs = _dbEcheckContext.Ncmorgs.ToList();
+            var locs = _dbEcheckContext.Ncmlocs.ToList();
+
+            return allNcActions
+                .Where(a=>a.Actp!="Ops")
+                .Select(action => new TrackerViewModel
+                {
+                    Acid = action.Acid,
+                    Oname = orgs.FirstOrDefault(o => o.Oid == action.Oid)?.Oname ?? "Unknown Org",
+                    Lname = locs.FirstOrDefault(l => l.Lcode == action.Lcode)?.Lname ?? "Unknown Location",
+                    SelectedTPP = action.Tpp,
+                    SelectedACTITLE = action.Actitle,
+                    SelectedSBTP = action.Sbtp,
+                    SelectedACTP = action.Actp,
+                    InternalStatus = action.Acistatus,
+                    DetailOfIssue = action.Acdetail,
+                    StartDate = action.Acidate,
+                    CloseDate = action.Accldate
+                })
+                .ToList();
+        }
 
 
 

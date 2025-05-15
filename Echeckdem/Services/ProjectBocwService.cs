@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Echeckdem.CustomFolder.ProjectBocw;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http;
+using Echeckdem.CustomFolder;
 
 
 
@@ -106,42 +107,8 @@ namespace Echeckdem.Services
                 BocwServices = bocwDtos
             };
         }
-        //public async Task<ProjectDetailsDto> GetProjectDetailsAsync(int uno, string clientName, string siteName)
-        //{
-        //    var map = await _dbEcheckContext.Ncumaps
-        //        .Where(m => m.Uno == uno)
-        //        .Join(_dbEcheckContext.Ncmorgs,
-        //            m => m.Oid,
-        //            o => o.Oid,
-        //            (m, o) => new { m.Lcode, m.Oid, OrgName = o.Oname })
-        //        .Join(_dbEcheckContext.Ncmlocs,
-        //            mo => new { mo.Lcode, mo.Oid },
-        //            l => new { l.Lcode, l.Oid },
-        //            (mo, l) => new { mo.Lcode, mo.Oid, mo.OrgName, SiteName = l.Lname, l.Lstate, l.Lcity })
-        //        .Where(x => x.OrgName == clientName && x.SiteName == siteName)
-        //        .FirstOrDefaultAsync();
 
-        //    if (map == null)
-        //        return null;
-
-        //    var locb = await _dbEcheckContext.Ncmlocbos
-        //        .Where(b => b.Lcode == map.Lcode)
-        //        .FirstOrDefaultAsync();
-
-        //    return new ProjectDetailsDto
-        //    {
-        //        SiteName = map.SiteName,
-        //        State = map.Lstate,
-        //        City = map.Lcity,
-        //        ClientName = locb?.ClientName,
-        //        GeneralContractor = locb?.GeneralContractor,
-        //        ProjectStartDate = locb?.ProjectStartDateEst?.ToString("dd-MMM-yyyy"),
-        //        ProjectEndDate = locb?.ProjectEndDateEst?.ToString("dd-MMM-yyyy"),
-        //        ProjectArea = locb?.ProjectArea,
-        //        ProjectCost = locb?.ProjectCostEst?.ToString("N2"),
-        //        ProjectLead = locb?.ProjectLead
-        //    };
-        //}
+        
 
 
 

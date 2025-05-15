@@ -25,6 +25,8 @@
 </div>
 
 <div class="table-container-detailsView">
+
+    <!-- Project Details Table -->
     <table class="styled-table">
         <thead>
             <tr><th colspan="11" class="table-header">Select a Client and Project</th></tr>
@@ -57,7 +59,8 @@
         </thead>
     </table>
 
-    <table class="styled-table">
+    <!-- BOCW Services Table -->
+    <table class="styled-table" style="margin-top: 30px;">
         <thead>
             <tr><th class="text-center" colspan="11" class="table-header">BOCW Services</th></tr>
             <tr>
@@ -72,15 +75,16 @@
                 <th>Edit</th>
             </tr>
         </thead>
-        <tbody id="complianceActivities"></tbody>
-   @*  </table>
-</div> *@
-        <thead style="top:75px;">
+        <tbody id="complianceActivities">
+            <!-- BOCW data rows injected here -->
+        </tbody>
+    </table>
 
-            <tr><th class="text-center" colspan="11" class="table-header">On-Going Activites</th></tr>
-
+    <!-- Ongoing Activities Table -->
+    <table class="styled-table" style="margin-top: 30px;">
+        <thead>
+            <tr><th class="text-center" colspan="8" class="table-header">On-Going Activities</th></tr>
             <tr>
-
                 <th>Tracker For</th>
                 <th>Inspection Notice</th>
                 <th>Title</th>
@@ -89,41 +93,21 @@
                 <th>Start Date</th>
                 <th>Close Date</th>
                 <th>Details</th>
-
             </tr>
-
         </thead>
-        <tbody>
-            @if (Model.TrackerActions != null && Model.TrackerActions.Any())
-            {
-                foreach (var tracker in Model.TrackerActions)
-                {
-                    <tr>
-                        <td>@tracker.SelectedACTP</td>
-                        <td>@tracker.SelectedTPP</td>
-                        <td>@tracker.SelectedACTITLE</td>
-                        <td>@tracker.DetailOfIssue</td>
-                        <td>@tracker.InternalStatus</td>
-                        <td>@(tracker.StartDate.HasValue ? tracker.StartDate.Value.ToString("dd-MMM-yyyy") : "")</td>
-                        <td>@(tracker.CloseDate.HasValue ? tracker.CloseDate.Value.ToString("dd-MMM-yyyy") : "")</td>
-                        <td><a href="/DetailsView/ViewAction?acid=@tracker.Acid">Details</a></td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr><td colspan="8" class="text-center">No ongoing activities found.</td></tr>
-            }
+        <tbody id="ongoingActivities">
+            <tr><td colspan="8" class="text-center">Select a Client and Site to load ongoing activities.</td></tr>
         </tbody>
-
-    </table>
+    </table>s
 
 </div>
 
 @section Scripts {
     <script>
+        // Deserialize Client -> Site mapping from Model
         const clientSiteMap = @Html.Raw(Json.Serialize(Model.ClientSiteMap));
 
+        // Populate site dropdown when client is selected
         function populateSites() {
             const client = document.getElementById('clientDropdown').value;
             const siteDropdown = document.getElementById('siteDropdown');
@@ -131,22 +115,51 @@
 
             if (clientSiteMap[client]) {
                 clientSiteMap[client].forEach(site => {
-                    siteDropdown.innerHTML += `<option value="${site}">${site}</option>`;
+                    const option = document.createElement('option');
+                    option.value = site;
+                    option.text = site;
+                    siteDropdown.appendChild(option);
                 });
             }
+
+            clearProjectDetails();
+            clearBocwServices();
+            clearOngoingActivities();
         }
 
+        function clearProjectDetails() {
+            ['SiteName', 'State', 'City', 'ClientName', 'GeneralContractor', 'ProjectStartDate', 'ProjectEndDate', 'ProjectArea', 'ProjectCost', 'ProjectLead'].forEach(id => {
+                const cell = document.querySelector(`td[data-id="${id}"]`);
+                if (cell) cell.innerText = '';
+            });
+        }
+
+        function clearBocwServices() {
+            const tbody = document.getElementById('complianceActivities');
+            if (tbody) tbody.innerHTML = '';
+        }
+
+        function clearOngoingActivities() {
+            const tbody = document.getElementById('ongoingActivities');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="text-center">Select a Client and Site to load ongoing activities.</td></tr>';
+        }
+
+        // Hook up client dropdown change
+        document.getElementById('clientDropdown').addEventListener('change', populateSites);
+
+        // Hook up site dropdown change
         document.getElementById('siteDropdown').addEventListener('change', function () {
             const client = document.getElementById('clientDropdown').value;
             const site = this.value;
 
             if (client && site) {
+                // Fetch project details
                 fetch(`/Project/GetProjectDetails?client=${encodeURIComponent(client)}&site=${encodeURIComponent(site)}`)
                     .then(res => res.json())
                     .then(data => {
                         if (!data) return;
 
-                        // Populate static project details
+                        // Fill in static project info
                         document.querySelector('td[data-id="SiteName"]').innerText = data.siteName || '';
                         document.querySelector('td[data-id="State"]').innerText = data.state || '';
                         document.querySelector('td[data-id="City"]').innerText = data.city || '';
@@ -158,10 +171,10 @@
                         document.querySelector('td[data-id="ProjectCost"]').innerText = data.projectCost || '';
                         document.querySelector('td[data-id="ProjectLead"]').innerText = data.projectLead || '';
 
-                        // Populate BOCW services
+                        // BOCW Services
                         const tbody = document.getElementById('complianceActivities');
                         tbody.innerHTML = '';
-                        if (data.bocwServices && data.bocwServices.length > 0) {
+                        if (data.bocwServices?.length > 0) {
                             data.bocwServices.forEach((item, index) => {
                                 const row = `
                                             <tr>
@@ -173,16 +186,92 @@
                                                 <td>${item.status}</td>
                                                 <td>${item.completionDate || ''}</td>
                                                 <td colspan="2">${item.file ? `<a href="/uploads/${item.file}" target="_blank">${item.file}</a>` : 'N/A'}</td>
-                                                        <td><a href="/DetailsView/EditBocw?transactionID=${item.transactionID}&lcode=${item.lcode}" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>>Edit</a></td>
-
-                                                
+                                                <td>
+                                                    <a href="/DetailsView/EditBocw?transactionID=${item.transactionID}&lcode=${item.lcode}" class="edit-btn">
+                                                        <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px;"></i> Edit
+                                                    </a>
+                                                </td>
                                             </tr>`;
                                 tbody.innerHTML += row;
                             });
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="10" class="text-center">No BOCW services found.</td></tr>';
                         }
                     })
-                    .catch(err => console.error('Error fetching project details:', err));
+                    .catch(err => {
+                        console.error('Error fetching project details:', err);
+                        clearProjectDetails();
+                        clearBocwServices();
+                    });
+
+                // Fetch ongoing NC activities
+                fetch(`/Project/GetNcActions?client=${encodeURIComponent(client)}&site=${encodeURIComponent(site)}`)
+                    .then(res => res.ok ? res.json() : Promise.reject(res))
+                    .then(actions => {
+                        const tbody = document.getElementById('ongoingActivities');
+                        tbody.innerHTML = '';
+                        if (actions.length > 0) {
+                            actions.forEach(action => {
+                                const row = `
+                                            <tr>
+                                                <td>${action.selectedACTP}</td>
+                                                <td>${action.selectedTPP}</td>
+                                                <td>${action.selectedACTITLE}</td>
+                                                <td>${action.detailOfIssue}</td>
+                                                <td>${action.internalStatus}</td>
+                                                <td>${action.startDate ? new Date(action.startDate).toLocaleDateString('en-GB') : ''}</td>
+                                                <td>${action.closeDate ? new Date(action.closeDate).toLocaleDateString('en-GB') : ''}</td>
+                                                <td><button onclick="openDetails('${action.Acid}', '${action.Actid}')">Details</button></td>
+                                            </tr>`;
+                                tbody.innerHTML += row;
+                            });
+                        } else {
+                            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No ongoing activities found.</td></tr>';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error fetching NC actions:', err);
+                        document.getElementById('ongoingActivities').innerHTML = '<tr><td colspan="8" class="text-center">Error loading ongoing activities.</td></tr>';
+                    });
+            } else {
+                clearProjectDetails();
+                clearBocwServices();
+                clearOngoingActivities();
             }
         });
+
+        // Show details section and populate with data
+        function openDetails(acid, actid) {
+            $('#AcidNcAction, #AcidNcActTaken').val(acid);
+            $('#addItemContainer').hide();
+            $('#table-container-detailsView').hide();
+            $('#DetailsSection').show();
+
+            $.get('@Url.Action("EditNcAction", "Tracker")', { acid }, function (ncActionData) {
+                $('#Title').val(ncActionData.title);
+                $('#ExternalStatus').val(ncActionData.externalStatus);
+                $('#VisibleToClient').val(ncActionData.visibleToClient);
+                $('#InternalStatus').val(ncActionData.internalStatus);
+                $('#DetailOfIssue').val(ncActionData.detailOfIssue);
+                $('#StartDate').val(ncActionData.startDate?.substring(0, 10));
+                $('#DocsReceiptDate').val(ncActionData.docsReceiptDate?.substring(0, 10));
+                $('#CloseDate').val(ncActionData.closeDate?.substring(0, 10));
+                $('#Remarks').val(ncActionData.remarks);
+
+                $.get('@Url.Action("EditNcActTaken", "Tracker")', { acid }, function (ncActTakenData) {
+                    if (ncActTakenData && Object.keys(ncActTakenData).length > 0) {
+                        $('#Actid').val(ncActTakenData.actid);
+                        $('#Acdate').val(ncActTakenData.acdate?.substring(0, 10));
+                        $('#Actaken').val(ncActTakenData.actaken);
+                        $('#Nacdate').val(ncActTakenData.nacdate?.substring(0, 10));
+                        $('#Showclient').val(ncActTakenData.showclient);
+                        $('#Uno').val(ncActTakenData.Uno);
+                    } else {
+                        $('#ncactionTakenForm')[0].reset();
+                        $('#Actid').val('');
+                    }
+                }).fail(() => alert("Error fetching NCACTAKEN data."));
+            }).fail(() => alert("Error fetching NCACTION data."));
+        }
     </script>
 }
