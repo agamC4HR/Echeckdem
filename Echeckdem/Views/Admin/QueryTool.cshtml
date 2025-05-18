@@ -1,10 +1,12 @@
 ﻿@{
     ViewData["Title"] = "SQL Query Tool";
+    ViewData["Heading"] = "SQL Query Tool";
+    ViewData["Heading_child"] = "Run and Check Query";
 }
+<div class="table-container-detailsView" id="table-container-detailsView">
+
 
 <div class="container mt-5">
-    <h4 class="mb-3">SQL Query Tool</h4>
-
     <div class="d-flex gap-3 mb-3">
         <div class="flex-grow-1">
             <label for="sqlBox" class="form-label fw-semibold small">Write a SELECT query:</label>
@@ -22,7 +24,7 @@
     <div id="resultArea" class="table-responsive" style="max-height: 400px; overflow-y: auto;"></div>
 
 </div>
-
+</div>
 <script>
     function runSql() {
         const query = document.getElementById("sqlBox").value.trim();
