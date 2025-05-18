@@ -1,5 +1,22 @@
-﻿@model Echeckdem.CustomFolder.TrackerViewModel
+﻿@model Echeckdem.ViewModel.OnGoingActivity.NewActivityViewModel
+@{
+    ViewData["Title"] = "New Activity";
+    ViewData["Heading"] = "Add New Activity";
+    ViewData["Heading_child"] = "Initiate a New Activity & Track it";
+    
+}
+
 <style>
+    .ItemContainer {
+        position: absolute;
+        width: 98vw;
+        background: #ffffff;
+        left: 7px;
+        margin-top: 45px;
+        padding: 15px;
+        border-radius: .375rem;
+    }
+
     .form-row-2col {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -45,75 +62,107 @@
         }
 
 </style>
+<div class="table-container-detailsView" id="table-container-detailsView">
+<div class="ItemContainer" id="addItemContainer">
 
-<div class="heading">Add Item</div>
+
 <form asp-action="Create" method="post" style="margin-top:10px;">
-    <input type="hidden" asp-for="SelectedUno" id="SelectedUno" />
-    <input type="hidden" name="Acid" value="@Model.Acid" />
+    
+    
     <div class="form-row-2col">
 
         <div class="form-group">
-            <label for="SelectedACTP">Tracker For:</label>
-            <select asp-for="SelectedACTP" class="form-control" asp-items="Model.ACTPDropdown" id="SelectedACTP" name="SelectedACTP">
+            <label for="SelectedACTP">Activity Type:</label>
+            <select asp-for="SelectedACTP" class="form-control" asp-items="Model.ACTPDropdown" id="SelectedACTP" name="SelectedACTP" required>
                 <option value="">-- Select Tracker Type --</option>
 
             </select>
             <span asp-validation-for="SelectedACTP" class="text-danger"></span>
         </div>
-        
-        <div class="form-group">
-        <label for="SelectedOid">Select Organization</label>
-        <select asp-for="SelectedOid" class="form-control" asp-items="Model.Organizations" id="SelectedOid" name="SelectedOid">
+
+                <div class="form-group" id="clientGroup" style="display:none;">
+        <label for="SelectedOid">Client</label>
+                    <select asp-for="SelectedOid" class="form-control" asp-items="Model.Organizations" id="SelectedOid" name="SelectedOid" required>
             <option value="">-- Select Organization --</option>
           
         </select>
         <span asp-validation-for="SelectedOid" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label for="SelectedLCODE">Select Location</label>
-        <select asp-for="SelectedLCODE" class="form-control" asp-items="Model.Locations" id="SelectedLCODE" name="SelectedLCODE">
-            <option value="">-- Select Location --</option>
+                <div class="form-group" id="siteGroup" style="display:none;">
+        <label for="SelectedLCODE">Site</label>
+                    <select asp-for="SelectedLCODE" class="form-control" asp-items="Model.Locations" id="SelectedLCODE" name="SelectedLCODE" required>
+            <option value="">-- Select Site --</option>
           
         </select>
         <span asp-validation-for="SelectedLCODE" class="text-danger"></span>
     </div>
     </div>
-    <div class="form-row-2col">
+            <div class="form-row-2col" id="otherDropdowns" style="display:none;">
     <div class="form-group">
-        <label for="SelectedTPP">Inspection/Notice For:</label>
-        <select asp-for="SelectedTPP" class="form-control" asp-items="Model.TPPDropdown" id="SelectedTPP" name="SelectedTPP">
-            <option value="">-- Select TPP --</option>
+        <label for="SelectedTPP">Authority:</label>
+                    <select asp-for="SelectedTPP" class="form-control" asp-items="Model.TPPDropdown" id="Select Authority" name="SelectedTPP" required>
+                        <option value="">-- Select Authority --</option>
            
         </select>
         <span asp-validation-for="SelectedTPP" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label for="SelectedACTITLE">ACT:</label>
-        <select asp-for="SelectedACTITLE" class="form-control" asp-items="Model.ActDropdown" id="SelectedACTITLE" name="SelectedACTITLE">
+        <label for="SelectedACTITLE">Act:</label>
+                    <select asp-for="SelectedACTITLE" class="form-control" asp-items="Model.ActDropdown" id="SelectedACTITLE" name="SelectedACTITLE" required>
             <option value="">-- Select ACT --</option>
             
         </select>
         <span asp-validation-for="SelectedACTITLE" class="text-danger"></span>
     </div>
     </div>
-    <div class="form-row-2col">
-    <div class="form-group">
-        <label for="SelectedSBTP">SLA:</label>
-        <select asp-for="SelectedSBTP" class="form-control" asp-items="Model.SlaDropdown" id="SelectedSBTP" name="SelectedSBTP">
-            <option value="">-- Select SLA --</option>
-        
-        </select>
-        <span asp-validation-for="SelectedSBTP" class="text-danger"></span>
-    </div>
-    </div>
-
+  
     <button type="submit" class="saveButton">Submit</button>
     <button type="button" class="saveButton" onclick="window.location.href='/Tracker/trackerlist'">
         Cancel
     </button>
 </form>
 
+</div>
+</div>
 
-   
+<script type="text/javascript">
+        $(document).ready(function () {
+        $('#SelectedACTP').on('change', function () {
+            var selectedACTP = $(this).val();
+            if (selectedACTP !== "") {
+                $('#clientGroup').show();
+            } else {
+                $('#clientGroup, #siteGroup, #otherDropdowns').hide();
+            }
+        });
+
+        $('#SelectedOid').on('change', function () {
+            
+            var selectedOid= $(this).val();
+            
+            if (selectedOid !== "") {
+            
+            
+                $.get('/DetailsView/GetLocationsByOid', { oid: selectedOid }, function (data) {
+    
+            
+                    var siteDropdown = $('#SelectedLCODE');
+                    siteDropdown.empty();
+                    siteDropdown.append($('<option>').val("").text("-- Select Site --"));
+
+                    $.each(data.value, function (i, item) {
+                        siteDropdown.append($('<option>').val(item.value).text(item.text));
+                    });
+
+                    $('#siteGroup').show();
+                    $('#otherDropdowns').show();
+                });
+            } else {
+                $('#siteGroup, #otherDropdowns').hide();
+            }
+        });
+    });
+
+</script>

@@ -74,13 +74,16 @@
                             <a href="/UserManagement/Index">User Management</a>
                             <a href="/Tracker/trackerlist">Tracker</a>
                             <a href="/StateTemplate/Index">State Template</a>
+                            <a href="/DetailsView/Index">Compliance Tracker </a>
+                            <a href="/Tracker/Trackerlist">On-Going Activity</a>
+                            <a href="/Project/Index">Construction Tracker</a>
                         }
                         else
                         {
 
-                            <a href="/DetailsView/CombinedDetailed">Compliance Tracker </a>
+                            <a href="/DetailsView/Index">Compliance Tracker </a>
                             <a href="/Tracker/Trackerlist">On-Going Activity</a>
-                            //  <a href="/Project/Index">Project Tracker</a>
+                            
                             if(Context.Session.GetString("BO") == "yes")
                             
                             {
@@ -134,7 +137,7 @@
                         <h1 class="heading"> @Html.Raw(ViewData["Heading"]) </h1>
                         <p class="heading_child">@Html.Raw(ViewData["Heading_child"]) </p>
                 </div>
-                    @if (ViewData["Title"]?.ToString() == "Detailed Report")
+                    @if (ViewData["Title"]?.ToString() == "Compliance Tracker")
                     {
                         <div class="cond-act-buttons">
                         <button class="filter-btn" onclick="toggleFilterForm()">
@@ -153,13 +156,13 @@
                             Add New Organisation
                         </button>
                     }
-                    @if (ViewData["Title"]?.ToString() == "Tracker List")
+                    @if (ViewData["Title"]?.ToString() == "On-Going Activities" && Context.Session.GetInt32("User Level") <= 2)
                     {
-                        <button class="table-add-btn" onclick="onAddNewItemClick()">
+                        <a href="@Url.ActionLink("Index","Tracker")" class="table-add-btn" >
                             Add New Item
-                        </button>
+                        </a>
                     }
-                    @if (ViewData["Title"]?.ToString() == "Tracker Details")
+                    @if (ViewData["Title"]?.ToString() == "Activity Details")
                     {
                         <button class="table-add-btn" onclick="backToTracker()">
                             Back to Tracker

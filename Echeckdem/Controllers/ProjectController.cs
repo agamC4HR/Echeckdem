@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Echeckdem.Services;
 using Echeckdem.Models;
-
-using Echeckdem.CustomFolder.ProjectBocw;
+using System.Text.Json;
+using Echeckdem.ViewModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MongoDB.Driver.Core.Events;
+using Echeckdem.ViewModel.ProjectBocw;
 
 namespace Echeckdem.Controllers
 {
@@ -11,74 +14,70 @@ namespace Echeckdem.Controllers
         private readonly ProjectBocwService _projectbocwService;
         private readonly TrackerService _trackerService;
         private readonly DbEcheckContext _dbEcheckContext;
+        
 
         public ProjectController(ProjectBocwService projectBocwService, TrackerService trackerService, DbEcheckContext dbEcheckContext)
         {
             _projectbocwService = projectBocwService;
             _trackerService = trackerService;
             _dbEcheckContext = dbEcheckContext;
+        
         }
         public async Task<IActionResult> Index()
         {
-            var uno = HttpContext.Session.GetInt32("UNO");
-            if (uno == null) return RedirectToAction("Login", "Index");
+            
+            ProjectBocwViewModel model2=new ProjectBocwViewModel();
+            var _UserlocationBOList = JsonSerializer.Deserialize<List<UserLocation>>(HttpContext.Session.GetString("Userbolocation"));
+            model2.ClientList = _UserlocationBOList.Select(x=>new SelectListItem { Value=x.Oid,Text=x.Client}).DistinctBy(x=>x.Value).ToList();
 
-            var clientSiteMap = await _projectbocwService.GetUserOrgSiteMapAsync(uno.Value);
-            var model = new ProjectBocwViewModel
-            {
-                Clients = clientSiteMap.Keys.ToList(),
-                ClientSiteMap = clientSiteMap,
-               //TrackerActions = _trackerService.GetNcActionsForUser(uno.Value)
-            };
+           
 
-            return View(model);
+            return View(model2);
         }
-        [HttpGet]
-        public async Task<IActionResult> GetProjectDetails(string client, string site)
+        [HttpPost]
+        public async Task<IActionResult> FetchProjectDets() 
         {
-            var uno = HttpContext.Session.GetInt32("UNO");
-            if (!uno.HasValue || string.IsNullOrEmpty(client) || string.IsNullOrEmpty(site))
+            var _UserlocationBOList = JsonSerializer.Deserialize<List<UserLocation>>(HttpContext.Session.GetString("Userbolocation"));
+            ProjectBocwViewModel model2 = new ProjectBocwViewModel();
+            
+            if (!string.IsNullOrEmpty(Request.Form["clientDropdown"]) && !string.IsNullOrWhiteSpace(Request.Form["clientDropdown"]))
             {
-                return BadRequest();
+                var selectedoid = Request.Form["clientDropdown"].ToString().Trim();
+                ViewBag.SelectedOID = selectedoid;
+                model2.ClientList = _UserlocationBOList.Select(x => new SelectListItem { Value = x.Oid, Text = x.Client,Selected=(x.Oid==selectedoid) }).DistinctBy(x => x.Value).ToList();
+                if (!string.IsNullOrEmpty(Request.Form["siteDropdown"]) && !string.IsNullOrWhiteSpace(Request.Form["siteDropdown"]))
+                {
+                    var selectedlcode = Request.Form["siteDropdown"].ToString().Trim();
+                    model2.projectDetailsDto = await _projectbocwService.GetProjectDetailsAsync(selectedoid, selectedlcode);
+                    ViewBag.SelectedLcode= selectedlcode;
+                    
+                    model2.SiteList = _UserlocationBOList.Where(x => x.Oid == selectedoid).Select(x => new SelectListItem { Value = x.Lcode, Text = x.Site,Selected=(x.Lcode==selectedlcode) }).DistinctBy(x => x.Value).ToList();
+
+                    return View("Index", model2);
+
+                }
+                else 
+                {
+
+                    model2.SiteList = _UserlocationBOList.Where(x => x.Oid == selectedoid).Select(x => new SelectListItem { Value = x.Lcode, Text = x.Site }).DistinctBy(x => x.Value).ToList();
+                    return View("Index", model2);
+                }
+                    
+            }
+            else 
+            {
+                model2.ClientList = _UserlocationBOList.Select(x => new SelectListItem { Value = x.Oid, Text = x.Client }).DistinctBy(x => x.Value).ToList();
+                return View("Index", model2);
             }
 
-            var details = await _projectbocwService.GetProjectDetailsAsync(uno.Value, client, site);
-            if (details == null)
-            {
-                return NotFound();
-            }
 
-            return Json(details);
+              
         }
-
-        [HttpGet]
-        public IActionResult GetNcActions(string client, string site)
-        {
-            var uno = HttpContext.Session.GetInt32("UNO");
-            if (!uno.HasValue || string.IsNullOrEmpty(client) || string.IsNullOrEmpty(site))
-                return BadRequest();
-
-            var oid = _dbEcheckContext.Ncmorgs.FirstOrDefault(o => o.Oname == client)?.Oid;
-            var lcode = _dbEcheckContext.Ncmlocs.FirstOrDefault(l => l.Lname == site && l.Oid == oid)?.Lcode;
-
-            if (string.IsNullOrEmpty(oid) || string.IsNullOrEmpty(lcode))
-                return NotFound();
-
-            var actions = _trackerService.GetNcActionsForUserByOrgAndSite(uno.Value, oid, lcode);
-            return Json(actions);
-        }
+      
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetNcActionIds(string lcode, int oid, int transactionId)
-        {
-            var result = await _projectbocwService.GetNcActionIdsAsync(lcode, oid, transactionId);
 
-            if (result == null || result.Acid == null)
-                return NotFound("No NC Action found for given transaction ID");
-
-            return Json(result);
-        }
+       
 
 
 

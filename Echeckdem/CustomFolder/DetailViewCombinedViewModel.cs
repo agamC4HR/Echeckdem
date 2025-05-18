@@ -1,4 +1,4 @@
-﻿using Echeckdem.Models;
+﻿using Echeckdem.ViewModel.ComplianceTracker;
 
 namespace Echeckdem.CustomFolder
 {

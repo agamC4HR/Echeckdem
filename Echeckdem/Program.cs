@@ -41,7 +41,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<OrganisationSetupService>();
-builder.Services.AddScoped<BOCWService>();
+
 builder.Services.AddScoped<ReturnsService>();
 builder.Services.AddScoped<ContributionService>();
 builder.Services.AddScoped<RegistrationService>();
@@ -57,7 +57,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ProjectBocwService>();
 builder.Services.AddScoped<IAudtrail, AudtrailUpdate>();
 builder.Services.AddScoped<IDashboardSummary, DashboardSummary>();
-    
+builder.Services.AddScoped<IFilter, Filter>();
 builder.Services.AddControllersWithViews();
 // Configuring the Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStrings");              //ECHECK

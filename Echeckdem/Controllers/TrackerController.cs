@@ -1,122 +1,162 @@
-﻿using Echeckdem.CustomFolder;
+﻿using DocumentFormat.OpenXml.Math;
+using Echeckdem.CustomFolder;
 using Echeckdem.Handlers;
 using Echeckdem.Models;
 using Echeckdem.Services;
+using Echeckdem.ViewModel;
+using Echeckdem.ViewModel.OnGoingActivity;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
+using System.Security.Cryptography;
+using System.Text.Json;
 namespace Echeckdem.Controllers
 {
     public class TrackerController : Controller
     {
         private readonly TrackerService _trackerService;
         private readonly IUserService _userService;
-
-        public TrackerController(TrackerService trackerService, IUserService userService)
+        private readonly DbEcheckContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IFilter _filter;
+        public TrackerController(TrackerService trackerService, IUserService userService, DbEcheckContext context, IWebHostEnvironment webHostEnvironment,IFilter filter)
         {
             _trackerService = trackerService;
             _userService = userService;
+            _context = context;
+            _webHostEnvironment = webHostEnvironment;
+            _filter = filter;
         }
 
-        public int GetUnoFromSession(HttpContext httpContext)
-        {
-            return httpContext.Session.GetInt32("UNO") ?? 0;
-        }
-
+      
         public IActionResult TrackerList()
-        {
-            int uno = _trackerService.GetUnoFromSession(HttpContext);
-            var fullActions = _trackerService.GetFullNcActionsForUser(uno);
+        {           
+            var fullActions = _trackerService.GetNcActionsForUser();
             return View(fullActions); 
         }
 
-        
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> TrackerDet(string Acid ) 
         {
-            int uno = _trackerService.GetUnoFromSession(HttpContext);
+            var ncActions = await _trackerService.GetNcActionDet(Acid);
 
-            var model = new TrackerViewModel
-            {
-                Organizations = _trackerService.GetOrganizations(uno),
-                TPPDropdown = _trackerService.GetTPPDropdown(),
-                ActDropdown = _trackerService.GetActDropdown(),
-                SlaDropdown = _trackerService.GetSlaDropdown(),
-                ACTPDropdown = _trackerService.GetACTPDropdown(),
-               Locations = new List<SelectListItem>()
-                //Locations = _trackerService.GetLocations(uno, oid)
-            };
-
-            return PartialView(model); // Not PartialView, unless you're intentionally returning a fragment
+            return View(ncActions);
         }
 
-
-
-
-        [HttpGet]
-        //public async Task<JsonResult> GetLocations(string oid)
-        public JsonResult GetLocations(string oid)
+        public async Task<IActionResult> Index()
         {
-         
-            int uno = _trackerService.GetUnoFromSession(HttpContext);
 
-            var locations = _trackerService.GetLocations(uno, oid);
-            return Json(locations);
+            var _UserlocationList = JsonSerializer.Deserialize<List<UserLocation>>(HttpContext.Session.GetString("Userlocation"));
+            var model = new NewActivityViewModel
+            {
+                Organizations =  _UserlocationList.Select(x => new SelectListItem { Value = x.Oid, Text = x.Client }).DistinctBy(x => x.Value).ToList(),
+                TPPDropdown = _trackerService.GetTPPDropdown(),
+                ActDropdown = _trackerService.GetActDropdown(),
+                //SlaDropdown = _trackerService.GetSlaDropdown(),
+                ACTPDropdown = _trackerService.GetACTPDropdown(),
+                Locations = _UserlocationList.Select(x => new SelectListItem { Value = x.Lcode, Text = x.Site}).DistinctBy(x => x.Value).ToList(),
+
+            };
+
+            return View(model); 
+        }
+        public IActionResult GetLocationsByOid(string oid)
+        {
+           return Json(_filter.GetLocationsByOid(oid));
         }
 
         [HttpPost]
-        public IActionResult Create(TrackerViewModel model)
+        public IActionResult Create(NewActivityViewModel model)
         {
-            foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
+            var _UserlocationBOList = JsonSerializer.Deserialize<List<UserLocation>>(HttpContext.Session.GetString("Userbolocation"));
+            if (!ModelState.IsValid)
             {
-                Console.WriteLine(modelError.ErrorMessage); // Log errors
-            }
-
-            if (!ModelState.IsValid) 
-            {
-                model.SelectedUno = _trackerService.GetUnoFromSession(HttpContext);
-                model.Organizations = _trackerService.GetOrganizations(model.SelectedUno);
-                model.Locations = _trackerService.GetLocations(model.SelectedUno, model.SelectedOid);
+                
+                model.Organizations = _UserlocationBOList.Select(x => new SelectListItem { Value = x.Oid, Text = x.Client }).DistinctBy(x => x.Value).ToList();
                 model.TPPDropdown = _trackerService.GetTPPDropdown();
                 model.ActDropdown = _trackerService.GetActDropdown();
-                model.SlaDropdown = _trackerService.GetSlaDropdown();
+                //model.SlaDropdown = _trackerService.GetSlaDropdown();
                 model.ACTPDropdown = _trackerService.GetACTPDropdown();
-                return View("Index", model); 
+                model.Locations = _UserlocationBOList.Select(x => new SelectListItem { Value = x.Lcode, Text = x.Site }).DistinctBy(x => x.Value).ToList();
+
+                return View("Index", model);
             }
-            
+
             try
             {
-                _trackerService.SaveNcAction(model);
-                return RedirectToAction("TrackerList");
+                Ncaction Activity = new Ncaction();
+                Activity.Oid = model.SelectedOid;
+                Activity.Lcode = model.SelectedLCODE;
+                Activity.Actp = model.SelectedACTP;
+                Activity.Actitle = _trackerService.GetActivityName(model.SelectedACTP)+" for "+ _trackerService.GetActName(model.SelectedACTITLE) ;
+                Activity.Acstatus = "O";
+                Activity.Acstatus = "N";
+                Activity.Acshow = 1;
+                Activity.Acruser = HttpContext.Session.GetInt32("UNO");
+                Activity.Acrdate = DateOnly.FromDateTime(DateTime.Today);
+
+                _context.Ncactions.Add(Activity);
+                _context.SaveChanges();
+
+                return RedirectToAction("TrackerDet", new { Acid=Activity.Acid.ToString()});
             }
             catch (Exception ex)
-            {                
+            {
+                
                 ModelState.AddModelError("", "An error occurred while saving data.");
-                model.Organizations = _trackerService.GetOrganizations(model.SelectedUno);
-                model.Locations = _trackerService.GetLocations(model.SelectedUno, model.SelectedOid);
+                model.Organizations = _UserlocationBOList.Select(x => new SelectListItem { Value = x.Oid, Text = x.Client }).DistinctBy(x => x.Value).ToList();
+                model.Locations = _UserlocationBOList.Select(x => new SelectListItem { Value = x.Lcode, Text = x.Site }).DistinctBy(x => x.Value).ToList();
                 return View("Index", model); // Return to form with error message
             }
         }
 
-        [HttpGet]
-        public IActionResult EditNcAction(int acid)
-        {
-            var ncAction = _trackerService.GetNcActionById(acid);
-            return ncAction == null ? NotFound() : Json(ncAction);
-        }
-
-
         [HttpPost]
-        public IActionResult SaveNcAction(TrackerViewModel model)
+        public async Task<IActionResult> SaveNcAction(TrackerFullViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+            
 
             try
             {
-                _trackerService.SaveOrUpdateNcAction(model);
-                return Json(new { success = true });
+                var existingAction = _context.Ncactions.FirstOrDefault(a => a.Acid == model.Acid);
+                if (existingAction == null)
+                    return NotFound();
+
+                existingAction.Actitle = model.Title;
+                existingAction.Acstatus = model.Acstatus;
+                
+                existingAction.Acistatus = model.Acistatus;
+                existingAction.Acdetail = model.Acdetail;
+                existingAction.Acidate = model.Acidate;
+                existingAction.Adocdate = model.Adocdate;
+                existingAction.Accldate = model.Accldate;
+                existingAction.Acremarks = model.Remark;
+                if (model.UploadedFile != null && model.UploadedFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "files", model.Oid, "Acts");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+                    var fileName = Path.GetFileName(model.UploadedFile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.UploadedFile.CopyToAsync(stream);
+                    }
+                    var ncFile = new Ncfile
+                    {
+                        Oid = model.Oid,
+                        Ftp = "Act",
+                        Flink = existingAction.Acid,
+                        Fname = fileName,
+                        Fupdate = DateOnly.FromDateTime(DateTime.Today)
+                    };
+
+                    _context.Ncfiles.Add(ncFile);
+                }
+                _context.Ncactions.Update(existingAction);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("TrackerDet", new { Acid = model.Acid.ToString() });
             }
             catch (Exception ex)
             {
@@ -124,45 +164,12 @@ namespace Echeckdem.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult UploadNcFile(int acid, IFormFile file)
+       [HttpPost]
+        public async Task<IActionResult> SaveNcActTaken(AddNcactaken model)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
 
-            try
-            {
-                _trackerService.SaveNcFile(acid, file);
-                return Json(new { success = true, message = "File uploaded successfully." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { success = false, message = ex.Message });
-            }
-        }
-
-
-        [HttpGet]
-        public IActionResult EditNcActTaken(int acid)
-        {
-            var actionTaken = _trackerService.GetNcActTakenByAcid(acid);
-
-            return Json(actionTaken);
-        }
-
-        [HttpPost]
-        public IActionResult SaveNcActTaken(TrackerFullViewModel model)
-        {
-            
             var uno = HttpContext.Session.GetInt32("UNO");
 
-            
-            if (!uno.HasValue)
-            {
-                return BadRequest("UNO is missing in session.");
-            }
-
-           // modelstate uno mei dikkat hai
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -170,26 +177,24 @@ namespace Echeckdem.Controllers
 
             try
             {
-                
-                var takenModel = new TrackerTakenViewModel
+
+                var takenModel = new Ncactaken
                 {
-                    Acid = model.Acid,        
-                    Acdate = model.Acdate,    
-                    Actaken = model.Actaken, 
-                    Nacdate = model.Nacdate, 
-                    Showclient = model.Showclient,
-                    Uno = uno.Value           
+                    Acid = model.Acid,
+                    Acdate = model.Acdate,
+                    Actaken = model.Actaken,
+                    Nacdate = model.Nacdate,
+                    Accrdate = DateOnly.FromDateTime(DateTime.Today),
+                    Showclient = 1,
+                    Uno = uno
                 };
-
-                
-                _trackerService.SaveOrUpdateNcActTaken(takenModel);
-
-                
-                return Json(new { success = true });
+                _context.Ncactakens.Add(takenModel);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("TrackerDet", new { Acid = model.Acid.ToString() });
             }
             catch (Exception ex)
             {
-                
+
                 return StatusCode(500, "Error: " + ex.Message);
             }
         }

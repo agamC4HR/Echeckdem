@@ -1,0 +1,68 @@
+﻿@model Echeckdem.ViewModel.ProjectBocw.NcbocwUpdateModel
+<style>
+    .NCBOCW_Information {
+        width: 50%;
+        background: white;
+        border: 2px solid red;
+        border-radius: .375rem;
+        padding: 15px;
+        margin-top: 45px;
+        margin-left: 7px;
+    }
+</style>
+<form asp-action="UpdateBocw" asp-controller="DetailsView" method="post" enctype="multipart/form-data">
+    <fieldset class="NCBOCW_Information">
+
+        <div class="heading">Task Summary</div>
+        <input type="hidden" asp-for="TransactionId" />
+        <input type="hidden" asp-for="ScopeId" />
+        <div class="form-row-2col">
+            <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                <label>Title</label>
+                <input class="form-control" asp-for="Title" readonly style="cursor:pointer;" />
+            </div>
+        </div>
+
+        <div class="form-row-2col">
+            <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                <label>Status</label>
+                @Html.DropDownListFor(m => m.Status, Model.AvailableStatuses, "Select Status", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-row-2col">
+            <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                <label>Due Date</label>
+                <input class="form-control" type="date" asp-for="DueDate" readonly />
+            </div>
+        </div>
+
+        <div class="form-row-2col">
+            <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                <label>Completion Date</label>
+                <input class="form-control" type="date" asp-for="CompletionDate" />
+            </div>
+        </div>
+
+        <div class="form-row-2col">
+            <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                <label>Upload File (.pdf, .jpg)</label>
+                <input type="file" name="UploadedFile" class="form-control" accept=".pdf,.jpg,.jpeg" />
+            </div>
+        </div>
+
+        <!-- Displaying the current file name if it exists -->
+        @if (!string.IsNullOrEmpty(Model.ExistingFileName))
+        {
+            <div class="form-row-2col">
+                <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                    <label>Current File</label>
+                    <span>@Model.ExistingFileName</span>
+                </div>
+            </div>
+        }
+        @if(Context.Session.GetInt32("User Level") <= 2 && Model.Status!=3)
+                        {
+        <button type="submit" name="submitType" value="SaveNCBOCW" class="saveButton">Save Task</button>
+                        }
+    </fieldset>
+</form>

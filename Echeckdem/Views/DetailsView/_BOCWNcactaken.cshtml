@@ -1,0 +1,50 @@
+﻿@model Echeckdem.ViewModel.ProjectBocw.BocwNcactaken
+<style>
+    .NCACTAKEN_Action {
+        width: 50%;
+        background: white;
+        border: 2px solid red;
+        border-radius: .375rem;
+        padding: 15px;
+        margin-top: 45px;
+        margin-left: 7px;
+    }
+
+    .NCACTAKEN_Action {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+</style>
+<form asp-action="UpdateBONcactaken" asp-controller="DetailsView" method="post">
+    <fieldset class="NCACTAKEN_Action">
+        <div class="heading">Task Update</div>
+        <input type="hidden" asp-for="Acid" />
+        <input type="hidden" asp-for="TransactionId" />
+
+        <div class="form-row-2col">
+            <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                <label>Details of Action Taken</label>
+                @Html.TextAreaFor(m => m.Actaken, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-row-2col">
+            <div class="form-group">
+                <label>Date of Action Taken</label>
+                @Html.TextBoxFor(m => m.Acdate, new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="form-group">
+                <label>Date of Next Action</label>
+                @Html.TextBoxFor(m => m.Nacdate, new { @class = "form-control", type = "date" })
+            </div>
+        </div>
+
+
+         @if(Context.Session.GetInt32("User Level") <= 2 )
+                        {
+        <button type="submit" name="submitType" value="SaveNCACTION" class="saveButton">Save New Task</button>
+                        }
+    </fieldset>
+</form>

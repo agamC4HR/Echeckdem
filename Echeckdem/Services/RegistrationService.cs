@@ -9,192 +9,171 @@ using ZstdSharp.Unsafe;
 using Echeckdem.CustomFolder.Dashboard.Registration;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using System.Security.Cryptography;
+using DocumentFormat.OpenXml.Vml.Office;
+using Echeckdem.ViewModel.Shared;
+using Echeckdem.ViewModel.ComplianceTracker;
 namespace Echeckdem.Services
 {
     public class RegistrationService
     {
         private readonly DbEcheckContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public RegistrationService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment)
+        private readonly HttpContext _httpContext;
+        public RegistrationService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _httpContext = httpContextAccessor.HttpContext!;
         }
-        public async Task<List<RegistrationViewModel>> GetDataAsync(
-    int ulev, int uno,
-    string organizationName = null,
-    string LocationName = null,
-    string StateName = null,
-    string CityName = null,
-    DateOnly? StartDueDate = null,
-    DateOnly? EndDueDate = null,
-    DateOnly? StartPeriod = null,
-    DateOnly? EndPeriod = null)
+
+        public async Task<List<ComplianceViewModel>> GetRegistrationAsync(FilterFormModel model=null ) 
         {
-            var sqlQuery = @"
-    SELECT a.oid, a.doe, a.status, a.Dolr, a.tp, a.doi, a.lcode, a.nmoe, a.noe, a.remarks, a.rno, a.uid, a.Filename, 
-           b.lname, b.lstate, b.lcity, b.lregion, b.ltype,
-           c.oname,
-           d.statedesc as State
-    FROM ncreg a
-    JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
-    JOIN ncmorg c ON c.oid = b.oid
-    JOIN MASTSTATES d ON b.lstate = d.stateid
-    WHERE c.oactive = 1 
-      AND b.oid = a.oid
-      AND a.lcode = b.lcode";
-
-            var sqlParams = new List<SqlParameter>
-    {
-        new SqlParameter("@uno", uno)
-    };
-
-            if (ulev >= 1)
+            if (_httpContext.Session.GetInt32("User Level") == 1)
             {
-                sqlQuery += @"
-        AND b.oid IN (SELECT DISTINCT oid FROM ncumap WHERE uno = @uno)
-        AND b.lactive = '1'
-        AND a.lcode IN (SELECT DISTINCT lcode FROM ncumap WHERE uno = @uno)";
+
+
+                if (model == null)
+                {
+
+                    return await (from reg in _context.Ncregs
+                                  join loc in _context.Ncmlocs on reg.Lcode equals loc.Lcode
+                                  join org in _context.Ncmorgs on loc.Oid equals org.Oid
+
+                                  where loc.Lactive == 1 && org.Oactive == 1
+                                  orderby reg.Doe ascending
+                                  select new ComplianceViewModel
+                                  {
+                                      Id = reg.Uid,
+                                      Oid = org.Oid,
+                                      Lcode = loc.Lcode,
+                                      Oname = org.Oname,
+                                      Lname = loc.Lname,
+                                      Lcity = loc.Lcity,
+                                      Lstate = loc.Lstate,
+                                      ServiceType = "Registration",
+                                      Service = (from mastre in _context.Mastregs where mastre.Rtype == reg.Tp select mastre.Rdesc).FirstOrDefault() ?? "Unknown",
+                                      Period = "N/A",
+                                      DueDate = reg.Doe.HasValue ? reg.Doe.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                      CompletionDate = reg.Dolr.HasValue ? reg.Dolr.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                      Status = reg.Status,
+                                      FileName = reg.Filename
+
+                                  }).ToListAsync();
+
+
+                }
+                else
+                {
+                    var registrations = await (from reg in _context.Ncregs
+                                               join loc in _context.Ncmlocs on reg.Lcode equals loc.Lcode
+                                               join org in _context.Ncmorgs on loc.Oid equals org.Oid
+
+                                               where loc.Lactive == 1 && org.Oactive == 1
+                                                 && (string.IsNullOrEmpty(model.SelectedClient) || org.Oid == model.SelectedClient)
+                                                 && (string.IsNullOrEmpty(model.SelectedSite) || loc.Lcode == model.SelectedSite)
+                                                 && (string.IsNullOrEmpty(model.SelectedState) || loc.Lstate == model.SelectedState)
+                                                 && (string.IsNullOrEmpty(model.SelectedCity) || loc.Lcity == model.SelectedCity)
+                                                 && (!model.StartDueDate.HasValue || reg.Doe >= model.StartDueDate.Value)
+                                                 && (!model.EndDueDate.HasValue || reg.Doe <= model.EndDueDate.Value)
+                                               orderby reg.Doe ascending
+                                               select new ComplianceViewModel
+                                               {
+                                                   Id = reg.Uid,
+                                                   Oid = org.Oid,
+                                                   Lcode = loc.Lcode,
+                                                   Oname = org.Oname,
+                                                   Lname = loc.Lname,
+                                                   Lcity = loc.Lcity,
+                                                   Lstate = loc.Lstate,
+                                                   ServiceType = "Registration",
+                                                   Service = (from mastre in _context.Mastregs where mastre.Rtype == reg.Tp select mastre.Rdesc).FirstOrDefault() ?? "Unknown",
+                                                   Period = "N/A",
+                                                   DueDate = reg.Doe.HasValue ? reg.Doe.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                                   CompletionDate = reg.Dolr.HasValue ? reg.Dolr.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                                   Status = reg.Status,
+                                                   FileName = reg.Filename
+
+                                               }).ToListAsync();
+
+                    return registrations;
+                }
+            }
+            else
+            {
+                var uno = _httpContext.Session.GetInt32("UNO");
+
+                if (model == null)
+                {
+
+                    return await (from reg in _context.Ncregs
+                                  join loc in _context.Ncmlocs on reg.Lcode equals loc.Lcode
+                                  join org in _context.Ncmorgs on loc.Oid equals org.Oid
+                                  join usem in _context.Ncumaps on new { loc.Oid, loc.Lcode } equals new { usem.Oid, usem.Lcode }
+                                  where usem.Uno == uno && loc.Lactive == 1 && org.Oactive == 1
+                                  orderby reg.Doe ascending
+                                  select new ComplianceViewModel
+                                  {
+                                      Id = reg.Uid,
+                                      Oid = org.Oid,
+                                      Lcode = loc.Lcode,
+                                      Oname = org.Oname,
+                                      Lname = loc.Lname,
+                                      Lcity = loc.Lcity,
+                                      Lstate = loc.Lstate,
+                                      ServiceType = "Registration",
+                                      Service = (from mastre in _context.Mastregs where mastre.Rtype == reg.Tp select mastre.Rdesc).FirstOrDefault() ?? "Unknown",
+                                      Period = "N/A",
+                                      DueDate = reg.Doe.HasValue ? reg.Doe.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                      CompletionDate = reg.Dolr.HasValue ? reg.Dolr.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                      Status = reg.Status,
+                                      FileName = reg.Filename
+
+                                  }).ToListAsync();
+
+
+                }
+                else
+                {
+                    var registrations = await (from reg in _context.Ncregs
+                                               join loc in _context.Ncmlocs on reg.Lcode equals loc.Lcode
+                                               join org in _context.Ncmorgs on loc.Oid equals org.Oid
+                                               join usem in _context.Ncumaps on new { loc.Oid, loc.Lcode } equals new { usem.Oid, usem.Lcode }
+                                               where usem.Uno == uno && loc.Lactive == 1 && org.Oactive == 1
+                                                 && (string.IsNullOrEmpty(model.SelectedClient) || org.Oid == model.SelectedClient)
+                                                 && (string.IsNullOrEmpty(model.SelectedSite) || loc.Lcode == model.SelectedSite)
+                                                 && (string.IsNullOrEmpty(model.SelectedState) || loc.Lstate == model.SelectedState)
+                                                 && (string.IsNullOrEmpty(model.SelectedCity) || loc.Lcity == model.SelectedCity)
+                                                 && (!model.StartDueDate.HasValue || reg.Doe >= model.StartDueDate.Value)
+                                                 && (!model.EndDueDate.HasValue || reg.Doe <= model.EndDueDate.Value)
+                                               orderby reg.Doe ascending
+                                               select new ComplianceViewModel
+                                               {
+                                                   Id = reg.Uid,
+                                                   Oid = org.Oid,
+                                                   Lcode = loc.Lcode,
+                                                   Oname = org.Oname,
+                                                   Lname = loc.Lname,
+                                                   Lcity = loc.Lcity,
+                                                   Lstate = loc.Lstate,
+                                                   ServiceType = "Registration",
+                                                   Service = (from mastre in _context.Mastregs where mastre.Rtype == reg.Tp select mastre.Rdesc).FirstOrDefault() ?? "Unknown",
+                                                   Period = "N/A",
+                                                   DueDate = reg.Doe.HasValue ? reg.Doe.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                                   CompletionDate = reg.Dolr.HasValue ? reg.Dolr.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                                                   Status = reg.Status,
+                                                   FileName = reg.Filename
+
+                                               }).ToListAsync();
+
+                    return registrations;
+                }
+
             }
 
-            if (!string.IsNullOrEmpty(organizationName))
-            {
-                sqlQuery += " AND c.oname = @organizationName";
-                sqlParams.Add(new SqlParameter("@organizationName", organizationName));
-            }
-
-            if (!string.IsNullOrEmpty(LocationName))
-            {
-                sqlQuery += " AND b.lname = @LocationName";
-                sqlParams.Add(new SqlParameter("@LocationName", LocationName));
-            }
-
-            if (!string.IsNullOrEmpty(StateName))
-            {
-                sqlQuery += " AND d.statedesc = @StateName";
-                sqlParams.Add(new SqlParameter("@StateName", StateName));
-            }
-
-            if (!string.IsNullOrEmpty(CityName))
-            {
-                sqlQuery += " AND b.lcity = @CityName";
-                sqlParams.Add(new SqlParameter("@CityName", CityName));
-            }
-
-            if (StartDueDate.HasValue)
-            {
-                sqlQuery += " AND a.doe >= @StartDueDate";
-                sqlParams.Add(new SqlParameter("@StartDueDate", StartDueDate.Value));
-            }
-
-            if (EndDueDate.HasValue)
-            {
-                sqlQuery += " AND a.doe <= @EndDueDate";
-                sqlParams.Add(new SqlParameter("@EndDueDate", EndDueDate.Value));
-            }
-
-            // If both StartPeriod and EndPeriod are applicable later, apply logic here as well
-            // Currently not in use, so not included
-
-            sqlQuery += " ORDER BY a.doe DESC, b.lname";
-
-            var result = await _context.RegistrationViewModel
-                .FromSqlRaw(sqlQuery, sqlParams.ToArray())
-                .ToListAsync();
-
-            return result;
+                
         }
-
-        //public async Task<List<RegistrationViewModel>> GetDataAsync( int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
-        //{
-        //    //var currentYear = DateTime.Now.Year;
-
-        //    var sqlQuery = @"
-        //    SELECT a.oid, a.doe, a.status, a.Dolr, a.tp, a.doi, a.lcode, a.nmoe, a.noe, a.remarks, a.rno, a.uid, a.Filename, 
-        //    b.lname, b.lstate, b.lcity, b.lregion, b.ltype,
-        //    c.oname,
-        //    d.statedesc as State
-
-        //    FROM ncreg a
-        //    JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
-        //    JOIN ncmorg c ON c.oid = b.oid
-        //    JOIN MASTSTATES d ON b.lstate = d.stateid
-        //    WHERE c.oactive = 1 
-        //    AND b.oid = a.oid
-        //    AND a.lcode = b.lcode ";
-
-
-
-        //    // Apply year condition only if no filters are specified
-        //    if (string.IsNullOrEmpty(organizationName) &&
-        //        string.IsNullOrEmpty(LocationName) &&
-        //        string.IsNullOrEmpty(StateName) &&
-        //        string.IsNullOrEmpty(CityName))
-        //    {
-        //        //sqlQuery += "AND YEAR(a.doe) = @currentYear ";                          
-        //    }
-
-        //    if (ulev >= 1)
-        //    {
-        //        sqlQuery += @" 
-        //        AND b.oid IN (SELECT DISTINCT oid FROM ncumap WHERE uno = @uno)
-        //        AND b.lactive = '1'
-        //        AND a.lcode IN (SELECT DISTINCT lcode FROM ncumap WHERE uno = @uno) ";
-        //    }
-
-        //    // Applying filters
-
-        //    if (!string.IsNullOrEmpty(organizationName))
-        //    {
-        //        sqlQuery += " AND c.oname = @organizationName";
-        //    }
-        //    if (!string.IsNullOrEmpty(LocationName))
-        //    {
-        //        sqlQuery += " AND b.lname = @LocationName";
-        //    }
-        //    if (!string.IsNullOrEmpty(StateName))
-        //    {
-        //        sqlQuery += " AND d.statedesc = @StateName";
-        //    }
-        //    if (!string.IsNullOrEmpty(CityName))
-        //    {
-        //        sqlQuery += " AND b.lcity = @CityName";
-        //    }
-        //    if (StartDueDate.HasValue)
-        //    {
-        //        sqlQuery += " AND a.doe >= @StartDueDate";
-        //    }
-        //    if (EndDueDate.HasValue)
-        //    {
-        //        sqlQuery += " AND a.doe <= @EndDueDate";
-        //    }    
-        //    if (StartPeriod.HasValue)
-        //    {
-        //        sqlQuery += " ";
-        //    }
-        //    if (EndPeriod.HasValue)
-        //    {
-        //        sqlQuery += " "; 
-        //    }
-        //    sqlQuery += " ORDER BY a.doe DESC, b.lname";
-
-        //    var result = await _context.RegistrationViewModel
-        //        .FromSqlRaw(sqlQuery,
-        //        //new SqlParameter("@currentYear", currentYear),
-        //        new SqlParameter("@uno", uno),
-        //        new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
-        //        new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
-        //        new SqlParameter("@StateName", (object)StateName ?? DBNull.Value),
-        //        new SqlParameter("@CityName", (object)CityName ?? DBNull.Value),
-        //        new SqlParameter("@StartDueDate", (object)StartDueDate ?? DBNull.Value),
-        //        new SqlParameter("@EndDueDate", (object)EndDueDate ?? DBNull.Value),
-        //        new SqlParameter("@StartPeriod", (object)StartPeriod ?? DBNull.Value),
-        //        new SqlParameter("@EndPeriod", (object)EndPeriod ?? DBNull.Value))
-        //        .ToListAsync();
-
-        //    return result;
-        //}
-
+ 
+        
         public Task<List<CompliantRegistrationViewModel>> GetCompliantRegistrationsAsync(int uno, int selectedYear)
         {
             // LINQ query to get the compliant registrations

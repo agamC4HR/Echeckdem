@@ -9,6 +9,7 @@ using Echeckdem.CustomFolder;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Echeckdem.CustomFolder.UserManagement;
 using Echeckdem.Handlers;
+using Echeckdem.ViewModel;
 
 namespace Echeckdem.Services
 {
@@ -60,27 +61,81 @@ namespace Echeckdem.Services
             return user?.Uno ?? 0;
         }
 
-        public async Task<List<string>> GetUserLocationTypesAsync(int uno)
+        public async Task<List<string>> GetUserLocationTypesAsync(int uno,int ulevel)
         {
-            var locationTypes = await _dbEcheckContext.Ncumaps
-                .Where(m => m.Uno == uno)
-                .Join(
-                    _dbEcheckContext.Ncmlocs,
-                    map => new { map.Lcode, map.Oid },
-                    loc => new { loc.Lcode, loc.Oid },
-                    (map, loc) => loc.Ltype
-                )
-                 .Where(ltype => !string.IsNullOrWhiteSpace(ltype))
-                 .Select(ltype => ltype.Trim())
-                 .ToListAsync();
+            if (ulevel==1) 
+            {
+                var locationTypes = await (from a  in _dbEcheckContext.Ncmlocs
+                                           join b in _dbEcheckContext.Ncmorgs on a.Oid equals b.Oid
+                                           where a.Lactive == 1 && !string.IsNullOrEmpty(a.Ltype) && b.Oactive == 1
+                select a.Ltype).Distinct().ToListAsync();
 
-            return locationTypes;
+
+                return locationTypes;
+            }
+            else 
+            {
+                var locationTypes = await (
+            from aa in _dbEcheckContext.Ncumaps.Where(x => x.Uno == uno)
+            join bb in (
+                from a in _dbEcheckContext.Ncmlocs
+                where a.Lactive == 1 && !string.IsNullOrEmpty(a.Ltype)
+                join b in _dbEcheckContext.Ncmorgs.Where(o => o.Oactive == 1) on a.Oid equals b.Oid
+                select new { a.Oid, a.Lcode, a.Ltype }
+            )
+            on new { aa.Oid, aa.Lcode } equals new { bb.Oid, bb.Lcode }
+            select bb.Ltype
+        ).Distinct().ToListAsync();
+
+
+                return locationTypes;
+            }
+                
         }
 
-        public async Task<List<Ncumap>> GetUserLocationsAsync(int uno)
-        { 
-            return await _dbEcheckContext.Ncumaps.Where(m=>m.Uno==uno).ToListAsync();
-        
+      
+        public async Task<List<UserLocation>> GetUserLocationsAsync(int uno,int ulevel)
+        {
+            if (ulevel == 1)
+            {
+                return await (from client in _dbEcheckContext.Ncmorgs 
+                              join locs in _dbEcheckContext.Ncmlocs on client.Oid equals locs.Oid
+                              where client.Oactive == 1 && locs.Lactive == 1
+                              orderby client.Oname, locs.Lname
+                              select new UserLocation { Oid = client.Oid, Client = client.Oname, Lcode = locs.Lcode, Site = locs.Lname, Lcity = locs.Lcity, Lstate = locs.Lstate }).ToListAsync();
+            }
+            else {
+                return await (from mapping in _dbEcheckContext.Ncumaps
+                              join client in _dbEcheckContext.Ncmorgs on mapping.Oid equals client.Oid
+                              join locs in _dbEcheckContext.Ncmlocs on mapping.Lcode equals locs.Lcode
+                              where mapping.Uno == uno && client.Oactive == 1 && locs.Lactive == 1
+                              orderby client.Oname, locs.Lname
+                              select new UserLocation { Oid = client.Oid, Client = client.Oname, Lcode = locs.Lcode, Site = locs.Lname, Lcity = locs.Lcity, Lstate = locs.Lstate }).ToListAsync();
+            }
+                
+            
+
+        }
+        public async Task<List<UserLocation>> GetUserBOLocationsAsync(int uno,int ulevel)
+        {
+            if (ulevel == 1)
+            {
+                return await (from client in _dbEcheckContext.Ncmorgs
+                              join locs in _dbEcheckContext.Ncmlocs on client.Oid equals locs.Oid
+                              where client.Oactive == 1 && locs.Lactive == 1 && !string.IsNullOrEmpty(locs.Ltype) && locs.Ltype.Trim() == "BO"
+                              orderby client.Oname, locs.Lname
+                              select new UserLocation { Oid = client.Oid, Client = client.Oname, Lcode = locs.Lcode, Site = locs.Lname, Lcity = locs.Lcity, Lstate = locs.Lstate }).ToListAsync();
+            }
+            else
+            {
+                return await (from mapping in _dbEcheckContext.Ncumaps
+                              join client in _dbEcheckContext.Ncmorgs on mapping.Oid equals client.Oid
+                              join locs in _dbEcheckContext.Ncmlocs on mapping.Lcode equals locs.Lcode
+                              where mapping.Uno == uno && !string.IsNullOrEmpty(locs.Ltype) && locs.Ltype.Trim() == "BO" && client.Oactive == 1 && locs.Lactive == 1
+                              orderby client.Oname, locs.Lname
+                              select new UserLocation { Oid = client.Oid, Client = client.Oname, Lcode = locs.Lcode, Site = locs.Lname, Lcity = locs.Lcity, Lstate = locs.Lstate }).ToListAsync();
+            }
+
         }
 
     }

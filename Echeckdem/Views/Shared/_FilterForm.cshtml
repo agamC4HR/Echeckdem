@@ -1,4 +1,7 @@
-﻿<style>
+﻿@using Echeckdem.ViewModel.Shared
+@model FilterFormModel
+
+<style>
 
     .table-filter-container-parent {
         position: fixed;
@@ -97,62 +100,38 @@
             <button type="button" class="close-btn-table-filter-container" onclick="toggleFilterForm()">✕</button>
             <h3 class="heading">Filter Options</h3>
         </div>
-        <form method="get" asp-action="CombinedDetailed" style="padding:0 15px 15px 7px;">
+        <form method="post" asp-action="FilteredIndex" style="padding:0 15px 15px 7px;" id="filterform">
             <div class="form-row-2col">
                 <div class="form-group">
-                    <label for="organizationFilter">Filter by Organization:</label>
-                    <select id="organizationFilter" name="organizationName" class="form-control">
-                        <option value="">All</option>
-                        @if (ViewBag.OrganizationNames != null)
-                        {
-                            foreach (var org in ViewBag.OrganizationNames)
-                            {
-                                <option value="@org">@org</option>
-                            }
-                        }
+                    <label for="organizationFilter">Client:</label>
+                    <select id="organizationFilter" asp-for="SelectedClient" asp-items="Model.UClientList" class="form-control">
+                        <option value="">All Client</option>
+                        
                     </select>
 
                 </div>
                 <div class="form-group">
                     <label for="locationFilter">Site</label>
                     @* <input type="text" name="site" class="form-control" value="@Model.Site" /> *@
-                    <select id="locationFilter" name="LocationName" class="form-control">
+                    <select id="locationFilter" asp-for="SelectedSite" asp-items="Model.USiteList" class="form-control" >
                         <option value="">Select a Site</option>
-                        @if (ViewBag.LocationNames != null)
-                        {
-                            foreach (var loc in ViewBag.LocationNames)
-                            {
-                                <option value="@loc">@loc</option>
-                            }
-                        }
+                        
                     </select>
                 </div>
                 </div>
             <div class="form-row-2col">
                 <div class="form-group">
                     <label for="StateFilter">State</label>
-                    <select id="StateFilter" name="Statename" class="form-control">
-                        <option value="">Select a State</option>
-                        @if (ViewBag.StateNames != null)
-                        {
-                            foreach (var sta in ViewBag.StateNames)
-                            {
-                                <option value="@sta">@sta</option>
-                            }
-                        }
+                    <select id="StateFilter" asp-for="SelectedState" asp-items="Model.UStateList" class="form-control">
+                        <option value="">All States</option>
+                        
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="CityFilter">City</label>
-                    <select id="CityFilter" name="CityName" class="form-control">
-                        <option value="">Select a City</option>
-                        @if (ViewBag.CityNames != null)
-                        {
-                            foreach (var city in ViewBag.CityNames)
-                            {
-                                <option value="@city">@city</option>
-                            }
-                        }
+                    <select id="CityFilter" asp-for="SelectedCity" asp-items="Model.UCityList" class="form-control">
+                        <option value="">All Cities</option>
+                       
                     </select>
                 </div>
                 </div>
@@ -161,33 +140,108 @@
             <div class="form-row-2col">
                 <div class="form-group">
                     <label for="StartDueDate">Start Due Date</label>
-                    <input type="date" name="startDueDate" class="form-control" id="startDueDate" value="@Model.StartDueDate?.ToString("yyyy-MM-dd")" />
+                    <input type="date" asp-for="StartDueDate" class="form-control" id="startDueDate" />
                 </div>
                 <div class="form-group">
                     <label for="EndDueDate">End Due Date</label>
-                    <input type="date" name="endDueDate" class="form-control" id="endDueDate" value="@Model.EndDueDate?.ToString("yyyy-MM-dd")" />
+                    <input type="date" asp-for="EndDueDate" class="form-control" id="endDueDate" />
                 </div>
                 </div>
             <div class="form-row-2col">
                 <div class="form-group">
                     <label for="StartPeriod">Start Period</label>
-                    <input type="date" name="startPeriod" class="form-control" id="startPeriod" value="@Model.StartPeriod?.ToString("yyyy-MM-dd")" />
+                    <input type="date" asp-for="StartPeriod" class="form-control" id="startPeriod" />
                 </div>
                 <div class="form-group">
                     <label for="EndPeriod">End Period</label>
-                    <input type="date" name="endPeriod" class="form-control" id="endPeriod" value="@Model.EndPeriod?.ToString("yyyy-MM-dd")" />
+                    <input type="date" asp-for="EndPeriod" class="form-control" id="endPeriod" />
                 </div>
                 </div>
             <div style="display:flex; gap:10px;">
 
                     <button type="submit" class="saveButton">Filter</button>
-                    <button type="reset" class="saveButton" onclick="clearFilters()">Clear</button>
+                    <button type="reset" class="saveButton" >Clear</button>
 </div>
         </form>
     </div>
 </div>
 
 <script>
+      $(document).ready(function () {
+      $('#organizationFilter').on('change', function () {
+            var organizationFilter = $(this).val();
+            if (organizationFilter !== "") {
+
+                $.get('/DetailsView/GetLocationsByOid', { oid: organizationFilter }, function (data) {
+                    var siteDropdown = $('#locationFilter');
+                    siteDropdown.empty();
+                    siteDropdown.append($('<option>').val("").text("Select a Site"));
+
+                    $.each(data.value, function (i, item) {
+                        siteDropdown.append($('<option>').val(item.value).text(item.text));
+                    });
+
+                   
+                });
+                $.get('/DetailsView/GetCityByOid', { oid: organizationFilter }, function (data) {
+                    var siteDropdown = $('#CityFilter');
+                    siteDropdown.empty();
+                    siteDropdown.append($('<option>').val("").text("All Cities"));
+
+                    $.each(data.value, function (i, item) {
+                        siteDropdown.append($('<option>').val(item.value).text(item.text));
+                    });
+
+
+                });
+                 $.get('/DetailsView/GetStateByOid', { oid: organizationFilter }, function (data) {
+                    var siteDropdown = $('#StateFilter');
+                    siteDropdown.empty();
+                    siteDropdown.append($('<option>').val("").text("All States"));
+
+                    $.each(data.value, function (i, item) {
+                        siteDropdown.append($('<option>').val(item.value).text(item.text));
+                    });
+
+
+                });
+            } else {
+                 $.get('/DetailsView/GetLocations', function (data) {
+                    var siteDropdown = $('#locationFilter');
+                    siteDropdown.empty();
+                    siteDropdown.append($('<option>').val("").text("Select a Site"));
+
+                    $.each(data.value, function (i, item) {
+                        siteDropdown.append($('<option>').val(item.value).text(item.text));
+                    });
+
+
+                });
+                $.get('/DetailsView/GetCity', function (data) {
+                    var siteDropdown = $('#CityFilter');
+                    siteDropdown.empty();
+                    siteDropdown.append($('<option>').val("").text("All Cities"));
+
+                    $.each(data.value, function (i, item) {
+                        siteDropdown.append($('<option>').val(item.value).text(item.text));
+                    });
+
+
+                });
+                 $.get('/DetailsView/GetState', function (data) {
+                    var siteDropdown = $('#StateFilter');
+                    siteDropdown.empty();
+                    siteDropdown.append($('<option>').val("").text("All States"));
+
+                    $.each(data.value, function (i, item) {
+                        siteDropdown.append($('<option>').val(item.value).text(item.text));
+                    });
+
+
+                });
+            }
+        });
+      });
     function toggleFilterForm() {
         const tableFilterContainer = document.getElementById('table-filter-container');
         const tableFilterContainerParent = document.getElementById('table-filter-container-parent');
@@ -203,110 +257,6 @@
             body.style.overflow = 'hidden';
         }
     }
-    $(document).ready(function () {
-        $('#organizationFilter').on('change', function () {
-            var organizationName = $(this).val();
-            var filterSource = $('#filterSource').val(); // get the selected filter source
-            var locationDropdown = $('#locationFilter');
-            var endpoint = '';
 
-            // decide which endpoint to call based on filter source
-            switch (filterSource) {
-                case 'contribution':
-                    endpoint = '/DetailsView/GetContributionLocations';
-                    break;
-                case 'return':
-                    endpoint = '/DetailsView/GetReturnLocations';
-                    break;
-                case 'bocw':
-                    endpoint = '/DetailView/GetBOCWLocations';
-                    break;
-                default:
-                    endpoint = '/DetailsView/GetLocations';
-            }
-
-            // make the AJAX request
-            $.get(endpoint, { organizationName: organizationName }, function (data) {
-                locationDropdown.empty();
-                locationDropdown.append('<option value="">-- Select Location --</option>');
-
-                $.each(data, function (index, location) {
-                    locationDropdown.append('<option value="' + location + '">' + location + '</option>');
-                });
-            });
-        });
-    });
-
- 
-
-    // storing data in form
-    function getQueryParam(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const fields = [
-            "organizationName",
-            "LocationName",
-            "Statename",
-            "CityName",
-            "startDueDate",
-            "endDueDate",
-            "startPeriod",
-            "endPeriod"
-        ];
-
-        fields.forEach(function (fieldName) {
-            const value = getQueryParam(fieldName);
-            if (value !== null) {
-                const element = document.getElementsByName(fieldName)[0];
-                if (element) {
-                    element.value = value;
-                }
-            }
-        });
-    });
-
-    function clearFilters() {
-        const form = document.querySelector('.table-filter-container form');
-        form.reset();
-
-        const locationDropdown = document.getElementById('locationFilter');
-        if (locationDropdown) {
-            locationDropdown.innerHTML = '<option value="">Select a Site</option>';
-        }
-
-        const cityDropdown = document.getElementById('CityFilter');
-        if (cityDropdown) {
-            cityDropdown.innerHTML = '<option value="">Select a City</option>';
-        }
-
-        const stateDropdown = document.getElementById('StateFilter');
-        if (stateDropdown) {
-            stateDropdown.value = '';
-        }
-
-        const dateFields = [
-            'startDueDate',
-            'endDueDate',
-            'startPeriod',
-            'endPeriod'
-        ];
-
-        dateFields.forEach(id => {
-            const input = document.querySelector(`input[name="${id}"]`);
-            if (input) {
-                input.value = '';
-                input.defaultValue = '';
-            }
-        });
-
-        // Optionally clear URL query string
-        if (window.history.replaceState) {
-            const cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, document.title, cleanUrl);
-        }
-    }
 
 </script>

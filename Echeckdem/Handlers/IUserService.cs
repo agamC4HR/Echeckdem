@@ -1,4 +1,5 @@
 ﻿using Echeckdem.Models;
+using Echeckdem.ViewModel;
 
 namespace Echeckdem.Handlers
 {
@@ -9,8 +10,13 @@ namespace Echeckdem.Handlers
         Task<int> GetUserLevelAsync(string Userid);
         Task<int> GetUserUnoAsync(string Userid);
 
-        Task<List<string>> GetUserLocationTypesAsync(int uno);
+        Task<List<string>> GetUserLocationTypesAsync(int uno,int ulevel);
 
-        Task<List<Ncumap>> GetUserLocationsAsync(int uno);
+        //Task<List<Ncumap>> GetUserLocationsAsync(int uno);
+
+        Task<List<UserLocation>> GetUserLocationsAsync(int uno, int ulevel);
+
+        Task<List<UserLocation>> GetUserBOLocationsAsync(int uno, int ulevel);
+
     }
 }

@@ -1,4 +1,5 @@
-﻿@model Echeckdem.CustomFolder.TrackerTakenViewModel
+﻿@using Echeckdem.ViewModel.OnGoingActivity
+@model TrackerTakenViewModel
 
 <div class="modal fade" id="editNcActTakenModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -27,14 +28,7 @@
                         <input type="date" class="form-control" asp-for="Nacdate" />
                     </div>
 
-                    <div class="form-group">
-                        <label>Visible to Client</label>
-                        <select class="form-control" asp-for="Showclient">
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
-
+                    
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>

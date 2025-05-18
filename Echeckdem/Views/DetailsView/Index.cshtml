@@ -1,0 +1,458 @@
+﻿@using Echeckdem.ViewModel.ComplianceTracker
+@model CombinedDetailedViewModel
+@{
+    ViewData["Title"] = "Compliance Tracker";
+    ViewData["Heading"] = "Compliance Tracker";
+    ViewData["Heading_child"] = "Comprehensive Labor Compliance Calendar.";
+    var ulevel = Context.Session.GetInt32("User Level");
+    bool check = false;
+    int sno = 1;
+}
+
+
+<partial name="_FilterForm" model="Model.FilterFormModel" />
+<style>
+    .styled-table th:nth-child(1) { /* S.No. */
+    width: 4%;
+    }
+
+    .styled-table th:nth-child(2) {
+    width: 15%;
+    }
+
+    .styled-table th:nth-child(5) { /* Site */
+    width: 150px;
+    }
+
+    .styled-table th:nth-child(6) { /* Period */
+    width: 9%;
+    }
+
+    .styled-table th:nth-child(7) { /* Due Date */
+    width: 9%;
+    }
+
+    .styled-table th:nth-child(8) { /* Status */
+    width: 10%;
+    }
+
+    .styled-table th:nth-child(9) { /* Date of Deposit/Renewal */
+    width: 7%;
+    }
+
+    .styled-table th:nth-child(10) { /* City */
+    width: 120px;
+    }
+
+    .styled-table th:nth-child(11) { /* State */
+    width: 120px;
+    }
+
+    .styled-table th:nth-child(12) { /* Region */
+    width: 120px;
+    }
+
+
+
+    .highlight {
+    background-color: yellow;
+    color: black;
+    }
+
+    .view-pdf-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: bold;
+    }
+
+    .view-pdf-link:hover {
+    color: #004d99;
+    text-decoration: underline;
+    }
+
+</style>
+<div class="table-heading-container">
+
+    <!-- Search bar -->
+    <input type="text" id="searchBar" placeholder="Search..." class="table-search-input" onkeyup="searchTable()">
+
+    <!-- Outer-Filter button -->
+    <div class="table-filter-buttons">
+        <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
+        <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
+        <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
+        <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
+        <button class="table-filter-btn" onclick="filterTable('bocw')">Construction</button>
+    </div>
+</div>
+<div class="table-container-detailsView">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>S.No.</th>
+                <th>Client</th>
+                <th>Site Name</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Service Category</th>
+                <th>Services</th>
+                <th>Period</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Completion Date</th>
+
+
+                <th>File</th>
+                @if (ulevel<=2) 
+                {
+                    <th>Edit</th>
+                }
+                else
+                {
+                    <th>Detail</th>
+                }
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Registrations!=null && Model.Registrations.Count>0)
+            { 
+                check = true; 
+                foreach (var k in Model.Registrations)
+                {
+                    <tr class="registration-row">
+                        <td>@sno</td>
+                        <td>@k.Oname</td>
+                        <td>@k.Lname</td>
+                        <td>@k.Lcity</td>
+                        <td>@k.Lstate</td>
+                        <td>@k.ServiceType</td>
+                        <td>@k.Service</td>
+                        <td>@k.Period</td>
+                        <td>@k.DueDate</td>
+                        <td>@k.Status</td>
+                        <td>@k.CompletionDate</td>
+
+
+                        <td>
+                            @if (!string.IsNullOrEmpty(k.FileName))
+                            {
+                                <a href="@Url.Action("Open_file", "DetailsView", new { tp = "REG", nm = k.FileName, oid = k.Oid })"
+                                   target="_blank"
+                                   class="view-pdf-link">
+                                    View FILE
+                                </a>
+                            }
+                            else
+                            {
+                                <span>No file uploaded</span>
+                            }
+                        </td>
+                        <td>
+                            @if (ulevel <= 2)
+                            {
+                                <a href="@Url.Action("EditReg", "DetailsView", new {uid = k.Id})" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("EditReg", "DetailsView", new {uid = k.Id})" class="edit-btn">   <i class="fas fa-eye" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+
+                            }
+                        </td>
+                    </tr>
+                    sno++;
+                }
+
+
+            }
+            @if (Model.Contributions != null && Model.Contributions.Count > 0)
+            {
+                check = true;
+                foreach (var l in Model.Contributions)
+                {
+                    <tr class ="payroll-row">
+                        <td>@sno</td>
+                        <td>@l.Oname</td>
+                        <td>@l.Lname</td>
+                        <td>@l.Lcity</td>
+                        <td>@l.Lstate</td>
+                        <td>@l.ServiceType</td>
+                        <td>@l.Service</td>
+                        <td>@l.Period</td>
+                        <td>@l.DueDate</td>
+                        <td>@l.Status</td>
+                        <td>@l.CompletionDate</td>
+
+
+                        <td>
+                            @if (!string.IsNullOrEmpty(l.FileName))
+                            {
+                                <a href="@Url.Action("Open_file", "DetailsView", new { tp = "CONTR", nm = l.FileName, oid = l.Oid})"
+                                   target="_blank"
+                                   class="view-pdf-link">
+                                    View FILE
+                                </a>
+                            }
+                            else
+                            {
+                                <span>No file uploaded</span>
+                            }
+                        </td>
+                        <td>
+                            @if (ulevel <= 2)
+                            {
+                                <a href="@Url.Action("EditContr", "DetailsView", new {uid = l.Id})" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("EditContr", "DetailsView", new {uid = l.Id})" class="edit-btn">   <i class="fas fa-eye" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+
+                            }
+                        </td>
+                    </tr>
+                    sno++;
+                }
+            }
+            @if (Model.Returns != null && Model.Returns.Count > 0)
+            {
+                check = true;
+                foreach (var l in Model.Returns )
+                {
+                    <tr class="return-row">
+                        <td>@sno</td>
+                        <td>@l.Oname</td>
+                        <td>@l.Lname</td>
+                        <td>@l.Lcity</td>
+                        <td>@l.Lstate</td>
+                        <td>@l.ServiceType</td>
+                        <td>@l.Service</td>
+                        <td>@l.Period</td>
+                        <td>@l.DueDate</td>
+                        <td>@l.Status</td>
+                        <td>@l.CompletionDate</td>
+
+
+                        <td>
+                            
+                            @if (!string.IsNullOrEmpty(l.FileName))
+                            {
+                                <a href="@Url.Action("Open_file", "DetailsView", new { tp = "RET", nm = l.FileName, oid = l.Oid})"
+                                   target="_blank"
+                                   class="view-pdf-link">
+                                    View FILE
+                                </a>
+                            }
+                            else
+                            {
+                                <span>No file uploaded</span>
+                            }
+                        </td>
+                        <td>
+                            @if (ulevel <= 2)
+                            {
+                                <a href="@Url.Action("EditRet", "DetailsView", new {uid = l.Id})" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("EditRet", "DetailsView", new {uid = l.Id})" class="edit-btn">   <i class="fas fa-eye" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+
+                            }
+                        </td>
+                    </tr>
+                    sno++;
+                }
+            }
+            @if (Model.BOCW != null && Model.BOCW.Count > 0)
+            {
+                check = true;
+                foreach (var l in Model.BOCW)
+                {
+                    <tr class="bocw-row">
+                        <td>@sno</td>
+                        <td>@l.Oname</td>
+                        <td>@l.Lname</td>
+                        <td>@l.Lcity</td>
+                        <td>@l.Lstate</td>
+                        <td>@l.ServiceType</td>
+                        <td>@l.Service</td>
+                        <td></td>
+                        <td>@l.DueDate</td>
+                        <td>@l.Status</td>
+                        <td>@l.CompletionDate</td>
+
+
+                        <td>
+                            @if (!string.IsNullOrEmpty(l.File))
+                            {
+                                <a href="@Url.Action("Open_file", "DetailsView", new { tp = "BOCW", nm = l.File, oid = l.Oid})"
+                                   target="_blank"
+                                   class="view-pdf-link">
+                                    View FILE
+                                </a>
+                            }
+                            else
+                            {
+                                <span>No file uploaded</span>
+                            }
+                        </td>
+                        <td>
+                            @if (ulevel <= 2)
+                            {
+                                <a href="@Url.Action("EditBocw", "DetailsView", new {transactionId = l.Id})" class="edit-btn">   <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("EditBocw", "DetailsView", new {transactionId = l.Id})" class="edit-btn">   <i class="fas fa-eye" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+
+                            }
+                        </td>
+                    </tr>
+                    sno++;
+                }
+            }
+            @if (check == false)
+            {
+            <tr>
+                <td colspan="13" class="text-center">No Data Found!</td>
+            </tr>    
+            }
+        </tbody>
+</table>
+</div>
+<script>
+    function filterTable(type) {
+        const allRows = document.querySelectorAll("tbody tr");
+        const registrationRows = document.querySelectorAll(".registration-row");
+        const payrollRows = document.querySelectorAll(".payroll-row");
+        const returnRows = document.querySelectorAll(".return-row");
+        const bocwRows = document.querySelectorAll(".bocw-row");
+
+        // Show or hide rows based on the selected filter type
+        if (type === "all") {
+            allRows.forEach(row => row.style.display = "table-row");
+            updateSerialNumbers(allRows);
+        } else if (type === "registration") {
+            registrationRows.forEach(row => row.style.display = "table-row");
+            payrollRows.forEach(row => row.style.display = "none");
+            returnRows.forEach(row => row.style.display = "none");
+            bocwRows.forEach(row => row.style.display = "none");
+            updateSerialNumbers(registrationRows);
+        } else if (type === "payroll") {
+            registrationRows.forEach(row => row.style.display = "none");
+            payrollRows.forEach(row => row.style.display = "table-row");
+            returnRows.forEach(row => row.style.display = "none");
+            bocwRows.forEach(row => row.style.display = "none");
+            updateSerialNumbers(payrollRows);
+        } else if (type === "return") {
+            registrationRows.forEach(row => row.style.display = "none");
+            payrollRows.forEach(row => row.style.display = "none");
+            returnRows.forEach(row => row.style.display = "table-row");
+            bocwRows.forEach(row => row.style.display = "none");
+            updateSerialNumbers(returnRows);
+        } else if (type === "bocw") {
+            registrationRows.forEach(row => row.style.display = "none");
+            payrollRows.forEach(row => row.style.display = "none");
+            returnRows.forEach(row => row.style.display = "none");
+            bocwRows.forEach(row => row.style.display = "table-row");
+            updateSerialNumbers(bocwRows);
+        }
+        // Update active button
+        document.querySelectorAll(".table-filter-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(`.table-filter-btn[onclick="filterTable('${type}')"]`).classList.add("active");
+    }
+
+
+    function updateSerialNumbers(rows) {
+        rows.forEach((row, index) => {
+            const serialCell = row.cells[0];
+            serialCell.textContent = index + 1;
+        });
+    }
+
+
+
+
+    function searchTable() {
+        const input = document.getElementById('searchBar');
+        const filter = input.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('.styled-table tbody tr');
+
+        rows.forEach(row => {
+            removeHighlight(row); // Clear previous highlights
+
+            const rowText = row.textContent.toLowerCase();
+            const match = rowText.includes(filter);
+
+            row.style.display = match ? "" : "none";
+
+            if (match && filter) {
+                highlightText(row, filter);
+            }
+        });
+    }
+
+    function highlightText(row, filter) {
+        const regex = new RegExp(`(${filter})`, 'gi');
+
+        row.querySelectorAll('td').forEach(cell => {
+            walkTextNodes(cell, node => {
+                const value = node.nodeValue;
+                if (regex.test(value)) {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = value.replace(regex, '<span class="highlight">$1</span>');
+
+                    const fragments = document.createDocumentFragment();
+                    [...tempDiv.childNodes].forEach(n => fragments.appendChild(n));
+                    node.parentNode.replaceChild(fragments, node);
+                }
+            });
+        });
+    }
+
+    // Utility: Traverse only text nodes in a node
+    function walkTextNodes(node, callback) {
+        const walker = document.createTreeWalker(
+            node,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+        let currentNode;
+        while ((currentNode = walker.nextNode())) {
+            callback(currentNode);
+        }
+    }
+
+
+    function removeHighlight(row) {
+        row.querySelectorAll('td').forEach(cell => {
+            // Remove highlight spans while keeping other HTML intact
+            const highlighted = cell.querySelectorAll('span.highlight');
+            highlighted.forEach(span => {
+                span.replaceWith(span.textContent);
+            });
+        });
+    }
+
+
+    function downloadData() {
+        const table = document.querySelector('.styled-table');
+        let rows = table.querySelectorAll('tr');
+        let csv = [];
+
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('th, td').forEach(cell => {
+                rowData.push(cell.textContent);
+            });
+            csv.push(rowData.join(','));
+        });
+
+        const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(csvFile);
+        link.download = 'table-data.csv';
+        link.click();
+    }
+</script>

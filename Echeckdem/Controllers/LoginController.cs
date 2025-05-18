@@ -33,7 +33,7 @@ namespace Echeckdem.Controllers
         { 
             if (ModelState.IsValid)
             {
-                var isValidUser = _loginService.IsValidUser(model.userID, model.password);
+            //    var isValidUser = _loginService.IsValidUser(model.userID, model.password);
                 var isValidUserhash= _loginService.IsValidUserhash(model.userID, model.password);
                 if (isValidUserhash)
                 {
@@ -41,18 +41,20 @@ namespace Echeckdem.Controllers
                     var userLevel = await _loginService.GetUserLevelAsync(model.userID);
                     var uno = await _loginService.GetUserUnoAsync(model.userID);                                   
                     var token = _jwtService.GenerateJwtToken(model);
-                    var locationTypes = await _loginService.GetUserLocationTypesAsync(uno);
-                    var userlocations=await _loginService.GetUserLocationsAsync(uno);
-                    string userlocation=JsonSerializer.Serialize(userlocations);
-
+                    var locationTypes = await _loginService.GetUserLocationTypesAsync(uno,userLevel);
+                    var userlocations=await _loginService.GetUserLocationsAsync(uno, userLevel);
+                    var userbolocations = await _loginService.GetUserBOLocationsAsync(uno,userLevel);
+                    
                     HttpContext.Session.SetString("JWTToken", token);
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
-                    var bo = locationTypes.All(a => a == "BO") ? "yes" : "no";
+                    var bo = locationTypes.All(a => a.Trim() == "BO") ? "yes" : "no";
                     HttpContext.Session.SetString("BO", bo);
+                    string userlocation = JsonSerializer.Serialize(userlocations);
+                    string userbolocation = JsonSerializer.Serialize(userbolocations);
                     HttpContext.Session.SetString("Userlocation", userlocation);
-
+                    HttpContext.Session.SetString("Userbolocation", userbolocation);
                     if (userLevel == 2) { Console.WriteLine("USERLEVEL:", userLevel.ToString()); }
 
                     ViewBag.UserLevel = userLevel;

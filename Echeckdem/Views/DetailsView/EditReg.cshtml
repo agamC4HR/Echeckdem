@@ -1,0 +1,298 @@
+﻿@using Echeckdem.ViewModel
+@using Echeckdem.ViewModel.ComplianceTracker
+    @model RegistrationViewModel
+
+    @{
+        ViewData["Title"] = "Edit Category";
+    ViewData["Heading"] = "Edit Registration - <span style='font-weight:normal;'>NAAM</span>";
+        ViewData["Heading_child"] = "<strong>Location:</strong> FPLCSPL - Pune  | <strong>City:</strong> Pune | <strong>State:</strong> Maharashtra | <strong>Description:</strong> Professional Tax | <strong>Expiry Date:</strong> 31-5-2025";
+     }
+
+    <style>
+
+        .form-container {
+            width: 98vw;
+            margin-top: 45px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: .375rem;
+            margin-left: 7px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+            .form-field label {
+                font-weight: bold;
+                font-size: 12px;
+                color: #333;
+                margin-bottom: 5px;
+                display: block;
+            }
+
+            .form-field input,
+            .form-field select,
+            .form-field textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 12px;
+                background-color: #fff;
+            }
+
+                .form-field input:focus,
+                .form-field select:focus,
+                .form-field textarea:focus {
+                    border-color: #007bff;
+                    outline: none;
+                }
+
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+
+    .view-pdf-link {
+        color: #0066cc;
+        text-decoration: none; 
+        font-weight: bold;
+        justify-content: flex-start;
+        margin-top: -10px;
+        padding:0;
+    }
+
+        .view-pdf-link:hover {
+            color: #004d99; 
+            text-decoration: underline;
+        }
+
+    .required-field {
+        font-weight: bold;
+    }
+
+    /* Error highlighting */
+    input:invalid, select:invalid, textarea:invalid {
+        border-color: #ff9999;
+    }
+
+    /* For dynamically required fields */
+    .dynamic-required::after {
+        content: ' *';
+        color: red;
+    }
+
+    .required-star {
+        color: red;
+        margin-left: 2px;
+    }
+
+
+    </style>
+
+    <form asp-action="AddOrUpdateReg" asp-controller="DetailsView" method="post" enctype="multipart/form-data" class="form-container">
+        <input type="hidden" asp-for="Oid" />
+        <input type="hidden" asp-for="Uid" />
+        <input type="hidden" asp-for="Lcode" />
+
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label asp-for="Status">Status:</label>
+            <select asp-for="Status" asp-items="@(new SelectList(Model.StatusOptions, "Key", "Value", Model.Status))" required></select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+            <label asp-for="Rno">Registration No.:</label>
+            <input asp-for="Rno" type="text" />
+            </div>
+            <div class="form-field">
+            <label asp-for="Noe">No. of Employees:</label>
+            <input asp-for="Noe" type="number" />
+            </div>
+        </div>
+
+    <div class="form-row">
+        <div class="form-field">
+            <label asp-for="Nmoe">Name of Employer:</label>
+            <input asp-for="Nmoe" type="text" />
+        </div>
+        <div class="form-field">
+            <label asp-for="Doi">Date of Issue (DOI):</label>
+            <input asp-for="Doi" type="date"  />
+        </div>
+    </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <label asp-for="Doe">Date of Expiry (DOE):</label>
+            <input asp-for="Doe" type="date" />
+            </div>
+        <div class="form-field">
+            <label asp-for="Dolr">Date of Last Renewal (DOLR):</label>
+            <input asp-for="Dolr" type="date" />
+        </div>
+        </div>
+
+        
+
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label asp-for="Remarks">Remarks:</label>
+            <textarea asp-for="Remarks" required></textarea>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label>Upload File (PDF only):</label>
+            <input type="file" name="file" accept="application/pdf" />
+            </div>
+        </div>
+
+    @if (!string.IsNullOrEmpty(Model.Filename))
+    {
+        <div class="form-row">
+            <div class="form-field" style="flex: 1 1 100%;">
+                <label>Currently Uploaded File:</label><br />
+                <a href="@Url.Action("Open_file", "DetailsView", new { tp = "REG", nm = Model.Filename, oid = Model.Oid })"
+                   target="_blank"
+                   class="view-pdf-link">
+                    View PDF in New Tab
+                </a>
+            </div>
+        </div>
+
+    }
+
+
+    <button class="saveButton" type="submit">Save Changes</button>
+    <button type ="button" class="saveButton" onclick="window.location.href='/DetailsView/CombinedDetailed'">Cancel</button>
+    </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('.form-container form');
+            const statusSelect = document.getElementById('Status');
+            const doeInput = document.getElementById('Doe');
+            const remarksTextarea = document.getElementById('Remarks');
+            const remarksLabel = document.querySelector('label[for="Remarks"]');
+
+            // Function to check if remarks should be required
+            function checkRemarksRequired() {
+                if (!statusSelect.value || !doeInput.value) return false;
+
+                const isCompliant = statusSelect.value === 'C';
+                const expiryDate = new Date(doeInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Normalize today's date for comparison
+
+                return isCompliant && expiryDate > today;
+            }
+
+            // Update remarks field requirement
+            function updateRemarksRequirement() {
+                const isRemarksRequired = checkRemarksRequired();
+                remarksTextarea.required = isRemarksRequired;
+
+                if (isRemarksRequired) {
+                    remarksLabel.classList.add('required-field');
+                    // Check if the red star already exists to avoid duplicates
+                    if (!remarksLabel.querySelector('.required-star')) {
+                        const star = document.createElement('span');
+                        star.className = 'required-star';
+                        star.style.color = 'red';
+                        star.textContent = ' *';
+                        remarksLabel.appendChild(star);
+                    }
+                } else {
+                    remarksLabel.classList.remove('required-field');
+                    // Remove the red star if it exists
+                    const existingStar = remarksLabel.querySelector('.required-star');
+                    if (existingStar) {
+                        remarksLabel.removeChild(existingStar);
+                    }
+                }
+            }
+
+            // Initialize
+            updateRemarksRequirement();
+
+            // Event listeners
+            statusSelect.addEventListener('change', updateRemarksRequirement);
+            doeInput.addEventListener('change', updateRemarksRequirement);
+
+            // Form submission validation
+            form.addEventListener('submit', function (e) {
+                let isValid = true;
+
+                // Check all required fields
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value || field.value.trim() === "") {
+                        isValid = false;
+                        field.style.borderColor = 'red';
+                        // Ensure the red star is visible
+                        const label = document.querySelector(`label[for="${field.id}"]`);
+                        if (label && !label.querySelector('.required-star')) {
+                            const star = document.createElement('span');
+                            star.className = 'required-star';
+                            star.style.color = 'red';
+                            star.textContent = ' *';
+                            label.appendChild(star);
+                        }
+                    } else {
+                        field.style.borderColor = '#ccc';
+                    }
+                });
+
+                // Special validation for Remarks
+                if (checkRemarksRequired() && !remarksTextarea.value.trim()) {
+                    isValid = false;
+                    remarksTextarea.style.borderColor = 'red';
+                    alert('Remarks are required when Status is Compliant and Expiry Date is in the future.');
+                }
+
+                // Validate file upload (if needed)
+                const fileInput = form.querySelector('input[type="file"]');
+                if (fileInput && fileInput.required && fileInput.files.length === 0) {
+                    isValid = false;
+                    fileInput.style.borderColor = 'red';
+                    alert('Please upload the required PDF file.');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+
+            // Visual feedback for required fields
+            function highlightRequiredFields() {
+                document.querySelectorAll('[required]').forEach(field => {
+                    const label = document.querySelector(`label[for="${field.id}"]`);
+                    if (label && !label.querySelector('.required-star')) {
+                        const star = document.createElement('span');
+                        star.className = 'required-star';
+                        star.style.color = 'red';
+                        star.textContent = ' *';
+                        label.appendChild(star);
+                    }
+                });
+            }
+
+            highlightRequiredFields();
+        });
+    </script>
+}

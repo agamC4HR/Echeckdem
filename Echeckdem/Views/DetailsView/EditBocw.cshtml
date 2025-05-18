@@ -1,0 +1,130 @@
+﻿@model Echeckdem.ViewModel.ProjectBocw.BOCWEditViewModel
+
+@{
+    ViewData["Title"] = "BOCW Record";
+    ViewData["Heading"] = Model.ProjectSummary.SiteName+"-"+Model.ProjectSummary.Orgname;
+    ViewData["Heading_child"] = $"<b>Client Name:&nbsp;&nbsp;</b>{Model.ProjectSummary.ClientName}&nbsp;&nbsp;<b>Project Lead:&nbsp;&nbsp;</b>{Model.ProjectSummary.ProjectLead}&nbsp;&nbsp;<b>State:&nbsp;&nbsp;</b>{Model.ProjectSummary.State}&nbsp;&nbsp;<b>City:&nbsp;&nbsp;</b>{Model.ProjectSummary.City}&nbsp;&nbsp;";
+}
+
+<style>
+    .Parent_Container {
+    display: flex;
+    flex-direction: column;
+    width: 98vw;
+    }
+
+    .Child_Container {
+    display: flex;
+    width: 100%;
+    gap: 15px;
+    }
+
+    
+    .form-row-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+    }
+
+    .form-group {
+    display: flex;
+    flex-direction: column;
+    }
+
+    .form-group label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 12px;
+    }
+
+    .form-control {
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: .375rem;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+    }
+
+    .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+    }
+
+    .heading {
+    margin-bottom: 10px;
+    }
+
+    .saveButton {
+    width: 140px;
+    }
+</style>
+
+
+
+    
+
+    <div class="Parent_Container">
+        <div class="Child_Container">
+            <!-- NCBOCW Section -->
+        <partial name="_BOCWEdit" model="Model.Task" />
+
+
+
+            <!-- NCACTION Section -->
+        <partial name="_BOCWNcaction" model="Model.Ncaction" />
+        </div>
+        <!--NCACTAKEN Summary Section-->
+
+        <fieldset class="NCACTAKEN_Action">
+            <div class="heading">Previous Action Taken History</div>
+
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Action Date</th>
+                        <th>Action Taken</th>
+                        <th>Next Action Date</th>
+                        <th>Updated On</th>
+                        <th>By User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ncactakens != null && Model.ncactakens.Any())
+                    {
+                        @foreach (var item in Model.ncactakens)
+                        {
+                            <tr>
+                                <td>@item.Acdate?.ToString("dd-MMM-yyyy")</td>
+                                <td>@item.Actaken</td>
+                                <td>@item.Nacdate?.ToString("dd-MMM-yyyy")</td>
+                            <td>@item.Accrdate?.ToString("dd-MMM-yyyy")</td>
+                                <td>@item.Uname</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">No Action Taken</td>
+                        </tr>
+                    }
+                </tbody>
+                </table>
+            </fieldset>
+       
+            @if(Context.Session.GetInt32("User Level") <= 2 && Model.Task.Status!=3)
+                        {
+        <!-- NCACTAKEN Section -->
+    <partial name="_BOCWNcactaken" model="Model.Ncactaken" />
+                        }
+      
+    </div>
+
+<script>
+    if (window.history.replaceState) {
+        const url = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, url);
+    }
+</script>

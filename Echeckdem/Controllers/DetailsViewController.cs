@@ -7,8 +7,18 @@ using System.Runtime.CompilerServices;
 using Echeckdem.CustomFolder;
 using Microsoft.AspNetCore.Hosting;
 using System.Text;
+using System.Text.Json;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Security.Cryptography;
+using Echeckdem.ViewModel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Echeckdem.ViewModel.Shared;
+using DocumentFormat.OpenXml.InkML;
+using Echeckdem.ViewModel.ProjectBocw;
+using Echeckdem.ViewModel.ComplianceTracker;
+using Echeckdem.Handlers;
 
 namespace Echeckdem.Controllers
 {
@@ -17,191 +27,92 @@ namespace Echeckdem.Controllers
         private readonly RegistrationService _regService;
         private readonly ContributionService _contService;
         private readonly ReturnsService _retService;
-        private readonly BOCWService _bocwService;
+        
+        private readonly ProjectBocwService _bocwService;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-
-        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService, IWebHostEnvironment webHostEnvironment, BOCWService bocwService)
+        private readonly DbEcheckContext _context;
+        private readonly IFilter _filter;
+        public DetailsViewController(RegistrationService regService, ContributionService contService, ReturnsService retService, IWebHostEnvironment webHostEnvironment, ProjectBocwService bocwService, DbEcheckContext dbEcheckContext, IFilter filter    )
         {
             _regService = regService;
             _contService = contService;
             _retService = retService;
             _bocwService = bocwService;
             _webHostEnvironment = webHostEnvironment;
+            _context = dbEcheckContext;
+            _filter = filter;
         }
-        public async Task<IActionResult> CombinedDetailed(
-    string organizationName = null,
-    string LocationName = null,
-    string StateName = null,
-    string CityName = null,
-    DateOnly? StartDueDate = null,
-    DateOnly? EndDueDate = null,
-    DateOnly? StartPeriod = null,
-    DateOnly? EndPeriod = null)
+        [HttpGet]
+        public async Task<IActionResult> Index() 
         {
-            int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
-            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
+            CombinedDetailedViewModel model = new CombinedDetailedViewModel();
+            
 
-            if (ulev == 0)
+            
+            model.Registrations= await _regService.GetRegistrationAsync();
+            model.Contributions = await _contService.GetContributionAsync();
+            model.Returns = await _retService.GetReturnAsync();
+            model.BOCW = await _bocwService.GetBocwAsync();
+            var _UserlocationList = JsonSerializer.Deserialize<List<UserLocation>>(HttpContext.Session.GetString("Userlocation"));
+            model.FilterFormModel = new FilterFormModel();
+            model.FilterFormModel.UClientList = _UserlocationList.Select(x => new SelectListItem { Value = x.Oid, Text = x.Client }).DistinctBy(x => x.Value).ToList();
+            model.FilterFormModel.USiteList = _UserlocationList.Select(x => new SelectListItem { Value = x.Lcode, Text = x.Site }).DistinctBy(x => x.Value).ToList();
+            model.FilterFormModel.UStateList = _UserlocationList.Select(x => new SelectListItem { Value = x.Lstate, Text = x.Lstate }).DistinctBy(x => x.Value).ToList();
+            model.FilterFormModel.UCityList = _UserlocationList.Where(x=>!string.IsNullOrEmpty(x.Lcity)).Select(x => new SelectListItem { Value = x.Lcity, Text = x.Lcity }).DistinctBy(x => x.Value).ToList();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FilteredIndex(FilterFormModel filter)
+        {
+            if(!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Session has expired. Please log in again.";
-                return RedirectToAction("Index", "Login");
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest("Invalid filter data."+filter+"<br/>"+errors  );
             }
+            CombinedDetailedViewModel model = new CombinedDetailedViewModel();
 
-            // Always fetch all registrations (no date filtering)
-            var registrations = await _regService.GetDataAsync(
-                ulev, uno, organizationName, LocationName, StateName, CityName, null, null, StartPeriod, EndPeriod);
+            model.FilterFormModel = filter;
+            
+            var _UserlocationList = JsonSerializer.Deserialize<List<UserLocation>>(HttpContext.Session.GetString("Userlocation"));
+          
+            model.FilterFormModel.UClientList = _UserlocationList.Select(x => new SelectListItem { Value = x.Oid, Text = x.Client }).DistinctBy(x => x.Value).ToList();
+            model.FilterFormModel.USiteList = _UserlocationList.Select(x => new SelectListItem { Value = x.Lcode, Text = x.Site }).DistinctBy(x => x.Value).ToList();
+            model.FilterFormModel.UStateList = _UserlocationList.Select(x => new SelectListItem { Value = x.Lstate, Text = x.Lstate }).DistinctBy(x => x.Value).ToList();
+            model.FilterFormModel.UCityList = _UserlocationList.Where(x => !string.IsNullOrEmpty(x.Lcity)).Select(x => new SelectListItem { Value = x.Lcity, Text = x.Lcity }).DistinctBy(x => x.Value).ToList();
+            model.Registrations = await _regService.GetRegistrationAsync(filter);
+            model.Contributions = await _contService.GetContributionAsync(filter);
+            model.Returns = await _retService.GetReturnAsync(filter);
+            model.BOCW = await _bocwService.GetBocwAsync(filter);
 
-            // Determine if user applied any filter (org, loc, state, city) but NOT due dates
-            bool isFiltered = !string.IsNullOrEmpty(organizationName) || !string.IsNullOrEmpty(LocationName)
-                              || !string.IsNullOrEmpty(StateName) || !string.IsNullOrEmpty(CityName);
 
-            bool isDueDateSpecified = StartDueDate.HasValue || EndDueDate.HasValue;
-
-            // If user filtered but didn't specify due dates => restrict to current year
-            var currentYear = DateTime.Now.Year;
-            var currentYearStart = new DateOnly(currentYear, 1, 1);
-            var currentYearEnd = new DateOnly(currentYear, 12, 31);
-
-            var finalStartDueDate = isDueDateSpecified ? StartDueDate : (isFiltered ? currentYearStart : null);
-            var finalEndDueDate = isDueDateSpecified ? EndDueDate : (isFiltered ? currentYearEnd : null);
-
-            var contributions = await _contService.GetDataAsync(
-                ulev, uno, organizationName, LocationName, StateName, CityName, finalStartDueDate, finalEndDueDate, StartPeriod, EndPeriod);
-
-            var returns = await _retService.GetDataAsync(
-                ulev, uno, organizationName, LocationName, StateName, CityName, finalStartDueDate, finalEndDueDate, StartPeriod, EndPeriod);
-
-            var bocw = await _bocwService.GetDataAsync(
-                ulev, uno, organizationName, LocationName, StateName, CityName, finalStartDueDate, finalEndDueDate, StartPeriod, EndPeriod);
-
-            var detailedViewModel = new CombinedDetailedViewModel
-            {
-                Registrations = registrations,
-                Contributions = contributions,
-                Returns = returns,
-                BOCW = bocw,
-                OrganizationName = organizationName,
-                SiteName = LocationName,
-                StateName = StateName,
-                CityName = CityName,
-                StartDueDate = StartDueDate,
-                EndDueDate = EndDueDate,
-                StartPeriod = StartPeriod,
-                EndPeriod = EndPeriod
-            };
-
-            ViewBag.OrganizationNames = await _regService.GetOrganizationNamesAsync(uno);
-
-            ViewBag.LocationNames = string.IsNullOrEmpty(organizationName)
-                ? await _regService.GetLocationNamesAsync(uno)
-                : await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
-
-            ViewBag.StateNames = await _regService.GetStateNamesAsync(uno);
-            ViewBag.CityNames = await _regService.GetCityNamesAsync(uno);
-
-            return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);
+            return View("Index",model);
         }
-
-        //public async Task<IActionResult> CombinedDetailed(string organizationName = null,  string LocationName = null!, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)//(int ulev, int uno, string organizationName = null)
-        //{
-
-        //    int ulev = HttpContext.Session.GetInt32("User Level") ?? 0;
-        //    int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
-
-
-        //    if (ulev == 0)// || uno == 0)
-        //    {
-        //        // If session values are missing, redirect to login or show error 
-        //        TempData["ErrorMessage"] = "Session has expired. Please log in again.";
-        //        return RedirectToAction("Index", "Login");
-        //    }
-
-
-
-        //    var registrations = await _regService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
-        //    var contributions = await _contService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
-        //    var returns = await _retService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
-        //    var bocw = await _bocwService.GetDataAsync(ulev, uno, organizationName, LocationName, StateName, CityName, StartDueDate, EndDueDate, StartPeriod, EndPeriod);
-
-        //    var detailedViewModel = new CombinedDetailedViewModel
-        //    {
-        //        Registrations = registrations,
-        //        Contributions = contributions,
-        //        Returns = returns,
-        //        BOCW = bocw,
-        //        OrganizationName = organizationName,
-        //        SiteName = LocationName,
-        //        StateName = StateName,
-        //        CityName = CityName,
-        //        StartDueDate = StartDueDate,
-        //        EndDueDate = EndDueDate,
-        //        StartPeriod = StartPeriod,
-        //        EndPeriod = EndPeriod
-        //    };
-
-        //    var organizationNames = await _regService.GetOrganizationNamesAsync(uno);
-        //    ViewBag.OrganizationNames = organizationNames;
-
-
-        //    var locationNames = string.IsNullOrEmpty(organizationName)
-        //       ? await _regService.GetLocationNamesAsync(uno)
-        //       : await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
-        //    ViewBag.LocationNames = locationNames;
-
-        //    var StateNames = await _regService.GetStateNamesAsync(uno);
-        //    ViewBag.StateNames = StateNames;
-
-        //    var CityNames = await _regService.GetCityNamesAsync(uno);
-        //    ViewBag.CityNames = CityNames;
-
-
-        //    return View("~/Views/DetailedView/CombinedDetailedView.cshtml", detailedViewModel);     
-        //}
-
-        [HttpGet]          
-        public async Task<IActionResult> GetLocations(string organizationName)  
+        public IActionResult GetLocationsByOid(string oid)
         {
-            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
-                
-            if (string.IsNullOrEmpty(organizationName))
-            {
-                return Json(await _regService.GetLocationNamesAsync(uno));
-            }
-
-            var locations = await _regService.GetFilteredLocationNamesAsync(uno, organizationName);
-            return Json(locations);
+            return Json(_filter.GetLocationsByOid(oid));
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetReturnLocations(string organizationName)
+        public IActionResult GetCityByOid(string oid)
         {
-            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
-            if (string.IsNullOrEmpty(organizationName))
-                return Json(await _retService.GetLocationNamesAsync(uno));
-
-            return Json(await _retService.GetFilteredLocationNamesAsync(uno, organizationName));
+            return Json(_filter.GetCityByOid(oid));
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetContributionLocations(string organizationName)
+        public IActionResult GetStateByOid(string oid)
         {
-            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
-            if (string.IsNullOrEmpty(organizationName))
-                return Json(await _contService.GetLocationNamesAsync(uno));
-
-            return Json(await _contService.GetFilteredLocationNamesAsync(uno, organizationName));
+            return Json(_filter.GetStateByOid(oid));
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetBOCWLocations(string organizationName)
+        public IActionResult GetLocations()
         {
-            int uno = HttpContext.Session.GetInt32("UNO") ?? 0;
-            if (string.IsNullOrEmpty(organizationName))
-                return Json(await _bocwService.GetLocationNamesAsync(uno));
-
-            return Json(await _bocwService.GetFilteredLocationNamesAsync(uno, organizationName));
+            return Json(_filter.GetLocations());
         }
+        public IActionResult GetCity()
+        {
+            return Json(_filter.GetCity());
+        }
+        public IActionResult GetState()
+        {
+            return Json(_filter.GetState());
+        }
+
         //----------------START----------------------------------REGISTRATION--------  ----------------------------------------------------------------------//
 
         public async Task<IActionResult> EditReg(int uid, string oid, string lcode)
@@ -281,7 +192,7 @@ namespace Echeckdem.Controllers
         //----------------END----------------------------------REGISTRATION------------------------------------------------------------------------------//
 
         //----------------START----------------------------------CONTRIBUTION ------------------------------------------------------------------------------//
-
+        [HttpGet]
         public async Task<IActionResult> EditContr(int contid, string oid, string lcode)
         {
             var nccontr = await _contService.GetByIdAsync(contid, oid, lcode);
@@ -324,7 +235,7 @@ namespace Echeckdem.Controllers
 
         //----------------END----------------------------------CONTRIBUTION ------------------------------------------------------------------------------/
         //----------------START----------------------------------RETURNS ----------------------------------------------------------------------------------//
-
+        [HttpGet]
         public async Task<IActionResult> EditRet(int rtid, string oid, string lcode)
         {
             var ncret = await _retService.GetByIdAsync(rtid, oid, lcode);
@@ -364,68 +275,131 @@ namespace Echeckdem.Controllers
         //----------------END----------------------------------RETURNS------------------------------------------------------------------------------------//
         //----------------START----------------------------------BOCW------------------------------------------------------------------------------------//
         [HttpGet]
-        public IActionResult EditBocw(int transactionId, string lcode)
+        public async Task<IActionResult> EditBocw(string transactionId)
         {
-            var model = _bocwService.GetEditData(lcode, transactionId);
+            var model = await _bocwService.GetEditData(transactionId);
             if (model == null) return NotFound();
 
-            return View("~/Views/DetailedView/EditBocw.cshtml",model);
+            return View(model);
 
-            
+
         }
-
         [HttpPost]
-        public IActionResult AddorUpdateBocw(BOCWEditViewModel model, string submitType) //IFormFile file)
+        public async Task<IActionResult> UpdateBocw(NcbocwUpdateModel model)
         {
             if (!ModelState.IsValid)
+                return BadRequest();
+
+            var task = await _context.Ncbocws.FindAsync(model.TransactionId);
+            if (task == null)
+                return NotFound();
+
+            
+            task.Status = model.Status;
+            task.CompletionDate = model.CompletionDate;
+            var oid = _context.Ncmlocs.Where(x => x.Lcode == task.Lcode).Select(x => x.Oid).FirstOrDefault();
+            if (model.UploadedFile != null && model.UploadedFile.Length > 0)
             {
-                return View("~/Views/DetailedView/EditBocw.cshtml", model);
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "files", oid.ToString(), "bocw");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Path.GetFileName(model.UploadedFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.UploadedFile.CopyToAsync(stream);
+                }
+
+                task.FileName = fileName;
             }
 
-            try
-            {
-                if (submitType == "SaveNCBOCW")
-                {
-                    _bocwService.UpdateOnlyNCBOCW(model, model.UploadedFile);
-                }
-                else if (submitType == "SaveNCACTION")
-                {
-                    _bocwService.UpdateOnlyNCACTION(model);
-                }
-              
+            _context.Update(task);
+            await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "Record updated successfully.";
-                return RedirectToAction("EditBocw", new { transactionId = model.TransactionID, lcode = model.LCode });
-            }
-            catch (Exception ex)
+            return RedirectToAction("EditBocw", new { transactionId = model.TransactionId.ToString() });
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateBONcaction(BOCWNcactionEdit model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var task = await _context.Ncactions.FindAsync(model.Acid);
+            if (task == null)
+                return NotFound();
+
+            
+            task.Acdetail = model.Acdetail;
+            task.Acremarks = model.Acremarks;
+            if (model.UploadedFile != null && model.UploadedFile.Length > 0)
             {
-                ModelState.AddModelError("", "An error occurred while saving: " + ex.Message);
-                return View("~/Views/DetailedView/EditBocw.cshtml", model);
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "files", model.Oid, "Acts");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Path.GetFileName(model.UploadedFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.UploadedFile.CopyToAsync(stream);
+                }
+
+                var ncFile = new Ncfile
+                {
+                    Oid = model.Oid,
+                    Ftp="Act",
+                    Flink = task.Acid,
+                    Fname = fileName,
+                    Fupdate = DateOnly.FromDateTime(DateTime.Today)
+                };
+
+                _context.Ncfiles.Add(ncFile);
+                
             }
+
+            _context.Update(task);
+            await _context.SaveChangesAsync();
+
+
+
+
+
+
+
+            return RedirectToAction("EditBocw", new { transactionId = model.TransactionId.ToString() });
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateBONcactaken(BocwNcactaken model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var task = new Ncactaken();
+
+
+            task.Acid = model.Acid;
+            task.Acdate = model.Acdate;
+            task.Actaken = model.Actaken;
+            task.Nacdate = model.Nacdate;
+            task.Accrdate = DateOnly.FromDateTime(DateTime.Today);
+            task.Showclient = 1;
+task.Uno= HttpContext.Session.GetInt32("UNO");
+            _context.Ncactakens.Add(task);
+            await _context.SaveChangesAsync();
+
+
+
+
+
+
+
+            return RedirectToAction("EditBocw", new { transactionId = model.TransactionId.ToString() });
         }
 
-
-        //[HttpPost]
-        //public IActionResult AddorUpdateBocw(BOCWEditViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View("~/Views/DetailedView/EditBocw.cshtml", model);
-        //    }
-
-        //    try
-        //    {
-        //        _bocwService.UpdateData(model);
-        //        TempData["SuccessMessage"] = "Record updated successfully.";
-        //        return RedirectToAction("EditBocw", new { transactionId = model.TransactionID, lcode = model.LCode });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError("", "An error occurred while saving: " + ex.Message);
-        //        return View("~/Views/DetailedView/EditBocw.cshtml", model);
-        //    }
-        //}
-
+        
         //----------------END----------------------------------BOCW------------------------------------------------------------------------------------//
     }
 }

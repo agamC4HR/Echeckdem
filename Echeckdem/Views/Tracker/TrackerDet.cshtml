@@ -1,0 +1,208 @@
+﻿@model Echeckdem.ViewModel.OnGoingActivity.TrackerFullViewModel
+@{
+    ViewData["Title"] = "Activity Detail";
+    ViewData["Heading"] = Model.ActivityType+" for Client: "+Model.Oname+" at Site: "+Model.Lname;
+    ViewData["Heading_child"] = Model.Title+" created on "+Model.Acrdate+" by "+Model.Uname;
+    int sno = 1;
+}
+<style>
+    .form-row-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+    }
+
+    .form-group {
+    display: flex;
+    flex-direction: column;
+    }
+
+    .form-group label {
+    margin-bottom: 5px;
+    font-size: 12px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: .375rem;
+    font-size: 12px;
+    }
+
+    .DetailsSection_Child {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    left: 7px;
+    width: 98vw;
+    top: 45px;
+    }
+
+    .DetailsSection_Child_1, .DetailsSection_Child_2, .DetailsSection_Child_3 {
+    background: white;
+    padding: 15px;
+    width: 100%;
+    border-radius: .375rem;
+    border: 2px solid red;
+    }
+
+    .DetailsSection_Child_1.heading, .DetailsSection_Child_2.heading {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    }
+</style>
+
+<div id="DetailsSection">
+    <div class="DetailsSection_Child">
+        <!-- NCACTION -->
+        <div class="DetailsSection_Child_1">
+            <div style="display:flex; justify-content: space-between;">
+                <div class="heading">Edit Activity Details</div>
+                <button class="cancelButton" onclick="window.location.href='/Tracker/trackerlist'">Back to Tracker</button>
+            </div>
+            <form id="ncactionForm" method="post" asp-action="SaveNcAction" enctype="multipart/form-data" style="margin-top:10px;">
+
+                <input type="hidden" asp-for="Acid" />
+                <input type="hidden" asp-for="Oid" />
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="Title">Title:</label>
+                        <input type="text" class="form-control" asp-for="Title" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ExternalStatus">External Status:</label>
+
+                        @Html.DropDownListFor(m => m.Acstatus, Model.AcstatusList, "Select Status", new { @class = "form-control", @required="required" })
+
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="InternalStatus">Internal Status:</label>
+                        @Html.DropDownListFor(m => m.Acistatus, Model.AcistatusList,  new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="DetailOfIssue">Detail of Issue:</label>
+                        <textarea class="form-control" asp-for="Acdetail"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="StartDate">Start Date of Issue:</label>
+                        <input type="date" class="form-control" asp-for="Acidate" required/>
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="DocsReceiptDate">Date of Receipt of All Docs/Inputs:</label>
+                        <input type="date" class="form-control" asp-for="Adocdate" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="CloseDate">Close Date of Issue:</label>
+                        <input type="date" class="form-control" asp-for="Accldate" />
+                    </div>
+                </div>
+                <div class="form-row-2col">
+                    <div class="form-group">
+                        <label for="Remarks">Remarks:</label>
+                        <textarea class="form-control" asp-for="Remark"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="FileUpload">Upload PDF:</label>
+                        <input type="file" id="UploadedFile" name="UploadedFile" class="form-control" accept=".pdf" />
+                    </div>
+                </div>
+                @if (Model.ExistingFileName != null && Model.ExistingFileName.Any())
+                {
+                    <div class="form-row-2col">
+                        <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                            <label>Current File</label>
+                            @foreach (var k in Model.ExistingFileName)
+                            {
+                                <span>
+                                    <a href="@Url.Action(k, "DetailsView", new { tp = "Act", nm = k, oid =Model.Oid })"
+                                    target="_blank"
+                                    class="view-pdf-link" style="color:black">
+                                        Open File
+                                    </a>
+                                </span>
+                            }
+
+                        </div>
+                    </div>
+                }
+                @if (Context.Session.GetInt32("User Level") <= 2 && Model.Acstatus.Trim() != "C")
+                {
+                    <button type="submit" class="saveButton">Save</button>
+                }
+            </form>
+        </div>
+
+        <!-- NCACTAKEN List-->
+
+        <div class="DetailsSection_Child_3">
+
+
+            <div class="heading">Previous Actions (History)</div>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>UserName</th>
+                        <th>Date of Action</th>
+                        <th>Action Taken</th>
+                        <th>Next Action Date</th>
+
+                        <th>Created On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(Model.TakenViewModel != null && Model.TakenViewModel.Any())
+                    {
+                        foreach (var taken in Model.TakenViewModel)
+                        {
+                            <tr>
+                                <td>@taken.Uname</td>
+                                <td>@taken.Acdate?.ToString("yyyy-MM-dd")</td>
+                                <td>@taken.Actaken</td>
+                                <td>@taken.Nacdate?.ToString("yyyy-MM-dd")</td>
+
+                                <td>@taken.Acdate?.ToString("yyyy-MM-dd")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" style="text-align: center;">No Actions Taken</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+
+        </div>
+        <!--ADD NEW NCACTAKEN -->
+        @if (Model.Acstatus.Trim() != "C" && Context.Session.GetInt32("User Level") <= 2)
+        {
+            <partial name="_NcactakenAdd" model="Model.Taken" />
+        }
+        
+    </div>
+
+
+</div>
+<script>
+    if (window.history.replaceState) {
+        const url = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, url);
+    }
+</script>

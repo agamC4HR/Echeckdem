@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Mono.TextTemplating;
 using System.Security.Policy;
 using Microsoft.AspNetCore.Hosting;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Echeckdem.ViewModel.Shared;
+using Echeckdem.ViewModel.ComplianceTracker;
 
 namespace Echeckdem.Services
 {
@@ -13,107 +16,177 @@ namespace Echeckdem.Services
     {
         private readonly DbEcheckContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public ReturnsService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment)
+        private readonly HttpContext _httpContext;
+        private static readonly Dictionary<int, string> StatusDescriptions = new()
+{
+            { -1,"Unknown"} ,
+    { 0, "Future" },
+    { 1, "Compliant" },
+    { 2, "Non Compliant" },
+    { 3, "Not IN Scope" },
+    { 4, "Not Applicable" },
+    { 5, "Under Process" }
+    
+};
+        public ReturnsService(DbEcheckContext context, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _httpContext = httpContextAccessor.HttpContext;
         }
 
-        public async Task<List<ReturnsViewModel>> GetDataAsync(int ulev, int uno, string organizationName = null, string LocationName = null, string StateName = null, string CityName = null, DateOnly? StartDueDate = null, DateOnly? EndDueDate = null, DateOnly? StartPeriod = null, DateOnly? EndPeriod = null)
+        public async Task<List<ComplianceViewModel>> GetReturnAsync( FilterFormModel model = null)
         {
-            var currentYear = DateTime.Now.Year;
-
-            var sqlQuery = @"
-                                SELECT a.oid, a.Depdate, a.Status, a.lastdate, a.remarks, a.rtid, a.lcode, a.Filename,
-                                b.lname, b.lstate, b.lcity, b.lregion, 
-                                c.rtitle, c.rform, c.RM, c.YROFF, 
-                                d.oname,
-                                e.statedesc as State
-                                
-                                FROM ncret a
-                                JOIN ncmloc b ON a.lcode = b.lcode AND a.oid = b.oid
-                                JOIN nctempret c ON a.rcode = c.rcode
-                                JOIN ncmorg d ON b.oid = d.oid  
-                                JOIN MASTSTATES e ON b.lstate = e.stateid
-                                WHERE d.oactive = 1 
-                               AND (a.status IS NULL OR a.status <> 99) ";
-
-
-            if (string.IsNullOrEmpty(organizationName) &&
-               string.IsNullOrEmpty(LocationName) &&
-               string.IsNullOrEmpty(StateName) &&
-               string.IsNullOrEmpty(CityName) &&
-                !StartDueDate.HasValue &&
-                !EndDueDate.HasValue &&
-                !StartPeriod.HasValue &&
-                !EndPeriod.HasValue)
+            if (_httpContext.Session.GetInt32("User Level") == 1)
             {
-                sqlQuery += "AND YEAR(a.lastdate) = @currentYear ";
+                if (model == null)
+                {
+
+                    var returns = await (from ret in _context.Ncrets
+                                         join retemp in _context.Nctemprets on ret.Rcode equals retemp.Rcode
+                                         join loc in _context.Ncmlocs on ret.Lcode equals loc.Lcode
+                                         join org in _context.Ncmorgs on loc.Oid equals org.Oid
+                                        
+                                         where loc.Lactive == 1 && org.Oactive == 1
+                                         orderby ret.Lastdate ascending
+                                         select new { ret, retemp, loc, org }).ToListAsync();
+                    return returns.Select(x => new ComplianceViewModel
+                    {
+                        Id = x.ret.Rtid,
+                        Oid = x.org.Oid,
+                        Lcode = x.loc.Lcode,
+                        Oname = x.org.Oname,
+                        Lname = x.loc.Lname,
+                        Lcity = x.loc.Lcity,
+                        Lstate = x.loc.Lstate,
+                        ServiceType = "Returns",
+                        Service = x.retemp.Rtitle,
+                        Period = x.ret.Ryear.ToString(),
+                        DueDate = x.ret.Lastdate.HasValue ? x.ret.Lastdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        CompletionDate = x.ret.Depdate.HasValue ? x.ret.Depdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        Status = StatusDescriptions.TryGetValue(x.ret.Status ?? -1, out var description) ? description : "Unknown",
+                        FileName = x.ret.Filename
+
+                    }).ToList();
+                }
+                else
+                {
+                    var returns = await (from ret in _context.Ncrets
+                                         join retemp in _context.Nctemprets on ret.Rcode equals retemp.Rcode
+                                         join loc in _context.Ncmlocs on ret.Lcode equals loc.Lcode
+                                         join org in _context.Ncmorgs on loc.Oid equals org.Oid
+                                         
+                                         where loc.Lactive == 1 && org.Oactive == 1
+                                            && (string.IsNullOrEmpty(model.SelectedClient) || org.Oid == model.SelectedClient)
+                                            && (string.IsNullOrEmpty(model.SelectedSite) || loc.Lcode == model.SelectedSite)
+                                            && (string.IsNullOrEmpty(model.SelectedState) || loc.Lstate == model.SelectedState)
+                                            && (string.IsNullOrEmpty(model.SelectedCity) || loc.Lcity == model.SelectedCity)
+                                            && (model.StartDueDate == null || ret.Lastdate >= model.StartDueDate.Value)
+                                            && (model.EndDueDate == null || ret.Lastdate <= model.EndDueDate.Value)
+                                            && (model.StartPeriod == null || ret.Ryear >= model.StartPeriod.Value.Year)
+                                            && (model.EndPeriod == null || ret.Ryear <= model.EndPeriod.Value.Year)
+
+                                         orderby ret.Lastdate ascending
+                                         select new { ret, retemp, loc, org }).ToListAsync();
+
+
+
+                    return returns.Select(x => new ComplianceViewModel
+                    {
+                        Id = x.ret.Rtid,
+                        Oid = x.org.Oid,
+                        Lcode = x.loc.Lcode,
+                        Oname = x.org.Oname,
+                        Lname = x.loc.Lname,
+                        Lcity = x.loc.Lcity,
+                        Lstate = x.loc.Lstate,
+                        ServiceType = "Returns",
+                        Service = x.retemp.Rtitle,
+                        Period = x.ret.Ryear.ToString(),
+                        DueDate = x.ret.Lastdate.HasValue ? x.ret.Lastdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        CompletionDate = x.ret.Depdate.HasValue ? x.ret.Depdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        Status = StatusDescriptions.TryGetValue(x.ret.Status ?? -1, out var description) ? description : "Unknown",
+                        FileName = x.ret.Filename
+
+                    }).ToList();
+                }
             }
-            // Add extra filtering if ulev > 1
-            if (ulev >= 1)
-            {
-                sqlQuery += @" AND b.oid IN (SELECT DISTINCT oid FROM ncumap WHERE uno = @uno)
-                           AND b.lactive = '1'
-                           AND a.lcode IN (SELECT DISTINCT lcode FROM ncumap WHERE uno = @uno)";
+            else {
+                var uno = _httpContext.Session.GetInt32("UNO");
+
+                if (model == null)
+                {
+
+                    var returns = await (from ret in _context.Ncrets
+                                         join retemp in _context.Nctemprets on ret.Rcode equals retemp.Rcode
+                                         join loc in _context.Ncmlocs on ret.Lcode equals loc.Lcode
+                                         join org in _context.Ncmorgs on loc.Oid equals org.Oid
+                                         join usem in _context.Ncumaps on new { loc.Oid, loc.Lcode } equals new { usem.Oid, usem.Lcode }
+                                         where usem.Uno == uno && loc.Lactive == 1 && org.Oactive == 1
+                                         orderby ret.Lastdate ascending
+                                         select new { ret, retemp, loc, org }).ToListAsync();
+                    return returns.Select(x => new ComplianceViewModel
+                    {
+                        Id = x.ret.Rtid,
+                        Oid = x.org.Oid,
+                        Lcode = x.loc.Lcode,
+                        Oname = x.org.Oname,
+                        Lname = x.loc.Lname,
+                        Lcity = x.loc.Lcity,
+                        Lstate = x.loc.Lstate,
+                        ServiceType = "Returns",
+                        Service = x.retemp.Rtitle,
+                        Period = x.ret.Ryear.ToString(),
+                        DueDate = x.ret.Lastdate.HasValue ? x.ret.Lastdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        CompletionDate = x.ret.Depdate.HasValue ? x.ret.Depdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        Status = StatusDescriptions.TryGetValue(x.ret.Status ?? -1, out var description) ? description : "Unknown",
+                        FileName = x.ret.Filename
+
+                    }).ToList();
+                }
+                else
+                {
+                    var returns = await (from ret in _context.Ncrets
+                                         join retemp in _context.Nctemprets on ret.Rcode equals retemp.Rcode
+                                         join loc in _context.Ncmlocs on ret.Lcode equals loc.Lcode
+                                         join org in _context.Ncmorgs on loc.Oid equals org.Oid
+                                         join usem in _context.Ncumaps on new { loc.Oid, loc.Lcode } equals new { usem.Oid, usem.Lcode }
+                                         where usem.Uno == uno && loc.Lactive == 1 && org.Oactive == 1
+                                            && (string.IsNullOrEmpty(model.SelectedClient) || org.Oid == model.SelectedClient)
+                                            && (string.IsNullOrEmpty(model.SelectedSite) || loc.Lcode == model.SelectedSite)
+                                            && (string.IsNullOrEmpty(model.SelectedState) || loc.Lstate == model.SelectedState)
+                                            && (string.IsNullOrEmpty(model.SelectedCity) || loc.Lcity == model.SelectedCity)
+                                            && (model.StartDueDate == null || ret.Lastdate >= model.StartDueDate.Value)
+                                            && (model.EndDueDate == null || ret.Lastdate <= model.EndDueDate.Value)
+                                            && (model.StartPeriod == null || ret.Ryear >= model.StartPeriod.Value.Year)
+                                            && (model.EndPeriod == null || ret.Ryear <= model.EndPeriod.Value.Year)
+
+                                         orderby ret.Lastdate ascending
+                                         select new { ret, retemp, loc, org }).ToListAsync();
+
+
+
+                    return returns.Select(x => new ComplianceViewModel
+                    {
+                        Id = x.ret.Rtid,
+                        Oid = x.org.Oid,
+                        Lcode = x.loc.Lcode,
+                        Oname = x.org.Oname,
+                        Lname = x.loc.Lname,
+                        Lcity = x.loc.Lcity,
+                        Lstate = x.loc.Lstate,
+                        ServiceType = "Returns",
+                        Service = x.retemp.Rtitle,
+                        Period = x.ret.Ryear.ToString(),
+                        DueDate = x.ret.Lastdate.HasValue ? x.ret.Lastdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        CompletionDate = x.ret.Depdate.HasValue ? x.ret.Depdate.Value.ToString("dd-MMM-yyyy") : string.Empty,
+                        Status = StatusDescriptions.TryGetValue(x.ret.Status ?? -1, out var description) ? description : "Unknown",
+                        FileName = x.ret.Filename
+
+                    }).ToList();
+                }
             }
 
-            //Applyting FILTERSS
-
-            if (!string.IsNullOrEmpty(organizationName))
-            {
-                sqlQuery += " AND d.oname = @organizationName";
-            }
-            if (!string.IsNullOrEmpty(LocationName))
-            {
-                sqlQuery += " AND b.lname = @LocationName";
-            }
-
-            if (!string.IsNullOrEmpty(StateName))
-            {
-                sqlQuery += " AND e.statedesc = @StateName";
-            }
-
-            if (!string.IsNullOrEmpty(CityName))
-            {
-                sqlQuery += " AND b.lcity = @CityName";
-            }
-            if (StartDueDate.HasValue)
-            {
-                sqlQuery += " AND a.lastdate >= @StartDueDate";
-            }
-            if (EndDueDate.HasValue)
-            {
-                sqlQuery += " AND a.lastdate <= @EndDueDate";
-            }
-            if (StartPeriod.HasValue)
-            {
-                sqlQuery += " AND a.Depdate >= @StartPeriod";
-            }
-            if (EndPeriod.HasValue)
-            {
-                sqlQuery += " AND a.Depdate <= @EndPeriod";
-            }
-
-            sqlQuery += " ORDER BY a.lastdate DESC, b.lname";
-
-            // Execute the SQL query
-            var result = await _context.ReturnsViewModel
-               .FromSqlRaw(sqlQuery,
-                             new SqlParameter("@currentYear", currentYear),
-                             new SqlParameter("@uno", uno),
-                             new SqlParameter("@organizationName", (object)organizationName ?? DBNull.Value),
-                             new SqlParameter("@LocationName", (object)LocationName ?? DBNull.Value),
-                             new SqlParameter("@StateName", (object)StateName ?? DBNull.Value),
-                             new SqlParameter("@CityName", (object)CityName ?? DBNull.Value),
-                             new SqlParameter("@StartDueDate", (object)StartDueDate ?? DBNull.Value),
-                             new SqlParameter("@EndDueDate", (object)EndDueDate ?? DBNull.Value),
-                             new SqlParameter("@StartPeriod", (object)StartPeriod ?? DBNull.Value),
-                             new SqlParameter("@EndPeriod", (object)EndPeriod ?? DBNull.Value))
-                .ToListAsync();
-
-            return result;
         }
 
         public async Task<List<string>> GetOrganizationNamesAsync(int uno)     // code for getting oname on basis of uno and oid in filters)

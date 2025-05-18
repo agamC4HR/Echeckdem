@@ -1,7 +1,11 @@
-﻿using Echeckdem.CustomFolder;
-using Echeckdem.Models;
+﻿using Echeckdem.Models;
+using Echeckdem.ViewModel.OnGoingActivity;
+using Echeckdem.ViewModel.ProjectBocw;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace Echeckdem.Services
 {
@@ -11,57 +15,74 @@ namespace Echeckdem.Services
         private readonly DbEcheckContext _dbEcheckContext;
         private readonly ILogger<TrackerService> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly HttpContext _httpContext;
+        private static readonly Dictionary<string, string> StatusDescriptions = new()
+{
+            { "","Yet To Start"} ,
+    { "O", "Open" },
+    { "I", "Docs received, In Process" },
+    { "D", "Docs requested" },
+    { "C", "Closed" }
+    
 
-        public TrackerService(DbEcheckContext dbEcheckContext, ILogger<TrackerService> logger, IWebHostEnvironment webHostEnvironment)
+};
+        private static readonly Dictionary<string, string> IStatusDescriptions = new()
+{
+            { "","unknown"} ,
+    { "N", "Normal" },
+    { "P", "Priority" },
+    { "E", "Escalated" },
+    { "C", "Critical" }
+
+
+};
+        private static readonly Dictionary<string, string> ActivityTypeDescriptions = new()
+{
+            { "","Unknown"} ,
+    { "O", "Other" },
+    { "I", "Inspection/Notice" },
+    { "P", "PF Queries" },
+    { "A", "Registration New/Amendment" },
+    { "S", "Site Visit" },
+    { "C", "Client Audit" }
+
+
+};
+        private static readonly Dictionary<string, string> ActDescriptions = new()
+{
+               { "BOCW", "BOCW Act" },
+                 { "BOWC", "BOCW Cess Act" },
+                 { "SE", "Shops & Estbt. Act" },
+                 { "CLRA", "Contract Labour Regulation Act" },
+                 { "PoW", "Payment of Wages Act" },
+                 { "PoB", "Payment of Bonus Act" },
+                 { "MW", "Minimum Wages Act" },
+                 { "PF", "Provident Fund Act" },
+                 { "ESI", "Employee state Insurance Act" },
+                 { "NFH", "National Festival Holidays Act" },
+                 { "PoG", "Payment of Gratuity Act" },
+                 { "MB", "Maternity Benefit Act" },
+                 { "EE", "Employment Exchange Act" },
+                 { "OA", "Other Act" }
+
+
+};
+        public TrackerService(DbEcheckContext dbEcheckContext, ILogger<TrackerService> logger, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _dbEcheckContext = dbEcheckContext;
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
+            _httpContext = httpContextAccessor.HttpContext;
         }
-        //----------------------------START-------------------FETCHING UNO from session------------------------------------------------------------------------
-        public int GetUnoFromSession(HttpContext httpContext)
+
+        public string GetActivityName(string tp) 
         {
-            return httpContext.Session.GetInt32("UNO") ?? 0; 
+        return ActivityTypeDescriptions.TryGetValue(tp?.Trim() ?? "", out var activityType) ? activityType : "Unknown";
         }
-        //----------------------------END-------------------FETCHING UNO from session------------------------------------------------------------------------
-        //----------------------------START-------------------Get Mapped Orgs and locations for user from NCUMAP------------------------------------------------------------------------
-        public List<SelectListItem> GetOrganizations(int uno)
+        public string GetActName(string tp)
         {
-            return _dbEcheckContext.Ncumaps
-        .Where(x => x.Uno == uno)
-        .Select(x => x.Oid) 
-        .Distinct() 
-        .Join(_dbEcheckContext.Ncmorgs, oid => oid, org => org.Oid,
-            (oid, org) => new SelectListItem
-            {
-                Value = org.Oid.ToString(),
-                Text = org.Oname
-            })
-        .ToList();
+            return ActDescriptions.TryGetValue(tp?.Trim() ?? "", out var actType) ? actType : "Unknown";
         }
-
-        public List<SelectListItem> GetLocations(int uno, string oid)
-        {
-            var locations = _dbEcheckContext.Ncumaps
-                .Where(x => x.Uno == uno && x.Oid == oid)
-                .Join(_dbEcheckContext.Ncmlocs, umap => umap.Lcode, org => org.Lcode,
-                    (umap, org) => new SelectListItem
-                    {
-                        Value = org.Lcode,
-                        Text = org.Lname
-                    }).ToList();
-
-            
-          if (!locations.Any())
-{
-                 _logger.LogWarning($"No locations found for UNO: {uno}, OID: {oid}");
-}
-
-            return locations;
-        }
-
-        //----------------------------END-------------------Get Mapped Orgs for user from NCUMAP------------------------------------------------------------------------
-
         public List<SelectListItem> GetTPPDropdown()
         {
             var tppList = new List<SelectListItem>
@@ -79,18 +100,20 @@ namespace Echeckdem.Services
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Value = "SE", Text = "Shops & Estb" },
-                new SelectListItem { Value = "CLRA", Text = "Contract Labour" },
-                new SelectListItem { Value = "PoW", Text = "Payment of Wages" },
-                new SelectListItem { Value = "PoB", Text = "Payment of Bonus" },
-                new SelectListItem { Value = "MW", Text = "Minimum Wages" },
-                new SelectListItem { Value = "PF", Text = "Provident Fund" },
-                new SelectListItem { Value = "ESI", Text = "Emp. state Insurance" },
-                new SelectListItem { Value = "NFH", Text = "National Festival Holidays" },
-                new SelectListItem { Value = "PoG", Text = "Payment of Gratuity" },
-                new SelectListItem { Value = "MB", Text = "Maternity Benefit" },
-                new SelectListItem { Value = "ER-I", Text = "Employment Exchange" },
-                new SelectListItem { Value = "OT", Text = "Other" }
+                new SelectListItem { Value = "BOCW", Text = "BOCW Act" },
+                new SelectListItem { Value = "BOWC", Text = "BOCW Cess Act" },
+                new SelectListItem { Value = "SE", Text = "Shops & Estbt. Act" },
+                new SelectListItem { Value = "CLRA", Text = "Contract Labour Regulation Act" },
+                new SelectListItem { Value = "PoW", Text = "Payment of Wages Act" },
+                new SelectListItem { Value = "PoB", Text = "Payment of Bonus Act" },
+                new SelectListItem { Value = "MW", Text = "Minimum Wages Act" },
+                new SelectListItem { Value = "PF", Text = "Provident Fund Act" },
+                new SelectListItem { Value = "ESI", Text = "Employee state Insurance Act" },
+                new SelectListItem { Value = "NFH", Text = "National Festival Holidays Act" },
+                new SelectListItem { Value = "PoG", Text = "Payment of Gratuity Act" },
+                new SelectListItem { Value = "MB", Text = "Maternity Benefit Act" },
+                new SelectListItem { Value = "EE", Text = "Employment Exchange Act" },
+                new SelectListItem { Value = "OA", Text = "Other Act" }
             };
         }
 
@@ -107,316 +130,125 @@ namespace Echeckdem.Services
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Value = "A", Text = "REG./AMMEND." },
-                new SelectListItem { Value = "O", Text = "OTHER" },
-                new SelectListItem { Value = "P", Text = "PF TRACKER" },
-                new SelectListItem { Value = "I", Text = "INSPECTIONS" },
-                new SelectListItem { Value = "", Text = "SITE AUDIT"}
+                new SelectListItem { Value = "A", Text = "Registration New/Amendment" },
+                new SelectListItem { Value = "O", Text = "Other" },
+                new SelectListItem { Value = "P", Text = "PF Queries" },
+                new SelectListItem { Value = "I", Text = "Inspection/Notice" },
+                new SelectListItem { Value = "S", Text = "Site Visit"},
+                new SelectListItem { Value = "C", Text = "Client Audit"}
             };
         }
 
-        //----------------------------START-------------------Fetching Actions from NCACTION table for a user------------------------------------------------------------------------
-        public List<TrackerViewModel> GetNcActionsForUser(int uno)
+        //----------------------------START-------------------Fetching Actions for Tracker List------------------------------------------------------------------------
+        public List<TrackerViewModel> GetNcActionsForUser()
         {
-                 var userMappings = _dbEcheckContext.Ncumaps
-                .Where(x => x.Uno == uno && !string.IsNullOrEmpty(x.Oid) && !string.IsNullOrEmpty(x.Lcode))
-                .Select(x => new { x.Oid, x.Lcode })
-                .ToList();
-
-            if (!userMappings.Any())
+            if (_httpContext.Session.GetInt32("User Level") == 1)
             {
-                _logger.LogWarning($"No organizations found for user UNO: {uno}");
-                return new List<TrackerViewModel>();
-            }
+                
 
-           
-            var allNcActions = _dbEcheckContext.Ncactions.ToList();
+                var ncaction = (from act in _dbEcheckContext.Ncactions
+                                join loc in _dbEcheckContext.Ncmlocs on act.Lcode equals loc.Lcode
+                                join org in _dbEcheckContext.Ncmorgs on loc.Oid equals org.Oid
+                                
+                                where  loc.Lactive == 1 && org.Oactive == 1 && !string.IsNullOrEmpty(act.Actp) && act.Actp.Trim() != "Ops"
+                                select new { act, loc, org }).ToList();
 
-           
-            var filteredActions = allNcActions
-                .Where(x => userMappings.Any(m => m.Oid == x.Oid && m.Lcode == x.Lcode)).ToList();
 
-           
-            var orgs = _dbEcheckContext.Ncmorgs.ToList(); // Fetch all orgs
-            var locs = _dbEcheckContext.Ncmlocs.ToList(); // Fetch all lcodes
 
-            var ncActions = filteredActions
-                .Select(action => new TrackerViewModel
+                return ncaction.Select(x => new TrackerViewModel
                 {
-                    Acid = action.Acid,
-                    Oname = orgs.FirstOrDefault(o => o.Oid == action.Oid)?.Oname ?? "Unknown Org",
-                    Lname = locs.FirstOrDefault(l => l.Lcode == action.Lcode)?.Lname ?? "Unknown Location",
-                    SelectedTPP = action.Tpp,
-                    SelectedACTITLE = action.Actitle,
-                    SelectedSBTP = action.Sbtp,
-                    SelectedACTP = action.Actp,
-                    InternalStatus = action.Acistatus,
-                    DetailOfIssue = action.Acdetail,
-                    StartDate = action.Acidate,
-                    CloseDate = action.Accldate
-                })
-                .ToList();
-
-            return ncActions;
-        }
-        //----------------------------END-------------------Fetching Actions from NCACTION table for a user------------------------------------------------------------------------
-        //----------------------------START-------------------ADDING new record in NCACTION  and file upload------------------------------------------------------------------------
-
-        public void SaveNcAction(TrackerViewModel model)
-        {
-            var newRecord = new Ncaction
-            {
-                Acid = model.Acid,
-                Oid = model.SelectedOid,   
-                Lcode = model.SelectedLCODE,
-                Tpp = model.SelectedTPP,
-                Actitle = model.SelectedACTITLE,
-                Sbtp = model.SelectedSBTP,
-                Actp = model.SelectedACTP
-            };
-
-            _dbEcheckContext.Ncactions.Add(newRecord);
-            _dbEcheckContext.SaveChanges();
-        }
-
-        public void SaveNcFile(int acid, IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                throw new Exception("Invalid file.");
-
-            var action = _dbEcheckContext.Ncactions.FirstOrDefault(a => a.Acid == acid);
-            if (action == null)
-                throw new Exception("Action not found.");
-
-            string oid = action.Oid.ToString();
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Files", oid, "Acts");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                file.CopyTo(stream);
-            }
-
-            var ncFile = new Ncfile
-            {
-                Oid = action.Oid,
-                Flink = action.Acid,  // Same as ACID
-                Fname = fileName,
-                Fupdate = DateOnly.FromDateTime(DateTime.Now)
-            };
-
-            _dbEcheckContext.Ncfiles.Add(ncFile);
-            _dbEcheckContext.SaveChanges();
-        }
-
-        //----------------------------END-------------------ADDING new record in NCACTION and file upload------------------------------------------------------------------------
-        //----------------------------START-------------------EDiting NCACTION---------------------------------------------------------------------------------------------------
-        public TrackerViewModel GetNcActionById(int acid)
-        {
-            var action = _dbEcheckContext.Ncactions.FirstOrDefault(a => a.Acid == acid);
-            if (action == null) 
-                return null;
-
-            return new TrackerViewModel
-            {
-                Acid = action.Acid,
-                Title = action.Actitle,
-                ExternalStatus = action.Acstatus,
-                VisibleToClient = action.Acshow ?? 0,
-                InternalStatus = action.Acistatus,
-                DetailOfIssue = action.Acdetail,
-                StartDate = action.Acidate,
-                DocsReceiptDate = action.Adocdate,
-                CloseDate = action.Accldate,
-                Remarks = action.Acremarks
-            };
-        }
-
-        public void SaveOrUpdateNcAction(TrackerViewModel model)
-        {
-            var existingAction = _dbEcheckContext.Ncactions.FirstOrDefault(a => a.Acid == model.Acid);
-
-            if (existingAction != null)
-            {
-                existingAction.Actitle = model.Title;
-                existingAction.Acstatus = model.ExternalStatus;
-                existingAction.Acshow = model.VisibleToClient;
-                existingAction.Acistatus = model.InternalStatus;
-                existingAction.Acdetail = model.DetailOfIssue;
-                existingAction.Acidate = model.StartDate;
-                existingAction.Adocdate = model.DocsReceiptDate;
-                existingAction.Accldate = model.CloseDate;
-                existingAction.Acremarks = model.Remarks;
+                    Acid = x.act.Acid,
+                    Oname = x.org.Oname,
+                    Lname = x.loc.Lname,
+                    Title = x.act.Actitle,
+                    ExternalStatus = StatusDescriptions.TryGetValue(x.act.Acstatus?.Trim() ?? "", out var status) ? status : "Unknown",
+                    DetailOfIssue = x.act.Acdetail,
+                    StartDate = x.act.Acidate,
+                    CloseDate = x.act.Accldate,
+                    ActivityType = ActivityTypeDescriptions.TryGetValue(x.act.Actp?.Trim() ?? "", out var activityType) ? activityType : "Unknown",
+                }).ToList();
             }
             else
             {
-                var newAction = new Ncaction
+                var uno = _httpContext.Session.GetInt32("UNO");
+
+                var ncaction = (from act in _dbEcheckContext.Ncactions
+                                join loc in _dbEcheckContext.Ncmlocs on act.Lcode equals loc.Lcode
+                                join org in _dbEcheckContext.Ncmorgs on loc.Oid equals org.Oid
+                                join userm in _dbEcheckContext.Ncumaps on new { loc.Oid, loc.Lcode } equals new { userm.Oid, userm.Lcode }
+                                where userm.Uno == uno && loc.Lactive == 1 && org.Oactive == 1 && !string.IsNullOrEmpty(act.Actp) && act.Actp.Trim() != "Ops"
+                                select new { act, loc, org, userm }).ToList();
+
+
+
+                return ncaction.Select(x => new TrackerViewModel
                 {
-                    Actitle = model.Title,
-                    Acstatus = model.ExternalStatus,
-                    Acshow = model.VisibleToClient,
-                    Acistatus = model.InternalStatus,
-                    Acdetail = model.DetailOfIssue,
-                    Acidate = model.StartDate,
-                    Adocdate = model.DocsReceiptDate,
-                    Accldate = model.CloseDate,
-                    Acremarks = model.Remarks
-                };
-                _dbEcheckContext.Ncactions.Add(newAction);
+                    Acid = x.act.Acid,
+                    Oname = x.org.Oname,
+                    Lname = x.loc.Lname,
+                    Title = x.act.Actitle,
+                    ExternalStatus = StatusDescriptions.TryGetValue(x.act.Acstatus?.Trim() ?? "", out var status) ? status : "Unknown",
+                    DetailOfIssue = x.act.Acdetail,
+                    StartDate = x.act.Acidate,
+                    CloseDate = x.act.Accldate,
+                    ActivityType = ActivityTypeDescriptions.TryGetValue(x.act.Actp?.Trim() ?? "", out var activityType) ? activityType : "Unknown",
+                }).ToList();
             }
-
-            _dbEcheckContext.SaveChanges();
+                
         }
 
-        //----------------------------END-------------------EDiting NCACTION---------------------------------------------------------------------------------------------------
-        //----------------------------START-------------------ADDing / EDiting in NCACTTAKEN table---------------------------------------------------------------------------------------------------
-        public TrackerTakenViewModel GetNcActTakenByAcid(int acid)
+        //------------------Fetching Action Details for ACID------------------------------------------------------------------------
+        public async Task<TrackerFullViewModel> GetNcActionDet(string Acid) 
         {
-            var actionTaken = _dbEcheckContext.Ncactakens.FirstOrDefault(a => a.Acid == acid);
+            int id = string.IsNullOrEmpty(Acid) ? 0 : Convert.ToInt32(Acid);
+            TrackerFullViewModel model = new TrackerFullViewModel();
+            var actiondata = await (from act in _dbEcheckContext.Ncactions
+                                    join loc in _dbEcheckContext.Ncmlocs on act.Lcode equals loc.Lcode
+                                    join org in _dbEcheckContext.Ncmorgs on loc.Oid equals org.Oid
+                                    where act.Acid == id
+                                    select new { act, loc, org }).FirstOrDefaultAsync();
 
-            if (actionTaken == null)
+            if (actiondata != null)
             {
-                return new TrackerTakenViewModel
+                model = new TrackerFullViewModel
                 {
-                    Acid = acid,
-                    Actid = 0, // 0 indicates a new entry
-                    Acdate = null,
-                    Actaken = string.Empty,
-                    Nacdate = null,
-                    Showclient = 0
+                    Acid = actiondata.act.Acid,
+                    Oid = actiondata.org.Oid,
+                    Title = actiondata.act.Actitle,
+                    Acstatus =actiondata.act.Acstatus??"",// StatusDescriptions.TryGetValue(actiondata.act.Acstatus?.Trim() ?? "", out var status) ? status : "Unknown",
+                    Acistatus = actiondata.act.Acistatus ?? "",   //IStatusDescriptions.TryGetValue(actiondata.act.Acistatus?.Trim() ?? "", out var istatus) ? istatus : "Unknown",
+                    Acdetail = actiondata.act.Acdetail ?? string.Empty,
+                    Acidate = actiondata.act.Acidate,
+                    Adocdate = actiondata.act.Adocdate,
+                    Accldate = actiondata.act.Accldate,
+                    Remark = actiondata.act.Acremarks ?? string.Empty,
+                    Oname = actiondata.org.Oname,
+                    Lname = actiondata.loc.Lname,
+                    Acrdate = actiondata.act.Acrdate,
+                    ActivityType =ActivityTypeDescriptions.TryGetValue(actiondata.act.Actp?.Trim()??"",out var actype)?actype:"Unknown",
+                    Uname=_dbEcheckContext.Ncusers.Where(x => x.Uno == actiondata.act.Acruser).Select(x => x.Uname).FirstOrDefault()
                 };
+            model.TakenViewModel= (from taken in _dbEcheckContext.Ncactakens
+                                   join usr in _dbEcheckContext.Ncusers on taken.Uno equals usr.Uno
+                                   where taken.Acid == model.Acid
+                                   select new TrackerTakenViewModel
+                                   {
+                                       Acid = taken.Acid,
+                                       Actid = taken.Actid,
+                                       Acdate = taken.Acdate,
+                                       Actaken = taken.Actaken??string.Empty,
+                                       Nacdate = taken.Nacdate,
+
+                                       Acrdate = taken.Accrdate,
+                                       Uname = usr.Uname
+                                   }).ToList();
             }
-
-            return new TrackerTakenViewModel
-            {
-                Actid = actionTaken.Actid,
-                Acid = actionTaken.Acid,
-                Acdate = actionTaken.Acdate,
-                Actaken = actionTaken.Actaken,
-                Nacdate = actionTaken.Nacdate,
-                Showclient = actionTaken.Showclient ?? 0
-            };
-
-        }
-
-        public void SaveOrUpdateNcActTaken(TrackerTakenViewModel model)
-        {
-            var existingActionTaken = _dbEcheckContext.Ncactakens   .FirstOrDefault(a => a.Acid == model.Acid);
-
-            if (existingActionTaken != null)
-            {
-                existingActionTaken.Acdate = model.Acdate;
-                existingActionTaken.Actaken = model.Actaken;
-                existingActionTaken.Nacdate = model.Nacdate;
-                existingActionTaken.Showclient = model.Showclient;
-                existingActionTaken.Uno = model.Uno;
-            }
-            else
-            {
-                var newActionTaken = new Ncactaken
-                {
-                    Acid = model.Acid,
-                    Acdate = model.Acdate,
-                    Actaken = model.Actaken,
-                    Nacdate = model.Nacdate,
-                    Showclient = model.Showclient,
-                    Uno = model.Uno
-                };
-                _dbEcheckContext.Ncactakens.Add(newActionTaken);
-            }
-
-            _dbEcheckContext.SaveChanges();
-        }
-
-        //----------------------------END-------------------ADDing / EDiting in NCACTTAKEN table---------------------------------------------------------------------------------------------------
-        //----------------------------START-------------------fetching all data for a user NCACTTAKEN table--------------------------------------------------------------------------------------------------
-        public List<TrackerFullViewModel> GetFullNcActionsForUser(int uno)
-        {
-            var ncActions = GetNcActionsForUser(uno);
-
-            var fullList = ncActions.Select(action =>
-            {
-                var taken = _dbEcheckContext.Ncactakens
-                    .Where(t => t.Acid == action.Acid)
-                    .ToList(); 
-
-                return new TrackerFullViewModel
-                {
-                    Acid = action.Acid,
-                    SelectedACTITLE = action.SelectedACTITLE,
-                    SelectedSBTP = action.SelectedSBTP,
-                    SelectedTPP = action.SelectedTPP,
-                    SelectedACTP = action.SelectedACTP,
-                    Oname = action.Oname,
-                    Lname = action.Lname,
-                    Actid = taken.FirstOrDefault()?.Actid ?? 0,
-                    TakenViewModel = taken.Select(t => new TrackerTakenViewModel
-                    {
-                        Actid = t.Actid,
-                        Acid = t.Acid,
-                        Acdate = t.Acdate,
-                        Actaken = t.Actaken,
-                        Nacdate = t.Nacdate,
-                        Showclient = t.Showclient ?? 0,
-                        Uno = t.Uno,
-                        Uname = _dbEcheckContext.Ncusers.Where(u => u.Uno == t.Uno).Select(u => u.Uname).FirstOrDefault()
-                    }),
-                    ActionViewModel = new List<TrackerViewModel> { action }
-                };
-            }).ToList();
-
-            return fullList;
-        }
-
-        //----------------------------END-------------------fetching all data for a user NCACTTAKEN table--------------------------------------------------------------------------------------------------
-
-
-        public List<TrackerViewModel> GetNcActionsForUserByOrgAndSite(int uno, string oid, string lcode)
-        {
-            var userMappings = _dbEcheckContext.Ncumaps
-                .Where(x => x.Uno == uno && x.Oid == oid && x.Lcode == lcode)
-                .Select(x => new { x.Oid, x.Lcode })
-                .ToList();
-
-            if (!userMappings.Any()) return new List<TrackerViewModel>();
-
-            var allNcActions = _dbEcheckContext.Ncactions
-    .AsEnumerable() // Bring Ncactions into memory
-    .Join(userMappings,
-          n => new { n.Oid, n.Lcode },
-          m => new { m.Oid, m.Lcode },
-          (n, m) => n)
-    .ToList();
-
-
-            var orgs = _dbEcheckContext.Ncmorgs.ToList();
-            var locs = _dbEcheckContext.Ncmlocs.ToList();
-
-            return allNcActions
-                //.Where(a=>a.Actp!="Ops")
-                .Select(action => new TrackerViewModel
-                {
-                    Acid = action.Acid,
-                    Oname = orgs.FirstOrDefault(o => o.Oid == action.Oid)?.Oname ?? "Unknown Org",
-                    Lname = locs.FirstOrDefault(l => l.Lcode == action.Lcode)?.Lname ?? "Unknown Location",
-                    SelectedTPP = action.Tpp,
-                    SelectedACTITLE = action.Actitle,
-                    SelectedSBTP = action.Sbtp,
-                    SelectedACTP = action.Actp,
-                    InternalStatus = action.Acistatus,
-                    DetailOfIssue = action.Acdetail,
-                    StartDate = action.Acidate,
-                    CloseDate = action.Accldate
-                })
-                .ToList();
+            model.Taken.Acid= model.Acid;
+            return model;
         }
 
 
+       
 
     }
 }

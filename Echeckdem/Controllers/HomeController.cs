@@ -38,17 +38,17 @@ namespace Echeckdem.Controllers
             }
 
             // Get the location types for the user
-            var locationTypes = await _loginService.GetUserLocationTypesAsync(uno.Value);
-            var typesSet = locationTypes.Select(l => l.ToUpper()).ToHashSet();
+            var locationTypes = await _loginService.GetUserLocationTypesAsync(uno.Value,HttpContext.Session.GetInt32("User Level")??0);
+            var typesSet = locationTypes.Select(l => l.ToUpper().Trim()).ToHashSet();
 
             // Determine the view type based on location types
             string viewType = "Default"; // Default fallback
             List<ProjectDashboardStatus> projectDashboardStatus = new List<ProjectDashboardStatus>();
-            if (typesSet.All(l => l == "S" || l == "F"))
+            if (typesSet.All(l => l.Trim() == "S" || l.Trim() == "F"))
             {
                 viewType = "OnlySF"; // Show view when no site is under BOCW
             }
-            else if (typesSet.All(l => l == "BO"))
+            else if (typesSet.All(l => l.Trim() == "BO"))
             {
                 viewType = "OnlyBO"; // Show view when all sites are under BOCW
                
@@ -58,6 +58,7 @@ namespace Echeckdem.Controllers
             else if (typesSet.Contains("BO"))
             {
                 viewType = "Mixed"; // Show view when some sites are under BOCW
+                projectDashboardStatus = _dashboardSummary.GetProjectDashboardSummary();
             }
 
             // Determine the year to fetch (use selected year or current year)
