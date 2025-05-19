@@ -68,8 +68,8 @@ namespace Echeckdem.Services
                 var locationTypes = await (from a  in _dbEcheckContext.Ncmlocs
                                            join b in _dbEcheckContext.Ncmorgs on a.Oid equals b.Oid
                                            where a.Lactive == 1 && !string.IsNullOrEmpty(a.Ltype) && b.Oactive == 1
-                select a.Ltype).Distinct().ToListAsync();
-
+                select a.Ltype.Trim()).Distinct().ToListAsync();
+                foreach (var k in locationTypes) { Console.WriteLine("\n"+k); }
 
                 return locationTypes;
             }
@@ -84,7 +84,7 @@ namespace Echeckdem.Services
                 select new { a.Oid, a.Lcode, a.Ltype }
             )
             on new { aa.Oid, aa.Lcode } equals new { bb.Oid, bb.Lcode }
-            select bb.Ltype
+            select bb.Ltype.Trim()
         ).Distinct().ToListAsync();
 
 

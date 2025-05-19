@@ -49,7 +49,7 @@ namespace Echeckdem.Controllers
                     HttpContext.Session.SetInt32("User Level", userLevel);
                     HttpContext.Session.SetString("userID", model.userID);
                     HttpContext.Session.SetInt32("UNO", uno);
-                    var bo = locationTypes.All(a => a.Trim() == "BO") ? "yes" : "no";
+                    var bo = locationTypes.Contains("BO") ? "yes" : "no";
                     HttpContext.Session.SetString("BO", bo);
                     string userlocation = JsonSerializer.Serialize(userlocations);
                     string userbolocation = JsonSerializer.Serialize(userbolocations);

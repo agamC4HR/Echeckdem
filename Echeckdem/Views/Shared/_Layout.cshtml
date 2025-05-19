@@ -76,7 +76,12 @@
                             <a href="/StateTemplate/Index">State Template</a>
                             <a href="/DetailsView/Index">Compliance Tracker </a>
                             <a href="/Tracker/Trackerlist">On-Going Activity</a>
-                            <a href="/Project/Index">Construction Tracker</a>
+                            if (Context.Session.GetString("BO") == "yes")
+
+                            {
+                                        <a href="/Project/Index">Construction Tracker</a>
+
+                            }
                         }
                         else
                         {
