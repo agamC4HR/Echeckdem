@@ -14,7 +14,7 @@ public partial class DbEcheckContext : DbContext
         : base(options)
     {
     }
-
+    //test
     public virtual DbSet<Act> Acts { get; set; }
 
     public virtual DbSet<Alink> Alinks { get; set; }
