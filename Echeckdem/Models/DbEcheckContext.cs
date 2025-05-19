@@ -15,17 +15,61 @@ public partial class DbEcheckContext : DbContext
     {
     }
 
+    public virtual DbSet<Alink> Alinks { get; set; }
+
     public virtual DbSet<Audtrail> Audtrails { get; set; }
 
     public virtual DbSet<BoScopeMap> BoScopeMaps { get; set; }
 
     public virtual DbSet<BocwScope> BocwScopes { get; set; }
 
+    public virtual DbSet<Calendar> Calendars { get; set; }
+
+    public virtual DbSet<Contact> Contacts { get; set; }
+
+    public virtual DbSet<Cuser> Cusers { get; set; }
+
+    public virtual DbSet<Cusers2> Cusers2s { get; set; }
+
+    public virtual DbSet<Doclink> Doclinks { get; set; }
+
+    public virtual DbSet<Doclist> Doclists { get; set; }
+
+    public virtual DbSet<Dorg> Dorgs { get; set; }
+
+    public virtual DbSet<EchkTrail> EchkTrails { get; set; }
+
+    public virtual DbSet<Emaillist> Emaillists { get; set; }
+
+    public virtual DbSet<EnquiryTable> EnquiryTables { get; set; }
+
+    public virtual DbSet<Ftlink> Ftlinks { get; set; }
+
+    public virtual DbSet<Ftlink1> Ftlinks1 { get; set; }
+
+    public virtual DbSet<Fulltext> Fulltexts { get; set; }
+
+    public virtual DbSet<Llauth> Llauths { get; set; }
+
+    public virtual DbSet<Lldef> Lldefs { get; set; }
+
+    public virtual DbSet<Llfaq> Llfaqs { get; set; }
+
+    public virtual DbSet<Llink> Llinks { get; set; }
+
+    public virtual DbSet<Lloff> Lloffs { get; set; }
+
+    public virtual DbSet<Location> Locations { get; set; }
 
     public virtual DbSet<Mastreg> Mastregs { get; set; }
 
     public virtual DbSet<Maststate> Maststates { get; set; }
 
+    public virtual DbSet<Mwcat> Mwcats { get; set; }
+
+    public virtual DbSet<Mwdatum> Mwdata { get; set; }
+
+    public virtual DbSet<Mwnote> Mwnotes { get; set; }
 
     public virtual DbSet<Ncactaken> Ncactakens { get; set; }
 
@@ -43,6 +87,7 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Ncfile> Ncfiles { get; set; }
 
+    public virtual DbSet<Ncfin> Ncfins { get; set; }
 
     public virtual DbSet<Nclocmap> Nclocmaps { get; set; }
 
@@ -58,6 +103,7 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Nctempcnt> Nctempcnts { get; set; }
 
+    public virtual DbSet<Nctempfin> Nctempfins { get; set; }
 
     public virtual DbSet<Nctempret> Nctemprets { get; set; }
 
@@ -65,12 +111,31 @@ public partial class DbEcheckContext : DbContext
 
     public virtual DbSet<Ncuser> Ncusers { get; set; }
 
+    public virtual DbSet<Noti> Notis { get; set; }
+
+    public virtual DbSet<Obligati> Obligatis { get; set; }
+
+    public virtual DbSet<Reg> Regs { get; set; }
+
+    public virtual DbSet<Rrdet> Rrdets { get; set; }
+
+    public virtual DbSet<Rrlist> Rrlists { get; set; }
+
+    public virtual DbSet<Rrstruc> Rrstrucs { get; set; }
+
+    public virtual DbSet<ServcMap> ServcMaps { get; set; }
 
     public virtual DbSet<Statusmaster> Statusmasters { get; set; }
 
     public virtual DbSet<TrackScope> TrackScopes { get; set; }
 
+    public virtual DbSet<Trig> Trigs { get; set; }
 
+    public virtual DbSet<Triglink> Triglinks { get; set; }
+
+    public virtual DbSet<UserActivation> UserActivations { get; set; }
+
+    public virtual DbSet<Webinar> Webinars { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -78,6 +143,113 @@ public partial class DbEcheckContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+            entity.ToTable("ACTS");
+
+            entity.HasIndex(e => new { e.Code, e.Sname, e.Lname }, "acts0");
+
+            entity.HasIndex(e => new { e.Code, e.Atype, e.Stcode, e.Sname, e.Year }, "acts00");
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("CODE");
+            entity.Property(e => e.Aactive).HasColumnName("AACTIVE");
+            entity.Property(e => e.Alegtype)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ALEGTYPE");
+            entity.Property(e => e.Appl)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("APPL");
+            entity.Property(e => e.Applicability)
+                .HasMaxLength(3000)
+                .IsUnicode(false)
+                .HasColumnName("APPLICABILITY");
+            entity.Property(e => e.Atype)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ATYPE");
+            entity.Property(e => e.Filename)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("FILENAME");
+            entity.Property(e => e.Lastamend)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("LASTAMEND");
+            entity.Property(e => e.Legtype)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("LEGTYPE");
+            entity.Property(e => e.Lname)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("LNAME");
+            entity.Property(e => e.Nochk).HasColumnName("NOCHK");
+            entity.Property(e => e.Nodoc).HasColumnName("NODOC");
+            entity.Property(e => e.Objectives)
+                .HasMaxLength(3000)
+                .IsUnicode(false)
+                .HasColumnName("OBJECTIVES");
+            entity.Property(e => e.Otherleg)
+                .HasMaxLength(250)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("OTHERLEG");
+            entity.Property(e => e.Parleg)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PARLEG");
+            entity.Property(e => e.Sname)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SNAME");
+            entity.Property(e => e.Stcode)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("STCODE");
+            entity.Property(e => e.Year)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("YEAR");
+        });
+
+        modelBuilder.Entity<Alink>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ALINKS");
+
+            entity.Property(e => e.Acode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACODE");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("LCODE");
+            entity.Property(e => e.Module)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("MODULE");
+        });
 
         modelBuilder.Entity<Audtrail>(entity =>
         {
@@ -193,6 +365,613 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<Calendar>(entity =>
+        {
+            entity.HasKey(e => new { e.Oblig, e.Obldate }).IsClustered(false);
+
+            entity.ToTable("CALENDAR");
+
+            entity.Property(e => e.Oblig)
+                .HasColumnType("decimal(6, 0)")
+                .HasColumnName("OBLIG");
+            entity.Property(e => e.Obldate)
+                .HasColumnType("datetime")
+                .HasColumnName("OBLDATE");
+            entity.Property(e => e.Remarks)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("REMARKS");
+            entity.Property(e => e.Warndate)
+                .HasColumnType("datetime")
+                .HasColumnName("WARNDATE");
+        });
+
+        modelBuilder.Entity<Contact>(entity =>
+        {
+            entity.HasKey(e => e.Userid).IsClustered(false);
+
+            entity.ToTable("CONTACT");
+
+            entity.Property(e => e.Userid)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("USERID");
+            entity.Property(e => e.Altemail)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ALTEMAIL");
+            entity.Property(e => e.Ccode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("CCODE");
+            entity.Property(e => e.Desig)
+                .HasMaxLength(75)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DESIG");
+            entity.Property(e => e.Emailid)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("EMAILID");
+            entity.Property(e => e.Fax)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("FAX");
+            entity.Property(e => e.Fname)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("FNAME");
+            entity.Property(e => e.Fullname)
+                .HasMaxLength(45)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("FULLNAME");
+            entity.Property(e => e.Lastpass)
+                .HasColumnType("datetime")
+                .HasColumnName("LASTPASS");
+            entity.Property(e => e.Lname)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("LNAME");
+            entity.Property(e => e.Location)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("LOCATION");
+            entity.Property(e => e.Orgcode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ORGCODE");
+            entity.Property(e => e.Pass)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PASS");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PHONE");
+            entity.Property(e => e.Stcode)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("STCODE");
+            entity.Property(e => e.Uactive)
+                .HasColumnType("decimal(2, 0)")
+                .HasColumnName("UACTIVE");
+            entity.Property(e => e.Userlevel)
+                .HasColumnType("decimal(5, 0)")
+                .HasColumnName("USERLEVEL");
+        });
+
+        modelBuilder.Entity<Cuser>(entity =>
+        {
+            entity.HasKey(e => e.Userid);
+
+            entity.ToTable("CUSERS");
+
+            entity.Property(e => e.Userid)
+                .HasMaxLength(60)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("userid");
+            entity.Property(e => e.Crdate).HasColumnName("crdate");
+            entity.Property(e => e.Defstate)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("defstate");
+            entity.Property(e => e.Expdate).HasColumnName("expdate");
+            entity.Property(e => e.Mail)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("mail");
+            entity.Property(e => e.Password)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("password");
+            entity.Property(e => e.Uactive).HasColumnName("uactive");
+            entity.Property(e => e.Ulevel).HasColumnName("ulevel");
+            entity.Property(e => e.Uname)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("uname");
+            entity.Property(e => e.Uno).HasColumnName("uno");
+            entity.Property(e => e.Uorg)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("uorg");
+            entity.Property(e => e.Ustates)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ustates");
+            entity.Property(e => e.Utype)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("utype");
+        });
+
+        modelBuilder.Entity<Cusers2>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("CUSERS2");
+
+            entity.Property(e => e.Ucrdate).HasColumnName("ucrdate");
+            entity.Property(e => e.Uexdate).HasColumnName("uexdate");
+            entity.Property(e => e.Uno).HasColumnName("uno");
+            entity.Property(e => e.Utype).HasColumnName("utype");
+            entity.Property(e => e.Utype1).HasColumnName("utype1");
+        });
+
+        modelBuilder.Entity<Doclink>(entity =>
+        {
+            entity.HasKey(e => new { e.Ocode, e.Dcode }).IsClustered(false);
+
+            entity.ToTable("DOCLINKS");
+
+            entity.Property(e => e.Ocode)
+                .HasColumnType("decimal(5, 0)")
+                .HasColumnName("OCODE");
+            entity.Property(e => e.Dcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DCODE");
+        });
+
+        modelBuilder.Entity<Doclist>(entity =>
+        {
+            entity.HasKey(e => e.Dcode).IsClustered(false);
+
+            entity.ToTable("DOCLIST");
+
+            entity.Property(e => e.Dcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DCODE");
+            entity.Property(e => e.Acode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACODE");
+            entity.Property(e => e.Dcat)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DCAT");
+            entity.Property(e => e.Ddesc)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DDESC");
+            entity.Property(e => e.Dindex).HasColumnName("DINDEX");
+            entity.Property(e => e.Dirname)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DIRNAME");
+            entity.Property(e => e.Docname)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DOCNAME");
+            entity.Property(e => e.Dtitle)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DTITLE");
+            entity.Property(e => e.Dtype)
+                .HasMaxLength(4)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DTYPE");
+            entity.Property(e => e.Oacode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("OACODE");
+        });
+
+        modelBuilder.Entity<Dorg>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("DORG");
+
+            entity.Property(e => e.Active).HasColumnName("ACTIVE");
+            entity.Property(e => e.Lenddate)
+                .HasColumnType("datetime")
+                .HasColumnName("LENDDATE");
+            entity.Property(e => e.Lstartdate)
+                .HasColumnType("datetime")
+                .HasColumnName("LSTARTDATE");
+            entity.Property(e => e.Orgcode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ORGCODE");
+            entity.Property(e => e.Orgdesc)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("ORGDESC");
+            entity.Property(e => e.States)
+                .HasColumnType("text")
+                .HasColumnName("STATES");
+        });
+
+        modelBuilder.Entity<EchkTrail>(entity =>
+        {
+            entity.HasKey(e => e.Tindex).IsClustered(false);
+
+            entity.ToTable("echkTrail");
+
+            entity.Property(e => e.Tindex)
+                .ValueGeneratedNever()
+                .HasColumnName("TINDEX");
+            entity.Property(e => e.Activity)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACTIVITY");
+            entity.Property(e => e.Details)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DETAILS");
+            entity.Property(e => e.Origin)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ORIGIN");
+            entity.Property(e => e.Tdate)
+                .HasColumnType("datetime")
+                .HasColumnName("TDATE");
+            entity.Property(e => e.Ttable)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TTABLE");
+            entity.Property(e => e.Ttime)
+                .HasColumnType("datetime")
+                .HasColumnName("TTIME");
+            entity.Property(e => e.Uids)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("UIDS");
+        });
+
+        modelBuilder.Entity<Emaillist>(entity =>
+        {
+            entity.HasKey(e => e.Email);
+
+            entity.ToTable("emaillist");
+
+            entity.Property(e => e.Email)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Active).HasColumnName("active");
+            entity.Property(e => e.Category)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength();
+        });
+
+        modelBuilder.Entity<EnquiryTable>(entity =>
+        {
+            entity.HasKey(e => e.Enid);
+
+            entity.ToTable("ENQUIRY_table");
+
+            entity.Property(e => e.Enid).HasColumnName("ENID");
+            entity.Property(e => e.Edesignation)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Eemail)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Eintrest)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Emessage)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Ename)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Eorganization)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Ereference)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Ftlink>(entity =>
+        {
+            entity.HasKey(e => new { e.Seccode, e.Module, e.Lcode }).IsClustered(false);
+
+            entity.ToTable("FTLINK");
+
+            entity.Property(e => e.Seccode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SECCODE");
+            entity.Property(e => e.Module)
+                .HasMaxLength(4)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("MODULE");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("LCODE");
+        });
+
+        modelBuilder.Entity<Ftlink1>(entity =>
+        {
+            entity.HasKey(e => new { e.Ocode, e.Seccode }).IsClustered(false);
+
+            entity.ToTable("FTLINKS");
+
+            entity.Property(e => e.Ocode)
+                .HasColumnType("decimal(5, 0)")
+                .HasColumnName("OCODE");
+            entity.Property(e => e.Seccode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SECCODE");
+        });
+
+        modelBuilder.Entity<Fulltext>(entity =>
+        {
+            entity.HasKey(e => e.Seccode).IsClustered(false);
+
+            entity.ToTable("FULLTEXT");
+
+            entity.HasIndex(e => e.Act, "ACT");
+
+            entity.HasIndex(e => e.Sindex, "SINDEX");
+
+            entity.Property(e => e.Seccode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SECCODE");
+            entity.Property(e => e.Act)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACT");
+            entity.Property(e => e.Chapter)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("CHAPTER");
+            entity.Property(e => e.Ftext)
+                .IsUnicode(false)
+                .HasColumnName("FTEXT");
+            entity.Property(e => e.Section)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SECTION");
+            entity.Property(e => e.Sindex).HasColumnName("SINDEX");
+            entity.Property(e => e.Title)
+                .HasMaxLength(120)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TITLE");
+        });
+
+        modelBuilder.Entity<Llauth>(entity =>
+        {
+            entity.HasKey(e => e.Aucode);
+
+            entity.ToTable("LLAUTH");
+
+            entity.Property(e => e.Aucode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("AUCODE");
+            entity.Property(e => e.Acode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACODE");
+            entity.Property(e => e.Auth)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("AUTH");
+            entity.Property(e => e.Duties)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DUTIES");
+            entity.Property(e => e.Jurisdiction)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("JURISDICTION");
+            entity.Property(e => e.Powers)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("POWERS");
+            entity.Property(e => e.Section)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SECTION");
+        });
+
+        modelBuilder.Entity<Lldef>(entity =>
+        {
+            entity.HasKey(e => e.Seccode);
+
+            entity.ToTable("LLDEF");
+
+            entity.Property(e => e.Seccode)
+                .HasMaxLength(10)
+                .HasColumnName("SECCODE");
+            entity.Property(e => e.Acode)
+                .HasMaxLength(10)
+                .HasColumnName("ACODE");
+            entity.Property(e => e.Dtext)
+                .IsUnicode(false)
+                .HasColumnName("DTEXT");
+            entity.Property(e => e.Section)
+                .HasMaxLength(6)
+                .HasColumnName("SECTION");
+            entity.Property(e => e.Title)
+                .HasMaxLength(120)
+                .HasColumnName("TITLE");
+        });
+
+        modelBuilder.Entity<Llfaq>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("LLFAQ");
+
+            entity.Property(e => e.Cat1)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("CAT1");
+            entity.Property(e => e.Cat2)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("CAT2");
+            entity.Property(e => e.Crdate).HasColumnName("CRDATE");
+            entity.Property(e => e.Qactive).HasColumnName("QACTIVE");
+            entity.Property(e => e.Qanswer)
+                .IsUnicode(false)
+                .HasColumnName("QANSWER");
+            entity.Property(e => e.Qcode).HasColumnName("QCODE");
+            entity.Property(e => e.Ques)
+                .IsUnicode(false)
+                .HasColumnName("QUES");
+        });
+
+        modelBuilder.Entity<Llink>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("LLINKS");
+
+            entity.Property(e => e.Crdate).HasColumnName("CRDATE");
+            entity.Property(e => e.Lactive).HasColumnName("LACTIVE");
+            entity.Property(e => e.Lcat)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .HasColumnName("LCAT");
+            entity.Property(e => e.Ldesc)
+                .IsUnicode(false)
+                .HasColumnName("LDESC");
+            entity.Property(e => e.Lid).HasColumnName("LID");
+            entity.Property(e => e.Ltitle)
+                .HasMaxLength(60)
+                .IsUnicode(false)
+                .HasColumnName("LTITLE");
+            entity.Property(e => e.Lurl)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("LURL");
+        });
+
+        modelBuilder.Entity<Lloff>(entity =>
+        {
+            entity.HasKey(e => e.Offcode);
+
+            entity.ToTable("LLOFF");
+
+            entity.Property(e => e.Offcode)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("OFFCODE");
+            entity.Property(e => e.Acode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACODE");
+            entity.Property(e => e.Maxfine).HasColumnName("MAXFINE");
+            entity.Property(e => e.Maxprison).HasColumnName("MAXPRISON");
+            entity.Property(e => e.Offence)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("OFFENCE");
+            entity.Property(e => e.Penalty)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("PENALTY");
+            entity.Property(e => e.Section)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SECTION");
+        });
+
+        modelBuilder.Entity<Location>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("LOcation");
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("code");
+            entity.Property(e => e.Location1)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("location");
+        });
+
         modelBuilder.Entity<Mastreg>(entity =>
         {
             entity.HasKey(e => e.Rtype);
@@ -241,6 +1020,59 @@ public partial class DbEcheckContext : DbContext
                 .HasColumnName("STATEDESC");
         });
 
+        modelBuilder.Entity<Mwnote>(entity =>
+        {
+            entity.HasKey(e => new { e.Stid, e.Catgrp });
+
+            entity.ToTable("MWNOTES");
+
+            entity.Property(e => e.Stid)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("STID");
+            entity.Property(e => e.Catgrp)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("CATGRP");
+            entity.Property(e => e.Stcats)
+                .IsUnicode(false)
+                .HasColumnName("STCATS");
+            entity.Property(e => e.Stnotes)
+                .IsUnicode(false)
+                .HasColumnName("STNOTES");
+            entity.Property(e => e.Title)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("TITLE");
+            entity.Property(e => e.Tp1)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TP1");
+            entity.Property(e => e.Tp2)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TP2");
+            entity.Property(e => e.Z1n)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("Z1N");
+            entity.Property(e => e.Z2n)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("Z2N");
+            entity.Property(e => e.Z3n)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("Z3N");
+            entity.Property(e => e.Z4n)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("Z4N");
+        });
 
         modelBuilder.Entity<Ncactaken>(entity =>
         {
@@ -521,6 +1353,53 @@ public partial class DbEcheckContext : DbContext
                 .HasColumnName("OID");
         });
 
+        modelBuilder.Entity<Ncfin>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("NCFIN");
+
+            entity.Property(e => e.Depdate).HasColumnName("DEPDATE");
+            entity.Property(e => e.ExcUsr)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .HasColumnName("exc_usr");
+            entity.Property(e => e.Filename)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .HasColumnName("FILENAME");
+            entity.Property(e => e.Fileup).HasColumnName("FILEUP");
+            entity.Property(e => e.Lastdate).HasColumnName("LASTDATE");
+            entity.Property(e => e.Lcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .HasColumnName("LCODE");
+            entity.Property(e => e.Oid)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("OID");
+            entity.Property(e => e.PenaltyDelay)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("penalty_delay");
+            entity.Property(e => e.Rcode).HasColumnName("RCODE");
+            entity.Property(e => e.ReasonDelay)
+                .HasColumnType("text")
+                .HasColumnName("reason_delay");
+            entity.Property(e => e.Remarks)
+                .HasColumnType("text")
+                .HasColumnName("REMARKS");
+            entity.Property(e => e.Rtid)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("RTID");
+            entity.Property(e => e.Ryear).HasColumnName("RYEAR");
+            entity.Property(e => e.Status).HasColumnName("STATUS");
+            entity.Property(e => e.TagUsr)
+                .HasMaxLength(250)
+                .IsUnicode(false)
+                .HasColumnName("tag_usr");
+            entity.Property(e => e.Uploaddate).HasColumnName("UPLOADDATE");
+        });
 
         modelBuilder.Entity<Nclocmap>(entity =>
         {
@@ -815,6 +1694,52 @@ public partial class DbEcheckContext : DbContext
                 .HasColumnName("TP");
         });
 
+        modelBuilder.Entity<Nctempfin>(entity =>
+        {
+            entity.HasKey(e => e.Rcode).HasName("pk_rcodee");
+
+            entity.ToTable("NCTEMPFIN");
+
+            entity.Property(e => e.Rcode).HasColumnName("RCODE");
+            entity.Property(e => e.Frequency)
+                .HasMaxLength(50)
+                .HasColumnName("frequency");
+            entity.Property(e => e.Ract)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("RACT");
+            entity.Property(e => e.Rd).HasColumnName("RD");
+            entity.Property(e => e.Rdesc)
+                .HasColumnType("text")
+                .HasColumnName("RDESC");
+            entity.Property(e => e.Rform)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("RFORM");
+            entity.Property(e => e.Rm).HasColumnName("RM");
+            entity.Property(e => e.Roblig).HasColumnName("ROBLIG");
+            entity.Property(e => e.Rstate)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("RSTATE");
+            entity.Property(e => e.Rtitle)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("RTITLE");
+            entity.Property(e => e.Rtype)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("RTYPE");
+            entity.Property(e => e.Triggr)
+                .HasDefaultValue(-5)
+                .HasColumnName("triggr");
+            entity.Property(e => e.Yroff).HasColumnName("YROFF");
+        });
 
         modelBuilder.Entity<Nctempret>(entity =>
         {
@@ -926,6 +1851,361 @@ public partial class DbEcheckContext : DbContext
             entity.Property(e => e.Userlevel).HasColumnName("USERLEVEL");
         });
 
+        modelBuilder.Entity<Noti>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("NOTI");
+
+            entity.Property(e => e.Acode)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACODE");
+            entity.Property(e => e.Applictn)
+                .HasColumnType("text")
+                .HasColumnName("applictn");
+            entity.Property(e => e.Crdate).HasColumnName("CRDATE");
+            entity.Property(e => e.Dcode)
+                .HasMaxLength(15)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DCODE");
+            entity.Property(e => e.Ddate)
+                .HasColumnType("datetime")
+                .HasColumnName("DDATE");
+            entity.Property(e => e.Ddesc)
+                .IsUnicode(false)
+                .HasColumnName("DDESC");
+            entity.Property(e => e.Detail)
+                .IsUnicode(false)
+                .HasColumnName("DETAIL");
+            entity.Property(e => e.Dtitle)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("DTITLE");
+            entity.Property(e => e.Exempt)
+                .HasColumnType("text")
+                .HasColumnName("exempt");
+            entity.Property(e => e.Filename)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("FILENAME");
+            entity.Property(e => e.Folder)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("FOLDER");
+            entity.Property(e => e.Nactive).HasColumnName("NACTIVE");
+            entity.Property(e => e.Section)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("SECTION");
+            entity.Property(e => e.State)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("state");
+            entity.Property(e => e.Wefdate)
+                .HasColumnType("datetime")
+                .HasColumnName("wefdate");
+        });
+
+        modelBuilder.Entity<Obligati>(entity =>
+        {
+            entity.HasKey(e => e.Code).IsClustered(false);
+
+            entity.ToTable("OBLIGATI");
+
+            entity.HasIndex(e => new { e.Code, e.Act }, "CODEACT");
+
+            entity.HasIndex(e => new { e.Code, e.Act, e.Title, e.Oblindex }, "obl");
+
+            entity.HasIndex(e => new { e.Act, e.Code }, "obligati0");
+
+            entity.HasIndex(e => e.Code, "obligati000");
+
+            entity.Property(e => e.Code)
+                .ValueGeneratedNever()
+                .HasColumnName("CODE");
+            entity.Property(e => e.Act)
+                .HasMaxLength(6)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("ACT");
+            entity.Property(e => e.Action)
+                .HasMaxLength(3000)
+                .IsUnicode(false)
+                .HasColumnName("ACTION");
+            entity.Property(e => e.Audits)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("AUDITS");
+            entity.Property(e => e.Dsource)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("DSOURCE");
+            entity.Property(e => e.Oactive)
+                .HasDefaultValue(1)
+                .HasColumnName("OACTIVE");
+            entity.Property(e => e.Oblige)
+                .HasMaxLength(250)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("OBLIGE");
+            entity.Property(e => e.Oblindex).HasColumnName("OBLINDEX");
+            entity.Property(e => e.Parentcode).HasColumnName("PARENTCODE");
+            entity.Property(e => e.Riskrat).HasColumnName("RISKRAT");
+            entity.Property(e => e.Section)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("SECTION");
+            entity.Property(e => e.Support)
+                .HasMaxLength(300)
+                .IsUnicode(false)
+                .HasColumnName("SUPPORT");
+            entity.Property(e => e.Timing)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TIMING");
+            entity.Property(e => e.Title)
+                .HasMaxLength(60)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TITLE");
+            entity.Property(e => e.Type)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TYPE");
+        });
+
+        modelBuilder.Entity<Reg>(entity =>
+        {
+            entity.HasKey(e => new { e.Stid, e.Tp, e.Rindex });
+
+            entity.ToTable("REGS");
+
+            entity.Property(e => e.Stid)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("stid");
+            entity.Property(e => e.Tp)
+                .HasMaxLength(3)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("tp");
+            entity.Property(e => e.Rindex).HasColumnName("rindex");
+            entity.Property(e => e.Ractive).HasColumnName("ractive");
+            entity.Property(e => e.Rfn)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("rfn");
+            entity.Property(e => e.Ritem)
+                .IsUnicode(false)
+                .HasColumnName("ritem");
+            entity.Property(e => e.Rtitle)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("rtitle");
+        });
+
+        modelBuilder.Entity<Rrdet>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("RRDET");
+
+            entity.Property(e => e.F1)
+                .HasColumnType("text")
+                .HasColumnName("f1");
+            entity.Property(e => e.F10)
+                .HasColumnType("text")
+                .HasColumnName("f10");
+            entity.Property(e => e.F2)
+                .HasColumnType("text")
+                .HasColumnName("f2");
+            entity.Property(e => e.F3)
+                .HasColumnType("text")
+                .HasColumnName("f3");
+            entity.Property(e => e.F4)
+                .HasColumnType("text")
+                .HasColumnName("f4");
+            entity.Property(e => e.F5)
+                .HasColumnType("text")
+                .HasColumnName("f5");
+            entity.Property(e => e.F6)
+                .HasColumnType("text")
+                .HasColumnName("f6");
+            entity.Property(e => e.F7)
+                .HasColumnType("text")
+                .HasColumnName("f7");
+            entity.Property(e => e.F8)
+                .HasColumnType("text")
+                .HasColumnName("f8");
+            entity.Property(e => e.F9)
+                .HasColumnType("text")
+                .HasColumnName("f9");
+            entity.Property(e => e.Rrid).HasColumnName("rrid");
+            entity.Property(e => e.Stid)
+                .HasMaxLength(5)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("stid");
+        });
+
+        modelBuilder.Entity<Rrlist>(entity =>
+        {
+            entity.HasKey(e => e.Rrid);
+
+            entity.ToTable("RRLIST");
+
+            entity.Property(e => e.Rrid)
+                .ValueGeneratedNever()
+                .HasColumnName("rrid");
+            entity.Property(e => e.Rractive).HasColumnName("rractive");
+            entity.Property(e => e.Rrname)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("rrname");
+            entity.Property(e => e.Rrorder).HasColumnName("rrorder");
+            entity.Property(e => e.Rrremarks)
+                .IsUnicode(false)
+                .HasColumnName("rrremarks");
+            entity.Property(e => e.Rrtitle)
+                .HasMaxLength(25)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("rrtitle");
+            entity.Property(e => e.Rrtp).HasColumnName("rrtp");
+        });
+
+        modelBuilder.Entity<Rrstruc>(entity =>
+        {
+            entity.HasKey(e => e.Rrid);
+
+            entity.ToTable("RRSTRUC");
+
+            entity.Property(e => e.Rrid)
+                .ValueGeneratedNever()
+                .HasColumnName("RRID");
+            entity.Property(e => e.F10f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F10F");
+            entity.Property(e => e.F10t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F10T");
+            entity.Property(e => e.F1f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F1F");
+            entity.Property(e => e.F1t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F1T");
+            entity.Property(e => e.F2f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F2F");
+            entity.Property(e => e.F2t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F2T");
+            entity.Property(e => e.F3f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F3F");
+            entity.Property(e => e.F3t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F3T");
+            entity.Property(e => e.F4f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F4F");
+            entity.Property(e => e.F4t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F4T");
+            entity.Property(e => e.F5f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F5F");
+            entity.Property(e => e.F5t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F5T");
+            entity.Property(e => e.F6f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F6F");
+            entity.Property(e => e.F6t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F6T");
+            entity.Property(e => e.F7f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F7F");
+            entity.Property(e => e.F7t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F7T");
+            entity.Property(e => e.F8f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F8F");
+            entity.Property(e => e.F8t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F8T");
+            entity.Property(e => e.F9f)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("F9F");
+            entity.Property(e => e.F9t)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("F9T");
+        });
+
+        modelBuilder.Entity<ServcMap>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Servc_map");
+
+            entity.Property(e => e.Echkuno).HasColumnName("echkuno");
+            entity.Property(e => e.Ecoid)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("ecoid");
+            entity.Property(e => e.Edoc).HasColumnName("edoc");
+            entity.Property(e => e.Edoid).HasColumnName("edoid");
+            entity.Property(e => e.Uno).HasColumnName("uno");
+            entity.Property(e => e.Vchkuno).HasColumnName("vchkuno");
+            entity.Property(e => e.Vcoid).HasColumnName("vcoid");
+            entity.Property(e => e.Vproid).HasColumnName("vproid");
+            entity.Property(e => e.Vuno).HasColumnName("vuno");
+        });
 
         modelBuilder.Entity<Statusmaster>(entity =>
         {
@@ -964,7 +2244,66 @@ public partial class DbEcheckContext : DbContext
                 .HasColumnName("ScopeID");
         });
 
+        modelBuilder.Entity<Trig>(entity =>
+        {
+            entity.HasKey(e => e.Tcode).IsClustered(false);
 
+            entity.ToTable("TRIGS");
+
+            entity.Property(e => e.Tcode)
+                .HasColumnType("decimal(4, 0)")
+                .HasColumnName("TCODE");
+            entity.Property(e => e.Tdesc)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TDESC");
+            entity.Property(e => e.Ttype)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength()
+                .HasColumnName("TTYPE");
+        });
+
+        modelBuilder.Entity<Triglink>(entity =>
+        {
+            entity.HasKey(e => new { e.Tcode, e.Ocode }).IsClustered(false);
+
+            entity.ToTable("TRIGLINK");
+
+            entity.Property(e => e.Tcode)
+                .HasColumnType("decimal(4, 0)")
+                .HasColumnName("TCODE");
+            entity.Property(e => e.Ocode)
+                .HasColumnType("decimal(5, 0)")
+                .HasColumnName("OCODE");
+        });
+
+        modelBuilder.Entity<UserActivation>(entity =>
+        {
+            entity.HasKey(e => e.UserId);
+
+            entity.ToTable("UserActivation");
+
+            entity.Property(e => e.UserId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<Webinar>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Webinar");
+
+            entity.Property(e => e.Active).HasColumnName("active");
+            entity.Property(e => e.Email)
+                .HasMaxLength(500)
+                .IsUnicode(false)
+                .HasColumnName("email");
+            entity.Property(e => e.Reference)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .IsFixedLength();
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }
