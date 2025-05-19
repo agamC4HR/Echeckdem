@@ -37,9 +37,9 @@ namespace Echeckdem.Services
             //_dbEcheckContext.SaveChanges();
             var user = _dbEcheckContext.Ncusers.FirstOrDefault(u => u.Userid == Userid);
             if (user == null) return false;
-            if(user.Hashpassword==null) return false;
+            if(user.HashPassword == null) return false;
 
-            var result = _passwordHasher.VerifyHashedPassword(user, user.Hashpassword, Password);
+            var result = _passwordHasher.VerifyHashedPassword(user, user.HashPassword, Password);
             return result == PasswordVerificationResult.Success;
         }
         public async Task<int> GetUserLevelAsync(string userId)

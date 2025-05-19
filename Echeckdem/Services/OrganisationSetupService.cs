@@ -628,10 +628,10 @@ namespace Echeckdem.Services
                         else
                         {
                             var parameter = _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == scopeId).Select(ts => new { ts.
-                                OffSet, ts.Reference }).FirstOrDefault();
+                                Offset, ts.Reference }).FirstOrDefault();
                             object?[] args = funcname switch
                             {
-                                "GenerateOneTimeDueDate" => new object[] { parameter?.OffSet ?? 30, parameter?.Reference ?? "Start", scopeId },
+                                "GenerateOneTimeDueDate" => new object[] { parameter?.Offset ?? 30, parameter?.Reference ?? "Start", scopeId },
                                 "GenerateMonthlyVendorAuditWindows" => new object[] { scopeId },
                                 "GenerateCalendarYearEndDueDates" => new object[] { scopeId },
                                 "GenerateHalfYearlyDueDates" => new object[] { scopeId },
