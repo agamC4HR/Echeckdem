@@ -108,7 +108,7 @@ namespace Echeckdem.Services
                                     Lstate = stateAbbreviation,
                                     Lregion = row.Cell(4).GetValue<string>().Substring(0, Math.Min(30, row.Cell(4).GetValue<string>().Length)),
                                     Ltype = row.Cell(5).GetValue<string>().Substring(0, Math.Min(30, row.Cell(5).GetValue<string>().Length)),
-                                    Laddress = row.Cell(6).GetValue<string>().Substring(0, Math.Min(200, row.Cell(6).GetValue<string>().Length)),
+                                    Laddress = row.Cell(6).GetValue<string>().Substring(0, Math.Min(200, row.Cell(6).GetValue<string>().Length)).Replace("\"",""),
                                     Lcontact = row.Cell(7).GetValue<string>().Substring(0, Math.Min(100, row.Cell(7).GetValue<string>().Length)),
                                     Lconemail = row.Cell(8).GetValue<string>().Substring(0, Math.Min(100, row.Cell(8).GetValue<string>().Length)),
                                     Lconno = row.Cell(9).GetValue<string>().Substring(0, Math.Min(50, row.Cell(9).GetValue<string>().Length)),

@@ -102,7 +102,7 @@ namespace Echeckdem.Services
         public async Task<List<SelectListItem>> GetC4HRSPOCListAsync()
         {
             return await _EcheckContext.Ncusers
-                .Where(u => u.Oid == "C4HR")
+                .Where(u => u.Userlevel == 2)
                 .Select(u => new SelectListItem
                 {
                     Value = u.Uname,
