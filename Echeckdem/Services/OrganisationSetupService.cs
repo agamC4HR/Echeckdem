@@ -177,7 +177,7 @@ namespace Echeckdem.Services
             }
 
             var spocEmail = await _EcheckContext.Ncusers
-            .Where(u => u.Oid == "C4HR" && u.Uname == updatedInfo.Spoc)
+            .Where(u => u.Userlevel == 2 && u.Uname == updatedInfo.Spoc)
             .Select(u => u.Emailid)
             .FirstOrDefaultAsync();
 
@@ -233,6 +233,7 @@ namespace Echeckdem.Services
                     Lcity = n.Lcity,
                     Lstate = n.Lstate,
                     Lregion = n.Lregion,
+                    Laddress = n.Laddress,
                     Iscentral = n.Iscentral,
                     Iscloc = n.Iscloc,
                     Lactive = n.Lactive,
@@ -256,6 +257,7 @@ namespace Echeckdem.Services
                 locationInDb.Lcity = addlocationdata.Lcity ?? locationInDb.Lcity;
                 locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;
                 locationInDb.Lregion = addlocationdata.Lregion ?? locationInDb.Lregion;
+                locationInDb.Laddress = addlocationdata.Laddress ?? locationInDb.Laddress;
                 locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
                 locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
                 locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
@@ -292,13 +294,13 @@ namespace Echeckdem.Services
                         {
                             var lname = row.Cell(1).GetValue<string>()?.Trim();
                             //  Resolve lcode based on lname
-                            var site = boSites.FirstOrDefault(b => b.Lname.Equals(lname, StringComparison.OrdinalIgnoreCase));
+                            var site = boSites.FirstOrDefault(b => b.Lname.Trim().Equals(lname.Trim(), StringComparison.OrdinalIgnoreCase));
                             if (site == null)
-                                throw new InvalidOperationException($"Invalid Location Name (Lname): {lname} for BO site.");
+                                throw new InvalidOperationException($"Invalid Location Name (Lname): {lname}");
 
-                            var lcode = site.Lcode; // Use the resolved lcode for further processing
+                            var lcode = site.Lcode.Trim(); // Use the resolved lcode for further processing
 
-                            var resolvedLname = site.Lname; // Use the resolved lname for population
+                            var resolvedLname = site.Lname.Trim(); // Use the resolved lname for population
 
                             var projectAreaCell = row.Cell(7);
                             decimal? projectArea = null; // Use nullable decimal
@@ -387,7 +389,7 @@ namespace Echeckdem.Services
                                 OvalId = row.Cell(2).GetValue<string>().Trim(),
                                 ClientName = row.Cell(3).GetValue<string>().Trim(),
                                 GeneralContractor = row.Cell(4).GetValue<string>().Trim(),
-                                ProjectAddress = row.Cell(5).GetValue<string>().Trim(),
+                                ProjectAddress = row.Cell(5).GetValue<string>().Trim().Replace("\"",""),
                                 NatureofWork = row.Cell(6).GetValue<string>().Trim(),
                                 //ProjectArea = row.Cell(7).GetValue<decimal>(),
                                 //ProjectCostEst = row.Cell(8).GetValue<float?>(),
@@ -626,10 +628,10 @@ namespace Echeckdem.Services
                         else
                         {
                             var parameter = _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == scopeId).Select(ts => new { ts.
-                                OffSet, ts.Reference }).FirstOrDefault();
+                                Offset, ts.Reference }).FirstOrDefault();
                             object?[] args = funcname switch
                             {
-                                "GenerateOneTimeDueDate" => new object[] { parameter?.OffSet ?? 30, parameter?.Reference ?? "Start", scopeId },
+                                "GenerateOneTimeDueDate" => new object[] { parameter?.Offset ?? 30, parameter?.Reference ?? "Start", scopeId },
                                 "GenerateMonthlyVendorAuditWindows" => new object[] { scopeId },
                                 "GenerateCalendarYearEndDueDates" => new object[] { scopeId },
                                 "GenerateHalfYearlyDueDates" => new object[] { scopeId },

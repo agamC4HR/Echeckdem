@@ -110,7 +110,7 @@ namespace Echeckdem.Services
             
             var Password=$"{newUser.Uno}@fqp!";
             newUser.
-                Hashpassword = _passwordHasher.HashPassword(model, Password);
+                HashPassword = _passwordHasher.HashPassword(model, Password);
 
             await _EcheckContext.SaveChangesAsync();
         }

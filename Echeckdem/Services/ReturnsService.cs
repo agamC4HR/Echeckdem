@@ -46,7 +46,7 @@ namespace Echeckdem.Services
                                          join retemp in _context.Nctemprets on ret.Rcode equals retemp.Rcode
                                          join loc in _context.Ncmlocs on ret.Lcode equals loc.Lcode
                                          join org in _context.Ncmorgs on loc.Oid equals org.Oid
-                                        
+                                         where ret.Ryear == DateTime.Now.Year
                                          where loc.Lactive == 1 && org.Oactive == 1
                                          orderby ret.Lastdate ascending
                                          select new { ret, retemp, loc, org }).ToListAsync();
@@ -122,6 +122,7 @@ namespace Echeckdem.Services
                                          join loc in _context.Ncmlocs on ret.Lcode equals loc.Lcode
                                          join org in _context.Ncmorgs on loc.Oid equals org.Oid
                                          join usem in _context.Ncumaps on new { loc.Oid, loc.Lcode } equals new { usem.Oid, usem.Lcode }
+                                         where ret.Ryear == DateTime.Now.Year
                                          where usem.Uno == uno && loc.Lactive == 1 && org.Oactive == 1
                                          orderby ret.Lastdate ascending
                                          select new { ret, retemp, loc, org }).ToListAsync();
