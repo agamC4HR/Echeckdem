@@ -78,20 +78,30 @@
 
     <!-- Outer-Filter button -->
     <div class="table-filter-buttons">
+        
         <button class="table-filter-btn active" onclick="filterTable('all')">All</button>
         <button class="table-filter-btn" onclick="filterTable('registration')">Registration</button>
         <button class="table-filter-btn" onclick="filterTable('payroll')">Payroll</button>
         <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
         <button class="table-filter-btn" onclick="filterTable('bocw')">Construction</button>
-    </div>
+    </div><br />
     @if(Context.Session.GetString("BO") == "yes")
 
     {
-    <button class="table-filter-btn" onclick="filterTable('registration')">Startup</button>
-    <button class="table-filter-btn" onclick="filterTable('payroll')">Training</button>
-    <button class="table-filter-btn" onclick="filterTable('return')">Ongoing</button>
-    <button class="table-filter-btn" onclick="filterTable('bocw')">Project End</button>
+        var listcat = Model.BOCW.Select(x => x.ServiceType).Distinct().ToList();
+        <div class="table-filter-buttons-cons">
+            <button class="table-filter-btn-cons active" onclick="filterTable('all bocw')">All</button>
+            @if (listcat != null && listcat.Count > 0)
+            {
+                foreach (var tp in listcat)
+                {
 
+                    <button class="table-filter-btn-cons" onclick="filterTable('bocw-@tp')">@tp.Trim()</button>
+                }
+            }
+
+    
+    </div>
     }
 </div>
 <div class="table-container-detailsView">

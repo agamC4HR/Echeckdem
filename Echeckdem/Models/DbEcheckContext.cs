@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-
+using Echeckdem.ViewModel.ComplianceTracker;
 namespace Echeckdem.Models;
 
 public partial class DbEcheckContext : DbContext
@@ -14,8 +14,6 @@ public partial class DbEcheckContext : DbContext
         : base(options)
     {
     }
-    //test
-    public virtual DbSet<Act> Acts { get; set; }
 
     public virtual DbSet<Alink> Alinks { get; set; }
 
@@ -145,9 +143,6 @@ public partial class DbEcheckContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Act>(entity =>
-        {
-            entity.HasKey(e => e.Code).IsClustered(false);
 
             entity.ToTable("ACTS");
 
@@ -285,7 +280,7 @@ public partial class DbEcheckContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("ORIGIN");
             entity.Property(e => e.RequestPath).IsUnicode(false);
-            entity.Property(e => e.SessionId)
+            entity.Property(e => e.SessionID)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("SessionID");
@@ -1023,128 +1018,6 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("STATEDESC");
-        });
-
-        modelBuilder.Entity<Mwcat>(entity =>
-        {
-            entity.HasKey(e => new { e.Stid, e.Catid }).HasName("PK_MWCAT_1");
-
-            entity.ToTable("MWCAT");
-
-            entity.Property(e => e.Stid)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("stid");
-            entity.Property(e => e.Catid).HasColumnName("catid");
-            entity.Property(e => e.Catdesc)
-                .IsUnicode(false)
-                .HasColumnName("catdesc");
-            entity.Property(e => e.Catgrp)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("catgrp");
-            entity.Property(e => e.Catlnk).HasColumnName("catlnk");
-            entity.Property(e => e.Catname)
-                .HasMaxLength(75)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("catname");
-        });
-
-        modelBuilder.Entity<Mwdatum>(entity =>
-        {
-            entity.HasKey(e => new { e.Stid, e.Catid, e.Stdate });
-
-            entity.ToTable("MWDATA");
-
-            entity.Property(e => e.Stid)
-                .HasMaxLength(5)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("STID");
-            entity.Property(e => e.Catid).HasColumnName("catid");
-            entity.Property(e => e.Stdate).HasColumnName("stdate");
-            entity.Property(e => e.Basic)
-                .HasDefaultValue(0.0)
-                .HasColumnName("basic");
-            entity.Property(e => e.Da)
-                .HasDefaultValue(0.0)
-                .HasColumnName("da");
-            entity.Property(e => e.Daily)
-                .HasDefaultValue(0.0)
-                .HasColumnName("daily");
-            entity.Property(e => e.Endate).HasColumnName("endate");
-            entity.Property(e => e.Hra).HasColumnName("hra");
-            entity.Property(e => e.Monthly)
-                .HasDefaultValue(0.0)
-                .HasColumnName("monthly");
-            entity.Property(e => e.Notdate).HasColumnName("notdate");
-            entity.Property(e => e.Notfile)
-                .HasMaxLength(80)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("notfile");
-            entity.Property(e => e.Other)
-                .HasDefaultValue(0.0)
-                .HasColumnName("other");
-            entity.Property(e => e.Spallowence).HasColumnName("spallowence");
-            entity.Property(e => e.Z2b)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z2b");
-            entity.Property(e => e.Z2d)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z2d");
-            entity.Property(e => e.Z2da)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z2da");
-            entity.Property(e => e.Z2hra).HasColumnName("z2hra");
-            entity.Property(e => e.Z2m)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z2m");
-            entity.Property(e => e.Z2other)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z2other");
-            entity.Property(e => e.Z2spallowence).HasColumnName("z2spallowence");
-            entity.Property(e => e.Z3b)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z3b");
-            entity.Property(e => e.Z3d)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z3d");
-            entity.Property(e => e.Z3da)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z3da");
-            entity.Property(e => e.Z3hra).HasColumnName("z3hra");
-            entity.Property(e => e.Z3m)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z3m");
-            entity.Property(e => e.Z3other)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z3other");
-            entity.Property(e => e.Z3spallowence).HasColumnName("z3spallowence");
-            entity.Property(e => e.Z4b)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z4b");
-            entity.Property(e => e.Z4d)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z4d");
-            entity.Property(e => e.Z4da)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z4da");
-            entity.Property(e => e.Z4hra)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z4hra");
-            entity.Property(e => e.Z4m)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z4m");
-            entity.Property(e => e.Z4other)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z4other");
-            entity.Property(e => e.Z4spallowence)
-                .HasDefaultValue(0.0)
-                .HasColumnName("z4spallowence");
         });
 
         modelBuilder.Entity<Mwnote>(entity =>
@@ -1947,7 +1820,7 @@ public partial class DbEcheckContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("EMAILID");
-            entity.Property(e => e.Hashpassword)
+            entity.Property(e => e.HashPassword)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("HASHPASSWORD");
@@ -2437,4 +2310,3 @@ public partial class DbEcheckContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
- // httt

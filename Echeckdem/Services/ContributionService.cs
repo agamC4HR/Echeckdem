@@ -44,7 +44,7 @@ namespace Echeckdem.Services
                     var contribution = await (from pay in _context.Nccontrs
                                               join loc in _context.Ncmlocs on pay.Lcode equals loc.Lcode
                                               join org in _context.Ncmorgs on loc.Oid equals org.Oid
-                                              
+                                              where pay.Cyear == DateTime.Now.Year
                                               where loc.Lactive == 1 && org.Oactive == 1
                                               orderby pay.Lastdate ascending
                                               select new { pay, loc, org }).ToListAsync();
@@ -114,6 +114,7 @@ namespace Echeckdem.Services
                                               join loc in _context.Ncmlocs on pay.Lcode equals loc.Lcode
                                               join org in _context.Ncmorgs on loc.Oid equals org.Oid
                                               join usem in _context.Ncumaps on new { loc.Oid, loc.Lcode } equals new { usem.Oid, usem.Lcode }
+                                              where pay.Cyear == DateTime.Now.Year
                                               where usem.Uno == uno && loc.Lactive == 1 && org.Oactive == 1
                                               orderby pay.Lastdate ascending
                                               select new { pay, loc, org }).ToListAsync();
