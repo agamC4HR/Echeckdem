@@ -88,7 +88,11 @@
                                 <div class="dropdown-content">
                                     <a href="/DetailsView/Index">Compliance Tracker</a>
                                     <a href="/Tracker/Trackerlist">On-Going Activity</a>
+                                    @if(Context.Session.GetString("BO") == "yes")
+
+                                    {
                                     <a href="/Project/Index">Construction Tracker</a>
+                                    }
                                 </div>
                             </div>
 
@@ -130,7 +134,7 @@
                 }
 
                 <div class="custom-dropdown" style="right:20px; align-content:center;">
-                    <button class="dropdown-toggle" onclick="toggleDropdown(this)">@initial</button>
+                    <button class="dropdown-toggle" onclick="toggleDropdown(this)">@Context.Session.GetString("userID")</button>
                     <div class="dropdown-content" style="right:45px;">
                         <a href="#">Change Password</a>
                         <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">

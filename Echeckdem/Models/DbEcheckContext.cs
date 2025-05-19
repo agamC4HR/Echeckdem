@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Echeckdem.ViewModel.ComplianceTracker;
 using Microsoft.EntityFrameworkCore;
 
 namespace Echeckdem.Models;
@@ -79,22 +78,7 @@ public partial class DbEcheckContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<ReturnsViewModel>()
-.HasNoKey()
-.ToView(null);
-
-        modelBuilder.Entity<ContributionViewModel>()
-       .HasNoKey()
-       .ToView(null);
-
-        modelBuilder.Entity<RegistrationViewModel>()
-      .HasNoKey()
-      .ToView(null);
-
-        modelBuilder.Entity<BocwViewModel>()
-      .HasNoKey()
-      .ToView(null);
-
+       
 
 
         modelBuilder.Entity<Audtrail>(entity =>
