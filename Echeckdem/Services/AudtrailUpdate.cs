@@ -66,7 +66,7 @@ namespace Echeckdem.Services
                 Tdate = DateTime.UtcNow,
                 UserAgent = userAgent,
                 RequestPath = requestPath,
-                SessionID = sessionId,
+                SessionId = sessionId,
                 Country = country,
                 City = city
 

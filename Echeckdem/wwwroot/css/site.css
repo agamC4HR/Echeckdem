@@ -48,23 +48,50 @@ body {
     /*    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
 }
 
-    .navbar .dropdown {                                                                                                           /*added by agam*/
-        position: fixed; 
-        right: 12x`px;
-        top: 10px; 
-        z-index: 9999;
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+    .custom-dropdown:hover .dropdown-toggle {
+        background: white;
+        color: black;
+        border-radius: 0.375rem;
+    }
+.dropdown-toggle {
+    background: none;
+    cursor: pointer;
+    color: white;
+    line-height: 150%;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0.5rem 0.75rem;
+    border: none;
+}
+
+.dropdown-toggle:hover {
+    color:black;
+}
+.dropdown-content {
+    display: none;
+    position: fixed;
+    top:75px;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+    .dropdown-content a {
+        color: black;
+        padding: 10px 16px;
+        text-decoration: none;
+        display: block;
     }
 
-
-    .navbar .dropdown-toggle {                                                                                                /*added by agam*/
-        border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
 
 .nav_parent {
     width: 97%;
@@ -133,13 +160,15 @@ a {
     border: none;
     border-radius: 0.375rem;
     text-decoration: none;
-    text-transform:uppercase;
 }
 
 .nav_links :hover {
     background: white;
     color: black;
+    border-radius: 0.375rem;
 }
+
+
 
 .b-links {
     display: flex;
@@ -160,22 +189,13 @@ a {
     }
 .Logout-button {
     position:relative;
-    top:15px;
     background: none;
-    color: white;
-    line-height: 150%;
-    font-size: 12px;
+    color: black;
     font-weight: 700;
-    padding: 0.5rem 0.75rem;
     border: none;
     border-radius: 0.375rem;
     text-decoration: none;
-    text-transform: uppercase;
 }
-    .Logout-button:hover {
-        background-color: white;
-        color: black;
-    }
 
 .heading_background_parent {
     position: relative;

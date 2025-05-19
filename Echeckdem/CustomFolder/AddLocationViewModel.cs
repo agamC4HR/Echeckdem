@@ -25,6 +25,8 @@
 
         public int? Lsetup { get; set; }
 
+        public string? Laddress { get; set; }
+
         public string LtypeDescription
         {
             get

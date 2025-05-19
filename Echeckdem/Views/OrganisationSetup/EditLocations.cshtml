@@ -94,7 +94,7 @@
  *@            <th>Location Name</th>
             <th>City</th>
             <th>State</th>
-            <th>Region</th>
+            <th>Site Address</th>
             <th>Central Govt</th>
             <th>CLRA</th>
             <th>Active</th>
@@ -108,12 +108,12 @@
         {
             <tr>
                 <td data-field="Oid" style="display: none;">@location.Oid</td>
-                <td  data-field="Lcode" hidden>@location.Lcode</td>
+                <td  data-field="Lcode" hidden>@location.Lcode </td>
                 
                 <td  data-field="Lname">@location.Lname</td>
                 <td  data-field="Lcity">@location.Lcity</td>
                 <td  data-field="Lstate">@location.Lstate</td>
-                <td  data-field="Lregion">@location.Lregion</td>
+                <td  data-field="Laddress">@location.Laddress</td>
                 <td  data-field="Iscentral">
                     @(location.Iscentral.HasValue ? (location.Iscentral == 1 ? "Yes" : "No") : "N/A")
                 <td  data-field="Iscloc">
@@ -156,7 +156,7 @@
 
             
                     <label for="Lcode">Location Code</label>
-                    <input type="text" id="Lcode" name="Lcode" placeholder="Enter location code" required />
+                    <input type="text" id="Lcode" name="Lcode" placeholder="Enter location code" required readonly/>
                 
 
                 
@@ -172,11 +172,12 @@
                
                     <label for="Lstate">State</label>
                     <input type="text" class="form-control" id="Lstate" name="Lstate" placeholder="Enter state name" required />
-               
 
+                <label for="Laddress">Site Address</label>
+                <input type="text" id="Laddress" name="Laddress" placeholder="Enter address name" required />
                 
-                    <label for="Lregion">Region</label>
-                    <input type="text" id="Lregion" name="Lregion" placeholder="Enter region name" required />
+                    @* <label for="Lregion">Region</label>
+                    <input type="text" id="Lregion" name="Lregion" placeholder="Enter region name" required /> *@
                 
 
                 
@@ -266,6 +267,7 @@
             var Lcity = row.find('td[data-field="Lcity"]').text();
             var Lstate = row.find('td[data-field="Lstate"]').text();
             var Lregion = row.find('td[data-field="Lregion"]').text();
+            var Laddress = row.find('td[data-field="Laddress"]').text();
             var Iscentral = row.find('td[data-field="Iscentral"]').text().includes("Yes") ? 1 : 0;
             var Iscloc = row.find('td[data-field="Iscloc"]').text().includes("Yes") ? 1 : 0;
             var Lactive = row.find('td[data-field="Lactive"]').text().includes("Yes") ? 1 : 0;
@@ -290,6 +292,7 @@
             $('#Lcity').val(Lcity);
             $('#Lstate').val(Lstate);
             $('#Lregion').val(Lregion);
+            $('#Laddress').val(Laddress);
             $('#Iscentral').val(Iscentral);
             $('#Iscloc').val(Iscloc);
             $('#Lactive').val(Lactive);

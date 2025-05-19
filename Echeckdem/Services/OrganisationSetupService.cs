@@ -177,7 +177,7 @@ namespace Echeckdem.Services
             }
 
             var spocEmail = await _EcheckContext.Ncusers
-            .Where(u => u.Oid == "C4HR" && u.Uname == updatedInfo.Spoc)
+            .Where(u => u.Userlevel == 2 && u.Uname == updatedInfo.Spoc)
             .Select(u => u.Emailid)
             .FirstOrDefaultAsync();
 
@@ -233,6 +233,7 @@ namespace Echeckdem.Services
                     Lcity = n.Lcity,
                     Lstate = n.Lstate,
                     Lregion = n.Lregion,
+                    Laddress = n.Laddress,
                     Iscentral = n.Iscentral,
                     Iscloc = n.Iscloc,
                     Lactive = n.Lactive,
@@ -256,6 +257,7 @@ namespace Echeckdem.Services
                 locationInDb.Lcity = addlocationdata.Lcity ?? locationInDb.Lcity;
                 locationInDb.Lstate = addlocationdata.Lstate ?? locationInDb.Lstate;
                 locationInDb.Lregion = addlocationdata.Lregion ?? locationInDb.Lregion;
+                locationInDb.Laddress = addlocationdata.Laddress ?? locationInDb.Laddress;
                 locationInDb.Iscentral = addlocationdata.Iscentral ?? locationInDb.Iscentral;
                 locationInDb.Iscloc = addlocationdata.Iscloc ?? locationInDb.Iscloc;
                 locationInDb.Lactive = addlocationdata.Lactive ?? locationInDb.Lactive;
@@ -625,10 +627,11 @@ namespace Echeckdem.Services
                             throw new InvalidOperationException($"Method {funcname} not found in ProjectCalendarGenerator.");
                         else
                         {
-                            var parameter = _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == scopeId).Select(ts => new { ts.Offset, ts.Reference }).FirstOrDefault();
+                            var parameter = _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == scopeId).Select(ts => new { ts.
+                                OffSet, ts.Reference }).FirstOrDefault();
                             object?[] args = funcname switch
                             {
-                                "GenerateOneTimeDueDate" => new object[] { parameter?.Offset ?? 30, parameter?.Reference ?? "Start", scopeId },
+                                "GenerateOneTimeDueDate" => new object[] { parameter?.OffSet ?? 30, parameter?.Reference ?? "Start", scopeId },
                                 "GenerateMonthlyVendorAuditWindows" => new object[] { scopeId },
                                 "GenerateCalendarYearEndDueDates" => new object[] { scopeId },
                                 "GenerateHalfYearlyDueDates" => new object[] { scopeId },

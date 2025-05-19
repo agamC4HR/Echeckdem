@@ -91,7 +91,8 @@
             <label for="file">Upload Excel File:</label>
             <input type="file" name="file" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        @* <button type="submit" class="btn btn-primary">Upload</button> *@
+            <button type="submit" class="btn btn-primary" id="uploadBtn" style="display:none;">Upload</button>
     </form>
     </div>
 
@@ -119,15 +120,25 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        $("#uploadForm").submit(function (e) {
-            e.preventDefault(); // Prevent normal form submission
+        $('input[name="file"]').on('change', function () {
+            const fileInput = this;
+            const uploadBtn = $('#uploadBtn');
 
-            var formData = new FormData(this);
+            const fileName = fileInput.files[0]?.name || '';
+            const isValidExcel = /\.(xlsx|xls)$/i.test(fileName);
 
-            // Log the form data for debugging
-            for (var pair of formData.entries()) {
-                console.log(pair[0] + ', ' + pair[1]);
+            if (isValidExcel) {
+                uploadBtn.show();
+            } else {
+                uploadBtn.hide();
+                alert("Please upload a valid Excel file (.xlsx or .xls)");
+                fileInput.value = '';
             }
+        });
+
+        $("#uploadForm").submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
 
             $.ajax({
                 url: '@Url.Action("Upload", "OrganisationSetup")',
@@ -140,20 +151,25 @@
                     $('#messageContainer').fadeIn();
 
                     if (response.success) {
+
                         $('#messageContainer').removeClass('alert-danger').addClass('alert-success');
+
                     } else {
+
                         $('#messageContainer').removeClass('alert-success').addClass('alert-danger');
+
                     }
 
                     $('#messageContainer').text(response.message).fadeIn().delay(10000).fadeOut();
+
                 },
+
                 error: function (xhr) {
                     $('#messageContainer').removeClass('alert-success').addClass('alert-danger');
                     $('#messageContainer').text('An error occurred: ' + xhr.responseText).fadeIn().delay(10000).fadeOut();
                 }
-
-               
             });
         });
     });
 </script>
+
