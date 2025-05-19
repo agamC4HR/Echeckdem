@@ -17,12 +17,13 @@ namespace Echeckdem.Services
         async Task<string> GetStateAbbreviation(string fullStateName)                                              // function to map state to statemaster
         {
             var fullStateNameTrimmed = fullStateName.Trim();
-            var state = await _context.Maststates.FirstOrDefaultAsync(s => s.Statedesc.ToLower() == fullStateNameTrimmed.ToLower());
+            var state = await _context.Maststates.FirstOrDefaultAsync(s => s.Statedesc.ToLower().Trim() == fullStateNameTrimmed.ToLower());
             if (state == null)
             {
               Console.WriteLine($"State not found: {fullStateNameTrimmed}");
             }
-            return state?.Stateid?? string.Empty;
+            //return state?.Stateid?? string.Empty;
+            return state?.Stateid?.Trim() ?? string.Empty;
         }
 
 
@@ -105,10 +106,10 @@ namespace Echeckdem.Services
                                     Oid = oid,
                                     Lname = row.Cell(1).GetValue<string>().Substring(0, Math.Min(100, row.Cell(1).GetValue<string>().Length)),
                                     Lcity = row.Cell(2).GetValue<string>().Substring(0, Math.Min(30, row.Cell(2).GetValue<string>().Length)),
-                                    Lstate = stateAbbreviation,
+                                    Lstate = stateAbbreviation.Trim(),
                                     Lregion = row.Cell(4).GetValue<string>().Substring(0, Math.Min(30, row.Cell(4).GetValue<string>().Length)),
                                     Ltype = row.Cell(5).GetValue<string>().Substring(0, Math.Min(30, row.Cell(5).GetValue<string>().Length)),
-                                    Laddress = row.Cell(6).GetValue<string>().Substring(0, Math.Min(200, row.Cell(6).GetValue<string>().Length)),
+                                    Laddress = row.Cell(6).GetValue<string>().Substring(0, Math.Min(200, row.Cell(6).GetValue<string>().Length)).Replace("\"",""),
                                     Lcontact = row.Cell(7).GetValue<string>().Substring(0, Math.Min(100, row.Cell(7).GetValue<string>().Length)),
                                     Lconemail = row.Cell(8).GetValue<string>().Substring(0, Math.Min(100, row.Cell(8).GetValue<string>().Length)),
                                     Lconno = row.Cell(9).GetValue<string>().Substring(0, Math.Min(50, row.Cell(9).GetValue<string>().Length)),

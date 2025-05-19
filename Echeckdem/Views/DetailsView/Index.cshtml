@@ -84,6 +84,15 @@
         <button class="table-filter-btn" onclick="filterTable('return')">Return</button>
         <button class="table-filter-btn" onclick="filterTable('bocw')">Construction</button>
     </div>
+    @if(Context.Session.GetString("BO") == "yes")
+
+    {
+    <button class="table-filter-btn" onclick="filterTable('registration')">Startup</button>
+    <button class="table-filter-btn" onclick="filterTable('payroll')">Training</button>
+    <button class="table-filter-btn" onclick="filterTable('return')">Ongoing</button>
+    <button class="table-filter-btn" onclick="filterTable('bocw')">Project End</button>
+
+    }
 </div>
 <div class="table-container-detailsView">
     <table class="styled-table">

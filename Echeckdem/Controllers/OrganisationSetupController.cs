@@ -31,12 +31,7 @@ namespace Echeckdem.Controllers
             _logger = logger;
         }
 
-        //[HttpGet]
-        //public IActionResult AddOrganisation()                                                                                 // Add Organisation details (setting up new organisation)
-        //{
-
-        //    return PartialView("AddOrganisation");
-        //}
+       
 
         [HttpGet]
         public async Task<IActionResult> AddOrganisation()
