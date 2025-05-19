@@ -36,23 +36,23 @@ namespace Echeckdem.Services
                         Enddate = (from k in _context.Ncmlocbos where k.Lcode == g.Key.Lcode select k.ProjectEndDateEst).FirstOrDefault(),
                         Oid = g.FirstOrDefault().project.Oid,
                         StartupTotal = g.Count(x => x.scope.Category == "Startup"),
-                        StartupPending = g.Count(x => x.scope.Category == "Startup" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                        StartupInProgress = g.Count(x => x.scope.Category == "Startup" && (x.task.Status == 1 || x.task.Status == 2)),
+                        StartupPending = g.Count(x => x.scope.Category == "Startup" && ( x.task.Status < 0)),
+                        StartupInProgress = g.Count(x => x.scope.Category == "Startup" && (x.task.Status < 3 && x.task.Status >= 0)),
                         StartupCompleted = g.Count(x => x.scope.Category == "Startup" && x.task.Status == 3),
 
                         TrainingTotal = g.Count(x => x.scope.Category == "Training"),
-                        TrainingPending = g.Count(x => x.scope.Category == "Training" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                        TrainingInProgress = g.Count(x => x.scope.Category == "Training" && (x.task.Status == 1 || x.task.Status == 2)),
+                        TrainingPending = g.Count(x => x.scope.Category == "Training" && (x.task.Status < 0)),
+                        TrainingInProgress = g.Count(x => x.scope.Category == "Training" && (x.task.Status <3 && x.task.Status >= 0)),
                         TrainingCompleted = g.Count(x => x.scope.Category == "Training" && x.task.Status == 3),
 
                         OngoingTotal = g.Count(x => x.scope.Category == "Ongoing"),
-                        OngoingPending = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                        OngoingInProgress = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status == 1 || x.task.Status == 2)),
+                        OngoingPending = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status < 0)),
+                        OngoingInProgress = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status <3 && x.task.Status >= 0)),
                         OngoingCompleted = g.Count(x => x.scope.Category == "Ongoing" && x.task.Status == 3),
 
                         ProjectEndTotal = g.Count(x => x.scope.Category == "Project End"),
-                        ProjectEndPending = g.Count(x => x.scope.Category == "Project End" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                        ProjectEndInProgress = g.Count(x => x.scope.Category == "Project End" && (x.task.Status == 1 || x.task.Status == 2)),
+                        ProjectEndPending = g.Count(x => x.scope.Category == "Project End" && (x.task.Status < 0)),
+                        ProjectEndInProgress = g.Count(x => x.scope.Category == "Project End" && (x.task.Status < 3 && x.task.Status >= 0)),
                         ProjectEndCompleted = g.Count(x => x.scope.Category == "Project End" && x.task.Status == 3)
                     }).ToList();
                 foreach (var k in result)
@@ -89,23 +89,23 @@ namespace Echeckdem.Services
                          Enddate = (from k in _context.Ncmlocbos where k.Lcode == g.Key.Lcode select k.ProjectEndDateEst).FirstOrDefault(),
                          Oid = g.FirstOrDefault().project.Oid,
                          StartupTotal = g.Count(x => x.scope.Category == "Startup"),
-                         StartupPending = g.Count(x => x.scope.Category == "Startup" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                         StartupInProgress = g.Count(x => x.scope.Category == "Startup" && (x.task.Status == 1 || x.task.Status == 2)),
+                         StartupPending = g.Count(x => x.scope.Category == "Startup" && (x.task.Status < 0)),
+                         StartupInProgress = g.Count(x => x.scope.Category == "Startup" && (x.task.Status < 3 && x.task.Status >= 0)),
                          StartupCompleted = g.Count(x => x.scope.Category == "Startup" && x.task.Status == 3),
 
                          TrainingTotal = g.Count(x => x.scope.Category == "Training"),
-                         TrainingPending = g.Count(x => x.scope.Category == "Training" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                         TrainingInProgress = g.Count(x => x.scope.Category == "Training" && (x.task.Status == 1 || x.task.Status == 2)),
+                         TrainingPending = g.Count(x => x.scope.Category == "Training" && (x.task.Status < 0)),
+                         TrainingInProgress = g.Count(x => x.scope.Category == "Training" && (x.task.Status < 3 && x.task.Status >= 0)),
                          TrainingCompleted = g.Count(x => x.scope.Category == "Training" && x.task.Status == 3),
 
                          OngoingTotal = g.Count(x => x.scope.Category == "Ongoing"),
-                         OngoingPending = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                         OngoingInProgress = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status == 1 || x.task.Status == 2)),
+                         OngoingPending = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status < 0)),
+                         OngoingInProgress = g.Count(x => x.scope.Category == "Ongoing" && (x.task.Status < 3 && x.task.Status >= 0)),
                          OngoingCompleted = g.Count(x => x.scope.Category == "Ongoing" && x.task.Status == 3),
 
                          ProjectEndTotal = g.Count(x => x.scope.Category == "Project End"),
-                         ProjectEndPending = g.Count(x => x.scope.Category == "Project End" && (x.task.Status == -2 || (x.task.Status >= -1 && x.task.Status < 1))),
-                         ProjectEndInProgress = g.Count(x => x.scope.Category == "Project End" && (x.task.Status == 1 || x.task.Status == 2)),
+                         ProjectEndPending = g.Count(x => x.scope.Category == "Project End" && (x.task.Status < 0)),
+                         ProjectEndInProgress = g.Count(x => x.scope.Category == "Project End" && (x.task.Status < 3 && x.task.Status >= 0)),
                          ProjectEndCompleted = g.Count(x => x.scope.Category == "Project End" && x.task.Status == 3)
                      }).ToList();
                 foreach (var k in result)

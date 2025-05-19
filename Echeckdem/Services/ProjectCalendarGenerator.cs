@@ -74,6 +74,7 @@ namespace Echeckdem.Services
             logcomm.Parameters.AddWithValue("@actp", "Ops");
             logcomm.Parameters.AddWithValue("@actitle", task);
             logcomm.Parameters.AddWithValue("@acshow", 1);
+            
             //logcomm.Parameters.AddWithValue("@acstatus", status);
             DateTime acitdate;
             string astatus=string.Empty;
