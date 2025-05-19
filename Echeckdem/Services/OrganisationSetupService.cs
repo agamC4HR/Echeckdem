@@ -38,7 +38,7 @@ namespace Echeckdem.Services
             while (await _EcheckContext.Ncmorgs.AnyAsync(org => org.Oid == generatedOid));
 
             var spocEmail = await _EcheckContext.Ncusers
-            .Where(u => u.Oid == "C4HR" && u.Uname == newOrganisation.Spoc)
+            .Where(u => u.Userlevel == 2 && u.Uname == newOrganisation.Spoc)
             .Select(u => u.Emailid)
             .FirstOrDefaultAsync();
 
