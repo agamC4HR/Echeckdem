@@ -16,8 +16,6 @@ public partial class Ncuser
 
     public string? Password { get; set; }
 
-    public string? HashPassword { get; set; }
-
     public int? Userlevel { get; set; }
 
     public int? Uactive { get; set; }
@@ -26,9 +24,10 @@ public partial class Ncuser
 
     public string? Emailid { get; set; }
 
+    public string? Hashpassword { get; set; }
+
     [NotMapped]
     public string? OName { get; set; }
     [NotMapped]
     public string? UserLevelName { get; set; }
-
 }

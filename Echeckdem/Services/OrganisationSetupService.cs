@@ -627,10 +627,11 @@ namespace Echeckdem.Services
                             throw new InvalidOperationException($"Method {funcname} not found in ProjectCalendarGenerator.");
                         else
                         {
-                            var parameter = _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == scopeId).Select(ts => new { ts.Offset, ts.Reference }).FirstOrDefault();
+                            var parameter = _EcheckContext.TrackScopes.Where(ts => ts.ScopeId == scopeId).Select(ts => new { ts.
+                                OffSet, ts.Reference }).FirstOrDefault();
                             object?[] args = funcname switch
                             {
-                                "GenerateOneTimeDueDate" => new object[] { parameter?.Offset ?? 30, parameter?.Reference ?? "Start", scopeId },
+                                "GenerateOneTimeDueDate" => new object[] { parameter?.OffSet ?? 30, parameter?.Reference ?? "Start", scopeId },
                                 "GenerateMonthlyVendorAuditWindows" => new object[] { scopeId },
                                 "GenerateCalendarYearEndDueDates" => new object[] { scopeId },
                                 "GenerateHalfYearlyDueDates" => new object[] { scopeId },

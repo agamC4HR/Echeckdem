@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Echeckdem.Models;
@@ -21,6 +20,4 @@ public partial class Ncactaken
     public DateOnly? Accrdate { get; set; }
 
     public int? Showclient { get; set; }
-
-    
 }
