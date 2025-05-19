@@ -130,7 +130,9 @@
                 }
 
                 <div class="custom-dropdown" style="right:20px; align-content:center;">
-                    <button class="dropdown-toggle" onclick="toggleDropdown(this)">@initial</button>
+                    <button class="dropdown-toggle" onclick="toggleDropdown(this)" style="background: white; color: black; border-radius: .375rem;">
+                        @initial
+                    </button>
                     <div class="dropdown-content" style="right:45px;">
                         <a href="#">Change Password</a>
                         <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">

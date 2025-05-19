@@ -1,0 +1,157 @@
+﻿@{
+    string oid = Context.Request.Query["oid"];
+}
+
+<style>
+    .location-template-parent p {
+        font-size: 10px;
+    }
+
+    /* General container for spacing */
+    .upload-form-container {
+        max-width: 500px;
+    }
+
+        /* Label styling */
+        .upload-form-container label {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* File input */
+        .upload-form-container input[type="file"] {
+            padding: 5px;
+            font-size: 12px;
+            border-radius: .375rem;
+            border: 1px solid #ddd;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        /* Submit button */
+        .upload-form-container button[type="submit"] {
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: white;
+            color: #dd3432;
+            border: 2px solid #dd3432;
+            border-radius: .375rem;
+            width: 135px;
+        }
+
+            .upload-form-container button[type="submit"]:hover {
+                background-color: #dd3432;
+                color: white;
+            }
+
+    /* Message container */
+    #messageContainer {
+        padding: 5px;
+        font-size: 12px;
+        border-radius: .375rem;
+        display: none;
+        grid-column: 1 / span 2;
+    }
+
+    /* Template note section */
+    .location-template-parent {
+        background-color: #eef2f7;
+        padding: 15px;
+        border-radius: .375rem;
+    }
+
+        .location-template-parent a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            color: #0056b3;
+            background-color: #d4e3f1;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+            .location-template-parent a:hover {
+                background-color: #bcd4e5;
+                text-decoration: underline;
+            }
+</style>
+ 
+
+@if (ViewBag.HasIncompleteBOData == true)
+{
+    <div class="alert alert-warning">
+        Additional information for BOCW sites is required. Please upload the data using the template below.
+    </div>
+}
+
+
+@if (Context.Session.GetInt32("User Level") == 1)
+{
+    <div class="upload-form-container">
+    <form id="uploadForm" asp-action="UploadBOCWSiteDetails" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="oid" value="@ViewBag.Oid" />
+        <div class="form-group">
+            <label for="file">Upload Excel File:</label>
+            <input type="file" name="file" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    </div>
+
+    <div class="location-template-parent">
+        <p> *Please refer to this Excel template to upload data in Locations under BOCW. </p>
+        <p> *Note: OvalID - max 10 characters, Clientname, GeneralContractor - max 100 characters, Project Address/NatureofWork/Projectlead - max 255 characters, Date Format - DD/MM/YYYY </p>
+
+        <a href="@Url.Action("DownloadBOCWExcelFile", "OrganisationSetup", new { oid = ViewBag.Oid})"
+           style="display: block; color: blue; background-color: lightgray; text-align:center; align-content:center;"
+           onmouseover="this.style.textDecoration='underline'"
+           onmouseout="this.style.textDecoration='none'">
+            Download Excel Template
+        </a>
+    </div>
+
+    <div id="messageContainer" class="alert mt-3" style="display:none;"></div>
+
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#uploadForm").submit(function (e) {
+            e.preventDefault(); // Prevent normal form submission
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '@Url.Action("UploadBOCWSiteDetails", "OrganisationSetup")',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        // Display success message
+                        $('#messageContainer').removeClass('alert-danger').addClass('alert-success');
+                        $('#messageContainer').text(response.message).fadeIn().delay(3000).fadeOut();
+                    } else {
+                        // Display error message
+                        $('#messageContainer').removeClass('alert-success').addClass('alert-danger');
+                        $('#messageContainer').text(response.message).fadeIn().delay(3000).fadeOut();
+                    }
+                },
+                error: function () {
+                    // Display general error message
+                    $('#messageContainer').removeClass('alert-success').addClass('alert-danger');
+                    $('#messageContainer').text('An error occurred. Please try again.').fadeIn().delay(3000).fadeOut();
+                }
+            });
+        });
+    });
+</script>
+

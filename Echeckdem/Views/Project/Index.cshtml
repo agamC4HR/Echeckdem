@@ -9,6 +9,24 @@
     var autoLcode = Context.Request.Query["lcode"].ToString();
 
 }
+<style>
+    .table-filter-buttons {
+        background:none;
+    }
+
+        .table-filter-buttons form {
+            position: absolute;
+            display: flex;
+            right: 10px;
+            gap: 10px;
+        }
+
+    .table-filter-buttons select {
+        border-radius: 0.375rem;
+        font-size: 12px;
+        padding: 5px;
+    }
+</style>
 @if (!string.IsNullOrEmpty(autoOid) && !string.IsNullOrEmpty(autoLcode))
 {
     @using (Html.BeginForm("FetchProjectDets", "Project", FormMethod.Post, new { @id = "autoPostForm" }))
@@ -122,7 +140,12 @@
                                 <td>@k.Status</td>
                                 <td>@k.CompletionDate</td>
                                 <td colspan="2">@k.File</td>
-                                <td>@Html.ActionLink("Edit Pencil", "EditBocw", "DetailsView", new { transactionID = k.transactionID }, new { @style = "color:black" })</td>
+                                <td style="display:flex; padding:15px;">
+                                    <a href="@Url.Action("EditBocw","DetailsView",new{transactionID=k.transactionID})">    <i class="fas fa-pen edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i></a>
+                                    <a href="@Url.Action("EditBocw","DetailsView",new{transactionID=k.transactionID})">
+                                        <i class="fas fa-eye edit-icon" style="color: #dd3432; font-size: 14px; cursor: pointer;"></i>
+                                   </a> 
+                                </td>
                             </tr>
                             count++;}
 
