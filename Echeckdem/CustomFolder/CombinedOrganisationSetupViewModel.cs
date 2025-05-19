@@ -36,6 +36,8 @@ namespace Echeckdem.CustomFolder
         public string? Lstate { get; set; }
 
         public string? Lregion { get; set; }
+
+        public string? Laddress { get; set; }
         public int? Lactive { get; set; }
 
         public int? Iscentral { get; set; }
