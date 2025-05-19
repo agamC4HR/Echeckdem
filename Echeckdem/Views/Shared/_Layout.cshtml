@@ -65,18 +65,44 @@
 
                         @if (Context.Session.GetInt32("User Level") == 1)
                         {
+                            <div class="custom-dropdown">
+                                <button class="dropdown-toggle" onclick="toggleDropdown(this)">Client Mgmt</button>
+                                <div class="dropdown-content">
+                                    <a href="/OrganisationSetup/OrganisationSetup">Client Setup</a>
+                                    <a href="/SiteManagement/Index">Manage Sites</a>
+                                    <a href="/UserManagement/Index">Manager User</a>
+                                </div>
+                            </div>
+
+                            <div class="custom-dropdown">
+                                <button class="dropdown-toggle" onclick="toggleDropdown(this)">Compliance Setup</button>
+                                <div class="dropdown-content">
+                                    <a href="/StateTemplate/Index">State Template</a>
+                                    <a href="/ActScopeSetup/Index">BOCW Scope Setup</a>
+                                    <a href="/TrackScopeSetup/Index">Track Scope Setup</a>
+                                </div>
+                            </div>
+
+                            <div class="custom-dropdown">
+                                <button class="dropdown-toggle" onclick="toggleDropdown(this)">Reports</button>
+                                <div class="dropdown-content">
+                                    <a href="/DetailsView/Index">Compliance Tracker</a>
+                                    <a href="/Tracker/Trackerlist">On-Going Activity</a>
+                                    <a href="/Project/Index">Construction Tracker</a>
+                                </div>
+                            </div>
 
                             @* <h2>User Level: @ViewBag.UserLevel</h2> *@
-                            <a href="/SiteManagement/Index">Manage Sites</a>
-                            <a href="/OrganisationSetup/OrganisationSetup">Client Setup</a>
-                            <a href="/ActScopeSetup/Index">BOCW Scope Setup</a>
-                            <a href= "/TrackScopeSetup/Index">Track Scope Setup</a>
-                            <a href="/UserManagement/Index">User Management</a>
+                            @* <a href="/SiteManagement/Index">Manage Sites</a>
+                            <a href="/OrganisationSetup/OrganisationSetup">Client Setup</a> *@
+                           @*  <a href="/ActScopeSetup/Index">BOCW Scope Setup</a>
+                            <a href= "/TrackScopeSetup/Index">Track Scope Setup</a> *@
+                            @* <a href="/UserManagement/Index">User Management</a> *@
                             
-                            <a href="/StateTemplate/Index">State Template</a>
-                            <a href="/DetailsView/Index">Compliance Tracker </a>
+                            @* <a href="/StateTemplate/Index">State Template</a> *@
+                            @* <a href="/DetailsView/Index">Compliance Tracker </a>
                             <a href="/Tracker/Trackerlist">On-Going Activity</a>
-                            <a href="/Project/Index">Construction Tracker</a>
+                            <a href="/Project/Index">Construction Tracker</a> *@
                         }
                         else
                         {
@@ -97,31 +123,41 @@
                     </div>
             </div>
 
-                
-
-                @*  <a href=""> Settings</a> *@
-                <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">
-                    <button type="submit" class="Logout-button">Logout</button>
-                </form>
-
                 @{
                     var userID = Context.Session.GetString("userID");
                     var initial = !string.IsNullOrEmpty(userID) ? userID.Trim()[0].ToString().ToUpper() : "?";
 
                 }
 
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle rounded-circle text-white bg-primary"
-                            type="button" id="userDropdown" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                <div class="custom-dropdown" style="right:20px; align-content:center;">
+                    <button class="dropdown-toggle" onclick="toggleDropdown(this)">@initial</button>
+                    <div class="dropdown-content" style="right:45px;">
+                        <a href="#">Change Password</a>
+                        <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">
+                            <a> <button type="submit" class="Logout-button">Logout</button> </a>
+                        </form>
+                    </div>
+                </div>
+
+               @*  <div class="custom-dropdown" style="right:20px; align-content:center;">
+                    <button class="dropdown-toggle" onclick="toggleDropdown(this)">
                         @initial
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">View Account</a></li>
-                        <li><a class="dropdown-item" href="#">Change Password</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                    </ul>
-                </div>
+                    <div class="dropdown-content" style="margin-left:110px;">
+                        <a href="#">Change Password</a>
+                        <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">
+                            <button type="submit" class="Logout-button">Logout</button>
+                        </form>
+                    </div>
+                </div> *@
+
+                @*  <a href=""> Settings</a> *@
+               @*  <form asp-action="Logout" asp-controller="Login" method="post" class="Logout-form">
+                    <button type="submit" class="Logout-button">Logout</button>
+                </form> *@
+
+
+               
 
 
 
@@ -212,5 +248,29 @@
 </body>
 </html>
 
- 
+<script>
+    function toggleDropdown(button) {
+        // Close all dropdowns first
+        document.querySelectorAll('.dropdown-content').forEach(drop => {
+            if (drop !== button.nextElementSibling) {
+                drop.style.display = 'none';
+            }
+        });
+
+        // Toggle the clicked dropdown
+        const dropdown = button.nextElementSibling;
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdowns when clicking outside
+    window.addEventListener('click', function (e) {
+        if (!e.target.matches('.dropdown-toggle')) {
+            document.querySelectorAll('.dropdown-content').forEach(drop => {
+                drop.style.display = 'none';
+            });
+        }
+    });
+</script>
+
+
     

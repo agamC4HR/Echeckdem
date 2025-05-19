@@ -29,10 +29,13 @@ public partial class Ncbocw
 
     public int TransactionId { get; set; }
 
+    public DateOnly? CompletionDate { get; set; }
+
     public string? FileName { get; set; }
 
-    public DateOnly? FupDate  { get; set; }
-    public DateOnly? CompletionDate { get; set; }
+    public DateOnly? FupDate { get; set; }
+
+    public string? ServiceType { get; set; }
 
     public virtual Ncmloc LcodeNavigation { get; set; } = null!;
 

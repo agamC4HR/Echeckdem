@@ -16,9 +16,9 @@ public partial class BocwScope
 
     public string? Frequency { get; set; }
 
-    public string? ServiceType { get; set; }
-
     public string? FunctionName { get; set; }
+
+    public string? ServiceType { get; set; }
 
     public virtual ICollection<BoScopeMap> BoScopeMaps { get; set; } = new List<BoScopeMap>();
 
@@ -27,6 +27,6 @@ public partial class BocwScope
     public virtual ICollection<Statusmaster> Statusmasters { get; set; } = new List<Statusmaster>();
 
     [NotMapped]
-    public bool IsSelected { get; set; }
 
+    public bool IsSelected { get; set; }
 }
